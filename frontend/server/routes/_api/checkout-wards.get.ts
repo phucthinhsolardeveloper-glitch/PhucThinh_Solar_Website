@@ -1,0 +1,20 @@
+import { isPublicCheckoutWardsPayload } from '../../../shared/contracts/public-checkout'
+import { fetchSessionResponse } from '../../utils/backend-session'
+
+export default defineEventHandler(async (event) => {
+  if (getMethod(event) !== 'GET') {
+    setHeader(event, 'Allow', 'GET')
+    throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
+  }
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'city')) throw createError({ statusCode: 400, statusMessage: 'Invalid city query' })
+  const city = query.city
+  if (typeof city !== 'string' || !/^[1-9][0-9]*$/.test(city)) throw createError({ statusCode: 400, statusMessage: 'Invalid city' })
+  let response: Response
+  try { response = await fetchSessionResponse(event, '/api/v1/checkout-wards?city=' + encodeURIComponent(city), { method: 'GET' }) }
+  catch { throw createError({ statusCode: 502, statusMessage: 'Checkout locations unavailable' }) }
+  if (!response.ok) throw createError({ statusCode: response.status === 404 ? 404 : 502, statusMessage: 'Checkout locations unavailable' })
+  const payload: unknown = await response.json().catch(() => null)
+  if (!isPublicCheckoutWardsPayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid checkout locations contract' })
+  return payload
+})

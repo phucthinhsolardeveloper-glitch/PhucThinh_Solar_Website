@@ -18,10 +18,10 @@ useSeoMeta({ title: 'Giải pháp — internal preview', robots: 'noindex, nofol
  * cho nhất quán, không phải một lựa chọn thiết kế cố ý.
  */
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
-const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-solutions', () => $fetch('/_migration/solutions'))
+const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-solutions', () => $fetch('/_api/solutions'))
 
 const tocContainerRef = ref<HTMLElement | null>(null)
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({

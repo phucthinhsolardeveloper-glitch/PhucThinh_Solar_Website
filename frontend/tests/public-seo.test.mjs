@@ -145,9 +145,9 @@ test('legacy product aliases resolve to Nuxt canonical routes and do not duplica
   const rootMiddleware = read('app/middleware/product-root-alias-public-route.ts')
   assert.match(alias, /middleware:\s*['"]product-legacy-alias-public-route['"]/)
   assert.match(rootAlias, /middleware:\s*['"]product-root-alias-public-route['"]/)
-  assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
+  assert.match(aliasMiddleware, /_api\/public-route-resolve/)
   assert.doesNotMatch(aliasMiddleware, /PublicRouteEnabled|legacyProductDetailPublicPath|phpPublicRouteUrl/)
-  assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
+  assert.match(aliasMiddleware, /_api\/public-route-resolve/)
   assert.match(rootMiddleware, /navigateTo\(CATALOG_PUBLIC_PATH, \{ redirectCode: 301 \}\)/)
 })
 

@@ -102,7 +102,7 @@ test('PDP cart and document links use public assets on public routes and preview
   assert.doesNotMatch(purchase, /navigateTo\('\/migration-cart-preview'\)/)
   assert.match(documents, /links\.active\.value/)
   assert.match(documents, /!links\.active\.value\) return document\.url/)
-  assert.match(documents, /_migration\/product-document\?path=/)
+  assert.match(documents, /_api\/product-document\?path=/)
   assert.match(page, /:consultation-available="Boolean\(extras\)"/)
   assert.match(purchase, /v-if="pricing\.mode === 'quote' && consultationAvailable"[\s\S]*href="#pts-pdp-consultation"/)
 })

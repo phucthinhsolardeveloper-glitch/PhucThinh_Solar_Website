@@ -22,13 +22,13 @@ const robots = computed(() => editorialPublicRouteRobots(
   Object.keys(requestQuery.value).length > 0,
 ))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const requestQuery = computed(() => {
   const query: Record<string, string> = {}
   for (const key of ['q', 'p', 'category']) if (typeof route.query[key] === 'string' && route.query[key]) query[key] = route.query[key] as string
   return query
 })
-const { data, error, pending } = await useAsyncData<unknown>('migration-news', () => $fetch('/_migration/news', { query: requestQuery.value }), { watch: [requestQuery] })
+const { data, error, pending } = await useAsyncData<unknown>('migration-news', () => $fetch('/_api/news', { query: requestQuery.value }), { watch: [requestQuery] })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const news = computed(() => isPublicNewsPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode

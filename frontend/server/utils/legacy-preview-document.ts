@@ -10,7 +10,7 @@ const DOCUMENT_EXTENSIONS = new Map([
 export const LEGACY_DOCUMENT_MAX_BYTES = 25 * 1024 * 1024
 
 export interface LegacyDocumentConfig {
-  phpOrigin: string
+  apiOrigin: string
   previewMediaProxy: boolean | string | number
 }
 
@@ -61,7 +61,7 @@ export async function fetchLegacyPreviewDocument(
 ): Promise<{ body: ArrayBuffer; contentType: string; filename: string } | null> {
   if (!isEnabled(config.previewMediaProxy)) return null
   const validated = validateLegacyDocumentPath(pathname)
-  const origin = legacyOrigin(config.phpOrigin)
+  const origin = legacyOrigin(config.apiOrigin)
   if (!validated || !origin) return null
 
   const upstream = new URL(validated.pathname, origin)

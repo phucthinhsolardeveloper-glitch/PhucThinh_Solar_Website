@@ -23,7 +23,7 @@ test('public order confirmation matches PHP generic success without exposing ses
   assert.match(middleware, /redirectCode: 301/)
   assert.doesNotMatch(middleware, /throw createError\(\{ statusCode: 404/)
   assert.match(page, /const hasValidToken = computed\(\(\) => \/\^\[a-f0-9\]\{48\}\$\//)
-  assert.match(page, /hasValidToken\.value \? requestFetch\('\/_migration\/order-thanks'/)
+  assert.match(page, /hasValidToken\.value \? requestFetch\('\/_api\/order-thanks'/)
   assert.doesNotMatch(page, /setResponseStatus\(404, 'Not Found'\)/)
   assert.match(page, /setResponseStatus\(502, 'Bad Gateway'\)/)
   assert.match(page, /payload\?\.order\.customerName \|\| 'bạn'/)

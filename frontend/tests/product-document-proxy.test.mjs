@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { fetchLegacyPreviewDocument, LEGACY_DOCUMENT_MAX_BYTES, validateLegacyDocumentPath } from '../server/utils/legacy-preview-document.ts'
 
-const config = { phpOrigin: 'http://127.0.0.1:8088', previewMediaProxy: true }
+const config = { apiOrigin: 'http://127.0.0.1:8088', previewMediaProxy: true }
 const response = (body, headers = { 'content-type': 'application/pdf' }, status = 200) => new Response(body, { status, headers })
 
 test('accepts allowlisted local product documents', async () => {

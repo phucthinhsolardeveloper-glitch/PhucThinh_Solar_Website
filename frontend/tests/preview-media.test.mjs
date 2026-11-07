@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { fetchLegacyPreviewMedia, LEGACY_MEDIA_MAX_BYTES, validateLegacyMediaPath } from '../server/utils/legacy-preview-media.ts'
 
-const config = { phpOrigin: 'http://127.0.0.1:8088', previewMediaProxy: true }
+const config = { apiOrigin: 'http://127.0.0.1:8088', previewMediaProxy: true }
 const response = (body, headers = { 'content-type': 'image/png' }, status = 200) => new Response(body, { status, headers })
 
 test('accepts an allowlisted image path and preserves safe MIME', async () => {

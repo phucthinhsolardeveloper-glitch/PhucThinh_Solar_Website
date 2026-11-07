@@ -23,9 +23,9 @@ const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phú
 // function. Keeping this function synchronous and awaiting its `ready`
 // promise directly in the page sidesteps that entirely.
 export function useProductPreviewData(slug: Ref<string>) {
-  const siteFetch = useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-  const productFetch = useFetch<unknown>('/_migration/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
-  const extrasFetch = useFetch<unknown>('/_migration/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })
+  const siteFetch = useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+  const productFetch = useFetch<unknown>('/_api/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
+  const extrasFetch = useFetch<unknown>('/_api/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })
   const { data: siteData } = siteFetch
   const { data: productData, error, pending: productPending } = productFetch
   const { data: extrasData, pending: extrasPending } = extrasFetch

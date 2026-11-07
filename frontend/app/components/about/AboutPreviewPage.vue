@@ -4,7 +4,7 @@ import { isPublicCatalogPayload, type PublicCatalogPayload } from '#shared/contr
 
 const props = defineProps<{ about: PublicAboutPayload }>()
 const { data: brandCatalogData } = await useAsyncData<PublicCatalogPayload | null>('about-brand-catalog-options', async () => {
-  const payload: unknown = await $fetch('/_migration/catalog', { query: { per_page: '1' } })
+  const payload: unknown = await $fetch('/_api/catalog', { query: { per_page: '1' } })
   return isPublicCatalogPayload(payload) ? payload : null
 }, { default: () => null })
 const links = useMigrationLinks()

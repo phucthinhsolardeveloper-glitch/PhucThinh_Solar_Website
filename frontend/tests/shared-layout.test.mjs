@@ -36,8 +36,8 @@ test('migration layout owns only global shell utilities and preview robots polic
 test('about pilot delegates global shell but owns its breadcrumb and CMS request', () => {
   assert.match(about, /layout: 'migration'/)
   assert.match(about, /<SiteBreadcrumb :items="\[\{ label: 'Giới thiệu' \}\]" \/>/)
-  assert.doesNotMatch(about, /_migration\/site|<SiteHeader|<SiteFooter/)
-  assert.match(about, /_migration\/about/)
+  assert.doesNotMatch(about, /_api\/site|<SiteHeader|<SiteFooter/)
+  assert.match(about, /_api\/about/)
   assert.match(about, /Đang tải dữ liệu CMS/)
   assert.match(about, /Preview không hiển thị dữ liệu giới thiệu giả/)
 })

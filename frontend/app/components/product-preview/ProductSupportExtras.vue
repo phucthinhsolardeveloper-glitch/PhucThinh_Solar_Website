@@ -9,7 +9,7 @@ const hasMediaColumn = computed(() => Boolean(props.extras?.videoEmbedUrl) || pr
 
 function documentHref(document: PublicProductDocument): string {
   if (document.url.startsWith('https://') || !links.active.value) return document.url
-  return `/_migration/product-document?path=${encodeURIComponent(document.url)}`
+  return `/_api/product-document?path=${encodeURIComponent(document.url)}`
 }
 </script>
 

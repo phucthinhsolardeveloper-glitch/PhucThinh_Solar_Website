@@ -59,7 +59,7 @@ const currentSlug = computed(() => pending.value || props.data.solution.slug)
 let reducedMotion = false
 // Starts the next page's data at touch-down, a beat before the tap completes.
 function warmSolution(slug: string) {
-  if (slug !== props.data.solution.slug) void window.fetch(`/_migration/solution-detail?slug=${encodeURIComponent(slug)}`).catch(() => {})
+  if (slug !== props.data.solution.slug) void window.fetch(`/_api/solution-detail?slug=${encodeURIComponent(slug)}`).catch(() => {})
 }
 function choose(slug: string, index: number) {
   if (slug === props.data.solution.slug) return

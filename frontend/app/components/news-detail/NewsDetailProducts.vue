@@ -33,7 +33,7 @@ let observer: IntersectionObserver | undefined
 async function load() {
   if (!topic.value) return
   try {
-    const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: topic.value.slug, per_page: 12 } })
+    const payload = await $fetch<PublicCatalogPayload>('/_api/catalog', { query: { category: topic.value.slug, per_page: 12 } })
     const withImage = payload.products.filter((product) => product.media[0])
     // Priced items first: a visitor can act on them immediately.
     products.value = [...withImage.filter((p) => p.pricing?.mode === 'price'), ...withImage.filter((p) => p.pricing?.mode !== 'price')].slice(0, 4)

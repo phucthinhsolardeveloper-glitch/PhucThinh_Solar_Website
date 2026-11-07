@@ -94,13 +94,13 @@ function closeFilterDrawerAfterNavigation(event: MouseEvent) {
   if (new URL(link.href, window.location.href).pathname !== window.location.pathname) closeFilterDrawer()
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
-  const payload = await $fetch<unknown>('/_migration/site')
+  const payload = await $fetch<unknown>('/_api/site')
   if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP site data contract' })
   return payload
 })
 const { data: catalogData, error: catalogError, pending: catalogPending } = await useAsyncData<PublicCatalogPayload>(
   catalogDataKey,
-  () => $fetch('/_migration/catalog', { query: query.value }),
+  () => $fetch('/_api/catalog', { query: query.value }),
 )
 
 function findCategory(nodes: PublicProductCategoryNode[], chain: string): PublicProductCategoryNode | null {

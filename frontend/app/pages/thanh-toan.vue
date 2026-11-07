@@ -24,8 +24,8 @@ function appendRequirement(tag: string) {
   if (current.includes(tag)) return
   form.requirements = current ? `${current}; ${tag}` : tag
 }
-const { data: cartData } = await useFetch<unknown>('/_migration/cart', { key: 'migration-checkout-cart', default: () => null })
-const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_migration/checkout', { key: 'migration-checkout-meta', default: () => null })
+const { data: cartData } = await useFetch<unknown>('/_api/cart', { key: 'migration-checkout-cart', default: () => null })
+const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_api/checkout', { key: 'migration-checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
 const checkout = computed<PublicCheckoutPayload | null>(() => isPublicCheckoutPayload(checkoutData.value) ? checkoutData.value : null)
 
@@ -85,7 +85,7 @@ async function loadWards() {
   wardsController = controller
   wardsLoading.value = true
   try {
-    const payload = await $fetch<unknown>('/_migration/checkout-wards', {
+    const payload = await $fetch<unknown>('/_api/checkout-wards', {
       query: { city: String(city) },
       signal: controller.signal,
     })
@@ -141,7 +141,7 @@ async function quoteShipping() {
   shippingController = controller
   shippingLoading.value = true
   try {
-    const payload: any = await $fetch('/_migration/shipping-quote', {
+    const payload: any = await $fetch('/_api/shipping-quote', {
       method: 'POST',
       body: { city, ward },
       signal: controller.signal,

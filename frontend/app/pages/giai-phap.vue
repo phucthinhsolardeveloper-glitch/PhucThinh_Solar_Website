@@ -22,12 +22,12 @@ const isHubRoute = computed(() => route.path === SOLUTIONS_PUBLIC_PATH || route.
 const indexable = computed(() => isHubRoute.value && config.public.solutionsPublicRouteIndexable === true && !!data.value && !error.value)
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
 const { data, error } = await useAsyncData<PublicSolutionsPayload | null>(
   'public-solutions',
-  () => isHubRoute.value ? $fetch('/_migration/solutions') : Promise.resolve(null),
+  () => isHubRoute.value ? $fetch('/_api/solutions') : Promise.resolve(null),
   { watch: [isHubRoute] },
 )
 const responseStatus = editorialPublicHubResponseStatus(

@@ -30,7 +30,7 @@ test('public editorial detail preserves upstream 404 and 502 while preview respo
   assert.equal(editorialPublicResponseStatus(false, 502), undefined)
   assert.match(read('app/pages/migration-solution-detail-preview.vue'), /setResponseStatus\(responseStatus/)
   assert.match(read('app/pages/migration-policy-preview.vue'), /setResponseStatus\(responseStatus/)
-  assert.match(read('server/routes/_migration/policy-detail.get.ts'), /passThroughStatuses: \[404\]/)
+  assert.match(read('server/routes/_api/policy-detail.get.ts'), /passThroughStatuses: \[404\]/)
 })
 
 test('public editorial hubs preserve not-found and set 502 for unavailable or invalid data', () => {

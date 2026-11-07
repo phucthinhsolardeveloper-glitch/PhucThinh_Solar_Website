@@ -19,7 +19,7 @@ definePageMeta({ layout: false, key: (route) => route.path })
 const route = useRoute()
 const config = useRuntimeConfig()
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const slug = typeof route.params.slug === 'string' ? route.params.slug : ''
 const legacyAliases: Record<string, string> = {
@@ -41,7 +41,7 @@ const { data: resolutionData, error: resolutionError } = await useAsyncData<unkn
   `public-route-resolve-${slug}`,
   () => aliasTarget || !pathIsSafe || !pathCanResolve
     ? Promise.resolve(null)
-    : $fetch('/_migration/public-route-resolve', { query: { slug } }),
+    : $fetch('/_api/public-route-resolve', { query: { slug } }),
 )
 const activeDetail = ref<'news' | 'news-category' | 'solution-category' | 'project' | 'project-category' | 'gallery' | null>(null)
 const pageState = ref<'not-found' | 'unavailable' | 'redirecting' | 'ready'>('not-found')

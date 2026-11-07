@@ -1,4 +1,4 @@
-import { isAllowedPhpOrigin } from './migration-api.ts'
+import { isAllowedApiOrigin } from './backend-api.ts'
 
 const MEDIA_PREFIXES = ['/upload/', '/assets/', '/thumbs/'] as const
 const MEDIA_EXTENSIONS = new Map([
@@ -13,9 +13,9 @@ const MEDIA_EXTENSIONS = new Map([
 export const LEGACY_MEDIA_MAX_BYTES = 8 * 1024 * 1024
 
 export interface LegacyMediaConfig {
-  phpOrigin: string
+  apiOrigin: string
   previewMediaOrigin?: string
-  phpOriginAllowlist?: unknown
+  apiOriginAllowlist?: unknown
   previewMediaProxy: boolean | string | number
 }
 
@@ -63,11 +63,11 @@ export async function fetchLegacyPreviewMedia(
 ): Promise<{ body: ArrayBuffer; contentType: string } | null> {
   if (!isEnabled(config.previewMediaProxy)) return null
   const validated = validateLegacyMediaPath(pathname)
-  const apiOrigin = legacyOrigin(config.phpOrigin)
-  const origin = legacyOrigin(config.previewMediaOrigin ?? config.phpOrigin)
+  const apiOrigin = legacyOrigin(config.apiOrigin)
+  const origin = legacyOrigin(config.previewMediaOrigin ?? config.apiOrigin)
   if (!validated || !apiOrigin || !origin) return null
   // Only use a separate media origin when it is explicitly allowlisted.
-  if (origin.origin !== apiOrigin.origin && !isAllowedPhpOrigin(origin, config.phpOriginAllowlist)) return null
+  if (origin.origin !== apiOrigin.origin && !isAllowedApiOrigin(origin, config.apiOriginAllowlist)) return null
 
   let expectedContentType = validated.contentType
   const upstream = new URL(validated.pathname, origin)

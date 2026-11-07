@@ -16,7 +16,7 @@ const config = useRuntimeConfig()
 const homeTo = computed(() => migrationHref('/'))
 const compactItems = computed(() => props.items.length > 2 ? props.items.slice(-2) : props.items)
 const breadcrumbStructuredData = computed(() => {
-  if (route.path.startsWith('/migration-') || route.path.startsWith('/_migration') || /^\/san-pham\/[^/]+$/.test(route.path)) return null
+  if (route.path.startsWith('/migration-') || route.path.startsWith('/_api') || /^\/san-pham\/[^/]+$/.test(route.path)) return null
   return publicBreadcrumbStructuredData(config.public.canonicalSiteOrigin, route.path, props.items.map((item) => ({
     label: item.label,
     ...(item.to ? { path: item.to } : {}),

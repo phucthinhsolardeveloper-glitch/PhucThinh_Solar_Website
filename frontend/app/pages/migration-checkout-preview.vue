@@ -3,7 +3,7 @@ import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/p
 
 const { site } = await usePublicSite()
 const links = useMigrationLinks()
-const { data, error, pending } = await useFetch<unknown>('/_migration/cart', {
+const { data, error, pending } = await useFetch<unknown>('/_api/cart', {
   key: 'migration-checkout-cart',
   default: () => null,
 })

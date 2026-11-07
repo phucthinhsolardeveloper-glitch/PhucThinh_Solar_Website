@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('news category page uses the read-only category DTO, exact canonical, and no route feature flag', () => {
   const page = read('../app/components/news/NewsCategoryPage.vue')
-  assert.match(page, /\$fetch\('\/_migration\/news', \{ query:/)
+  assert.match(page, /\$fetch\('\/_api\/news', \{ query:/)
   assert.match(page, /category: slug\.value/)
   assert.match(page, /category\.value\?\.canonicalPath/)
   assert.doesNotMatch(page, /PublicRouteEnabled/)
@@ -17,9 +17,9 @@ test('news category page uses the read-only category DTO, exact canonical, and n
 
 test('solution category page uses the read-only filtered GET DTO as an always-on Nuxt route', () => {
   const page = read('../app/components/solutions/SolutionCategoryPage.vue')
-  const adapter = read('../server/routes/_migration/solutions.get.ts')
+  const adapter = read('../server/routes/_api/solutions.get.ts')
   const api = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solutions.php')
-  assert.match(page, /\$fetch\('\/_migration\/solutions', \{ query: \{ category: slug\.value \} \}\)/)
+  assert.match(page, /\$fetch\('\/_api\/solutions', \{ query: \{ category: slug\.value \} \}\)/)
   assert.match(page, /category\.value\?\.canonicalPath/)
   assert.doesNotMatch(page, /PublicRouteEnabled/)
   assert.match(page, /editorialPublicResponseStatus\(true,/)

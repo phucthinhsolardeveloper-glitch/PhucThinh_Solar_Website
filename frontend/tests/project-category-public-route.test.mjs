@@ -28,7 +28,7 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   const routePage = read('../app/pages/danh-muc-du-an/[slug].vue')
   const projectsApi = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php')
   const projectsDto = read('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_projects_api.php')
-  const projectsAdapter = read('../server/routes/_migration/projects.get.ts')
+  const projectsAdapter = read('../server/routes/_api/projects.get.ts')
   const legacyRouter = read('../../domains/phucthinhsolar.com/public_html/libraries/router.php')
   const manifest = JSON.parse(read('../../tools/visual-tests/fixtures/migration-routes.json'))
   assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)

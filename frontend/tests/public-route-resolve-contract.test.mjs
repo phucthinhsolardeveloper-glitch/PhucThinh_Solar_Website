@@ -46,55 +46,14 @@ test('route classifier contract rejects malformed, mismatched, private, or guess
   assert.equal(isPublicRouteResolveSlug('safe-slug-123'), true)
 })
 
-test('Nitro adapter is GET-only, validates one slug, delegates to the fixed PHP endpoint, and disables caching', () => {
-  const route = read('server/routes/_migration/public-route-resolve.get.ts')
+test('Nitro adapter is GET-only, validates one slug, delegates to the fixed API endpoint, and disables caching', () => {
+  const route = read('server/routes/_api/public-route-resolve.get.ts')
   assert.match(route, /requireMigrationGet\(event\)/)
   assert.match(route, /Object\.keys\(query\)\.some\(\(key\) => key !== 'slug'\)/)
   assert.match(route, /isPublicRouteResolveSlug\(query\.slug\)/)
-  assert.match(route, /endpoint: '\/api\/pts_v1_public_route_resolve\.php'/)
+  assert.match(route, /endpoint: '\/api\/v1\/public-route-resolve'/)
   assert.match(route, /passThroughStatuses: \[404\]/)
   assert.match(route, /Cache-Control', 'private, no-store'/)
   assert.match(route, /X-Robots-Tag', 'noindex, nofollow, noarchive'/)
   assert.doesNotMatch(route, /method:\s*'POST'|method:\s*'PUT'|method:\s*'DELETE'/)
-})
-
-test('PHP classifier follows the ordered router resolver and fails closed for unsupported route families', () => {
-  const api = read('../domains/phucthinhsolar.com/public_html/api/pts_v1_public_route_resolve.php')
-  const resolver = read('../domains/phucthinhsolar.com/public_html/libraries/public_route_resolver.php')
-  const orderedEntries = [
-    "'tbl'=>'product_list', 'field'=>'idl'",
-    "'tbl'=>'product_cat', 'field'=>'idc'",
-    "'tbl'=>'product_item', 'field'=>'idi'",
-    "'tbl'=>'product_sub', 'field'=>'ids'",
-    "'tbl'=>'product_brand', 'field'=>'idb'",
-    "'tbl'=>'product', 'field'=>'id', 'com'=>'san-pham'",
-    "'tbl'=>'product', 'field'=>'id', 'com'=>'thu-vien-anh'",
-    "'tbl'=>'photo', 'field'=>'id', 'com'=>'video'",
-    "'tbl'=>'news_list', 'field'=>'idl', 'com'=>'tin-tuc'",
-    "'tbl'=>'news', 'field'=>'id', 'com'=>'tin-tuc'",
-    "'tbl'=>'news', 'field'=>'id', 'com'=>'giai-phap'",
-    "'tbl'=>'news', 'field'=>'id', 'com'=>'du-an'",
-    "'tbl'=>'news', 'field'=>'id', 'com'=>'chinh-sach'",
-    "'tbl'=>'static', 'field'=>'id', 'com'=>'gioi-thieu'",
-  ]
-  let previous = -1
-  for (const entry of orderedEntries) {
-    const position = api.indexOf(entry)
-    assert.ok(position > previous, `resolver order must contain ${entry}`)
-    previous = position
-  }
-  assert.match(api, /publicRouteResolveSlug\(\$d, \$slug, 'slugvi', ptsPublicRouteResolveMap\(\)\)/)
-  assert.match(api, /find_in_set\('hienthi', status\)/)
-  assert.match(api, /ptsPublicRouteResolveIsReservedPath\(\$slug\)/)
-  assert.match(api, /'kind'=>'legacy-only', 'canonicalPath'=>null/)
-  assert.match(api, /\$com === 'du-an' && \$field === 'idl'/)
-  assert.match(api, /\$kind = 'project-category'/)
-  assert.match(api, /'news-category'/)
-  assert.match(api, /'solution-category'/)
-  assert.match(api, /n\.slugvi<>''/)
-  assert.match(api, /ptsPublicRouteResolveError\(404, 'PUBLIC_ROUTE_NOT_FOUND'\)/)
-  assert.match(resolver, /\$params\[\] = \$slug/)
-  assert.match(resolver, /order by route_priority limit 0,1/)
-  assert.match(resolver, /in_array\(\$table, array\('static', 'photo'\), true\)/)
-  assert.doesNotMatch(api, /'kind'\s*=>\s*'video'|'kind'\s*=>\s*'static'/)
 })

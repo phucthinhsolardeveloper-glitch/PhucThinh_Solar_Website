@@ -1,12 +1,12 @@
 // Page data is read-only and cached 60 s on the server, yet each navigation asked for it again.
 // Nuxt's useFetch does not go through globalThis.$fetch, so this sits at the browser fetch level,
 // which every path shares. Each caller gets its own Response copy, so nothing shares parsed data.
-const CACHEABLE = /^\/_migration\/(site|home|about|dealer|contact|solutions|projects|gallery|video|policy-detail|product-detail|product-extras|solution-detail|project-detail|gallery-detail|catalog|news)(\/|$|\?)/
+const CACHEABLE = /^\/_api\/(site|home|about|dealer|contact|solutions|projects|gallery|video|policy-detail|product-detail|product-extras|solution-detail|project-detail|gallery-detail|catalog|news)(\/|$|\?)/
 const TTL_MS = 120_000
 const WARM: Record<string, string[]> = {
-  '/': ['/_migration/site', '/_migration/home'],
-  '/san-pham/': ['/_migration/site', '/_migration/catalog'],
-  '/lien-he/': ['/_migration/site', '/_migration/contact'],
+  '/': ['/_api/site', '/_api/home'],
+  '/san-pham/': ['/_api/site', '/_api/catalog'],
+  '/lien-he/': ['/_api/site', '/_api/contact'],
 }
 
 export default defineNuxtPlugin((nuxtApp) => {

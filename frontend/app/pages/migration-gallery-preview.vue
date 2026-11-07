@@ -13,7 +13,7 @@ const links = useMigrationLinks()
 const isPublicRoute = computed(() => route.path === GALLERY_PUBLIC_PATH)
 const page = computed(() => typeof route.query.p === 'string' && /^[1-9][0-9]*$/.test(route.query.p) ? Number(route.query.p) : 1)
 const query = computed(() => page.value > 1 ? { p: String(page.value) } : {})
-const { data, error, pending } = await useFetch<unknown>('/_migration/gallery', { query })
+const { data, error, pending } = await useFetch<unknown>('/_api/gallery', { query })
 const gallery = computed<PublicGalleryPayload | null>(() => isPublicGalleryPayload(data.value) ? data.value : null)
 const totalPages = computed(() => gallery.value ? Math.max(1, Math.ceil(gallery.value.pagination.total / gallery.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode

@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const slug = typeof to.params.slug === 'string' ? to.params.slug : ''
   if (!isPublicRouteResolveSlug(slug)) throw createError({ statusCode: 404, statusMessage: 'Product not found' })
 
-  const { data, error } = await useFetch<unknown>('/_migration/public-route-resolve', {
+  const { data, error } = await useFetch<unknown>('/_api/public-route-resolve', {
     query: { slug },
     key: `legacy-product-alias-${slug}`,
   })

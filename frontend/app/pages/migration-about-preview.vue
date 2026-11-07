@@ -6,7 +6,7 @@ definePageMeta({
   layout: 'migration',
 })
 
-const { data, error, pending } = await useAsyncData<unknown>('migration-about', () => $fetch('/_migration/about'), { default: () => null })
+const { data, error, pending } = await useAsyncData<unknown>('migration-about', () => $fetch('/_api/about'), { default: () => null })
 const about = computed(() => isPublicAboutPayload(data.value) ? data.value : null)
 useSeoMeta({ title: 'Giới thiệu — internal preview' })
 </script>

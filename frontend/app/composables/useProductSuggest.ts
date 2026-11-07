@@ -35,7 +35,7 @@ export function useProductSuggest(keyword: Ref<string>) {
     const current = new AbortController()
     controller = current
     try {
-      const payload = await $fetch<PublicSearchPayload>('/_migration/search', {
+      const payload = await $fetch<PublicSearchPayload>('/_api/search', {
         query: { keyword: term, per_page: String(RESULT_COUNT) },
         signal: current.signal,
       })

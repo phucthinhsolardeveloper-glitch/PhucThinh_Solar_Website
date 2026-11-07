@@ -12,7 +12,7 @@ const hasValidToken = computed(() => /^[a-f0-9]{48}$/.test(token.value))
 if (import.meta.server && hasValidToken.value) useResponseHeader('Cache-Control').value = 'private, no-store'
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `order-thanks-${token.value}`,
-  () => hasValidToken.value ? requestFetch('/_migration/order-thanks', { query: { token: token.value } }) : Promise.resolve(null),
+  () => hasValidToken.value ? requestFetch('/_api/order-thanks', { query: { token: token.value } }) : Promise.resolve(null),
   { default: () => null },
 )
 const payload = computed<PublicOrderThanksPayload | null>(() => isPublicOrderThanksPayload(data.value) ? data.value : null)

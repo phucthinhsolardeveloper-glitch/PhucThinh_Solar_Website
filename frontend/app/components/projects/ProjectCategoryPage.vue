@@ -19,10 +19,10 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const canonicalPath = computed(() => projects.value?.category?.canonicalPath || projectCategoryCanonicalPath(slug.value))
 const page = computed(() => projectCategoryPage(route.query.p))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `project-category-${slug.value}-${page.value}`,
-  () => $fetch('/_migration/projects', { query: { category: slug.value, page: String(page.value) } }),
+  () => $fetch('/_api/projects', { query: { category: slug.value, page: String(page.value) } }),
   { watch: [slug, page] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
@@ -42,7 +42,7 @@ const totalPages = computed(() => projects.value ? Math.max(1, Math.ceil(project
 const paginationItems = usePaginationItems(currentPage, totalPages)
 // The first project leads the hero, as on the main projects page, so the wall does not repeat it.
 // A group without projects borrows the main page's lead photo, so its hero looks the same.
-const { data: allProjects } = await useAsyncData<unknown>('project-category-backdrop', () => $fetch('/_migration/projects'), { lazy: true })
+const { data: allProjects } = await useAsyncData<unknown>('project-category-backdrop', () => $fetch('/_api/projects'), { lazy: true })
 const heroBackdrop = computed(() => {
   const payload = isPublicProjectsPayload(allProjects.value) ? allProjects.value : null
   return payload?.featured?.image || payload?.projects[0]?.image || undefined

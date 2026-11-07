@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('search GET projection allowlists brand and public-price filters with parameterized product conditions', () => {
   const php = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_search.php')
-  const nitro = read('../server/routes/_migration/search.get.ts')
+  const nitro = read('../server/routes/_api/search.get.ts')
   const contract = read('../shared/contracts/public-search.ts')
 
   assert.match(php, /\$allowed = array\('keyword','page','per_page','brand','price','sort'\)/)

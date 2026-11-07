@@ -31,7 +31,7 @@ export function useMigrationCart() {
     const readSequence = ++refreshSequence.value
     beginRequest()
     try {
-      const payload = await $fetch<unknown>('/_migration/cart')
+      const payload = await $fetch<unknown>('/_api/cart')
       if (!isPublicCartPayload(payload)) throw new Error('Invalid cart contract')
       if (isCurrentCartRead(readRevision, cartRevision.value, readSequence, refreshSequence.value)) {
         cart.value = payload
@@ -61,7 +61,7 @@ export function useMigrationCart() {
       if (!current) current = await refresh()
       if (!current) throw new Error('Không thể khởi tạo phiên giỏ hàng.')
       try {
-        await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
+        await $fetch('/_api/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
       } catch (reason) {
         // On a first visit, parallel PHP responses can each start a session and the last
         // cookie wins, leaving the cached token on another session (419). Re-read the
@@ -69,7 +69,7 @@ export function useMigrationCart() {
         if ((reason as { statusCode?: number })?.statusCode !== 419) throw reason
         current = await refresh()
         if (!current) throw reason
-        await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
+        await $fetch('/_api/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
       }
       // Invalidate reads started while POST was in flight and keep the loading
       // state open until the authoritative post-mutation read completes.

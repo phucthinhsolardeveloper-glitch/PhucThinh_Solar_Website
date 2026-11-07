@@ -79,7 +79,7 @@ watch(() => form.city, async (city) => {
   if (!city) return
   loadingWards.value = true
   try {
-    const payload: any = await $fetch('/_migration/checkout-wards', { query: { city: String(city) } })
+    const payload: any = await $fetch('/_api/checkout-wards', { query: { city: String(city) } })
     wards.value = Array.isArray(payload?.wards) ? payload.wards : []
   } catch {
     wards.value = []

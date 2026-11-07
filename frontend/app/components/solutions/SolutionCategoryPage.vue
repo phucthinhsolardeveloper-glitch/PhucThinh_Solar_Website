@@ -13,12 +13,12 @@ const config = useRuntimeConfig()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : typeof route.query.slug === 'string' ? route.query.slug : '')
-const { data: siteData } = await useFetch<unknown>('/_migration/site', {
+const { data: siteData } = await useFetch<unknown>('/_api/site', {
   default: (): PublicSitePayload => ({ schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }),
 })
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `public-solution-category-${slug.value}`,
-  () => $fetch('/_migration/solutions', { query: { category: slug.value } }),
+  () => $fetch('/_api/solutions', { query: { category: slug.value } }),
   { watch: [slug] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : { schemaVersion: 1 as const, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] })

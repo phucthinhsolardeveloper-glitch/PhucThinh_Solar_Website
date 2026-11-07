@@ -15,7 +15,7 @@ const config = useRuntimeConfig()
 const isPublicRoute = computed(() => route.path === PROJECTS_PUBLIC_PATH)
 const publicProjectsEnabled = computed(() => isPublicRoute.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const category = computed(() => typeof route.query.category === 'string' ? route.query.category : undefined)
 // PHP uses `p` on the public URL; the read-only DTO endpoint names it `page`.
 const page = computed(() => {
@@ -30,7 +30,7 @@ const requestQuery = computed(() => ({
 }))
 const { data, error } = await useAsyncData<unknown>(
   () => `migration-projects-${JSON.stringify(requestQuery.value)}`,
-  () => $fetch('/_migration/projects', { query: requestQuery.value }),
+  () => $fetch('/_api/projects', { query: requestQuery.value }),
   { watch: [requestQuery] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)

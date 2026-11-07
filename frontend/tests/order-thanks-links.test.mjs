@@ -7,8 +7,8 @@ const links = readFileSync(new URL('../app/composables/useMigrationLinks.ts', im
 
 test('SSR forwards the PHP session cookie when loading the token-bound order confirmation', () => {
   assert.match(component, /const requestFetch = useRequestFetch\(\)/)
-  assert.match(component, /requestFetch\('\/_migration\/order-thanks'/)
-  assert.doesNotMatch(component, /\$fetch\('\/_migration\/order-thanks'/)
+  assert.match(component, /requestFetch\('\/_api\/order-thanks'/)
+  assert.doesNotMatch(component, /\$fetch\('\/_api\/order-thanks'/)
   assert.match(component, /useResponseHeader\('Cache-Control'\)\.value = 'private, no-store'/)
 })
 

@@ -127,14 +127,8 @@ test('cart static fallback resolves exactly', () => {
   assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', CART_PUBLIC_PATH), 'http://127.0.0.1:8080/gio-hang/')
 })
 
-test('checkout mutation URL omits the slash so PHP relative redirects resolve from site root', () => {
-  const action = phpPublicRouteUrl('http://localhost:8080', CART_CHECKOUT_POST_PATH)
-  assert.equal(CART_CHECKOUT_POST_PATH, '/gio-hang')
-  assert.equal(action, 'http://localhost:8080/gio-hang')
-  assert.equal(new URL('gio-hang/', action).pathname, '/gio-hang/')
-  assert.equal(new URL('cam-on/?token=abc123', action).pathname, '/cam-on/')
-  assert.equal(new URL('cam-on/?token=abc123', action).searchParams.get('token'), 'abc123')
-  assert.equal(new URL('cam-on/?token=abc123', `${action}/`).pathname, '/gio-hang/cam-on/')
+test('checkout posts to the API, which redirects with site-root paths', () => {
+  assert.equal(CART_CHECKOUT_POST_PATH, '/api/v1/checkout')
 })
 
 test('order-success fallback forwards a non-empty token query and omits an empty one', () => {

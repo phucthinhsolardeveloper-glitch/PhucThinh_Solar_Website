@@ -13,7 +13,7 @@ const links = useMigrationLinks()
 const isMigrationPreview = links.active
 const checkoutNotice = ref<PublicCheckoutNoticePayload | null>(null)
 const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
-const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_migration/cart', { key: 'migration-cart-page', default: () => null })
+const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_api/cart', { key: 'migration-cart-page', default: () => null })
 if (isPublicCartPayload(initialCart.value)) cart.value = initialCart.value
 else if (!isMigrationPreview.value && import.meta.server) setResponseStatus(502, 'Bad Gateway')
 if (!isMigrationPreview.value && import.meta.server && initialCartError.value) setResponseStatus(502, 'Bad Gateway')
@@ -111,7 +111,7 @@ onBeforeUnmount(() => { actionBarActive.value = false })
 
 onMounted(async () => {
   try {
-    const notice = await $fetch<unknown>('/_migration/checkout-notice')
+    const notice = await $fetch<unknown>('/_api/checkout-notice')
     if (isPublicCheckoutNoticePayload(notice)) checkoutNotice.value = notice
   } catch {
     // Checkout flash is optional; cart/session rendering remains independent.

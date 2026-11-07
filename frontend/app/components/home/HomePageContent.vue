@@ -16,8 +16,8 @@ const config = useRuntimeConfig()
 const indexable = computed(() => !props.preview && config.public.homePublicRouteIndexable === true
   && !!home.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data: homeData, error } = await useFetch<unknown>('/_migration/home')
+const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+const { data: homeData, error } = await useFetch<unknown>('/_api/home')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const home = computed(() => isPublicHomePayload(homeData.value) ? homeData.value : null)
 const fallbackTitle = computed(() => props.preview ? 'Phúc Thịnh Solar — homepage preview' : 'Phúc Thịnh Solar')

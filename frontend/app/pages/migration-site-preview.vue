@@ -10,8 +10,8 @@ import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data: solutionsData, error: solutionsError } = await useFetch<unknown>('/_migration/solutions', { default: () => null })
+const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+const { data: solutionsData, error: solutionsError } = await useFetch<unknown>('/_api/solutions', { default: () => null })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const solutions = computed(() => isPublicSolutionsPayload(solutionsData.value) ? solutionsData.value : null)
 

@@ -16,7 +16,7 @@ export const publicSiteFallback: PublicSitePayload = {
 export async function usePublicSite() {
   const { data, error, pending, refresh } = await useAsyncData<unknown>(
     PUBLIC_SITE_ASYNC_KEY,
-    () => $fetch<unknown>('/_migration/site'),
+    () => $fetch<unknown>('/_api/site'),
     {
       default: () => null,
       dedupe: 'defer',

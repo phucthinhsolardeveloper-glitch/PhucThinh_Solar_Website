@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('unknown project category keeps PHP CATEGORY_NOT_FOUND as a public 404', () => {
   const php = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php')
-  const adapter = read('../server/routes/_migration/projects.get.ts')
+  const adapter = read('../server/routes/_api/projects.get.ts')
   const page = read('../app/pages/migration-projects-preview.vue')
   const helper = read('../shared/editorial-public-route.ts')
 

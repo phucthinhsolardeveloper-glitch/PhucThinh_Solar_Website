@@ -37,7 +37,7 @@ test('mobile sidebar follows the PHP product-first order and narrower drawer siz
 
 test('PHP news-category aliases redirect only confirmed categories to their Nuxt canonical path', () => {
   const alias = read('pages/category/[slug].vue')
-  assert.match(alias, /_migration\/public-route-resolve/)
+  assert.match(alias, /_api\/public-route-resolve/)
   assert.match(alias, /resolution\.kind === 'news-category'/)
   assert.match(alias, /navigateTo\(\{ path: resolution\.canonicalPath, query: route\.query \}, \{ redirectCode: 301 \}\)/)
   assert.match(alias, /setResponseStatus\(validSlug \? statusCode : 404/)

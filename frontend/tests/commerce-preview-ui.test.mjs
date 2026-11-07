@@ -158,7 +158,7 @@ test('PDP support, reviews, consultation and related items follow the PHP sectio
 
 test('brand sidebar uses real category and brand links and filters prices within the brand', () => {
   const brand = read('components/catalog/BrandDetailPage.vue')
-  const adapter = read('../server/routes/_migration/brand-detail.get.ts')
+  const adapter = read('../server/routes/_api/brand-detail.get.ts')
   assert.match(brand, /site\.productCategories/)
   assert.match(brand, /data\.filters\.brands/)
   assert.match(brand, /data\.filters\.priceRanges/)
@@ -172,7 +172,7 @@ test('search and catalog root keep their PHP-backed route and category hero data
   const search = read('components/catalog/SearchResultsPage.vue')
   const catalog = read('components/catalog/CatalogPage.vue')
   const masthead = read('components/catalog/CatalogMasthead.vue')
-  assert.match(search, /\$fetch\('\/_migration\/search'/)
+  assert.match(search, /\$fetch\('\/_api\/search'/)
   assert.match(search, /keyword: keyword\.value/)
   assert.match(catalog, /:hero="catalogData\?\.categoryHero \?\? null"/)
   assert.match(catalog, /'den-pha-nang-luong-mat-troi': 10/)

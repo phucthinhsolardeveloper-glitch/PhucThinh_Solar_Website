@@ -8,7 +8,7 @@ const config = useRuntimeConfig()
 const links = useMigrationLinks()
 const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && route.path === `/${route.params.slug}/`)
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
-const { data, error, pending } = await useFetch<unknown>('/_migration/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
+const { data, error, pending } = await useFetch<unknown>('/_api/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !gallery.value)

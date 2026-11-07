@@ -11,11 +11,12 @@ export const CATALOG_PUBLIC_PATH = '/san-pham/'
 export const BRAND_ROOT_PUBLIC_PATH = '/thuong-hieu/'
 export const SEARCH_PUBLIC_PATH = '/tim-kiem/'
 export const CART_PUBLIC_PATH = '/gio-hang/'
-export const CART_CHECKOUT_POST_PATH = '/gio-hang'
+/** The checkout form posts straight to the API, which answers with a redirect. */
+export const CART_CHECKOUT_POST_PATH = '/api/v1/checkout'
 export const ORDER_SUCCESS_PUBLIC_PATH = '/cam-on/'
 
 // Static exact-match fallback paths (no slug).
-const STATIC_PUBLIC_PATHS: readonly string[] = [HOME_PUBLIC_PATH, ABOUT_PUBLIC_PATH, SOLUTIONS_PUBLIC_PATH, CONTACT_PUBLIC_PATH, DEALER_PUBLIC_PATH, NEWS_PUBLIC_PATH, PROJECTS_PUBLIC_PATH, GALLERY_PUBLIC_PATH, VIDEO_PUBLIC_PATH, CATALOG_PUBLIC_PATH, BRAND_ROOT_PUBLIC_PATH, SEARCH_PUBLIC_PATH, CART_PUBLIC_PATH, CART_CHECKOUT_POST_PATH, ORDER_SUCCESS_PUBLIC_PATH]
+const STATIC_PUBLIC_PATHS: readonly string[] = [HOME_PUBLIC_PATH, ABOUT_PUBLIC_PATH, SOLUTIONS_PUBLIC_PATH, CONTACT_PUBLIC_PATH, DEALER_PUBLIC_PATH, NEWS_PUBLIC_PATH, PROJECTS_PUBLIC_PATH, GALLERY_PUBLIC_PATH, VIDEO_PUBLIC_PATH, CATALOG_PUBLIC_PATH, BRAND_ROOT_PUBLIC_PATH, SEARCH_PUBLIC_PATH, CART_PUBLIC_PATH, ORDER_SUCCESS_PUBLIC_PATH]
 const RESERVED_BARE_SLUGS = new Set([
   'he-thong-dai-ly', 've-chung-toi', 'product', 'index', 'sitemap', 'lien-he',
   'gioi-thieu', 'dai-ly', 'tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien',

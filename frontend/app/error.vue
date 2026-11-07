@@ -7,7 +7,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 
 defineProps<{ error: { statusCode?: number; statusMessage?: string } }>()
 const fallback: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data } = await useFetch<unknown>('/_migration/site', { default: () => fallback })
+const { data } = await useFetch<unknown>('/_api/site', { default: () => fallback })
 const site = computed(() => isPublicSitePayload(data.value) ? data.value : fallback)
 
 </script>

@@ -12,9 +12,9 @@ test('only public, cookie-free DTO bridges with bounded keys are cached', () => 
     assert.ok(!cached.includes(name), `${name} must never be cached`)
   }
   for (const name of cached) {
-    const route = readFileSync(new URL(`../server/routes/_migration/${name}.get.ts`, import.meta.url), 'utf8')
+    const route = readFileSync(new URL(`../server/routes/_api/${name}.get.ts`, import.meta.url), 'utf8')
     assert.match(route, /fetchMigrationPayload/, `${name} must use the cookie-free bridge`)
-    assert.doesNotMatch(route, /fetchPhpSessionResponse|getHeader\(event, 'cookie'\)/, `${name} must not forward the session`)
+    assert.doesNotMatch(route, /fetchSessionResponse|getHeader\(event, 'cookie'\)/, `${name} must not forward the session`)
   }
   assert.match(config, /cache: \{ maxAge: 60, swr: true \}/)
 })

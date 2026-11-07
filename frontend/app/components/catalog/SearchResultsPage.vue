@@ -58,7 +58,7 @@ const searchQuery = computed(() => ({
 
 const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
   'migration-search',
-  () => $fetch('/_migration/search', { query: searchQuery.value }),
+  () => $fetch('/_api/search', { query: searchQuery.value }),
   { watch: [searchQuery] },
 )
 const publicSearchEnabled = computed(() => route.path === '/tim-kiem/')

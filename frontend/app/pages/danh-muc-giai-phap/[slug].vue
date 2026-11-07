@@ -9,7 +9,7 @@ const validSlug = isPublicRouteResolveSlug(slug)
 const { data, error } = await useAsyncData<unknown>(
   () => `legacy-solution-category-${slug}`,
   () => validSlug
-    ? $fetch('/_migration/public-route-resolve', { query: { slug } })
+    ? $fetch('/_api/public-route-resolve', { query: { slug } })
     : Promise.resolve(null),
 )
 const resolution = isPublicRouteResolveResult(data.value) ? data.value : null

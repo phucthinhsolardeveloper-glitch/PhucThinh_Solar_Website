@@ -9,7 +9,7 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const { site, hasError: siteHasError, errorMessage: siteErrorMessage } = await usePublicSite()
-const { data, error, pending } = await useAsyncData<unknown>('public-about', () => $fetch('/_migration/about'), { default: () => null })
+const { data, error, pending } = await useAsyncData<unknown>('public-about', () => $fetch('/_api/about'), { default: () => null })
 const about = computed(() => isPublicAboutPayload(data.value) ? data.value : null)
 const indexable = computed(() => isPublicSeoIndexable(config.public.aboutPublicRouteIndexable, !siteHasError.value && !!about.value && !error.value)
   && !!about.value && !siteHasError.value && !error.value)

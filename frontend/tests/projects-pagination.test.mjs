@@ -13,7 +13,7 @@ test('projects pagination follows PHP `p` URLs and maps them to the DTO `page` q
   assert.match(api, /\$_GET\['page'\]/)
   assert.match(page, /const value = route\.query\.p/)
   assert.match(page, /page: String\(page\.value\)/)
-  assert.match(page, /_migration\/projects', \{ query: requestQuery\.value \}/)
+  assert.match(page, /_api\/projects', \{ query: requestQuery\.value \}/)
 })
 
 test('projects pagination keeps the selected category, route family, and noindex query behavior', () => {

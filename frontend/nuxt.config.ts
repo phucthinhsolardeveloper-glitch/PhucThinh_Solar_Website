@@ -96,7 +96,7 @@ export default defineNuxtConfig({
     ...Object.fromEntries([
       'site', 'home', 'about', 'dealer', 'contact', 'solutions', 'projects', 'gallery', 'video',
       'policy-detail', 'product-detail', 'solution-detail', 'project-detail', 'gallery-detail',
-    ].map((name) => [`/_migration/${name}`, { cache: { maxAge: 60, swr: true } }])),
+    ].map((name) => [`/_api/${name}`, { cache: { maxAge: 60, swr: true } }])),
     '/migration-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
@@ -189,14 +189,14 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Override through NUXT_PHP_ORIGIN; never expose this in public runtimeConfig.
-    phpOrigin: 'http://127.0.0.1:8080',
+    // Laravel API origin, override through NUXT_API_ORIGIN; never expose this in public runtimeConfig.
+    apiOrigin: 'http://127.0.0.1:8090',
     // Media thumbnails may use the PHP app directly while DTOs use a local API bridge.
     // This stays server-only; previewMediaProxy is disabled for normal production runs.
     previewMediaOrigin: 'http://127.0.0.1:8080',
     // Comma-separated exact host[:port] entries. Never use a wildcard: this
-    // allowlist protects the server-side PHP bridge from SSRF.
-    phpOriginAllowlist: '127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
+    // allowlist protects the server-side API bridge from SSRF.
+    apiOriginAllowlist: '127.0.0.1:8090,localhost:8090,pts-laravel13-local:8000,127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
     // In dev, proxy allow-listed legacy image paths so CMS media and PHP-owned
     // assets render on the Nuxt origin. Production stays off unless explicitly
     // enabled for the isolated local SSR snapshot launcher.

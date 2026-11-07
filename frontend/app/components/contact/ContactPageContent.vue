@@ -9,8 +9,8 @@ const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: fals
 const config = useRuntimeConfig()
 const indexable = computed(() => !props.preview && config.public.contactPublicRouteIndexable === true
   && !!contact.value && !siteError.value && !error.value)
-const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data, error } = await useFetch<unknown>('/_migration/contact')
+const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+const { data, error } = await useFetch<unknown>('/_api/contact')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const contact = computed(() => isPublicContactPayload(data.value) ? data.value : null)
 const pageTitle = computed(() => props.preview ? 'Liên hệ — internal preview' : contact.value?.seo.title || 'Liên hệ — Phúc Thịnh Solar')

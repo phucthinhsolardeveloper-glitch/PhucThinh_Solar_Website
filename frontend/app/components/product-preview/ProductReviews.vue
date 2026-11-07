@@ -142,7 +142,7 @@ async function loadMoreReviews() {
   loadingMoreReviews.value = true
   reviewPageError.value = ''
   try {
-    const payload = await $fetch<unknown>('/_migration/product-extras', {
+    const payload = await $fetch<unknown>('/_api/product-extras', {
       query: { slug: props.slug, reviewOffset: String(currentReviews.value.items.length) },
     })
     if (!isPublicProductExtrasPayload(payload)) throw new Error('Invalid review page contract')
@@ -161,7 +161,7 @@ async function loadMoreReplies(review: PublicProductReview) {
   delete nextErrors[review.id]
   replyErrors.value = nextErrors
   try {
-    const payload = await $fetch<unknown>('/_migration/product-extras', {
+    const payload = await $fetch<unknown>('/_api/product-extras', {
       query: { slug: props.slug, replyParent: String(review.id), replyOffset: String(review.replies.length) },
     })
     if (!isPublicProductExtrasPayload(payload) || !payload.replyPage || payload.replyPage.parentId !== review.id) {
@@ -208,9 +208,9 @@ async function sendReview() {
       photoFiles.value.forEach((file) => body.append('review-file-photo[]', file, file.name))
       if (videoFile.value) body.append('review-file-video', videoFile.value, videoFile.value.name)
       if (videoPoster.value) body.append('review-poster-video', videoPoster.value, videoPoster.value.name)
-      result = await $fetch('/api/pts_v1_review.php', { method: 'POST', credentials: 'same-origin', body })
+      result = await $fetch('/api/v1/review', { method: 'POST', credentials: 'same-origin', body })
     } else {
-      result = await $fetch('/api/pts_v1_review.php', {
+      result = await $fetch('/api/v1/review', {
         method: 'POST',
         credentials: 'same-origin',
         body: { csrfToken: props.csrfToken, productId: props.productId, ...form },

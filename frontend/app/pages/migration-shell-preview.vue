@@ -8,7 +8,7 @@ const fallbackSite: PublicSitePayload = {
   productCategories: [],
 }
 
-const { data, error } = await useFetch<unknown>('/_migration/site', {
+const { data, error } = await useFetch<unknown>('/_api/site', {
   default: () => fallbackSite,
 })
 

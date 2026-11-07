@@ -17,10 +17,10 @@ const { openConsultation } = useStorefrontModal()
 const slug = computed(() => props.slugOverride || (typeof route.params.slug === 'string' ? route.params.slug : ''))
 const searchInput = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `public-news-category-${slug.value}-${String(route.query.p || '1')}-${String(route.query.q || '')}`,
-  () => $fetch('/_migration/news', { query: {
+  () => $fetch('/_api/news', { query: {
     category: slug.value,
     ...(typeof route.query.p === 'string' ? { p: route.query.p } : {}),
     ...(typeof route.query.q === 'string' ? { q: route.query.q } : {}),

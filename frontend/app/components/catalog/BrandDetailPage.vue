@@ -31,12 +31,12 @@ const query = computed(() => ({
 }))
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
 const { data, error, pending } = await useAsyncData<PublicBrandDetailPayload>(
   () => `migration-brand-detail-${props.slug}`,
-  () => $fetch('/_migration/brand-detail', { query: query.value }),
+  () => $fetch('/_api/brand-detail', { query: query.value }),
   { watch: [query] },
 )
 

@@ -15,9 +15,9 @@ const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' &
   `/${route.params.slug}/`,
 ].includes(route.path))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
-const { data, error } = await useAsyncData('migration-news-detail', () => $fetch('/_migration/news-detail', { query: { slug: slug.value } }), { watch: [slug] })
+const { data, error } = await useAsyncData('migration-news-detail', () => $fetch('/_api/news-detail', { query: { slug: slug.value } }), { watch: [slug] })
 const payload = computed(() => isPublicNewsDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !payload.value)

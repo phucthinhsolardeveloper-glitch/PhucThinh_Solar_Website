@@ -17,7 +17,7 @@ const { data: fetched, error, pending } = await useAsyncData<PublicPolicyDetail>
   () => 'migration-policy-' + slug.value,
   async () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
-    const payload = await $fetch<unknown>('/_migration/policy-detail', { query: { slug: slug.value } })
+    const payload = await $fetch<unknown>('/_api/policy-detail', { query: { slug: slug.value } })
     if (!isPublicPolicyDetail(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid policy contract' })
     return payload
   },
@@ -32,7 +32,7 @@ onMounted(() => {
   const warm = () => {
     for (const policy of site.value.footer?.policies ?? []) {
       const next = policy.href.replace(/\/+$/, '').split('/').pop()
-      if (next && isSafeEditorialSlug(next)) void $fetch('/_migration/policy-detail', { query: { slug: next } }).catch(() => {})
+      if (next && isSafeEditorialSlug(next)) void $fetch('/_api/policy-detail', { query: { slug: next } }).catch(() => {})
     }
   }
   if ('requestIdleCallback' in window) window.requestIdleCallback(warm)

@@ -14,13 +14,13 @@ const statusClass: Record<keyof typeof labels, string> = {
   'php-form': 'bg-[#e7f2ec] text-[#185c38]',
   migrating: 'bg-[#fff3d6] text-[#74510e]',
 }
-const { data: catalogData, error: catalogError } = await useAsyncData<unknown>('migration-hub-catalog', () => $fetch('/_migration/catalog', { query: { per_page: '1' } }))
+const { data: catalogData, error: catalogError } = await useAsyncData<unknown>('migration-hub-catalog', () => $fetch('/_api/catalog', { query: { per_page: '1' } }))
 const catalog = computed(() => isPublicCatalogPayload(catalogData.value) ? catalogData.value : null)
 const sampleProduct = computed(() => catalog.value?.products[0] ?? null)
 const productHref = computed(() => sampleProduct.value ? previewHref('product', { slug: sampleProduct.value.slug }) : previewHref('product'))
-const { data: newsData } = await useAsyncData<unknown>('migration-hub-news', () => $fetch('/_migration/news'))
-const { data: projectsData } = await useAsyncData<unknown>('migration-hub-projects', () => $fetch('/_migration/projects'))
-const { data: solutionsData } = await useAsyncData<unknown>('migration-hub-solutions', () => $fetch('/_migration/solutions'))
+const { data: newsData } = await useAsyncData<unknown>('migration-hub-news', () => $fetch('/_api/news'))
+const { data: projectsData } = await useAsyncData<unknown>('migration-hub-projects', () => $fetch('/_api/projects'))
+const { data: solutionsData } = await useAsyncData<unknown>('migration-hub-solutions', () => $fetch('/_api/solutions'))
 const sampleNews = computed(() => isPublicNewsPayload(newsData.value) ? (newsData.value.articles[0] ?? newsData.value.featured[0] ?? null) : null)
 const sampleProject = computed(() => isPublicProjectsPayload(projectsData.value) ? (projectsData.value.projects[0] ?? projectsData.value.featured ?? null) : null)
 const sampleSolution = computed(() => isPublicSolutionsPayload(solutionsData.value) ? (solutionsData.value.cards[0] ?? null) : null)

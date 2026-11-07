@@ -17,7 +17,7 @@ test('mutable uploads and thumbnails require revalidation', () => {
 
 test('product documents are not stored while static assets keep their short cache', () => {
   assert.match(
-    source('server/routes/_migration/product-document.get.ts'),
+    source('server/routes/_api/product-document.get.ts'),
     /Cache-Control', 'private, no-store'/,
   )
   assert.match(

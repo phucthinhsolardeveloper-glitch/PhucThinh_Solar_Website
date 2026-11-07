@@ -60,7 +60,7 @@ async function loadShowcases() {
   const entries = await Promise.allSettled(props.equipment.map(async (item) => {
     const path = equipmentCategoryPath(item)
     if (!path) return null
-    const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: path, per_page: 6 } })
+    const payload = await $fetch<PublicCatalogPayload>('/_api/catalog', { query: { category: path, per_page: 6 } })
     const products = payload.products.filter((product) => product.media[0]).slice(0, 3)
     return [item.url, { products }] as const
   }))

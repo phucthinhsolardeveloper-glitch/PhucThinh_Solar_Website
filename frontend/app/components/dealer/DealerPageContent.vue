@@ -13,8 +13,8 @@ const config = useRuntimeConfig()
 const indexable = computed(() => !props.preview && config.public.dealerPublicRouteIndexable === true
   && !!dealer.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data, error } = await useAsyncData<unknown>('migration-dealer', () => $fetch('/_migration/dealer'))
+const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+const { data, error } = await useAsyncData<unknown>('migration-dealer', () => $fetch('/_api/dealer'))
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const dealer = computed(() => isPublicDealerPayload(data.value) ? data.value : null)
 

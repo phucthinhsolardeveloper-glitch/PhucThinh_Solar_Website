@@ -16,7 +16,7 @@ const { data: fetched, error } = await useAsyncData<PublicSolutionDetailPayload>
   () => `migration-solution-detail-${slug.value}`,
   () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
-    return $fetch('/_migration/solution-detail', { query: { slug: slug.value } })
+    return $fetch('/_api/solution-detail', { query: { slug: slug.value } })
   },
   { watch: [slug] },
 )
@@ -36,7 +36,7 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
  * và breadcrumb 3 cấp "Trang chủ > Giải pháp > <tên giải pháp>".
  */
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const pageTitle = computed(() => isPublicRoute.value
   ? data.value?.seo?.title || data.value?.solution.title || 'Giải pháp'
