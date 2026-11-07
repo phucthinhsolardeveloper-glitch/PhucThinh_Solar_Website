@@ -52,28 +52,8 @@ const navItems = computed(() => {
   return items
 })
 const activeSection = ref('')
-let observer: IntersectionObserver | null = null
-
-function setupObserver() {
-  observer?.disconnect()
-  if (!import.meta.client) return
-  const nodes = navItems.value
-    .map((item) => document.getElementById(item.id))
-    .filter((node): node is HTMLElement => Boolean(node))
-  if (!nodes.length) return
-  if (!activeSection.value) activeSection.value = nodes[0]?.id ?? ''
-  observer = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-    const first = visible[0]?.target as HTMLElement | undefined
-    if (first?.id) activeSection.value = first.id
-  }, { rootMargin: '-120px 0px -60% 0px', threshold: [0, 0.01] })
-  nodes.forEach((node) => observer?.observe(node))
-}
-onMounted(() => nextTick(setupObserver))
-watch(navItems, () => nextTick(setupObserver), { deep: true })
-onBeforeUnmount(() => observer?.disconnect())
+useSlidingPill(productNavRef, 'product-sections', { chip: 'a' })
+const sectionSpy = useSectionSpy(() => navItems.value.map((item) => item.id), activeSection, productNavRef)
 
 function openReviewsSection() {
   if (!import.meta.client) return
@@ -84,21 +64,40 @@ function openReviewsSection() {
     details.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
   }
 }
+const summaryOpen = ref(false)
+// The title sits right above the summary, so a summary opening with the product name skips the repeat.
+const summaryText = computed(() => {
+  const { summary, name } = props.product
+  if (!summary.startsWith(name)) return summary
+  const rest = summary.slice(name.length).trim()
+  return /^(phù hợp|thích hợp)\s/i.test(rest) ? rest.charAt(0).toUpperCase() + rest.slice(1) : summary
+})
+const descriptionOpen = ref(false)
+const descriptionRef = ref<HTMLElement | null>(null)
+function toggleDescription() {
+  descriptionOpen.value = !descriptionOpen.value
+  if (descriptionOpen.value) return
+  nextTick(() => {
+    const top = descriptionRef.value?.getBoundingClientRect().top ?? 0
+    if (top < 0) window.scrollBy({ top: top - 72 })
+  })
+}
 </script>
 
 <template>
-  <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-3">
-    <div class="grid grid-cols-1 items-start gap-12 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2 nav:gap-14">
-      <div class="min-w-0 nav:sticky nav:top-28">
+  <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-0">
+    <div class="grid grid-cols-1 items-start gap-12 pb-12 pt-6 max-tb:gap-0 max-tb:pb-6 max-tb:pt-0 nav:grid-cols-2 nav:gap-14">
+      <div class="pdp-photo min-w-0 nav:sticky nav:top-28">
         <ProductPreviewGallery :name="product.name" :media="product.media" />
       </div>
 
-      <div class="min-w-0">
-        <h1 class="mb-3 text-[clamp(30px,2.5vw,44px)] font-black leading-[1.08] tracking-tight text-navy-950 max-tb:text-[30px]">
+      <!-- Phone reading order: name, price, then details. -->
+      <div class="pdp-sheet min-w-0 max-tb:flex max-tb:flex-col">
+        <h1 class="pdp-title mb-3 text-[clamp(30px,2.5vw,44px)] font-black leading-[1.08] tracking-tight text-navy-950 max-tb:order-1 max-tb:mb-2 max-tb:text-[22px] max-tb:leading-[1.25]">
           {{ product.name }}
         </h1>
 
-        <div v-if="product.code || product.brand || extras?.reviews.total" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600">
+        <div v-if="product.code || product.brand || extras?.reviews.total" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600 max-tb:order-3 max-tb:mb-2 max-tb:text-[13px]">
           <span v-if="product.code">Mã sản phẩm: <strong class="font-bold text-navy-800">{{ product.code }}</strong></span>
           <span v-if="product.code && product.brand" class="text-slate-300" aria-hidden="true">·</span>
           <span v-if="product.brand">Thương hiệu: <strong class="font-bold text-navy-800">{{ product.brand }}</strong></span>
@@ -111,16 +110,21 @@ function openReviewsSection() {
           </template>
         </div>
 
-        <p v-if="product.summary" class="mb-0 text-[16px] leading-[1.7] text-slate-600">{{ product.summary }}</p>
+        <div v-if="product.summary" class="max-tb:order-4">
+          <p class="mb-0 text-[16px] leading-[1.7] text-slate-600 max-tb:text-[15px] max-tb:leading-[1.6]" :class="summaryOpen ? '' : 'max-tb:line-clamp-3'">{{ summaryText }}</p>
+          <button v-if="summaryText.length > 110" type="button" class="min-h-9 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen">{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</button>
+        </div>
 
-        <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
-        <div v-if="product.packageContents" class="mt-5 border-l-2 border-gold-500 pl-4">
+        <div class="max-tb:order-5">
+          <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
+        </div>
+        <div v-if="product.packageContents" class="mt-5 border-l-2 border-gold-500 pl-4 max-tb:order-6">
           <p class="mb-1 text-xs font-bold text-slate-500">Bộ sản phẩm tiêu chuẩn</p>
           <p class="m-0 text-[15px] font-semibold leading-6 text-navy-800">{{ product.packageContents }}</p>
         </div>
 
-        <div class="mt-6 border-y border-gray-200 py-4">
-          <p class="mb-1.5 text-xs font-bold text-slate-500">Giá bán tham khảo</p>
+        <div class="mt-6 border-y border-gray-200 py-4 max-tb:order-2 max-tb:mt-0 max-tb:mb-2 max-tb:border-0 max-tb:py-0">
+          <p class="mb-1.5 text-xs font-bold text-slate-500 max-tb:hidden">Giá bán tham khảo</p>
           <div v-if="pricing.mode === 'quote'">
             <p class="m-0 text-[clamp(28px,2.2vw,36px)] font-extrabold leading-none text-[#d52525]">Liên hệ báo giá</p>
             <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">Nhận báo giá kỹ thuật theo số lượng, cấu hình và khu vực lắp đặt</p>
@@ -132,13 +136,13 @@ function openReviewsSection() {
             <span class="text-sm font-semibold text-slate-500">/ bộ</span>
             <template v-if="pricing.salePrice && pricing.regularPrice && pricing.regularPrice > pricing.salePrice">
               <span class="text-sm text-slate-400 line-through tabular-nums">{{ formatMoney(pricing.regularPrice) }}</span>
-              <span v-if="discountPercent > 0" class="rounded-[3px] bg-red-600 px-2 py-0.5 text-xs font-bold text-white">-{{ discountPercent }}%</span>
+              <span v-if="discountPercent > 0" class="rounded-chip bg-red-600 px-2 py-0.5 text-xs font-bold text-white">-{{ discountPercent }}%</span>
             </template>
             <p class="mt-1.5 basis-full text-[13px] leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
           </div>
         </div>
 
-        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)" :product-name="product.name" :product-image="product.media[0]">
+        <ProductPurchasePanel class="max-tb:order-7" :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)" :product-name="product.name" :product-image="product.media[0]">
           <template #product-info>
             <div v-if="productCategories.length" class="mt-[18px] min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
               <span class="mb-0.5 block font-semibold">Danh mục:</span>
@@ -152,9 +156,10 @@ function openReviewsSection() {
     <nav
       v-if="navItems.length"
       ref="productNavRef"
-      class="sticky z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      class="sticky m-glass-light z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
       aria-label="Mục nội dung sản phẩm"
+      @click="descriptionOpen = true"
     >
       <div class="flex min-w-max gap-1.5 py-2">
         <a
@@ -163,12 +168,17 @@ function openReviewsSection() {
           :href="'#' + item.id"
           :aria-current="activeSection === item.id ? 'location' : undefined"
           class="inline-flex min-h-11 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
-          :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100 hover:text-gold-700'"
+          :class="activeSection === item.id ? 'text-white' : 'text-navy-800 hover:text-gold-700'"
+          @click="sectionSpy.lockTo(item.id)"
         >{{ item.label }}</a>
       </div>
     </nav>
 
-    <ProductPreviewContent :content="content" />
+    <!-- Phone: long description stays one tap away instead of pushing specs and reviews down. -->
+    <div ref="descriptionRef" class="pdp-description" :class="{ 'is-open': descriptionOpen }">
+      <ProductPreviewContent :content="content" />
+    </div>
+    <button type="button" class="mb-2 min-h-11 w-full rounded-btn border border-slate-300 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription">{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</button>
     <ProductPreviewApplications v-if="applications?.items.length" :applications="applications" />
     <ProductPreviewBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
     <ProductPreviewSpecs :specifications="product.specifications" />
@@ -203,3 +213,14 @@ function openReviewsSection() {
     </section>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 820px) {
+  .pdp-photo { margin-inline: calc(50% - 50vw); }
+  .pdp-sheet { position: relative; z-index: 1; margin: -22px calc(50% - 50vw) 0; padding: 18px 16px 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 24px rgb(6 21 55 / 10%); }
+  /* One control for the description on phones: the button under it. */
+  .pdp-description :deep(details) { border: 0; }
+  .pdp-description :deep(details > summary) { display: none; }
+  .pdp-description:not(.is-open) { max-height: 460px; overflow: hidden; mask-image: linear-gradient(180deg, #000 70%, transparent); }
+}
+</style>

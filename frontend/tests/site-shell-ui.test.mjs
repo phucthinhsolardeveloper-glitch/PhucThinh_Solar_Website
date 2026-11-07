@@ -52,7 +52,7 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /whitespace-nowrap px-3[^\"]*nav:px-2 min-\[1681px\]:px-2\.5/)
   assert.doesNotMatch(header, /ptsInlineSearchInput|quickCategories|wd:hidden/)
   assert.match(gtranslatePlugin, /https:\/\/cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
-  assert.match(gtranslatePlugin, /new MutationObserver\(mountWidget\)/)
+  assert.match(gtranslatePlugin, /new MutationObserver\(queueMount\)/)
   assert.match(app, /wrapper_selector: '\.gtranslate_wrapper'/)
   assert.match(app, /'zh-CN', 'ko', 'ja'/)
   assert.doesNotMatch(mainCss, /\.gtranslate_wrapper\s*\{[^}]*display\s*:/)
@@ -82,9 +82,9 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
-test('header hides on downward scroll and reappears as soon as the user scrolls up', () => {
+test('header hides on downward scroll and only returns near the top of the page', () => {
   assert.match(header, /if \(accumulatedDelta > 12 && currentScrollY > 80\)\s*\{\s*isHeaderHidden\.value = true/)
-  assert.match(header, /if \(deltaY < 0\)\s*\{\s*isHeaderHidden\.value = false\s*accumulatedDelta = 0\s*\}/)
+  assert.match(header, /if \(deltaY < 0\) accumulatedDelta = 0/)
   assert.doesNotMatch(header, /accumulatedDelta < -12/)
   assert.match(header, /anyOverlayOpen \|\| currentScrollY <= 80\)\s*\{\s*isHeaderHidden\.value = false/)
   assert.match(header, /transition-transform duration-300/)
@@ -205,7 +205,7 @@ test('shared shell keeps controls reachable at 44px and preserves the 320px layo
   assert.match(header, /h-11 w-11/)
   assert.doesNotMatch(header, /max-ph:h-\[38px\]|max-ph:w-\[38px\]|class="[^"]*\bp-2\.5/)
   assert.match(header, /max-\[359px\]:px-3/)
-  assert.match(header, /max-w-\[min\(198px,100%\)\]/)
+  assert.match(header, /max-w-\[min\(240px,100%\)\]/)
   assert.match(header, /mobileOpen \? 'rotate-45'/)
   assert.match(header, /mobileOpen \? 'opacity-0'/)
   assert.match(header, /min-h-11 min-w-11/)
@@ -237,7 +237,7 @@ test('global keyboard focus has at least 3:1 contrast on the shell light and dar
 })
 
 test('footer renders its CMS heading once and uses the validated rich-text component for contact content', () => {
-  assert.match(footer, /<h2[^>]*>\s*\{\{ sentenceCase\(footer\?\.companyName \|\| 'Thông tin doanh nghiệp'\) \}\}\s*<\/h2>/)
+  assert.match(footer, /<h2[^>]*>\s*<button[^>]*>\{\{ sentenceCase\(footer\?\.companyName \|\| 'Thông tin doanh nghiệp'\) \}\}<\/button>\s*<\/h2>/)
   assert.match(footer, /<EditorialRichText v-if="footer\?\.contactText\?\.html" :content="footer\.contactText" class="cms-content-on-dark/)
   assert.doesNotMatch(footer, /<p v-if="footer\?\.companyName/)
   assert.doesNotMatch(footer, /contactLines/)

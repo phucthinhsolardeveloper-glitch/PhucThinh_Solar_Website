@@ -103,6 +103,12 @@ onBeforeUnmount(() => clearTimeout(removedTimer))
 
 const payload = computed<PublicCartPayload | null>(() => cart.value)
 
+// With items in the cart the phone dock gives way to the island that carries the next step.
+const actionBarActive = useMobileActionBar()
+const hasCartItems = computed(() => (payload.value?.quantityCount ?? 0) > 0)
+watch(hasCartItems, (value) => { actionBarActive.value = value }, { immediate: true })
+onBeforeUnmount(() => { actionBarActive.value = false })
+
 onMounted(async () => {
   try {
     const notice = await $fetch<unknown>('/_migration/checkout-notice')
@@ -115,12 +121,25 @@ onMounted(async () => {
 function openCheckout() {
   checkoutDraft.value = checkoutNotice.value?.form ?? null
 }
+
+// The island only carries the next step while the summary's own button is still below the screen.
+// The bottom margin leaves room for the island itself, and the huge top margin keeps it away past that button.
+const checkoutActionEnd = ref<HTMLElement | null>(null)
+const checkoutActionReached = ref(false)
+let checkoutActionObserver: IntersectionObserver | undefined
+watch(checkoutActionEnd, (element) => {
+  checkoutActionObserver?.disconnect()
+  checkoutActionReached.value = false
+  if (!element || !('IntersectionObserver' in window)) return
+  checkoutActionObserver = new IntersectionObserver(([entry]) => { checkoutActionReached.value = entry?.isIntersecting === true }, { rootMargin: '100000px 0px -96px 0px' })
+  checkoutActionObserver.observe(element)
+}, { flush: 'post' })
+onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 </script>
 
 <template>
   <div class="min-h-screen bg-[#f6f8fb] text-navy-800">
-    <SiteHeader :site="site" />
-    <div class="border-b border-slate-200/80 bg-white">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Giỏ hàng' }]" />
       </div>
@@ -161,7 +180,7 @@ function openCheckout() {
           </div>
           <h2 class="mb-2 text-2xl font-black text-navy-950">Giỏ hàng đang trống</h2>
           <p class="mx-auto mb-6 max-w-[520px] text-slate-600">
-            Chọn sản phẩm có giá công khai để thêm vào giỏ hàng, hoặc gửi yêu cầu để đội ngũ Phúc Thịnh Solar bóc tách vật tư và báo giá trọn gói theo công trình.
+            Chọn sản phẩm có giá để thêm vào giỏ, hoặc gửi yêu cầu để nhận báo giá trọn gói theo công trình.
           </p>
           <div class="flex flex-wrap items-center justify-center gap-3">
             <NuxtLink :to="links.generic('/san-pham/')" class="cart-btn cart-btn--gold">
@@ -170,20 +189,20 @@ function openCheckout() {
             </NuxtLink>
             <button type="button" class="cart-btn cart-btn--ghost" @click="openConsultation('Giỏ hàng: Tư vấn báo giá vật tư')">
               <UIcon name="i-lucide-headset" class="size-4 text-gold-600" aria-hidden="true" />
-              <span>Yêu cầu báo giá theo công trình</span>
+              <span>Yêu cầu báo giá</span>
             </button>
           </div>
 
           <div v-if="site.productCategories.length" class="mx-auto mt-10 max-w-[880px] border-t border-slate-200/80 pt-7 text-left">
-            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Khám phá nhanh theo nhóm thiết bị</p>
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Xem theo nhóm thiết bị</p>
+            <div class="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
               <NuxtLink
                 v-for="cat in site.productCategories.slice(0, 6)"
                 :key="cat.slug"
                 :to="links.generic(cat.url)"
-                class="group flex items-center justify-between gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:border-gold-500"
+                class="group flex items-center justify-between gap-3 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:border-gold-500"
               >
-                <span class="truncate">{{ cat.name }}</span>
+                <span class="min-w-0">{{ cat.name }}</span>
                 <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />
               </NuxtLink>
             </div>
@@ -272,6 +291,7 @@ function openCheckout() {
               Nhận báo giá
               <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
             </button>
+            <div ref="checkoutActionEnd" aria-hidden="true" />
             <ul class="cart-summary__trust">
               <li><UIcon name="i-lucide-badge-check" class="size-4 flex-none" aria-hidden="true" />Kiểm tra sản phẩm và số lượng trước khi đặt hàng</li>
               <li><UIcon name="i-lucide-shield-check" class="size-4 flex-none" aria-hidden="true" />Phí vận chuyển được xác nhận ở bước thanh toán</li>
@@ -281,18 +301,25 @@ function openCheckout() {
         </div>
       </template>
     </main>
-    <SiteFooter :site="site" />
+    <div v-if="payload && hasCartItems && !isMigrationPreview" class="m-island print:hidden" :class="{ 'is-away': checkoutActionReached }">
+      <span><small>Tổng tạm tính</small><strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong></span>
+      <NuxtLink v-if="payload.canCheckout" to="/thanh-toan/" @click="openCheckout">Thanh toán</NuxtLink>
+      <button v-else type="button" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">Nhận báo giá</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.m-island { transition: opacity .2s ease, transform .2s ease, visibility .2s; }
+.m-island.is-away { visibility: hidden; opacity: 0; pointer-events: none; transform: translateY(14px); }
+@media (prefers-reduced-motion: reduce) { .m-island { transition: none; } }
 .cart-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); align-items: center; gap: 24px 48px; margin-bottom: clamp(24px, 3vw, 40px); }
 .cart-panel { border-radius: var(--radius-md); background: #fff; }
 .cart-list { display: grid; align-content: start; gap: 12px; max-height: min(70svh, 740px); overflow-y: auto; padding-right: 6px; scrollbar-color: var(--color-gold-500) transparent; scrollbar-width: thin; }
 .cart-list:focus-visible { outline: 3px solid var(--color-gold-700); outline-offset: -3px; }
 .cart-row { padding: clamp(14px, 1.6vw, 20px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-md); background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 3%); transition: box-shadow 0.3s ease; }
 .cart-row:hover { box-shadow: 0 18px 36px -28px rgb(10 34 81 / 45%); }
-.cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: 10px; background: #f6f8fb; }
+.cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: var(--radius-md); background: #f6f8fb; }
 .cart-row__name { display: block; color: var(--color-navy-950); font-size: 16.5px; font-weight: 800; line-height: 1.35; text-decoration: none; }
 .cart-row__name:hover { color: var(--color-gold-700); }
 .cart-row__remove { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: 0; background: none; color: #94a3b8; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
@@ -306,7 +333,7 @@ function openCheckout() {
 .cart-list { position: relative; }
 .cart-undo { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 10px 10px 10px 16px; border-radius: 12px; background: var(--color-navy-950); color: #e2e8f0; font-size: 14.5px; }
 .cart-undo strong { color: #fff; }
-.cart-undo__btn { min-height: 44px; padding: 0 16px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 800; cursor: pointer; }
+.cart-undo__btn { min-height: 44px; padding: 0 16px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 800; cursor: pointer; }
 .cart-undo-enter-active, .cart-undo-leave-active { transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 .cart-undo-enter-from, .cart-undo-leave-to { opacity: 0; transform: translateY(-8px); }
 
@@ -318,8 +345,8 @@ function openCheckout() {
 .cart-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-top: 18px; white-space: nowrap; }
 .cart-summary__total span { color: #d3dcea; font-weight: 700; }
 .cart-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
-.cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: 10px; background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
-.cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
+.cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: var(--radius-md); background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
+.cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
 .cart-summary__cta > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .cart-summary__cta:hover { filter: brightness(1.06); }
 .cart-summary__cta:hover > span { transform: translateX(4px); }
@@ -333,7 +360,7 @@ function openCheckout() {
 .cart-empty__art { position: relative; display: grid; width: 96px; height: 96px; margin: 0 auto 20px; place-items: center; border-radius: 50%; background: rgb(228 168 73 / 14%); color: var(--color-gold-700); }
 .cart-empty__ring { position: absolute; inset: -10px; border: 1px dashed rgb(201 150 46 / 45%); border-radius: 50%; animation: empty-spin 18s linear infinite; }
 @keyframes empty-spin { to { transform: rotate(360deg); } }
-.cart-btn { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 22px; border-radius: 10px; font-weight: 800; text-decoration: none; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+.cart-btn { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 22px; border-radius: var(--radius-md); font-weight: 800; text-decoration: none; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
 .cart-btn--gold { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .cart-btn--gold:hover { filter: brightness(1.06); }
 .cart-btn--ghost { border: 1px solid rgb(10 34 81 / 18%); background: #fff; color: var(--color-navy-900); }

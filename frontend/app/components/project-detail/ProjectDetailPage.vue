@@ -51,7 +51,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 
       <div class="project-story__intro pts-container flex min-w-0 flex-col justify-end">
         <div v-if="project.category?.name" class="mb-4 flex flex-wrap items-center gap-2">
-          <span class="inline-flex items-center rounded-[3px] border border-gold-400/35 bg-white/10 px-3 py-1 text-xs font-bold text-gold-300">
+          <span class="inline-flex items-center rounded-chip border border-gold-400/35 bg-white/10 px-3 py-1 text-xs font-bold text-gold-300">
             {{ project.category.name }}
           </span>
         </div>
@@ -97,7 +97,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </div>
         <a
           :href="links.generic('/lien-he/#yeu-cau-tu-van')"
-          class="hidden min-h-10 items-center gap-1.5 rounded-[4px] bg-navy-900 px-3.5 py-1.5 text-xs font-extrabold text-gold-300 no-underline transition-colors hover:bg-navy-800 tb:inline-flex cursor-pointer"
+          class="hidden min-h-10 items-center gap-1.5 rounded-btn bg-navy-900 px-3.5 py-1.5 text-xs font-extrabold text-gold-300 no-underline transition-colors hover:bg-navy-800 tb:inline-flex cursor-pointer"
           @click.prevent="openConsultation('Dự án: ' + project.title)"
         >
           <span>Nhận báo giá cấu hình này</span>
@@ -110,7 +110,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
       <section id="project-overview" class="project-story__section scroll-mt-20 grid gap-6 py-12 tb:grid-cols-[minmax(160px,0.36fr)_minmax(0,1fr)] tb:gap-12 nav:py-16" aria-labelledby="project-summary-title">
         <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tổng quan công trình</h2>
         <div class="project-story__lede min-w-0 max-w-[68ch]">
-          <p v-if="summaryFallback" class="m-0 text-[clamp(19px,1.6vw,24px)] leading-[1.6] text-navy-900">{{ summaryFallback }}</p>
+          <p v-if="summaryFallback" class="m-0 text-[clamp(19px,1.6vw,24px)] leading-[1.6] text-navy-900 max-tb:text-[17px]">{{ summaryFallback }}</p>
           <EditorialRichText v-else-if="hasOverview" :content="overviewContent" />
           <p v-else class="m-0 text-base leading-relaxed text-slate-500">Thông tin mô tả chi tiết chưa được công bố cho dự án này.</p>
         </div>
@@ -217,7 +217,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 
 .project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
 .project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
-.project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .project-story__primary:hover { filter: brightness(1.06); }
 .project-story__primary:hover > span { transform: translateX(4px); }
 .project-story__more { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: #d3dcea; font-size: 15.5px; font-weight: 700; text-decoration: none; }

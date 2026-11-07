@@ -295,7 +295,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
     <section class="pts-home-dealer" aria-labelledby="pts-home-dealer-title">
         <div class="pts-home-container pts-home-dealer-grid">
             <div>
-                    <h2 id="pts-home-dealer-title">ĐĂNG KÝ ĐẠI LÝ</h2>
+                    <h2 id="pts-home-dealer-title">Đăng ký đại lý</h2>
                 <p><?=$homeEscape($homeDealerDesc)?></p>
                 <ul>
                     <li><i class="fas fa-check" aria-hidden="true"></i> Danh mục sản phẩm phù hợp nhu cầu thị trường.</li>

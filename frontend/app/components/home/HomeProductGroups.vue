@@ -35,7 +35,7 @@ function productImage(src: string): string {
               :to="links.product(product.slug)"
               class="group block min-w-0 text-navy-950 no-underline transition-transform duration-150 active:scale-[0.98]"
             >
-              <div class="overflow-hidden rounded-[4px] bg-white transition-all duration-300 group-hover:shadow-[0_8px_20px_rgba(10,34,81,0.08)]">
+              <div class="overflow-hidden rounded-btn bg-white transition-all duration-300 group-hover:shadow-[0_8px_20px_rgba(10,34,81,0.08)]">
                 <img
                   :src="productImage(product.image)"
                   :alt="product.name"

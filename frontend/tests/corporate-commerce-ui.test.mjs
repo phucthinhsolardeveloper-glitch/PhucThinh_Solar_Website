@@ -33,7 +33,7 @@ test('cart quantity updates keep money and stepper surfaces visually stable whil
   const stepper = read('components/commerce/QuantityStepper.vue')
   const money = read('components/commerce/AnimatedMoney.vue')
   assert.match(cart, /:busy="loading"[\s\S]*:disabled="busyCode/)
-  assert.equal((cart.match(/:animate="false"/g) || []).length, 3)
+  assert.equal((cart.match(/:animate="false"/g) || []).length, 4)
   assert.match(money, /if \(!props\.animate \|\|/)
   assert.match(stepper, /:aria-busy="busy \? 'true' : undefined"/)
   assert.match(stepper, /\.quantity-stepper\.is-busy button:disabled \{[\s\S]*?color: var\(--color-navy-800\)/)

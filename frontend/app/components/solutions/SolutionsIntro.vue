@@ -8,7 +8,7 @@ const links = useMigrationLinks()
 <template>
   <section aria-labelledby="solutions-title">
     <div v-if="intro.image" class="grid grid-cols-1 items-center gap-6 min-[801px]:grid-cols-2 min-[801px]:gap-12 max-[1100px]:min-[801px]:gap-[30px]">
-      <figure class="order-2 m-0 aspect-[8/5] overflow-hidden rounded-[3px] min-[801px]:order-1">
+      <figure class="order-2 m-0 aspect-[8/5] overflow-hidden rounded-chip min-[801px]:order-1">
         <img :src="optimizedImage(intro.image, 1200, 750)" :alt="intro.title" class="h-full w-full object-cover" width="1200" height="750" fetchpriority="high">
       </figure>
       <div class="order-1 min-w-0 min-[801px]:order-2">

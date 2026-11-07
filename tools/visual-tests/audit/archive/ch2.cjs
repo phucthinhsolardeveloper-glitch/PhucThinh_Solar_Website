@@ -1,0 +1,5 @@
+const {chromium}=require('playwright');const sharp=require('../../../../frontend/node_modules/sharp');
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});const o=[];let i=0;for(const w of [360,390]){const c=await b.newContext({viewport:{width:w,height:844},locale:'vi-VN',isMobile:true,hasTouch:true});const p=await c.newPage();await p.goto('http://127.0.0.1:3100/giai-phap/',{waitUntil:'load'});await p.waitForTimeout(500);
+await p.evaluate(async()=>{for(let y=0;y<3400;y+=300){scrollTo(0,y);await new Promise(r=>setTimeout(r,120))}});await p.waitForTimeout(700);console.log(w,JSON.stringify(await p.locator('.story-index').boundingBox()),JSON.stringify(await p.evaluate(()=>({cur:document.querySelector('.story-index a[aria-current]')?.innerText.slice(0,40),sw:document.documentElement.scrollWidth}))));
+o.push({input:await p.screenshot({clip:{x:0,y:0,width:w,height:260}}),left:i,top:0});i+=w+10;await c.close()}
+await sharp({create:{width:i,height:260,channels:3,background:'#555'}}).composite(o).png().toFile('mob/ch.png');await b.close()})().catch(e=>{console.error('ERR',e.message.slice(0,200));process.exit(1)});

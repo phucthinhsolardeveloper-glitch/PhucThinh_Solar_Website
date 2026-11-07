@@ -29,7 +29,7 @@ test('solution detail orders the hero before its switcher and only links to exis
   // Owner decision 2026-11-04: hero + pill rail redesign; the content link still targets the main content.
   assert.match(page, /<a v-if="hasContent" class="solution-hero__more" href="#noi-dung-giai-phap">Tìm hiểu phương án/)
   assert.match(page, /id="noi-dung-giai-phap"/)
-  assert.match(page, /class="solution-rail__item"[\s\S]*:aria-current="item\.active \? 'page' : undefined"/)
+  assert.match(page, /class="public-filter-chip[\s\S]*:aria-current="currentSlug === item\.slug \? 'page' : undefined"/)
   const categoryPage = read('../app/components/solutions/SolutionCategoryPage.vue')
   assert.match(categoryPage, /class="public-filter-chip flex min-h-11/)
   for (const file of ['../app/components/news/NewsFilters.vue', '../app/components/projects/ProjectFilters.vue']) {

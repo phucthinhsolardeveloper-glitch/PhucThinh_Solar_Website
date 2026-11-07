@@ -1,0 +1,13 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});const c=await b.newContext({viewport:{width:390,height:844},locale:'vi-VN',isMobile:true,hasTouch:true});const p=await c.newPage();const B='http://127.0.0.1:3100';
+await p.goto(B+'/san-pham/',{waitUntil:'load'});await p.waitForTimeout(600);await p.locator('article button').first().tap();await p.waitForTimeout(1300);
+const ck=(await c.cookies()).map(x=>x.name+'='+x.value).join('; ');
+const r=await fetch(B+'/gio-hang/',{headers:{cookie:ck}});const h=await r.text();
+const norm=s=>s.replace(/<!--.*?-->/gs,'').replace(/\s+/g,' ');
+console.log('ssr island',/m-island/.test(h),'ssr item',/Tổng tạm tính/.test(h),'dock',/class="dock /.test(h));
+await p.goto(B+'/gio-hang/',{waitUntil:'domcontentloaded'});await p.waitForTimeout(1500);
+const dom=await p.evaluate(()=>({island:!!document.querySelector('.m-island'),badge:document.querySelector('header a[href*="gio-hang"]')?.innerText}));console.log(JSON.stringify(dom));
+const m=h.match(/<header[\s\S]*?<\/header>/);const hb=(m?m[0]:'').match(/gio-hang[\s\S]{0,700}/);console.log('ssr header cart',(hb?hb[0]:'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,120));
+const i=h.indexOf('m-island');console.log(norm(h.slice(i-20,i+420)));
+const dh=await p.locator('.m-island').evaluate(e=>e.outerHTML);console.log('DOM:',norm(dh).slice(0,420));
+await b.close()})().catch(e=>console.log('ERR',e.message.slice(0,200)));

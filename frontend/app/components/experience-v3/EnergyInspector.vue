@@ -165,7 +165,7 @@ const currentDevice = computed(() => props.devices.find(d => d.id === props.sele
 .role-chip {
   padding: 2px 7px;
   border: 1px solid rgba(224, 182, 84, 0.45);
-  border-radius: 3px;
+  border-radius: var(--radius-chip);
   color: #e0b654;
   font-size: 12px;
   font-weight: 700;

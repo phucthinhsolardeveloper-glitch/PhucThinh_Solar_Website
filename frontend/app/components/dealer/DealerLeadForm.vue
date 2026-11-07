@@ -77,7 +77,7 @@ async function send() {
     selectedProfile.value = ''
     emit('clearProduct')
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || reason?.statusMessage || reason?.message || 'Không thể gửi đăng ký đại lý.'
+    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
   } finally {
     submitting.value = false
   }
@@ -85,37 +85,37 @@ async function send() {
 </script>
 
 <template>
-  <form class="grid min-w-0 grid-cols-1 gap-x-5 gap-y-5 min-[640px]:grid-cols-2" @submit.prevent="send">
-    <div v-if="selectedProduct" class="flex items-center justify-between gap-2 rounded-[4px] border border-gold-400/50 bg-gold-500/15 px-3.5 py-2.5 text-xs font-bold text-gold-200 min-[640px]:col-span-2">
+  <form class="dealer-form grid min-w-0 grid-cols-1 gap-x-5 gap-y-5 min-[640px]:grid-cols-2" @submit.prevent="send">
+    <div v-if="selectedProduct" class="dealer-form__selected flex items-center justify-between gap-2 rounded-btn border border-gold-400/50 bg-gold-500/15 px-3.5 py-2.5 text-xs font-bold text-gold-200 min-[640px]:col-span-2">
       <span class="flex items-center gap-2">
         <UIcon name="i-lucide-circle-check" class="size-4 flex-none text-gold-400" aria-hidden="true" />
         <span>Dòng sản phẩm quan tâm: <strong class="text-white">{{ selectedProduct }}</strong></span>
       </span>
-      <button type="button" class="text-xs font-extrabold text-gold-300 underline hover:text-white cursor-pointer" @click="emit('clearProduct')">Bỏ chọn</button>
+      <button type="button" class="dealer-form__clear text-xs font-extrabold text-gold-300 underline hover:text-white cursor-pointer" @click="emit('clearProduct')">Bỏ chọn</button>
     </div>
 
-    <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
+    <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
       <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
     </UFormField>
-    <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
-      <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
+    <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
+      <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
     </UFormField>
-    <UFormField label="Email" name="email" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
+    <UFormField label="Email" name="email" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
       <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" variant="none" class="w-full" :ui="inputUi" />
     </UFormField>
-    <UFormField label="Tỉnh/Thành phố" name="address" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
+    <UFormField label="Tỉnh/Thành phố" name="address" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
       <USelect v-model="form.address" name="address" required :disabled="securityLoading || !cityOptions.length" :items="cityOptions" :placeholder="securityLoading ? 'Đang tải tỉnh/thành…' : 'Chọn tỉnh/thành'" color="neutral" variant="none" class="w-full" :ui="selectUi" />
     </UFormField>
-    <UFormField label="Doanh nghiệp hoặc cửa hàng" name="company" required class="grid min-w-0 content-start gap-2 min-[640px]:col-span-2" :ui="{ label: 'text-sm font-semibold text-white' }">
-      <div class="mb-2 flex flex-wrap gap-1.5" role="group" aria-label="Chọn nhanh mô hình kinh doanh">
+    <UFormField label="Doanh nghiệp hoặc cửa hàng" name="company" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 min-[640px]:col-span-2" :ui="{ label: 'text-sm font-semibold text-white' }">
+      <div class="dealer-form__profiles mb-2 flex flex-wrap gap-1.5" role="group" aria-label="Chọn nhanh mô hình kinh doanh">
         <button
           v-for="profile in partnerProfiles"
           :key="profile"
           type="button"
-          class="rounded-[3px] border px-2.5 py-1 text-xs font-bold transition-colors cursor-pointer"
+          class="rounded-chip border px-2.5 py-1 text-xs font-bold transition-colors cursor-pointer"
           :class="selectedProfile === profile
             ? 'border-gold-400 bg-gold-500 text-navy-950'
-            : 'border-white/20 bg-white/10 text-blue-100 hover:border-gold-400/70 hover:text-white'"
+            : 'm-lg-dark border-white/20 bg-white/10 text-blue-100 hover:border-gold-400/70 hover:text-white'"
           @click="toggleProfile(profile)"
         >
           + {{ profile }}
@@ -127,7 +127,7 @@ async function send() {
     <p v-if="success" class="rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800 min-[640px]:col-span-2" role="status">{{ success }}</p>
     <div v-if="error" class="rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800 min-[640px]:col-span-2" role="alert">
       <p class="mb-2">{{ error }}</p>
-      <button v-if="!securityLoading" type="button" class="font-bold underline" @click="loadSecurity(true)">Thử tải lại</button>
+      <button v-if="!securityLoading" type="button" class="dealer-form__retry font-bold underline" @click="loadSecurity(true)">Thử tải lại</button>
     </div>
     <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || securityLoading || !cityOptions.length" class="min-h-14 w-full justify-center rounded-btn bg-gold-500 px-5 text-base font-extrabold text-navy-950 transition-colors hover:bg-gold-400 min-[640px]:col-span-2">
       {{ submitting ? 'Đang gửi…' : 'Đăng ký ngay' }}
@@ -137,15 +137,34 @@ async function send() {
     <a
       v-if="hotline?.tel"
       :href="`tel:${hotline.tel}`"
-      class="flex items-center justify-between gap-3 rounded-[4px] border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-blue-100 no-underline transition-colors hover:border-gold-400/60 hover:bg-white/10 min-[640px]:col-span-2"
+      class="dealer-form__hotline flex items-center justify-between gap-3 rounded-btn border border-white/15 bg-white/[.06] px-4 py-3 text-sm text-blue-100 no-underline transition-colors hover:border-gold-400/60 hover:bg-white/10 min-[640px]:col-span-2"
     >
-      <span class="flex items-center gap-2.5">
-        <span class="grid size-8 place-items-center rounded-full bg-gold-500 text-navy-950">
+      <span class="dealer-form__hotline-text flex items-center gap-2.5">
+        <span class="dealer-form__hotline-icon grid size-8 place-items-center rounded-full bg-gold-500 text-navy-950">
           <UIcon name="i-lucide-phone-call" class="size-4" aria-hidden="true" />
         </span>
         <span>Cần trao đổi chính sách chiết khấu ngay?</span>
       </span>
-      <strong class="font-black tabular-nums text-gold-300">{{ hotline.text }}</strong>
+      <strong class="dealer-form__hotline-number font-black tabular-nums text-gold-300">{{ hotline.text }}</strong>
     </a>
   </form>
 </template>
+
+<style scoped>
+/* Phones (<=820px): no clipped or squeezed controls, every control at least 44px tall. */
+@media (max-width: 820px) {
+  .dealer-form { row-gap: 14px; }
+  .dealer-form :deep(input), .dealer-form :deep(button[role="combobox"]) { height: 48px; }
+  .dealer-form__selected { min-width: 0; padding: 4px 4px 4px 12px; }
+  .dealer-form__clear { min-height: 44px; flex: none; padding-inline: 10px; }
+  .dealer-form__profiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+  .dealer-form__profiles button { min-width: 0; min-height: 44px; padding: 5px 8px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.25; text-align: center; }
+  .dealer-form__retry { min-height: 44px; }
+  /* Icon, short label and a full-size number: the phone number must never break across lines. */
+  .dealer-form__hotline { display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 12px; align-items: center; min-height: 64px; padding: 10px 14px; border-radius: var(--radius-md); }
+  .dealer-form__hotline-text { display: contents; }
+  .dealer-form__hotline-icon { grid-row: 1 / span 2; width: 36px; height: 36px; }
+  .dealer-form__hotline-text > span:last-child { grid-column: 2; font-size: 13px; line-height: 1.35; }
+  .dealer-form__hotline-number { grid-column: 2; font-size: 19px; line-height: 1.25; white-space: nowrap; }
+}
+</style>

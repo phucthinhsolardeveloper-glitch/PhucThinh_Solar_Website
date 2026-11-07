@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');
+const run=async(label,url)=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:412,height:924},isMobile:true,hasTouch:true});const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});await p.goto('http://localhost:3100'+url,{waitUntil:'load'});await p.waitForTimeout(1500);
+const items=await p.evaluate(()=>[...document.querySelectorAll('[aria-current="location"]')].length);
+await p.evaluate(()=>{window.__s=[];let last='';(function f(){const a=document.querySelector('[aria-current="location"]');const t=a?a.textContent.trim().slice(0,22):'-';if(t!==last){last=t;const nav=a&&a.parentElement;const order=nav?[...nav.children].indexOf(a):-1;window.__s.push([Math.round(scrollY),order,t])}requestAnimationFrame(f)})()});
+const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=140){await p.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await p.waitForTimeout(60)}await p.waitForTimeout(400);
+const s=await p.evaluate(()=>window.__s);let back=0;for(let i=1;i<s.length;i++)if(s[i][1]<s[i-1][1])back++;console.log('==',label,'H',H,'changes',s.length,'BACKWARDS',back);console.log(s.map(x=>x.join(':')).join(' | ').slice(0,900));await b.close()};
+(async()=>{await run('pdp','/san-pham/pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro');await run('about','/gioi-thieu/')})()

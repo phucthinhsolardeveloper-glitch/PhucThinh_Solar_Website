@@ -15,5 +15,5 @@ defineProps<{ projects: PublicProject[]; viewLabel: string; label: string }>()
 <style scoped>
 .project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) clamp(18px, 2vw, 32px); }
 @media (max-width: 1100px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .project-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
 </style>

@@ -37,7 +37,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="border-b border-slate-200/70 bg-slate-50/80">
@@ -55,7 +54,7 @@ usePublicSocialMeta({
         <template v-else>
           <ContactHero :contact="contact" :page-title="contact.title" />
 
-          <section class="py-12 nav:py-16">
+          <section class="py-12 max-tb:py-4 nav:py-16">
             <ContactLeadForm />
           </section>
 
@@ -64,6 +63,5 @@ usePublicSocialMeta({
       </div>
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

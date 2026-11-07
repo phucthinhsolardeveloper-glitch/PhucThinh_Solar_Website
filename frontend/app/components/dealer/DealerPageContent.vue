@@ -23,14 +23,27 @@ if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePay
 }
 
 const selectedProduct = ref('')
+const { isHeaderHidden } = useSiteHeader()
 
 function handleSelectProduct(title: string) {
   selectedProduct.value = title
   if (import.meta.client) {
     const el = document.getElementById('dang-ky-dai-ly')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    el?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' })
+    // On phones the form is taller than the screen, so centring it would hide the selected-line notice.
+    const isPhone = window.matchMedia('(max-width: 820px)').matches
+    el?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: isPhone ? 'start' : 'center' })
   }
+}
+
+// On phones the form sits first inside this section, so the products link has to land past it.
+function onQuickLink(event: MouseEvent, href: string) {
+  if (href !== '#nang-luc-phan-phoi' || !window.matchMedia('(max-width: 820px)').matches) return
+  const target = document.getElementById('dealer-overview-start')
+  if (!target) return
+  event.preventDefault()
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
 }
 
 const quickLinks = computed(() => {
@@ -97,7 +110,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="border-b border-slate-200/70 bg-slate-50/80">
@@ -121,7 +133,7 @@ usePublicSocialMeta({
             <p v-if="dealer.hero?.title" class="dealer-hero__lede">{{ dealer.hero.title }}</p>
             <div class="dealer-hero__actions">
               <a class="dealer-hero__primary" href="#dang-ky-dai-ly">{{ dealer.form.title }} <span aria-hidden="true"><UIcon name="i-lucide-arrow-down" class="size-5" /></span></a>
-              <a v-if="dealer.hotline" class="dealer-hero__call" :href="`tel:${dealer.hotline.tel}`">
+              <a v-if="dealer.hotline" class="dealer-hero__call m-lg-dark" :href="`tel:${dealer.hotline.tel}`">
                 <UIcon name="i-lucide-phone-call" class="size-5 text-gold-300" aria-hidden="true" />
                 <span><small>Hotline đại lý</small>{{ dealer.hotline.text }}</span>
               </a>
@@ -138,14 +150,14 @@ usePublicSocialMeta({
         </section>
 
         <!-- Hàng neo nhảy mục, nền trắng, ngay dưới hero -->
-        <nav class="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur-sm" aria-label="Điều hướng nhanh trong trang">
+        <nav class="dealer-quick m-glass-light sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur-sm" :class="{ 'dealer-quick--below-header': !isHeaderHidden }" aria-label="Điều hướng nhanh trong trang">
           <div class="pts-container flex min-h-[58px] flex-nowrap gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[767px]:grid max-[767px]:grid-cols-3 min-[768px]:min-h-[66px]">
-            <a v-for="link in quickLinks" :key="link.href" class="flex shrink-0 items-center gap-2 border-r border-gray-200 py-4 pl-4 pr-5 font-bold text-navy-800 no-underline transition-colors hover:bg-slate-50 hover:text-gold-700 first:pl-0 min-[992px]:px-[clamp(22px,3vw,42px)] first:min-[992px]:pl-0 max-[767px]:min-w-0 max-[767px]:min-h-[70px] max-[767px]:flex-col max-[767px]:justify-center max-[767px]:gap-1 max-[767px]:px-1 max-[767px]:py-2 max-[767px]:text-center max-[767px]:text-[12px] max-[767px]:leading-tight max-[767px]:first:pl-1" :href="links.generic(link.href)">
+            <a v-for="link in quickLinks" :key="link.href" class="flex shrink-0 items-center gap-2 border-r border-gray-200 py-4 pl-4 pr-5 font-bold text-navy-800 no-underline transition-colors hover:bg-slate-50 hover:text-gold-700 first:pl-0 min-[992px]:px-[clamp(22px,3vw,42px)] first:min-[992px]:pl-0 max-[767px]:min-w-0 max-[767px]:min-h-[70px] max-[767px]:flex-col max-[767px]:justify-center max-[767px]:gap-1 max-[767px]:px-1 max-[767px]:py-2 max-[767px]:text-center max-[767px]:text-[12px] max-[767px]:leading-tight max-[767px]:first:pl-1" :href="links.generic(link.href)" @click="onQuickLink($event, link.href)">
               <svg v-if="link.icon === 'edit'" class="h-[26px] w-[26px] flex-none text-gold-600" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               <svg v-else-if="link.icon === 'solar'" class="h-[26px] w-[26px] flex-none text-gold-600" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 10 18 0-2 9H5l-2-9Zm3-5h12l3 5H3l3-5ZM8 10l1 9m6-9-1 9M2 22h20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
               <svg v-else class="h-[26px] w-[26px] flex-none text-gold-600" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3ZM8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm8 2c-2.21 0-6 1.11-6 3.33V19h12v-2.67C22 14.11 18.21 13 16 13ZM8 13c-2.67 0-7 1.34-7 4v2h5v-2.67c0-1.3.79-2.38 2.09-3.19L8 13Z" fill="currentColor" /></svg>
               <span>{{ link.label }}</span>
-              <span v-if="link.badge" class="hidden rounded-[3px] bg-gold-500/15 px-1.5 py-0.5 text-xs font-extrabold tabular-nums text-gold-700 min-[768px]:inline-block">{{ link.badge }}</span>
+              <span v-if="link.badge" class="hidden rounded-chip bg-gold-500/15 px-1.5 py-0.5 text-xs font-extrabold tabular-nums text-gold-700 min-[768px]:inline-block">{{ link.badge }}</span>
             </a>
           </div>
         </nav>
@@ -153,19 +165,19 @@ usePublicSocialMeta({
         <div class="pts-container">
           <section
             id="nang-luc-phan-phoi"
-            class="grid grid-cols-1 items-start gap-8 pb-12 pt-6 min-[992px]:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] min-[992px]:gap-[clamp(44px,5vw,84px)] min-[992px]:pt-[clamp(24px,2.5vw,36px)] min-[1800px]:grid-cols-[minmax(0,1fr)_minmax(360px,560px)] nav:pb-16"
+            class="dealer-distribution grid grid-cols-1 items-start gap-8 pb-12 pt-6 min-[992px]:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] min-[992px]:gap-[clamp(44px,5vw,84px)] min-[992px]:pt-[clamp(24px,2.5vw,36px)] min-[1800px]:grid-cols-[minmax(0,1fr)_minmax(360px,560px)] nav:pb-16"
           >
-            <div v-if="dealer.intro.html || dealer.overview.title || dealer.overview.description || dealer.overview.products.length" class="order-2 min-w-0 min-[992px]:order-none">
+            <div v-if="dealer.intro.html || dealer.overview.title || dealer.overview.description || dealer.overview.products.length" id="dealer-overview-start" class="dealer-overview-start order-2 min-w-0 min-[992px]:order-none">
               <EditorialRichText v-if="dealer.intro.html" :content="dealer.intro" class="dealer-intro-rich" />
               <DealerOverview :dealer="dealer" :selected-product="selectedProduct" @select-product="handleSelectProduct" />
             </div>
 
             <aside
               id="dang-ky-dai-ly"
-              class="order-first w-full max-w-[560px] rounded-[4px] border border-white/10 bg-[linear-gradient(145deg,var(--color-navy-950),#123c72)] p-[22px_18px] text-white shadow-[0_14px_34px_rgba(6,23,53,0.14)] min-[640px]:max-w-none min-[992px]:order-none min-[992px]:sticky min-[992px]:top-[104px] min-[1321px]:top-[120px] min-[1681px]:top-[136px] min-[1800px]:top-[152px] min-[992px]:ml-auto min-[992px]:max-w-[520px] min-[992px]:p-8 min-[1800px]:max-w-[560px]"
+              class="dealer-form-card order-first w-full max-w-[560px] rounded-btn border border-white/10 bg-[linear-gradient(145deg,var(--color-navy-950),#123c72)] p-[22px_18px] text-white shadow-[0_14px_34px_rgba(6,23,53,0.14)] min-[640px]:max-w-none min-[992px]:order-none min-[992px]:sticky min-[992px]:top-[104px] min-[1321px]:top-[120px] min-[1681px]:top-[136px] min-[1800px]:top-[152px] min-[992px]:ml-auto min-[992px]:max-w-[520px] min-[992px]:p-8 min-[1800px]:max-w-[560px]"
             >
-              <h2 class="mb-2 text-2xl font-black leading-tight">{{ dealer.form.title }}</h2>
-              <p class="mb-5 text-[15px] leading-relaxed text-blue-100">{{ dealer.form.note }}</p>
+              <h2 class="dealer-form-card__title mb-2 text-2xl font-black leading-tight">{{ dealer.form.title }}</h2>
+              <p class="dealer-form-card__note mb-5 text-[15px] leading-relaxed text-blue-100">{{ dealer.form.note }}</p>
               <DealerLeadForm :selected-product="selectedProduct" :hotline="dealer.hotline" @clear-product="selectedProduct = ''" />
             </aside>
           </section>
@@ -175,7 +187,6 @@ usePublicSocialMeta({
       </template>
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>
 
@@ -188,7 +199,7 @@ usePublicSocialMeta({
 .dealer-hero h1 { margin: 0; color: #fff; font-size: clamp(36px, 4.2vw, 68px); font-weight: 850; line-height: 1.08; letter-spacing: -0.035em; text-wrap: balance; }
 .dealer-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
 .dealer-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
-.dealer-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
+.dealer-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .dealer-hero__primary:hover { filter: brightness(1.06); }
 .dealer-hero__primary:hover > span { transform: translateY(3px); }
 .dealer-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
@@ -217,5 +228,36 @@ usePublicSocialMeta({
   font-size: clamp(1.08rem, 1.3vw, 1.22rem);
   line-height: 1.65;
   color: var(--color-navy-900);
+}
+
+/* Phones (<=820px). Desktop rules above stay untouched. */
+@media (max-width: 820px) {
+  .dealer-hero { min-height: 540px; }
+  .dealer-hero__shade { background: linear-gradient(180deg, rgb(4 17 46 / 30%) 0%, rgb(4 17 46 / 80%) 46%, rgb(4 17 46 / 94%) 100%); }
+  .dealer-hero__inner { padding-block: 32px 22px; }
+  .dealer-hero__lede { margin-top: 10px; color: #dbe4f1; font-size: 16px; line-height: 1.55; }
+  .dealer-hero__actions { gap: 10px; margin-top: 18px; }
+  .dealer-hero__primary { min-height: 52px; gap: 12px; padding: 6px 6px 6px 16px; font-size: 15.5px; line-height: 1.25; }
+  .dealer-hero__primary > span { flex: none; }
+  .dealer-hero__call { min-height: 52px; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 18px; line-height: 1.25; }
+  .dealer-hero__call small { color: #d3dcea; font-size: 12.5px; }
+  /* Numbers sit on one baseline whatever the label length, and never spill past their column. */
+  .dealer-hero__stats dl > div { justify-content: flex-end; padding-block: 12px; padding-inline: 10px; }
+  .dealer-hero__stats dt { font-size: 13px; line-height: 1.3; }
+  .dealer-hero__stats dd { width: max-content; font-size: clamp(23px, 6.6vw, 32px); letter-spacing: -0.03em; white-space: nowrap; }
+
+  .dealer-quick--below-header { top: 65px; }
+  .dealer-quick { transition: top 0.3s var(--pts-ease, ease); }
+  .dealer-quick > div { min-height: 56px; }
+  .dealer-quick a { min-height: 56px; gap: 3px; border-right-color: rgb(10 34 81 / 8%); padding-block: 5px; }
+  .dealer-quick svg { width: 20px; height: 20px; }
+
+  .dealer-distribution { gap: 0; padding-block: 12px 36px; }
+  .dealer-overview-start, .dealer-form-card { scroll-margin-top: 132px; }
+  .dealer-form-card { border-radius: var(--radius-lg); padding: 20px 16px 16px; }
+  .dealer-form-card__title { font-size: 22px; font-weight: 800; }
+  .dealer-form-card__note { margin-bottom: 16px; }
+  .dealer-intro-rich { margin-top: 28px; }
+  .dealer-intro-rich :deep(p), .dealer-intro-rich :deep(p:first-child) { margin-block: 0.45rem; font-size: 16px; line-height: 1.6; }
 }
 </style>

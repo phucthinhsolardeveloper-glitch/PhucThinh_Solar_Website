@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');const sharp=require('../../../../frontend/node_modules/sharp');
+const groups=JSON.parse(process.argv[2]);const H=+process.argv[3]||1700;const start=+process.argv[4]||0;
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});const c=await b.newContext({viewport:{width:390,height:844},locale:'vi-VN',isMobile:true,hasTouch:true,deviceScaleFactor:1});const p=await c.newPage();await p.route('**/pts-living-energy/index.html*',x=>x.abort());
+await p.goto('http://127.0.0.1:3100/san-pham/',{waitUntil:'load'});const pdp=await p.locator('article a[href*="/san-pham/"]').first().getAttribute('href');
+for(let g=0;g<groups.length;g++){const comp=[];for(let i=0;i<groups[g].length;i++){const u=groups[g][i]==='PDP'?pdp:groups[g][i];await p.goto('http://127.0.0.1:3100'+u,{waitUntil:'load'});await p.waitForTimeout(500);await p.evaluate(async()=>{for(let y=0;y<document.documentElement.scrollHeight;y+=600){scrollTo(0,y);await new Promise(r=>setTimeout(r,70))}scrollTo(0,0)});await p.waitForTimeout(300);const buf=await p.screenshot({fullPage:true});const m=await sharp(buf).metadata();const top=Math.min(start,Math.max(0,m.height-10));const h=Math.min(H,m.height-top);comp.push({input:await sharp(buf).extract({left:0,top,width:390,height:h}).toBuffer(),left:i*400,top:0})}
+await sharp({create:{width:groups[g].length*400-10,height:H,channels:3,background:'#555'}}).composite(comp).png().toFile('mob/s'+g+'.png')}
+await b.close()})().catch(e=>{console.error('ERR',e.message.slice(0,300));process.exit(1)});

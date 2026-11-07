@@ -97,7 +97,7 @@ defineProps<{
   margin: 30px 0;
   padding: 22px 26px;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--radius-chip);
   background: #f8fafc;
   box-shadow: inset 4px 0 0 #e4a849;
   color: #071b46;
@@ -111,7 +111,7 @@ defineProps<{
   margin: 10px 0 16px;
   padding: 14px 18px;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: #071b46;
   box-shadow: inset 4px 0 0 #e4a849;
   color: #f8fafc;

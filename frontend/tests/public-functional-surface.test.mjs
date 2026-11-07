@@ -35,16 +35,16 @@ test('public listing/detail surfaces retain the PHP-equivalent CTA and related-c
   assert.match(projectDetailPreview, /ProjectDetailPage/)
 })
 
-test('contact form keeps native required validation for the public lead flow', () => {
+test('contact form requires name and phone natively; details are optional with a readable fallback', () => {
   const form = read('app/components/contact/ContactLeadForm.vue')
   assert.match(form, /const form = reactive\(\{ fullname: '', phone: '', email: '', subject: '', content: '' \}\)/)
-  assert.match(form, /submit\('contact', form\)/)
+  assert.match(form, /submit\('contact', \{ \.\.\.form, content: form\.content \|\|/)
   assert.match(form, /@submit\.prevent/)
   assert.match(form, /<UFormField label="Họ và tên" name="fullname" required[\s\S]*<UInput v-model\.trim="form\.fullname" name="fullname" required maxlength="100" autocomplete="name"/)
   assert.match(form, /<UFormField label="Số điện thoại" name="phone" required[\s\S]*<UInput v-model\.trim="form\.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel"/)
   assert.match(form, /<UFormField label="Email" hint="Không bắt buộc" name="email"[\s\S]*<UInput v-model\.trim="form\.email" name="email" type="email" maxlength="150" autocomplete="email"/)
   assert.match(form, /(?:<UFormField label="Nhu cầu quan tâm" hint="Không bắt buộc" name="subject"[\s\S]*<USelect v-model="form\.subject" name="subject"[\s\S]*:items="subjectOptions"|v-for="option in subjectOptions"[\s\S]*@click="toggleSubject\(option\)")/)
-  assert.match(form, /<UFormField label="Chi tiết nhu cầu tư vấn" name="content" required[\s\S]*<UTextarea v-model\.trim="form\.content" name="content" required maxlength="5000"/)
+  assert.match(form, /<UFormField label="Chi tiết nhu cầu tư vấn" name="content"[\s\S]*<UTextarea v-model\.trim="form\.content" name="content" maxlength="5000"/)
   assert.match(form, /focus-visible:ring-2 focus-visible:ring-gold-500\/30/)
   assert.match(form, /<UButton type="submit"[\s\S]*bg-gold-500[\s\S]*text-navy-950/)
 })

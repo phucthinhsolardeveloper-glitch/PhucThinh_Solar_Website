@@ -121,9 +121,9 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <section id="danh-muc-thiet-bi" class="energy-chain py-[clamp(56px,5vw,96px)]" aria-labelledby="home-catalog-title">
+  <section id="danh-muc-thiet-bi" class="energy-chain py-[clamp(56px,5vw,96px)] max-tb:py-8" aria-labelledby="home-catalog-title">
     <div class="pts-container">
-      <header class="mb-9 grid gap-4 min-[961px]:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] min-[961px]:items-end">
+      <header class="mb-9 max-tb:mb-4 grid gap-4 max-tb:gap-2 min-[961px]:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] min-[961px]:items-end">
         <h2 id="home-catalog-title" class="m-0 max-w-[16ch] text-[clamp(30px,3.2vw,52px)] font-black leading-[1.06] tracking-[-.035em] text-navy-950">
           Từ tia nắng đến nguồn điện trong nhà bạn
         </h2>
@@ -212,7 +212,7 @@ const links = useMigrationLinks()
   height: 100%;
   overflow: hidden;
   overflow: clip;
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: var(--color-navy-950);
   color: #fff;
   text-decoration: none;
@@ -318,7 +318,7 @@ const links = useMigrationLinks()
   top: 12px;
   width: var(--to);
   height: 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: linear-gradient(90deg, rgb(201 150 46 / 0%), var(--color-gold-400) 70%, #fff3d6);
   box-shadow: 0 0 14px rgb(224 182 84 / 70%);
   transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -358,5 +358,11 @@ const links = useMigrationLinks()
 
 @media (prefers-reduced-motion: reduce) {
   .chain-link, .chain-image, .chain-step, .chain-body, .chain-wire-pulse, .chain-node { transition: none !important; }
+}
+
+@media (max-width: 820px) {
+  .chain-card { height: clamp(340px, 96vw, 420px); border-radius: var(--radius-md); }
+  .chain-title, .chain-desc { display: block; overflow: visible; -webkit-line-clamp: unset; }
+  .chain-desc { font-size: 15px; line-height: 1.5; }
 }
 </style>

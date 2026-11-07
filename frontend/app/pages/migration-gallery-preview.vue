@@ -48,7 +48,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh' }]" />
@@ -95,6 +94,5 @@ usePublicSocialMeta({
         </nav>
       </template>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

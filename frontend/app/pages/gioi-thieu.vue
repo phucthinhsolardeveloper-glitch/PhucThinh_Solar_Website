@@ -39,7 +39,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="flex min-h-screen flex-col bg-white">
-    <SiteHeader :site="site" />
     <div v-if="siteHasError" class="border-b border-gray-200 bg-slate-50 text-slate-500" role="status">
       <div class="mx-auto w-full max-w-[1766px] px-4"><p class="py-2.5 text-sm leading-relaxed">{{ siteErrorMessage }}</p></div>
     </div>
@@ -59,6 +58,5 @@ usePublicSocialMeta({
       </div>
       <AboutPreviewPage v-else :about="about" />
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

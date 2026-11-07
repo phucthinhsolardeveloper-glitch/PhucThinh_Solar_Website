@@ -61,7 +61,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
     >
     <span class="origin-veil" aria-hidden="true" />
 
-    <div class="pts-container relative flex min-h-[clamp(560px,52vw,780px)] flex-col justify-between gap-12 py-[clamp(64px,7vw,112px)]">
+    <div class="origin-inner pts-container relative flex min-h-[clamp(560px,52vw,780px)] flex-col justify-between gap-12 py-[clamp(64px,7vw,112px)]">
       <div class="max-w-[640px]">
         <h2 id="home-about-title" class="m-0 text-[clamp(32px,3.6vw,60px)] font-black leading-[1.04] tracking-[-.035em] text-white [text-shadow:0_2px_24px_rgba(6,21,55,.45)]">
           {{ about.title }}
@@ -69,12 +69,12 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
         <p class="mt-5 max-w-[52ch] text-[clamp(16px,1.15vw,19px)] leading-[1.7] text-white/90 [text-shadow:0_1px_12px_rgba(6,21,55,.5)]">
           {{ about.description }}
         </p>
-        <a class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-[4px] bg-white px-6 text-[15px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400" :href="links.generic(about.href)">
+        <a class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-btn bg-white px-6 text-[15px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400" :href="links.generic(about.href)">
           {{ about.action }} <span aria-hidden="true">→</span>
         </a>
       </div>
 
-      <ul class="m-0 grid list-none gap-x-[clamp(20px,2.4vw,40px)] gap-y-7 p-0 min-[641px]:grid-cols-2 min-[1101px]:grid-cols-4">
+      <ul class="origin-points m-0 grid list-none gap-x-[clamp(20px,2.4vw,40px)] gap-y-7 p-0 min-[641px]:grid-cols-2 min-[1101px]:grid-cols-4">
         <li v-for="point in points" :key="point.label" class="origin-point">
           <div class="flex items-start gap-3">
             <img v-if="point.image" :src="pointImage(point.image)" alt="" class="mt-0.5 size-9 flex-none object-contain" width="48" height="48" loading="lazy" decoding="async">
@@ -122,5 +122,17 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 }
 @media (prefers-reduced-motion: reduce) {
   .origin-image { transform: none; inset: 0; height: 100%; }
+}
+
+/* Phones: the four points become a tidy 2-by-2 grid instead of a screen-long column. */
+@media (max-width: 820px) {
+  .origin-inner { min-height: 0; gap: 20px; padding-block: 32px; }
+  .origin-inner h2 { font-size: 28px; line-height: 1.12; }
+  .origin-inner h2 + p { margin-top: 8px; font-size: 15px; line-height: 1.55; }
+  .origin-inner a { display: flex; justify-content: center; margin-top: 12px; }
+  .origin-points { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+  .origin-point { min-width: 0; padding-top: 10px; }
+  .origin-point strong { font-size: 14.5px; }
+  .origin-point span { margin-top: 4px; font-size: 13px; line-height: 1.45; }
 }
 </style>

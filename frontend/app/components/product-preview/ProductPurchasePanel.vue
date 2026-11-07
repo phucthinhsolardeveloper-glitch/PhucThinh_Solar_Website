@@ -10,6 +10,26 @@ const loadingAction = ref<'buy' | 'cart' | null>(null)
 const { loading, error, mutate } = useMigrationCart()
 const links = useMigrationLinks()
 const { openDealer, openConsultation } = useStorefrontModal()
+const buyPrice = computed(() => `${new Intl.NumberFormat('vi-VN').format(props.pricing.salePrice ?? props.pricing.regularPrice ?? 0)}đ`)
+const { hotline, phoneHref } = usePublicContactLinks()
+const actionBarActive = useMobileActionBar()
+actionBarActive.value = true
+onBeforeUnmount(() => { actionBarActive.value = false })
+// The footer publishes contact links after this panel renders on the server, so they appear once mounted.
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+
+// Desktop: the same island appears once the reader has scrolled past the main buttons, so buying stays one click away.
+const buySentinel = ref<HTMLElement | null>(null)
+const buttonsOffScreen = ref(false)
+let buyObserver: IntersectionObserver | undefined
+onMounted(() => {
+  if (!buySentinel.value || !('IntersectionObserver' in window)) return
+  // The huge bottom margin counts everything below the fold as "not yet passed", so a long jump still flips the state.
+  buyObserver = new IntersectionObserver(([entry]) => { buttonsOffScreen.value = entry?.isIntersecting === false }, { rootMargin: '-88px 0px 100000px 0px' })
+  buyObserver.observe(buySentinel.value)
+})
+onBeforeUnmount(() => buyObserver?.disconnect())
 
 async function add(goToCart = false) {
   quantity.value = normalizeCommerceQuantity(quantity.value)
@@ -37,13 +57,13 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
   <section class="mt-4" aria-label="Mua sản phẩm">
     <QuantityStepper v-if="pricing.mode === 'price'" v-model="quantity" label="Số lượng" inline-label :disabled="loading" />
     <slot name="product-info" />
-    <div v-if="pricing.mode === 'price'" class="mt-5 grid gap-[9px]">
+    <div v-if="pricing.mode === 'price'" class="mt-5 grid gap-[9px] max-tb:hidden">
       <UButton
         type="button"
         color="primary"
         size="lg"
         :loading="loading && loadingAction === 'buy'"
-        class="min-h-12 w-full justify-center rounded-[4px] bg-gold-500 px-6 font-extrabold text-navy-950 transition-all duration-150 hover:bg-gold-600 hover:shadow-sm active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer shadow-xs"
+        class="min-h-12 w-full justify-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 transition-all duration-150 hover:bg-gold-600 hover:shadow-sm active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer shadow-xs"
         :disabled="loading"
         @click="add(true)"
       >
@@ -55,7 +75,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         variant="outline"
         size="lg"
         :loading="loading && loadingAction === 'cart'"
-        class="public-neutral-button public-navy-outline-button min-h-12 w-full justify-center rounded-[4px] px-5 font-bold text-navy-800 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
+        class="public-neutral-button public-navy-outline-button min-h-12 w-full justify-center rounded-btn px-5 font-bold text-navy-800 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
         :disabled="loading"
         @click="add(false)"
       >
@@ -64,8 +84,9 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         <template v-else>Thêm vào giỏ</template>
       </UButton>
     </div>
+    <div ref="buySentinel" aria-hidden="true" />
     <!-- Confirmation plays as the flight + card (CartFeedback); only errors stay inline, in a reserved slot. -->
-    <div v-if="pricing.mode === 'price'" class="purchase-status mt-3 min-h-6" aria-live="polite">
+    <div v-if="pricing.mode === 'price'" class="purchase-status mt-3 min-h-6 max-tb:hidden" aria-live="polite">
       <Transition name="purchase-status" mode="out-in">
         <p v-if="error" key="error" class="m-0 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
       </Transition>
@@ -75,7 +96,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
       href="#pts-pdp-consultation"
       color="primary"
       size="lg"
-      class="mt-5 min-h-12 w-full justify-center rounded-[4px] bg-gold-500 px-6 font-extrabold text-navy-950 no-underline transition-all duration-150 hover:bg-gold-600 active:scale-[0.98] cursor-pointer shadow-xs"
+      class="mt-5 min-h-12 w-full justify-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline max-tb:hidden transition-all duration-150 hover:bg-gold-600 active:scale-[0.98] cursor-pointer shadow-xs"
       @click.prevent="openConsultation()"
     >
       Liên hệ nhận báo giá
@@ -139,29 +160,54 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
       </div>
     </div>
 
-    <div class="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-slate-200 bg-white/95 p-3 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(6,21,55,0.12)] backdrop-blur-md nav:hidden">
-      <UButton
+    <!-- Phone: the buying island replaces the navigation island on this page. Desktop: it follows once the buttons scroll away. -->
+    <div class="buy-island m-glass print:hidden" :class="{ 'is-on': buttonsOffScreen }">
+      <p v-if="error" class="buy-island__error" role="alert">{{ error }}</p>
+      <strong v-if="productName" class="buy-island__name">{{ productName }}</strong>
+      <a v-if="mounted && phoneHref" :href="phoneHref" :aria-label="`Gọi hotline ${hotline}`" class="buy-island__icon">
+        <UIcon name="i-lucide-phone" class="size-[21px]" aria-hidden="true" />
+      </a>
+      <button
         v-if="pricing.mode === 'price'"
         type="button"
-        color="secondary"
-        variant="outline"
-        class="public-neutral-button min-h-12 flex-1 rounded-[4px] px-3 font-bold text-navy-800"
-        :loading="loading && loadingAction === 'cart'"
+        :aria-label="justAdded ? 'Đã thêm vào giỏ' : 'Thêm vào giỏ'"
+        class="buy-island__icon"
         :disabled="loading"
         @click="add(false)"
-      >Thêm vào giỏ</UButton>
-      <UButton
+      >
+        <UIcon :name="justAdded ? 'i-lucide-check' : 'i-lucide-shopping-cart'" class="size-[21px]" aria-hidden="true" />
+      </button>
+      <button
         type="button"
-        color="primary"
-        class="min-h-12 flex-1 rounded-[4px] bg-gold-500 px-3 font-extrabold text-navy-950"
+        class="buy-island__main"
         :disabled="pricing.mode === 'price' ? loading : !consultationAvailable"
         @click="pricing.mode === 'price' ? add(true) : openConsultation()"
-      >{{ pricing.mode === 'price' ? 'Mua ngay' : 'Nhận báo giá' }}</UButton>
+      >
+        <template v-if="pricing.mode === 'price'">
+          <span>{{ loadingAction === 'buy' ? 'Đang xử lý…' : 'Mua ngay' }}</span>
+          <small>{{ buyPrice }}</small>
+        </template>
+        <template v-else>Nhận báo giá</template>
+      </button>
     </div>
   </section>
 </template>
 
 <style scoped>
+.buy-island { position: fixed; left: 12px; right: 72px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; display: flex; align-items: center; gap: 2px; height: 60px; padding: 6px; border-radius: 30px; }
+.buy-island__name { display: none; }
+@media (min-width: 821px) {
+  .buy-island { right: auto; bottom: 20px; left: 50%; width: min(640px, calc(100vw - 200px)); padding-left: 22px; visibility: hidden; opacity: 0; transform: translate(-50%, 14px); transition: opacity .22s ease, transform .22s ease, visibility .22s; }
+  .buy-island.is-on { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
+  .buy-island__name { display: block; min-width: 0; flex: 1; overflow: hidden; color: #fff; font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+  .buy-island__main { flex: none; min-width: 170px; padding-inline: 20px; }
+}
+@media (min-width: 821px) and (prefers-reduced-motion: reduce) { .buy-island { transition: none; } }
+.buy-island__error { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); margin: 0; padding: 8px 14px; border-radius: var(--radius-md); background: #fef2f2; color: #b91c1c; font-size: 13px; font-weight: 600; }
+.buy-island__icon { display: grid; flex: none; width: 44px; height: 46px; place-items: center; color: #dbe4f0; text-decoration: none; }
+.buy-island__icon:disabled, .buy-island__main:disabled { opacity: .55; }
+.buy-island__main { display: flex; flex: 1; min-width: 0; height: 46px; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 14px; font-weight: 800; line-height: 1.15; }
+.buy-island__main small { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .added-label { display: inline-flex; align-items: center; gap: 8px; color: #15803d; animation: added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes added-in { from { opacity: 0; transform: translateY(6px) scale(0.96); } }
 .purchase-status-enter-active, .purchase-status-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }

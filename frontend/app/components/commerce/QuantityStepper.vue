@@ -57,7 +57,7 @@ function onChange(event: Event) {
         :value="quantity"
         :aria-label="label"
         :disabled="disabled"
-        class="h-11 w-[4.5rem] min-w-[4.5rem] border-x border-gray-300 bg-white px-2 text-center text-base text-navy-800 outline-none focus-visible:z-10 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-600 disabled:bg-slate-50"
+        class="rounded-none h-11 w-[4.5rem] min-w-[4.5rem] border-x border-gray-300 bg-white px-2 text-center text-base text-navy-800 outline-none focus-visible:z-10 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-600 disabled:bg-slate-50"
         @input="onInput"
         @change="onChange"
       >

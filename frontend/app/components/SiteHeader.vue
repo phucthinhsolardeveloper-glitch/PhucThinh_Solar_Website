@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SearchSuggestions from '~/components/search/SearchSuggestions.vue'
 import type { PublicCatalogGroup, PublicProductCategoryNode, PublicSiteLink, PublicSitePayload } from '#shared/contracts/public-site'
 import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 import {
@@ -32,11 +33,16 @@ useHead({
   }] : []),
 })
 const cartCountAvailable = computed(() => true)
+// The cart page fills this state after the header has rendered on the server, so the count is client-only.
+const cartBadgeReady = ref(false)
+onMounted(() => { cartBadgeReady.value = true })
 const reducedMotion = useReducedMotion()
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
 const brandLogo = computed(() => props.site.brand.logo || '')
+// Phones reach the cart from the dock. Product and checkout pages replace the dock, so they keep the header icon.
+const dockShowsCart = computed(() => !/^\/san-pham\/[^/]+\/?$/.test(route.path) && !/^\/thanh-toan\/?$/.test(route.path))
 const brandLogoSrc = computed(() => {
   const src = brandLogo.value
   return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? phpThumb(src, 520, 112, 3) : src
@@ -44,6 +50,7 @@ const brandLogoSrc = computed(() => {
 
 const searchOpen = ref(false)
 const searchKeyword = ref('')
+const headerSuggest = ref<InstanceType<typeof SearchSuggestions> | null>(null)
 const defaultSearchTerms = ['Đèn đường', 'Blue Carbon', 'LONGi', 'SolaX', 'Pin lưu trữ', 'Jindian', 'Bơm nước']
 // Admin "Tìm kiếm - Từ khóa nhanh" replaces the defaults when it has visible terms.
 const popularSearchTerms = computed(() => props.site.quickSearches?.length ? props.site.quickSearches : defaultSearchTerms)
@@ -308,9 +315,22 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   }
 }
 
+// A flyout near the bottom of the panel moves up, so all of its items stay in view.
+function fitOpenFlyout() {
+  const flyout = document.querySelector<HTMLElement>('.is-flyout-open > .catalog-flyout')
+  const panel = document.getElementById('ptsCatalogMenu')
+  if (!flyout || !panel) return
+  flyout.style.top = ''
+  const panelBox = panel.getBoundingClientRect()
+  const box = flyout.getBoundingClientRect()
+  const limit = Math.min(panelBox.bottom, window.innerHeight) - 12
+  const overflow = box.bottom - limit
+  if (overflow > 0) flyout.style.top = `${-Math.min(overflow, Math.max(0, box.top - panelBox.top - 8))}px`
+}
 // Sub-category flyouts: a short grace period stops a diagonal move toward an open
 // flyout from switching it to the item the pointer crosses on the way.
 const flyoutKey = ref('')
+watch(flyoutKey, () => nextTick(fitOpenFlyout))
 let flyoutTimer: ReturnType<typeof setTimeout> | null = null
 function clearFlyoutTimer() { if (flyoutTimer) clearTimeout(flyoutTimer); flyoutTimer = null }
 // Only a mostly-horizontal move (heading for the open flyout) gets the grace period;
@@ -435,6 +455,7 @@ function toggleSearch() {
 async function submitSearch() {
   const keyword = searchKeyword.value.trim()
   if (!keyword) return
+  headerSuggest.value?.remember(keyword)
   closeSearch(false)
   closeMobileMenu(false)
   await navigateTo({ path: shellHref('/tim-kiem/'), query: { keyword } })
@@ -522,6 +543,17 @@ function telHrefFor(value: string): string {
 }
 
 const { isHeaderHidden, isScrolled } = useSiteHeader()
+// Only one overlay at a time: the header's panels give way to the dock's support sheet, and the other way round.
+const activeOverlay = useState<string | null>('active-overlay', () => null)
+watch(activeOverlay, (overlay) => {
+  if (overlay !== 'support') return
+  if (searchOpen.value) closeSearch(false)
+  if (mobileOpen.value) closeMobileMenu(false)
+  if (catalogOpen.value) closeCatalog(false)
+})
+watch([searchOpen, mobileOpen, catalogOpen], (open) => {
+  if (open.some(Boolean)) activeOverlay.value = 'header'
+})
 // Full-bleed hero crosses the header on the homepage only; everywhere else the
 // header stays solid. See docs/15-design-delivery/06-LAYOUT-LAB.md #principles.
 const isHomeRoute = computed(() => route.path === '/')
@@ -548,10 +580,8 @@ function handleWindowScroll() {
     }
 
     const deltaY = currentScrollY - lastScrollY
-    if (deltaY < 0) {
-      isHeaderHidden.value = false
-      accumulatedDelta = 0
-    }
+    // Owner decision: scrolling up does not bring the header back; it returns near the top of the page.
+    if (deltaY < 0) accumulatedDelta = 0
     else accumulatedDelta += deltaY
 
     if (accumulatedDelta > 12 && currentScrollY > 80) {
@@ -562,6 +592,18 @@ function handleWindowScroll() {
     scrollTicking = false
   })
 }
+
+// The header now outlives page changes, so it has to reset itself on navigation.
+watch(() => route.path, () => {
+  searchOpen.value = false
+  catalogOpen.value = false
+  navDropdownOpen.value = null
+  if (mobileOpen.value) closeMobileMenu(false)
+  isHeaderHidden.value = false
+  isScrolled.value = false
+  lastScrollY = 0
+  accumulatedDelta = 0
+})
 
 function handleHeaderFocusin() {
   isHeaderHidden.value = false
@@ -590,10 +632,10 @@ onBeforeUnmount(() => {
     @focusin="handleHeaderFocusin"
   >
     <header
-      class="relative z-[1000] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
+      class="pts-header-capsule relative z-[1000] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
       :class="transparentAtTop
         ? 'border-b border-transparent bg-transparent shadow-none'
-        : ['border-b border-hdr-line bg-white/96 backdrop-blur-md', isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]']"
+        : ['pts-header-glass border-b border-hdr-line bg-white/96 backdrop-blur-md', isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]']"
     >
       <div
       class="mx-auto flex min-h-16 w-full max-w-[max(1680px,var(--container-page))] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
@@ -628,15 +670,15 @@ onBeforeUnmount(() => {
             :alt="brandName"
             width="520"
             height="73"
-            class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[46px]
-                   min-[561px]:max-w-[min(235px,100%)] min-[561px]:max-h-[52px]
+            class="block h-auto w-auto object-contain max-w-[min(240px,100%)] max-h-[46px]
+                   min-[561px]:max-w-[min(270px,100%)] min-[561px]:max-h-[52px]
                    min-[821px]:max-w-[min(265px,100%)] min-[821px]:max-h-[66px]
                    min-[1321px]:max-w-[min(300px,100%)] min-[1321px]:max-h-[80px]
                    min-[1681px]:max-w-[min(clamp(320px,20vw,420px),100%)] min-[1681px]:max-h-[96px]
                    min-[1800px]:max-h-[108px]
                    min-[2300px]:max-w-[460px] min-[2300px]:max-h-[120px]
-                   max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[42px]
-                   max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[34px]"
+                   max-[380px]:max-w-[min(214px,100%)] max-[380px]:max-h-[42px]
+                   max-[340px]:max-w-[min(170px,100%)] max-[340px]:max-h-[34px]"
           >
           <span v-else class="truncate text-xl font-black tracking-tight text-hdr-ink">{{ brandName }}</span>
         </a>
@@ -735,34 +777,36 @@ onBeforeUnmount(() => {
 
           <a
             v-if="hotline"
-            class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-2 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
-            :class="transparentAtTop ? 'bg-white/80 backdrop-blur-sm' : ''"
+            class="pts-header-call hidden min-h-11 items-center justify-center gap-2.5 text-hdr-ink no-underline min-[821px]:inline-flex"
             :href="telHrefFor(hotline)"
-            :aria-label="`Gọi tư vấn: ${hotline}`"
+            :aria-label="`Gọi ngay: ${hotline}`"
             :title="hotline"
           >
-            <span class="grid h-9 w-9 min-[1681px]:h-10 min-[1681px]:w-10 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
+            <span class="pts-header-call__icon grid size-9 flex-none place-items-center" aria-hidden="true">
               <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
             <span class="hidden min-[1681px]:flex min-[1681px]:flex-col min-[1681px]:gap-0.5 min-[1681px]:whitespace-nowrap text-left">
-              <small class="text-[12px] leading-none text-hdr-muted font-semibold">Tư vấn</small>
-              <b class="text-sm min-[1681px]:text-[15px] leading-tight text-hdr-ink font-black">{{ hotline }}</b>
+              <small class="pts-header-call__label text-[11.5px] leading-none font-semibold">Gọi ngay</small>
+              <b class="pts-header-call__number text-[15px] leading-tight font-extrabold">{{ hotline }}</b>
             </span>
           </a>
 
           <NuxtLink
             :external="isExternalLink(shellHref('/gio-hang/'))"
-            class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
-                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep"
+            class="relative h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
+                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
+            :class="dockShowsCart ? 'hidden' : 'inline-flex'"
             :to="shellHref('/gio-hang/')"
-            :aria-label="cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
+            :aria-label="cartBadgeReady && cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
             data-cart-target
           >
+            <ClientOnly>
             <span
               v-if="cartCountAvailable && migrationCart?.count"
               class="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-gold-500 px-1 text-[10px] font-black leading-4 text-navy-950"
             >{{ migrationCart.count }}</span>
+            </ClientOnly>
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
 
@@ -794,7 +838,7 @@ onBeforeUnmount(() => {
         <div
           id="ptsHeaderSearch"
           ref="searchPanel"
-          class="pts-search-panel absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft
+          class="pts-search-panel m-sheet-glass absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft
                  bg-white/97 py-3.5 shadow-[0_18px_40px_-24px_rgba(16,36,58,.35)] backdrop-blur-md"
           role="dialog"
           aria-modal="true"
@@ -812,17 +856,23 @@ onBeforeUnmount(() => {
                 v-model="searchKeyword"
                 class="h-12 w-full min-w-0 border-0 bg-transparent px-3 text-[15px] text-hdr-ink outline-none placeholder:text-hdr-muted"
                 type="search"
-                placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
+                placeholder="Tên, công suất, thương hiệu"
                 autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="true"
+                :aria-controls="headerSuggest?.listId"
+                :aria-activedescendant="headerSuggest?.activeOptionId"
+                @keydown="headerSuggest?.handleKey($event)"
               >
               <button
                 class="mr-1 inline-flex h-10 flex-none items-center justify-center rounded-full bg-hdr-gold px-4 text-sm font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
                 type="submit"
               >
-                Tìm kiếm
+                <span class="max-tb:hidden">Tìm kiếm</span><span class="tb:hidden">Tìm</span>
               </button>
             </form>
-            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1">
+            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1" :class="{ 'max-tb:hidden': searchKeyword.trim().length >= 2 }">
               <span class="mr-1.5 text-[13px] font-semibold text-slate-500">Tra cứu nhanh</span>
               <button
                 v-for="term in popularSearchTerms"
@@ -843,6 +893,16 @@ onBeforeUnmount(() => {
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
             </button>
           </div>
+          <SearchSuggestions
+            ref="headerSuggest"
+            class="mt-3"
+            :keyword="searchKeyword"
+            :site="site"
+            :search-path="shellHref('/tim-kiem/')"
+            id-prefix="pts-header-suggest"
+            @leave="closeSearch(false)"
+            @pick-term="selectPopularSearch"
+          />
         </div>
         </div>
       </div>
@@ -852,7 +912,7 @@ onBeforeUnmount(() => {
       <div
         v-if="catalogOpen"
         ref="catalogOverlay"
-        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden bg-[rgb(8_18_34_/_58%)]"
+        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden glass-overlay"
         aria-hidden="false"
       >
         <button
@@ -986,7 +1046,7 @@ onBeforeUnmount(() => {
                   </NuxtLink>
                   <ul
                     v-if="item.children.length"
-                    class="catalog-flyout absolute top-0 z-[3] max-h-80 w-[260px] list-none overflow-y-auto rounded-btn
+                    class="catalog-flyout absolute top-0 z-[3] max-h-[min(400px,calc(100dvh-160px))] w-[260px] list-none overflow-y-auto rounded-btn
                            border border-[#e5e7eb] bg-white p-1.5 shadow-[0_12px_30px_rgba(6,21,55,.16)] left-full
                            [.catalog-group-last_&]:right-full [.catalog-group-last_&]:left-auto"
                     :aria-label="`Danh mục con: ${item.label}`"
@@ -1053,7 +1113,8 @@ onBeforeUnmount(() => {
 
     <!-- Drawer điều hướng mobile/tablet, used through 1320px -->
     <Teleport to="body">
-    <div v-if="mobileOpen" ref="mobileOverlay" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
+    <Transition name="pts-drawer" :duration="{ enter: 380, leave: 260 }">
+    <div v-if="mobileOpen" ref="mobileOverlay" class="pts-drawer fixed inset-0 z-[1100] overflow-hidden">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"
         aria-hidden="true"
@@ -1062,21 +1123,17 @@ onBeforeUnmount(() => {
       <aside
         id="ptsMobileMenu"
         ref="mobilePanel"
-        class="relative z-[1] flex h-dvh max-h-dvh w-[min(326px,calc(100vw-24px))] flex-col overflow-hidden overscroll-y-contain bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]
+        class="relative z-[1] flex h-dvh max-h-dvh pts-drawer__panel w-[min(326px,calc(100vw-24px))] flex-col overflow-hidden overscroll-y-contain p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]
                shadow-[16px_0_36px_rgb(6_21_55_/_20%)] min-[761px]:w-[360px] min-[1501px]:w-[min(420px,calc(100vw-32px))]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="ptsMobileTitle"
       >
-        <div class="mb-[18px] flex items-center justify-between gap-4">
-          <h2 id="ptsMobileTitle" class="m-0 text-[17px] font-extrabold text-gold-700">Phúc Thịnh Solar</h2>
-          <button
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
-            type="button"
-            aria-label="Đóng danh mục điều hướng"
-            @click="closeMobileMenu()"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        <div class="pts-drawer__head mb-[18px] flex items-center justify-between gap-3">
+          <h2 id="ptsMobileTitle" class="sr-only">{{ brandName }}</h2>
+          <img v-if="brandLogo" :src="brandLogoSrc" alt="" width="520" height="73" class="pts-drawer__logo">
+          <button class="pts-morph m-lg-dark" type="button" aria-label="Đóng danh mục điều hướng" @click="closeMobileMenu()">
+            <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
           </button>
         </div>
 
@@ -1224,11 +1281,64 @@ onBeforeUnmount(() => {
         </button>
       </aside>
     </div>
+    </Transition>
     </Teleport>
   </div>
 </template>
 
 <style scoped>
+/* Mobile menu: navy liquid glass; the panel slides while the menu icon morphs in place. */
+.pts-drawer { background: rgb(6 21 55 / 42%); }
+.pts-drawer__panel {
+  --color-hdr-ink: #fff;
+  --color-hdr-sub: #c9d5e5;
+  --color-hdr-line: rgb(255 255 255 / 13%);
+  --color-hdr-surface: rgb(255 255 255 / 9%);
+  color: #fff;
+  background: var(--m-glass-bg);
+  -webkit-backdrop-filter: var(--m-glass-filter);
+  backdrop-filter: var(--m-glass-filter);
+  border-right: 1px solid var(--m-glass-rim);
+  box-shadow: var(--m-glass-shadow);
+}
+.pts-drawer__head { margin-top: -6px; margin-right: -4px; }
+.pts-drawer__logo { width: auto; max-width: 190px; height: 28px; object-fit: contain; object-position: left; }
+.pts-drawer__panel :deep(.text-navy-800), .pts-drawer__panel :deep(.text-navy-950) { color: #fff; }
+.pts-drawer__panel form[role="search"] { border-color: rgb(255 255 255 / 20%); border-radius: 22px; background: rgb(255 255 255 / 10%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%); }
+.pts-drawer__panel form[role="search"] input { color: #fff; }
+.pts-drawer__panel form[role="search"] input::placeholder { color: #c9d5e5; }
+.pts-drawer__panel form[role="search"] button { margin: 3px; min-height: 36px; border-radius: 18px; background: var(--pts-gold-gradient); color: var(--color-navy-950); }
+.pts-morph { position: relative; flex: none; width: 44px; height: 44px; border-radius: 50%; color: #fff; cursor: pointer; }
+.pts-morph span { position: absolute; top: 21px; left: 12px; width: 20px; height: 2px; border-radius: 2px; background: currentColor; }
+.pts-morph span:nth-child(1) { transform: rotate(45deg); }
+.pts-morph span:nth-child(2) { opacity: 0; }
+.pts-morph span:nth-child(3) { transform: rotate(-45deg); }
+.pts-drawer-enter-active, .pts-drawer-leave-active { transition: background-color .26s ease; }
+.pts-drawer-enter-from, .pts-drawer-leave-to { background-color: rgb(6 21 55 / 0%); }
+.pts-drawer-enter-active .pts-drawer__panel { transition: transform .38s cubic-bezier(.22, 1, .36, 1); }
+.pts-drawer-leave-active .pts-drawer__panel { transition: transform .26s cubic-bezier(.4, 0, 1, 1); }
+.pts-header-call { color: var(--color-navy-950); transition: transform .18s ease; }
+.pts-header-call__icon { border-radius: var(--radius-btn); background: var(--pts-gold-gradient); box-shadow: 0 2px 6px rgb(6 21 55 / 18%), inset 0 1px 0 rgb(255 255 255 / 35%); color: var(--color-navy-950); transition: filter .18s ease; }
+.pts-header-call__number { color: var(--color-navy-950); font-variant-numeric: tabular-nums; }
+.pts-header-call__label { color: var(--color-slate-600, #475569); }
+.pts-header-call:hover { transform: translateY(-1px); }
+.pts-header-call:hover .pts-header-call__icon { filter: brightness(1.05); }
+.pts-header-call:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; border-radius: var(--radius-md); }
+@media (min-width: 1681px) {
+  .pts-header-call { padding: 3px 14px 3px 3px; border: 1px solid rgb(10 34 81 / 12%); border-radius: var(--radius-md); background: rgb(255 255 255 / 88%); box-shadow: 0 1px 2px rgb(6 21 55 / 8%), inset 0 1px 0 #fff; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .pts-header-call:hover { border-color: var(--color-gold-400); box-shadow: 0 4px 12px rgb(6 21 55 / 12%), inset 0 1px 0 #fff; }
+}
+@media (prefers-reduced-motion: reduce) { .pts-header-call, .pts-header-call:hover { transform: none; transition: none; } }
+.pts-drawer-enter-from .pts-drawer__panel, .pts-drawer-leave-to .pts-drawer__panel { transform: translateX(-100%); }
+.pts-drawer-enter-active .pts-morph span { transition: transform .34s cubic-bezier(.3, 1.4, .5, 1), opacity .16s; }
+.pts-drawer-leave-active .pts-morph span { transition: transform .24s ease-in, opacity .16s; }
+.pts-drawer-enter-from .pts-morph span:nth-child(1), .pts-drawer-leave-to .pts-morph span:nth-child(1) { transform: translateY(-6px); }
+.pts-drawer-enter-from .pts-morph span:nth-child(2), .pts-drawer-leave-to .pts-morph span:nth-child(2) { opacity: 1; }
+.pts-drawer-enter-from .pts-morph span:nth-child(3), .pts-drawer-leave-to .pts-morph span:nth-child(3) { transform: translateY(6px); }
+.pts-mobile-nav-trigger { transition: opacity .12s; }
+@media (prefers-reduced-motion: reduce) {
+  .pts-drawer-enter-active .pts-drawer__panel, .pts-drawer-leave-active .pts-drawer__panel, .pts-drawer-enter-active .pts-morph span, .pts-drawer-leave-active .pts-morph span { transition: none; }
+}
 .pts-search-field { border: 1px solid rgb(10 34 81 / 16%); border-radius: 999px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 /* The pill itself shows focus; the global 3px outline on the inner input would draw a box inside it. */
 .pts-search-field input:focus, .pts-search-field input:focus-visible { outline: none; }

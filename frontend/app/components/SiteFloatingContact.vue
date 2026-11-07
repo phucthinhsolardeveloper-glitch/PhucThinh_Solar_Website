@@ -41,12 +41,12 @@ onUnmounted(() => {
 <template>
   <aside
     v-if="showBackToTop || hasContactChannels"
-    class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
+    class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden max-tb:bottom-[calc(16px+env(safe-area-inset-bottom))] max-tb:right-3 tb:bottom-6 tb:right-6 transform-gpu"
     :class="{ 'contact-above-checkout': isCheckout }"
     aria-label="Liên hệ nhanh"
   >
     <!-- Nút 3: Lên đầu trang (cuộn > 300px) -->
-    <div v-if="showBackToTop" class="group relative flex items-center">
+    <div v-if="showBackToTop" class="group relative flex items-center max-tb:hidden">
       <span
         class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"
@@ -80,14 +80,15 @@ onUnmounted(() => {
         rel="noopener noreferrer"
         title="Chat Zalo với chúng tôi"
         aria-label="Chat Zalo với chúng tôi"
-        class="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#0068ff] text-white shadow-[0_4px_16px_rgba(0,104,255,0.4)] transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 hover:bg-[#0057d6] hover:shadow-[0_6px_20px_rgba(0,104,255,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0068ff] focus-visible:ring-offset-2 active:scale-95"
+        class="m-glass-zalo relative flex h-12 w-12 items-center justify-center rounded-full bg-[#0068ff] text-white shadow-[0_4px_16px_rgba(0,104,255,0.4)] transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 hover:bg-[#0057d6] hover:shadow-[0_6px_20px_rgba(0,104,255,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0068ff] focus-visible:ring-offset-2 active:scale-95"
       >
         <span class="select-none text-[13px] font-black leading-none tracking-tight text-white">Zalo</span>
       </a>
     </div>
 
     <!-- Nút hotline dùng cùng nền gold gradient và giữ hiệu ứng pulse nhẹ. -->
-    <div v-if="phoneHref" class="group relative flex items-center">
+    <!-- On phones the call action lives in the bottom bar; only Zalo floats above it. -->
+    <div v-if="phoneHref" class="group relative flex items-center max-tb:hidden">
       <span
         class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"
@@ -113,7 +114,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-@media (max-width: 1320px) {
+@media (min-width: 821px) and (max-width: 1320px) {
   .contact-above-checkout { bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
 }
 </style>

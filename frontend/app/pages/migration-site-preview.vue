@@ -20,7 +20,6 @@ useSeoMeta({ title: 'Site preview — Phúc Thịnh Solar', robots: 'noindex, no
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="mx-auto w-full max-w-[1766px] px-4 pt-5">
@@ -47,6 +46,5 @@ useSeoMeta({ title: 'Site preview — Phúc Thịnh Solar', robots: 'noindex, no
       </template>
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

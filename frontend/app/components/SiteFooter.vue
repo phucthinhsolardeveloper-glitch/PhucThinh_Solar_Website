@@ -7,6 +7,7 @@ const props = defineProps<{
   site: PublicSitePayload
 }>()
 
+const footOpen = reactive({ company: false, policies: false, locations: false })
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
@@ -53,15 +54,15 @@ const telHref = computed(() => telHrefFor(hotline.value))
 <template>
   <footer class="border-t border-navy-900 bg-navy-950 pb-7 text-ftr-text">
     <div
-      class="mx-auto grid w-full max-w-(--container-page) gap-8 px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) pt-12
+      class="mx-auto grid w-full max-w-(--container-page) gap-8 px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) pt-12 max-tb:gap-0 max-tb:pt-6
              grid-cols-1
              tb:grid-cols-2
              nav:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]
              wd:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]"
     >
       <!-- Cột 1: Biểu trưng thương hiệu -->
-      <div class="flex flex-col items-center gap-4 tb:items-start">
-        <a class="block w-full max-w-[300px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
+      <div class="flex flex-col items-center gap-4 max-tb:flex-row max-tb:justify-between tb:items-start">
+        <a class="block w-full max-w-[300px] max-tb:max-w-[132px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo && !footerLogoUnavailable"
             :src="footerLogoSrc"
@@ -86,14 +87,14 @@ const telHref = computed(() => telHrefFor(hotline.value))
 
       <!-- Cột 2: Pháp nhân doanh nghiệp và 2 đường dây nóng -->
       <div>
-        <h2 class="mb-4 text-[16px] font-extrabold text-gold-400">
-          {{ sentenceCase(footer?.companyName || 'Thông tin doanh nghiệp') }}
+        <h2 class="foot-head mb-4 text-[16px] font-extrabold text-gold-400">
+          <button type="button" class="foot-toggle" :aria-expanded="footOpen.company" @click="footOpen.company = !footOpen.company">{{ sentenceCase(footer?.companyName || 'Thông tin doanh nghiệp') }}</button>
         </h2>
-        <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
+        <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500 max-tb:hidden" />
 
-        <EditorialRichText v-if="footer?.contactText?.html" :content="footer.contactText" class="cms-content-on-dark mt-3 text-[14.5px] leading-[1.68]" />
+        <EditorialRichText v-if="footer?.contactText?.html" :content="footer.contactText" class="cms-content-on-dark mt-3 text-[14.5px] leading-[1.68]" :class="footOpen.company ? '' : 'max-tb:hidden'" />
 
-        <div v-if="hotline || technicalHotline" class="mt-4 grid grid-cols-1 gap-2.5 ph:grid-cols-2">
+        <div v-if="hotline || technicalHotline" class="mt-4 grid grid-cols-2 gap-2.5 max-tb:mb-3 max-tb:mt-1">
           <a
             v-if="hotline"
             class="flex min-w-0 items-start gap-2.5 rounded-btn border border-[#bfdbfe]/20 border-l-[3px]
@@ -123,14 +124,14 @@ const telHref = computed(() => telHrefFor(hotline.value))
         </div>
       </div>
 
-      <div class="grid min-w-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(350px,1fr)_minmax(0,1fr)] min-[768px]:gap-12 tb:col-span-2 nav:col-span-1">
+      <div class="grid min-w-0 max-tb:gap-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(350px,1fr)_minmax(0,1fr)] min-[768px]:gap-12 tb:col-span-2 nav:col-span-1">
         <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
         <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
-          <h2 class="mb-4 text-[16px] font-extrabold text-white">
-            Chính sách &amp; Hỗ trợ khách hàng
+          <h2 class="foot-head mb-4 text-[16px] font-extrabold text-white">
+            <button type="button" class="foot-toggle" :aria-expanded="footOpen.policies" @click="footOpen.policies = !footOpen.policies">Chính sách &amp; Hỗ trợ khách hàng</button>
           </h2>
-          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
-          <ul class="m-0 list-none space-y-0.5 p-0">
+          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500 max-tb:hidden" />
+          <ul class="m-0 list-none space-y-0.5 p-0" :class="footOpen.policies ? '' : 'max-tb:hidden'">
             <li v-for="policy in footer ? footer.policies : []" :key="policy.href">
               <NuxtLink
                 :external="isExternalLink(footerHref(policy.href))"
@@ -145,11 +146,11 @@ const telHref = computed(() => telHrefFor(hotline.value))
 
         <!-- Địa điểm hiển thị thành danh sách phẳng, như .content_cn của PHP. -->
         <div v-if="footer?.locations.length">
-          <h2 class="mb-4 text-[16px] font-extrabold text-white">
-            Hệ thống kho &amp; điểm giao dịch
+          <h2 class="foot-head mb-4 text-[16px] font-extrabold text-white">
+            <button type="button" class="foot-toggle" :aria-expanded="footOpen.locations" @click="footOpen.locations = !footOpen.locations">Hệ thống kho &amp; điểm giao dịch</button>
           </h2>
-          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
-          <div class="space-y-3">
+          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500 max-tb:hidden" />
+          <div class="space-y-3" :class="footOpen.locations ? '' : 'max-tb:hidden'">
           <address
             v-for="location in footer.locations"
             :key="location.name + location.address"
@@ -177,7 +178,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
     </div>
 
     <!-- Thanh bản quyền & Kết nối mạng xã hội -->
-    <div class="mt-10 border-t border-white/10 pt-5">
+    <div class="mt-10 border-t border-white/10 pt-5 max-tb:mt-2">
       <div class="mx-auto flex w-full max-w-(--container-page) flex-col items-start justify-between gap-3 px-4 max-[359px]:px-3 tb:flex-row tb:items-center tb:px-(--spacing-gutter) text-[13px]">
         <p class="m-0 text-ftr-text/80">© {{ new Date().getFullYear() }} {{ brandName }}.</p>
         <ul v-if="footer?.socialLinks.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:pr-14" aria-label="Kết nối mạng xã hội">
@@ -205,4 +206,16 @@ const telHref = computed(() => telHrefFor(hotline.value))
   </footer>
 
   <SiteFloatingContact :site="site" />
+  <MobileTabBar :site="site" />
 </template>
+
+<style scoped>
+.foot-toggle { all: unset; }
+@media (max-width: 820px) {
+  .foot-head { margin: 0; border-top: 1px solid rgb(255 255 255 / 12%); }
+  .foot-toggle { display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+  .foot-toggle::after { content: '+'; flex: none; color: var(--color-gold-400); font-size: 20px; font-weight: 500; }
+  .foot-toggle[aria-expanded="true"]::after { content: '−'; }
+  .foot-toggle:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
+}
+</style>

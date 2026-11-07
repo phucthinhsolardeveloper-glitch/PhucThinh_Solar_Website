@@ -52,7 +52,7 @@ test('about section navigation sticks below the header and tracks smooth section
   assert.match(about, /sticky z-30[\s\S]*isHeaderHidden \? 'top-0 shadow-sm'/)
   assert.match(about, /<div class="overflow-x-clip text-navy-800">/)
   assert.doesNotMatch(about, /<div class="overflow-hidden text-navy-800">/)
-  assert.match(about, /new IntersectionObserver\([\s\S]*activeAboutSection\.value = current\.id/)
+  assert.match(about, /useSectionSpy\(\(\) => aboutSectionNavItems\.value\.map/)
   assert.match(about, /target\.scrollIntoView\(\{ behavior: reducedMotion \? 'auto' : 'smooth'/)
   assert.match(about, /useActiveHorizontalRail\(aboutNavRef\)/)
   assert.match(about, /aria-current="activeAboutSection === item\.id \? 'location' : undefined"/)

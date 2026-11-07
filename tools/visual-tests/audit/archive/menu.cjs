@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');const sharp=require('../../../../frontend/node_modules/sharp');
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});const c=await b.newContext({viewport:{width:390,height:844},locale:'vi-VN',isMobile:true,hasTouch:true});const p=await c.newPage();await p.route('**/pts-living-energy/index.html*',x=>x.abort());
+await p.goto('http://127.0.0.1:3100/san-pham/',{waitUntil:'load'});await p.waitForTimeout(900);await p.locator('.pts-mobile-nav-trigger').first().tap();await p.waitForTimeout(700);await p.screenshot({path:'mob/m1.png'});
+console.log('panel radius',await p.locator('#ptsMobileMenu').evaluate(e=>getComputedStyle(e).borderRadius+' | '+getComputedStyle(e).backdropFilter));
+await p.goto('http://127.0.0.1:3100/',{waitUntil:'load'});await p.waitForTimeout(1200);await p.screenshot({path:'mob/m2.png'});
+await p.goto('http://127.0.0.1:3100/san-pham/',{waitUntil:'load'});await p.waitForTimeout(700);await p.locator('button',{hasText:'Bộ lọc'}).first().tap();await p.waitForTimeout(800);await p.screenshot({path:'mob/m3.png'});
+const comp=[];for(let i=0;i<3;i++)comp.push({input:await sharp('mob/m'+(i+1)+'.png').toBuffer(),left:i*400,top:0});await sharp({create:{width:1190,height:844,channels:3,background:'#555'}}).composite(comp).png().toFile('mob/m.png');await b.close()})().catch(e=>{console.error('ERR',e.message.slice(0,300));process.exit(1)});

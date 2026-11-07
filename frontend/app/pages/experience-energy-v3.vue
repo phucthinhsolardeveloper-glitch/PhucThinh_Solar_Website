@@ -196,7 +196,7 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
   height: 32px;
   border: 1px solid rgba(201, 150, 46, 0.5);
   color: #9c7420;
-  border-radius: 3px;
+  border-radius: var(--radius-chip);
 }
 .v3-masthead-tag {
   color: #64748b;

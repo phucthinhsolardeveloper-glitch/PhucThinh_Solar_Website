@@ -1,0 +1,6 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const f=async(opt,label)=>{const c=await b.newContext(opt);const p=await c.newPage();await p.goto('http://localhost:3100/',{waitUntil:'domcontentloaded'});await p.waitForTimeout(1500);for(let i=0;i<25;i++){await p.evaluate(()=>scrollBy(0,innerHeight));await p.waitForTimeout(70)}
+console.log(label,JSON.stringify(await p.evaluate(()=>{const t='Lựa chọn đèn theo mặt bằng';const w=document.createTreeWalker(document.querySelector('main')||document.body,NodeFilter.SHOW_TEXT);const o=[];while(w.nextNode()){if(w.currentNode.textContent.includes(t)){let x=w.currentNode.parentElement,ch=[];for(let i=0;x&&i<5;i++,x=x.parentElement)ch.push(x.tagName+'.'+String(x.className).slice(0,40));o.push(ch)}}return o})));
+if(label==='phone'){console.log(JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('main section')].filter(s=>/Chiếu sáng|chiếu sáng/.test(s.innerText)).slice(0,3).map(s=>s.className.slice(0,60)+' :: '+s.innerText.replace(/\s+/g,' ').slice(0,500)))))}
+await c.close()};
+await f({viewport:{width:1440,height:900}},'desktop');await f({viewport:{width:390,height:844},isMobile:true,hasTouch:true},'phone');await b.close()})()

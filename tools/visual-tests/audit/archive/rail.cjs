@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const S=process.argv[2];
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:412,height:924},isMobile:true,hasTouch:true,deviceScaleFactor:2});const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});
+const cdp=await c.newCDPSession(p);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+await p.goto('http://localhost:3100/giai-phap/dien-mat-troi-ho-gia-dinh/',{waitUntil:'load'});await p.waitForTimeout(2500);
+const links=await p.locator('.solution-rail a').evaluateAll(a=>a.map(e=>({t:e.innerText.trim(),h:e.getAttribute('href'),w:Math.round(e.getBoundingClientRect().width),on:e.getAttribute('aria-current')})));console.log(JSON.stringify(links));
+const rail=await p.locator('.solution-rail').boundingBox();console.log('rail y',Math.round(rail.y));
+await p.evaluate(()=>{window.__g=[];let l=performance.now();(function f(){const n=performance.now();if(n-l>34)window.__g.push([Math.round(n),Math.round(n-l)]);l=n;requestAnimationFrame(f)})();window.__h=[];new MutationObserver(()=>{const h=document.querySelector('h1');if(h&&window.__h[window.__h.length-1]?.[1]!==h.innerText)window.__h.push([Math.round(performance.now()),h.innerText.slice(0,30),Math.round(scrollY)])}).observe(document.body,{subtree:true,childList:true,characterData:true})});
+const t0=await p.evaluate(()=>performance.now());const tgt=p.locator('.solution-rail a').nth(1);await tgt.scrollIntoViewIfNeeded().catch(()=>{});await tgt.tap();
+for(const ms of [120,350,700,1500]){await p.waitForTimeout(ms===120?120:ms-(ms===350?120:ms===700?350:700));await p.screenshot({path:`${S}/r${ms}.png`,clip:{x:0,y:0,width:412,height:700}})}
+await p.waitForTimeout(800);const r=await p.evaluate(()=>({g:window.__g,h:window.__h,url:location.pathname,y:Math.round(scrollY),now:performance.now()}));console.log(r.url,'y',r.y,'t',Math.round(r.now-t0));console.log('h1',JSON.stringify(r.h.map(x=>[x[0]-Math.round(t0),x[1],x[2]])));console.log('gaps',r.g.length,JSON.stringify(r.g.slice(0,14).map(x=>[x[0]-Math.round(t0),x[1]])));
+await b.close()})()

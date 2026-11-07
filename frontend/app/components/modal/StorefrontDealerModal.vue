@@ -120,8 +120,8 @@ async function send() {
     :title="'Đăng ký đối tác & Đại lý phân phối'"
     :description="'Hợp tác phát triển năng lượng xanh cùng Phúc Thịnh Solar với chính sách ưu đãi.'"
     :ui="{
-      overlay: 'bg-navy-950/70 backdrop-blur-md',
-      content: 'w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
+      overlay: 'glass-overlay',
+      content: 'shadow-[0_28px_70px_-24px_rgb(6_21_55/45%)] w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
       header: 'px-6 pt-7 pb-3 border-b-0 relative sm:px-10 sm:pt-10',
       title: 'text-[clamp(24px,3vw,32px)] font-black tracking-tight text-navy-950',
       description: 'mt-2 max-w-3xl text-[16px] leading-7 text-slate-600',
@@ -151,8 +151,8 @@ async function send() {
         </div>
       </div>
 
-      <form v-else class="grid gap-6" @submit.prevent="send">
-        <div class="grid grid-cols-2 gap-2 rounded-[4px] bg-navy-950 p-3.5 text-xs text-white sm:grid-cols-4">
+      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-4" @submit.prevent="send">
+        <div class="grid grid-cols-2 gap-2 rounded-btn bg-navy-950 p-3.5 text-xs text-white sm:grid-cols-4">
           <div class="border-l-2 border-gold-500 pl-2.5">
             <strong class="block text-gold-300">Chiết khấu gốc</strong>
             <span class="text-white/75">Nhập khẩu trực tiếp</span>
@@ -172,31 +172,31 @@ async function send() {
         </div>
 
         <div class="grid min-w-0 gap-x-6 gap-y-5 sm:grid-cols-2">
-          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Email" name="email" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Email" name="email" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Tỉnh/Thành phố" name="cityId" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Tỉnh/Thành phố" name="cityId" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <USelect v-model="form.cityId" name="cityId" required :disabled="securityLoading || !cityOptions.length" :items="cityOptions" :placeholder="securityLoading ? 'Đang tải tỉnh/thành…' : '-- Chọn tỉnh/thành --'" color="neutral" variant="none" class="w-full" :ui="selectUi" />
           </UFormField>
         </div>
 
-        <UFormField label="Khu vực kinh doanh / Tên cửa hàng" name="company" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+        <UFormField label="Khu vực kinh doanh / Tên cửa hàng" name="company" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
           <UInput v-model.trim="form.company" name="company" required maxlength="180" autocomplete="organization" placeholder="Tên doanh nghiệp, cửa hàng hoặc khu vực dự kiến kinh doanh" variant="none" class="w-full" :ui="inputUi" />
         </UFormField>
 
-        <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
+        <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
           <div class="mb-1.5 flex flex-wrap gap-1.5" aria-label="Mô hình đối tác gợi ý">
             <button
               v-for="chip in partnerProfiles"
               :key="chip"
               type="button"
-              class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900"
+              class="cursor-pointer rounded-chip border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900"
               @click="appendDealerNote(chip)"
             >
               + {{ chip }}
@@ -205,11 +205,11 @@ async function send() {
           <UTextarea v-model.trim="form.notes" name="notes" :rows="3" maxlength="1000" placeholder="Năng lực hiện tại, sản phẩm chính quan tâm (đèn mặt trời, điện mặt trời, inverter...)" variant="none" class="w-full" :ui="textareaUi" />
         </UFormField>
 
-        <p v-if="error" class="rounded-[4px] bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
+        <p v-if="error" class="rounded-btn bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
           {{ error }}
         </p>
 
-        <div v-if="securityError" class="rounded-[4px] bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">
+        <div v-if="securityError" class="rounded-btn bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">
           <span>{{ securityError }}</span>
           <button v-if="!securityLoading" type="button" class="ml-2 font-bold underline" @click="loadSecurity(true)">
             Thử tải lại

@@ -1,0 +1,8 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:1920,height:970},locale:'vi-VN'});const p=await c.newPage();await p.goto('http://localhost:3100/san-pham/',{waitUntil:'load'});await p.waitForTimeout(2000);
+const m=()=>p.evaluate(()=>{const s=document.querySelector('.catalog-sidebar-sticky');const r=s.getBoundingClientRect();const h=document.querySelector('header');const hr=h&&h.getBoundingClientRect();const pa=s.parentElement;const pr=pa.getBoundingClientRect();return {y:scrollY,top:Math.round(r.top),bottom:Math.round(r.bottom),h:Math.round(r.height),scrollH:s.scrollHeight,clientH:s.clientHeight,hdrTop:hr&&Math.round(hr.top),hdrBot:hr&&Math.round(hr.bottom),parentH:Math.round(pr.height),parentBot:Math.round(pr.bottom),docH:document.documentElement.scrollHeight}});
+console.log(JSON.stringify(await m()));
+for(const y of [600,1500,3000]){await p.mouse.wheel(0,0);await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(500);console.log(JSON.stringify(await m()));await p.screenshot({path:process.argv[2]+'/side'+y+'.png'})}
+await p.evaluate(()=>scrollTo(0,scrollY-200));await p.waitForTimeout(500);console.log('up',JSON.stringify(await m()));await p.screenshot({path:process.argv[2]+'/sideup.png'});
+const end=await p.evaluate(()=>{const s=document.querySelector('.catalog-sidebar-sticky').parentElement;return s.getBoundingClientRect().bottom+scrollY});await p.evaluate(e=>scrollTo(0,e-500),end);await p.waitForTimeout(500);console.log('end',JSON.stringify(await m()));await p.screenshot({path:process.argv[2]+'/sideend.png'});
+await b.close()})()

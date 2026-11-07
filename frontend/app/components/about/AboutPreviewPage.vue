@@ -14,8 +14,12 @@ const aboutNavRef = ref<HTMLElement | null>(null)
 const aboutNavCanScrollNext = ref(false)
 let aboutNavResizeObserver: ResizeObserver | null = null
 useActiveHorizontalRail(aboutNavRef)
+useSlidingPill(aboutNavRef, 'about-sections', { chip: '.about-chapter-link' })
 const activeAboutSection = ref('ve-phuc-thinh')
-let aboutSectionObserver: IntersectionObserver | null = null
+// The CMS leaves these item titles empty; the section title already names them in order.
+function compassLabel(title: string, index: number) {
+  return title || props.about.compass.title.split(/\s[–-]\s/)[index]?.trim() || ''
+}
 const galleryCertificates = computed(() => props.about.certificates.items)
 const visibleCertificates = computed(() => {
   const featured = props.about.certificates.items.filter((item) => item.featured)
@@ -60,27 +64,13 @@ const aboutSectionNavItems = computed(() => [
   ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
 ])
 
-function setupAboutSectionObserver() {
-  aboutSectionObserver?.disconnect()
-  if (!import.meta.client) return
-  const sections = aboutSectionNavItems.value
-    .map((item) => document.getElementById(item.id))
-    .filter((section): section is HTMLElement => Boolean(section))
-  if (!sections.length) return
-  aboutSectionObserver = new IntersectionObserver((entries) => {
-    const current = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]?.target as HTMLElement | undefined
-    if (current?.id) activeAboutSection.value = current.id
-  }, { rootMargin: '-150px 0px -58% 0px', threshold: [0, 0.01] })
-  sections.forEach((section) => aboutSectionObserver?.observe(section))
-}
+const aboutSpy = useSectionSpy(() => aboutSectionNavItems.value.map((item) => item.id), activeAboutSection, aboutNavRef)
 
 function navigateAboutSection(id: string) {
   const target = document.getElementById(id)
   if (!target) return
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  activeAboutSection.value = id
+  aboutSpy.lockTo(id)
   window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${id}`)
   target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
 }
@@ -91,7 +81,6 @@ function syncAboutNavControls() {
 }
 
 onMounted(() => nextTick(() => {
-  setupAboutSectionObserver()
   syncAboutNavControls()
   if (aboutNavRef.value && typeof ResizeObserver !== 'undefined') {
     aboutNavResizeObserver = new ResizeObserver(syncAboutNavControls)
@@ -99,11 +88,10 @@ onMounted(() => nextTick(() => {
   }
 }))
 watch(aboutSectionNavItems, () => nextTick(() => {
-  setupAboutSectionObserver()
+  aboutSpy.refresh()
   syncAboutNavControls()
 }), { deep: true })
 onBeforeUnmount(() => {
-  aboutSectionObserver?.disconnect()
   aboutNavResizeObserver?.disconnect()
 })
 
@@ -157,16 +145,16 @@ const showroomImage = computed(() => {
 <template>
   <div class="overflow-x-clip text-navy-800">
     <!-- Chapter 1: Story / Bản sắc thương hiệu -->
-    <section id="ve-phuc-thinh" class="scroll-mt-[160px] pts-container pt-6 pb-14 max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
-      <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
-        <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
+    <section id="ve-phuc-thinh" class="about-story scroll-mt-[160px] pts-container pt-6 pb-14 max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
+      <div class="about-story__card grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
+        <div class="about-story__copy flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
-          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#e1ebf8]">{{ about.story.intro }}</p>
-          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#bfcfe3]">{{ about.story.body }}</p>
-          <div class="mt-6 flex flex-wrap items-center gap-3">
+          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#e1ebf8]"><ChunkedText :text="about.story.intro" /></p>
+          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#bfcfe3]"><ChunkedText :text="about.story.body" /></p>
+          <div class="about-story__actions mt-6 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              class="about-story__primary inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-btn bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
               @click="openConsultation('Giới thiệu: ' + about.story.title)"
             >
               <span>Nhận tư vấn hợp tác</span>
@@ -175,7 +163,7 @@ const showroomImage = computed(() => {
             <a
               v-if="about.certificates.items.length"
               href="#about-certificates"
-              class="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-white/25 bg-white/5 px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:text-gold-300"
+              class="m-lg-dark inline-flex min-h-11 items-center gap-2 rounded-btn border border-white/25 bg-white/5 px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:text-gold-300"
               @click.prevent="navigateAboutSection('about-certificates')"
             >
               <span>Xem chứng nhận năng lực</span>
@@ -183,22 +171,22 @@ const showroomImage = computed(() => {
             </a>
           </div>
         </div>
-        <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
+        <figure v-if="about.story.image" class="about-story__media m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
           <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-storefront-retouched-20261104.webp'" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
         </figure>
       </div>
     </section>
 
     <!-- Chapter Navigation: Thanh điều hướng chương trình tự động dính -->
-    <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
+    <nav class="m-glass-light sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
       <div class="relative">
-        <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu" @scroll.passive="syncAboutNavControls">
+        <div ref="aboutNavRef" class="about-chapter-rail pts-container flex gap-1.5 overflow-x-auto py-1.5 [scrollbar-width:none] max-[800px]:gap-1 [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu" @scroll.passive="syncAboutNavControls">
         <a
           v-for="item in aboutSectionNavItems"
           :key="item.id"
           :data-about-section="item.id"
-          class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 px-2 text-[15px] font-extrabold no-underline transition-colors hover:border-gold-500 hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
-          :class="activeAboutSection === item.id ? 'border-gold-500 text-gold-600' : 'border-transparent text-navy-800'"
+          class="about-chapter-link inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip px-3.5 text-[15px] font-extrabold no-underline transition-colors hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
+          :class="activeAboutSection === item.id ? 'text-white' : 'text-navy-800'"
           :href="`#${item.id}`"
           :aria-current="activeAboutSection === item.id ? 'location' : undefined"
           @click.prevent="navigateAboutSection(item.id)"
@@ -209,32 +197,32 @@ const showroomImage = computed(() => {
     </nav>
 
     <!-- Chapter 2: History Timeline / Dòng thời gian phát triển -->
-    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
-      <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
+    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="about-chapter scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
+      <div class="about-history-grid pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
         <div>
           <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title || about.labels.history }}</h2>
-          <ol class="mt-7 grid list-none gap-6 border-l-2 border-gold-500/45 pl-6 p-0" :aria-label="about.labels.timeline">
+          <ol class="about-timeline mt-7 grid list-none gap-6 border-l-2 border-gold-500/45 pl-6 p-0" :aria-label="about.labels.timeline">
             <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="relative grid grid-cols-1 gap-x-4 border-t border-slate-200/80 pt-5 first:border-t-0 first:pt-0">
               <span class=" absolute -left-[31px] top-1.5 first:top-1.5 size-3 rounded-full border-2 border-gold-500 bg-white" :class="index > 0 ? 'top-6' : 'top-1.5'" aria-hidden="true" />
               <div>
-                <strong class="inline-flex items-center rounded-[3px] bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
+                <strong class="inline-flex items-center rounded-chip bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
               </div>
               <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]"><ChunkedText :text="item.description" /></p>
             </li>
           </ol>
         </div>
-        <figure class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+        <figure class="about-history-media m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
           <img class="block h-full w-full object-cover" :src="showroomImage" :alt="`${about.history.title || about.labels.history} — không gian trưng bày thiết bị năng lượng mặt trời`" width="780" height="600" loading="lazy">
         </figure>
       </div>
     </section>
 
     <!-- Chapter 3: People & Core Principles / Con người & Nguyên tắc hành động -->
-    <section id="con-nguoi" class="scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
+    <section id="con-nguoi" class="about-chapter scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
       <div class="pts-container">
-        <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
-          <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+        <div class="about-people-grid grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
+          <figure v-if="about.people.image" class="about-people-media m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
             <img class="block h-full w-full object-cover" :src="optimizedImage(about.people.image, 1200, 900)" :alt="about.people.title" width="780" height="620" loading="lazy">
           </figure>
           <div>
@@ -245,7 +233,7 @@ const showroomImage = computed(() => {
         </div>
 
         <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
-        <div v-if="about.people.principles.length" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+        <div v-if="about.people.principles.length" class="about-principles mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
             <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
@@ -258,8 +246,8 @@ const showroomImage = computed(() => {
     </section>
 
     <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (PHP 2-column parity) -->
-    <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
-      <div class="pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
+    <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="about-chapter scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
+      <div class="about-trust-grid pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
         <div>
           <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
         </div>
@@ -298,17 +286,17 @@ const showroomImage = computed(() => {
     </section>
 
     <!-- Chapter 5: Compass / Tầm nhìn - Sứ mệnh - Giá trị (Dark Stage Tone) -->
-    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
+    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="about-chapter scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
       <div class="pts-container">
         <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
 
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
-        <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+        <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header class="mb-3.5 flex items-center justify-end">
-              <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header class="mb-3.5 flex items-center justify-between gap-4">
+              <h3 v-if="compassLabel(item.title, index)" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ compassLabel(item.title, index) }}</h3>
+              <img v-if="item.image" class="about-compass-icon size-9 flex-none object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-white">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
           </article>
         </div>
@@ -316,9 +304,9 @@ const showroomImage = computed(() => {
     </section>
 
     <!-- Chapter 6: Certificates & Proof / Năng lực & Chứng nhận đã kiểm chứng -->
-    <section v-if="about.certificates.items.length" id="about-certificates" class="scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
+    <section v-if="about.certificates.items.length" id="about-certificates" class="about-chapter scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
       <div class="pts-container">
-        <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
+        <header class="about-cert-head grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
             <p class="mt-3 max-w-[48rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.certificates.intro }}</p>
@@ -334,17 +322,17 @@ const showroomImage = computed(() => {
         </header>
 
         <!-- Hợp nhất Card 4: Certificates (Đồng bộ ngôn ngữ Atelier Grid) -->
-        <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+        <div class="about-cert-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article
             v-for="item in visibleCertificates"
             :key="item.id"
             class="group flex flex-col justify-between border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500"
           >
             <div>
-              <div v-if="item.image" class="mb-4 overflow-hidden rounded-sm bg-slate-50 p-4 border border-slate-100">
+              <div v-if="item.image" class="about-cert-thumb-wrap mb-4 overflow-hidden rounded-sm bg-slate-50 p-4 border border-slate-100">
                 <button
                   type="button"
-                  class="block w-full h-48 focus:outline-none cursor-pointer"
+                  class="about-cert-thumb block w-full h-48 focus:outline-none cursor-pointer"
                   :aria-label="`Mở chứng nhận ${item.name}`"
                   @click="openCertificate(item, $event)"
                 >
@@ -355,8 +343,8 @@ const showroomImage = computed(() => {
               <h3 class="mt-1.5 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.name }}</h3>
               <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
             </div>
-            <div v-if="item.image" class="mt-4 pt-3 border-t border-slate-100">
-              <button type="button" class="inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
+            <div v-if="item.image" class="about-cert-more-wrap mt-4 pt-3 border-t border-slate-100">
+              <button type="button" class="about-cert-more inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
                 {{ about.labels.certDetail }} <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -424,6 +412,7 @@ const showroomImage = computed(() => {
 </template>
 
 <style scoped>
+.about-compass-icon { filter: brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(620%) hue-rotate(358deg) brightness(101%) contrast(92%); }
 .about-brand-section {
   position: relative;
   overflow: clip;
@@ -533,30 +522,124 @@ const showroomImage = computed(() => {
 }
 /* Certificate Dialog & Modal */
 .about-certificate-dialog { position: fixed; inset: 0; width: min(calc(100% - 24px), 1040px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; overflow: visible; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); }
-.about-certificate-dialog::backdrop { background: rgba(6,21,55,.86); backdrop-filter: blur(8px); }
-.about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 0; border-radius: 4px; background: transparent; }
+.about-certificate-dialog::backdrop { background: rgb(240 245 252 / 58%); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%); }
+.about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 0; border-radius: var(--radius-btn); background: transparent; }
 .about-certificate-modal-header, .about-certificate-modal-footer { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 22px; }
-.about-certificate-modal-header { border-bottom: 0; background: transparent; color: #fff; }
+.about-certificate-modal-header { border-bottom: 0; background: transparent; color: var(--color-navy-950); }
 .about-certificate-modal-title { display: flex; min-width: 0; align-items: center; gap: 14px; }
-.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: #fff; font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: rgba(255,255,255,.72); font-size: 12px; }
-.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); color: var(--color-gold-300); font-size: 11px; font-weight: 800; }
-.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 0; padding: 0 8px; background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-.about-certificate-close span { color: var(--color-gold-300); font-size: 23px; }
+.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: var(--color-navy-950); font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: #475569; font-size: 12px; }
+.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-500); border-radius: var(--radius-btn); background: rgb(255 255 255 / 80%); color: var(--color-gold-700); font-size: 11px; font-weight: 800; }
+.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / 90%); border-radius: var(--radius-btn); padding: 0 14px; background: rgb(255 255 255 / 92%); box-shadow: 0 6px 18px rgb(6 21 55 / 16%); color: var(--color-navy-950); font: inherit; font-weight: 700; cursor: pointer; }
+.about-certificate-close span { color: var(--color-gold-700); font-size: 23px; line-height: 1; }
 .about-certificate-modal-image { position: relative; display: flex; min-height: 260px; flex: 1; align-items: center; justify-content: center; gap: 12px; overflow-y: auto; padding: clamp(16px, 4vw, 36px); background: transparent; }
-.about-certificate-modal-image img { display: block; max-width: min(100%, 760px); max-height: min(66dvh, 680px); object-fit: contain; }
-.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: rgba(255,255,255,.9); text-align: center; }
-.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(6,21,55,.7); color: #fff; font-size: 20px; cursor: pointer; }
+.about-certificate-modal-image img { display: block; max-width: min(100%, 760px); max-height: min(66dvh, 680px); object-fit: contain; filter: drop-shadow(0 16px 26px rgb(6 21 55 / 26%)); }
+.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: var(--color-navy-800); text-align: center; }
+.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid rgb(255 255 255 / 90%); border-radius: 50%; background: rgb(255 255 255 / 92%); box-shadow: 0 6px 18px rgb(6 21 55 / 16%); color: var(--color-navy-950); font-size: 20px; cursor: pointer; }
 .about-certificate-modal-image button:disabled { cursor: not-allowed; opacity: .35; }
 .about-certificate-modal-image button:focus-visible { outline: 2px solid var(--color-gold-700); outline-offset: 2px; }
 .about-certificate-modal-footer { justify-content: center; border-top: 0; }
-.about-certificate-modal-footer p { margin: 0; color: rgba(255,255,255,.9); font-size: 16px; line-height: 1.6; text-align: center; }
-.about-certificate-modal-footer > span { flex: none; color: rgba(255,255,255,.72); font-size: 12px; }
+.about-certificate-modal-footer p { margin: 0; color: var(--color-navy-800); font-size: 16px; line-height: 1.6; text-align: center; }
+.about-certificate-modal-footer > span { flex: none; padding: 4px 12px; border-radius: var(--radius-btn); background: rgb(255 255 255 / 92%); color: var(--color-navy-950); font-size: 12px; font-weight: 700; }
 
 @media (max-width: 560px) {
   .about-certificate-modal-header, .about-certificate-modal-footer { padding: 13px 14px; }
   .about-certificate-modal-image { min-height: 200px; gap: 8px; padding: 12px; }
   .about-certificate-modal-image button { width: 40px; height: 40px; }
   .about-certificate-modal-footer { align-items: flex-start; flex-direction: column; gap: 8px; }
+}
+/* Phones (<=820px): one clear hierarchy per chapter, sized for a thumb. Desktop rules above stay untouched. */
+@media (max-width: 820px) {
+  .about-chapter { padding-block: 40px; scroll-margin-top: 128px; }
+  .about-chapter h2 { font-size: 26px; font-weight: 800; line-height: 1.18; letter-spacing: -.02em; text-wrap: balance; }
+
+  /* Story: the storefront photo opens the card, then title, intro and two full-width actions. */
+  .about-story { padding-block: 12px 24px; scroll-margin-top: 128px; }
+  .about-story__card { display: flex; min-height: 0; flex-direction: column; border-radius: var(--radius-lg); }
+  .about-story__media { order: -1; height: auto; aspect-ratio: 16 / 9; }
+  .about-story__copy { display: block; padding: 20px 18px; }
+  .about-story__copy p { margin-top: 12px; font-size: 16px; line-height: 1.6; }
+  .about-story__actions { display: grid; gap: 10px; margin-top: 18px; }
+  .about-story__actions > * { justify-content: space-between; min-height: 48px; padding-inline: 16px; }
+  .about-story__primary { background: var(--pts-gold-gradient); }
+
+  /* Chapter bar: pills, so the current chapter reads at a glance. */
+  .about-chapter-rail { gap: 4px; padding-block: 6px; scroll-padding-inline: 16px; }
+  .about-chapter-link { padding-inline: 14px; border-bottom-width: 0; border-radius: 999px; font-size: 14px; font-weight: 700; }
+  .about-chapter-link[aria-current="location"] { background: var(--color-navy-950); color: #fff; }
+  .about-chapter-link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: -3px; }
+
+  /* History */
+  .about-history-grid { gap: 20px; }
+  .about-timeline { gap: 16px; margin-top: 16px; }
+  .about-timeline strong { font-size: 17px; }
+  .about-timeline p { font-size: 16px; line-height: 1.6; }
+  .about-history-media { min-height: 0; max-height: none; aspect-ratio: 16 / 10; }
+
+  /* People: compact icon rows instead of a right-aligned icon floating above each paragraph. */
+  .about-people-grid { gap: 18px; }
+  .about-people-media { max-height: none; aspect-ratio: 16 / 9; }
+  .about-people-grid p { margin-top: 10px; font-size: 16px; line-height: 1.6; }
+  .about-principles { gap: 0; margin-top: 20px; }
+  .about-principles > article { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 14px; padding-block: 14px; border-top-width: 1px; }
+  .about-principles header { grid-row: 1 / span 2; align-items: flex-start; justify-content: flex-start; margin: 0; }
+  .about-principles h3 { grid-column: 2; font-size: 17px; }
+  .about-principles p { grid-column: 2; margin-top: 3px; font-size: 15px; line-height: 1.5; }
+
+  /* Trust: short peer statements read best as a two-column tile grid. */
+  .about-trust-grid { gap: 16px; }
+  .about-trust-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .about-trust-list > article { padding: 14px 12px; border: 1px solid rgb(10 34 81 / 8%); border-radius: var(--radius-md); background: #fff; box-shadow: var(--pts-shadow-soft); }
+  .about-trust-list > article:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .about-trust-list header { justify-content: flex-start; margin-bottom: 10px; }
+  .about-trust-list img { width: 32px; height: 32px; }
+  .about-trust-list h3 { font-size: 16px; }
+  .about-trust-list p { margin-top: 0; font-size: 15px; line-height: 1.45; }
+
+  /* Brands: same gold-framed board of light tiles on navy, tightened. */
+  .about-brand-section { padding-block: 44px; scroll-margin-top: 128px; }
+  .about-brand-layout { gap: 26px; }
+  .about-brand-copy h2 { max-width: 16ch; font-size: 30px; line-height: 1.08; }
+  .about-brand-copy p { margin-top: 10px; font-size: 16px; line-height: 1.6; }
+
+  /* Compass and certificates: peers on a swipe rail. */
+  .about-compass-rail { margin-top: 20px; }
+  .about-compass-rail > article { padding: 16px; border: 1px solid rgb(255 255 255 / 12%); border-radius: var(--radius-md); background: linear-gradient(160deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)); }
+  .about-compass-rail > article { flex-basis: min(82%, 320px); }
+  .about-compass-rail header { justify-content: flex-start; margin-bottom: 10px; }
+  .about-compass-rail img { filter: none; opacity: 1; }
+  .about-compass-rail p { margin-top: 0; font-size: 16px; line-height: 1.55; }
+
+  .about-cert-head { gap: 6px; }
+  .about-cert-head p { margin-top: 8px; font-size: 16px; line-height: 1.6; }
+  .about-cert-rail { margin-top: 12px; }
+  .about-cert-rail > article { flex-basis: min(66%, 260px); padding: 10px; border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-md); background: #fff; }
+  .about-cert-thumb-wrap { margin-bottom: 10px; padding: 8px; }
+  .about-cert-thumb { height: 176px; }
+  .about-cert-rail h3 { margin-top: 2px; font-size: 18px; }
+  .about-cert-more-wrap { margin-top: 6px; padding-top: 0; }
+  .about-cert-more { min-height: 44px; }
+
+  .about-contact { padding-block: 24px; }
+
+  /* Lightbox arrows float over the certificate so the document keeps the full width. */
+  .about-certificate-modal-image { gap: 0; padding: 12px; }
+  .about-certificate-modal-image button { position: absolute; top: 50%; z-index: 1; width: 44px; height: 44px; transform: translateY(-50%); }
+  .about-certificate-modal-image button:first-child { left: 8px; }
+  .about-certificate-modal-image button:last-child { right: 8px; }
+  .about-certificate-modal-image img { max-width: 100%; }
+}
+@media (max-width: 520px) {
+  /* Three logos per row keeps all twelve brands on one screen. */
+  .about-brand-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .about-brand-cell { min-height: 70px; padding: 8px; }
+  .about-brand-cell img { width: min(100%, 96px); max-height: 34px; }
+}
+@media (hover: none) {
+  .about-brand-board:hover { transform: none; }
+  .about-brand-cell:hover img { transform: none; filter: none; }
+}
+@media (max-width: 359px) {
+  .about-compass-rail, .about-cert-rail { margin-inline: -12px; padding-inline: 12px; }
 }
 </style>

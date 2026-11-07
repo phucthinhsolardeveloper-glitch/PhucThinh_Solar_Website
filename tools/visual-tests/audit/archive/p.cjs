@@ -1,0 +1,4 @@
+const {chromium}=require('playwright');const S=process.argv[2];
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:1440,height:900},locale:'vi-VN'});const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});
+for(const [n,u] of [['pj-main','/du-an-da-thuc-hien/'],['pj-cat','/danh-muc-du-an/du-an-ca-nhan/'],['news-main','/tin-tuc/'],['news-cat','/danh-muc-tin-tuc/tin-moi-nhat/']]){const r=await p.goto('http://localhost:3100'+u,{waitUntil:'load'});await p.waitForTimeout(1200);await p.screenshot({path:`${S}/${n}.png`});console.log(n,r.status(),await p.evaluate(()=>{const h=document.querySelector('main h1');return (h?h.innerText:'-')+' | root '+document.querySelector('main')?.firstElementChild?.className?.slice?.(0,60)}))}
+await b.close()})()

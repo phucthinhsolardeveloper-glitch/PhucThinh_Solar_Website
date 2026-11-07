@@ -16,7 +16,7 @@ defineProps<{ content: PublicProductContent }>()
         <li
           v-for="(highlight, index) in content.highlights"
           :key="`${index}-${highlight}`"
-          class="border-l-2 border-gold-500 bg-slate-50 px-4 py-3 text-[15px] font-bold leading-snug text-navy-900"
+          class="border-l-2 border-gold-500 bg-slate-50 px-4 py-3 max-tb:rounded-md max-tb:border-l-0 text-[15px] font-bold leading-snug text-navy-900"
         >
           {{ highlight }}
         </li>
@@ -35,7 +35,7 @@ defineProps<{ content: PublicProductContent }>()
           </h3>
 
           <p v-else-if="block.type === 'text'" class="m-0 whitespace-pre-line text-[16.5px] leading-[1.75] text-slate-700">
-            {{ block.text }}
+            <ChunkedText :text="block.text" />
           </p>
 
           <ol v-else-if="block.type === 'list' && block.ordered" class="m-0 list-decimal space-y-2.5 pl-6 text-[16px] leading-[1.7] text-slate-700">

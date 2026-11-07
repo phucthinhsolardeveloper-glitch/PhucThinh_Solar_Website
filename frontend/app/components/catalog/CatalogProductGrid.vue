@@ -136,7 +136,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     để nhận báo giá" như trước — không suy luận hay bịa giá.
   -->
   <div v-if="products.length" class="relative min-w-0">
-    <div v-if="props.layout === 'rail' && products.length > 2" class="mb-3 flex justify-end gap-2" role="group" aria-label="Điều hướng sản phẩm liên quan">
+    <div v-if="props.layout === 'rail' && products.length > 2" class="mb-3 flex justify-end gap-2 max-tb:hidden" role="group" aria-label="Điều hướng sản phẩm liên quan">
       <UButton
         type="button"
         color="neutral"
@@ -145,7 +145,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         square
         icon="i-lucide-chevron-left"
         aria-label="Sản phẩm trước"
-        class="public-neutral-button size-11 justify-center rounded-[3px] text-navy-800"
+        class="public-neutral-button size-11 justify-center rounded-chip text-navy-800"
         @click="scrollRail(-1)"
       />
       <UButton
@@ -156,7 +156,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         square
         icon="i-lucide-chevron-right"
         aria-label="Sản phẩm tiếp theo"
-        class="public-neutral-button size-11 justify-center rounded-[3px] text-navy-800"
+        class="public-neutral-button size-11 justify-center rounded-chip text-navy-800"
         @click="scrollRail(1)"
       />
     </div>
@@ -169,7 +169,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       <article
       v-for="(product, productIndex) in products"
       :key="product.id"
-      class="group flex h-full min-w-0 flex-col"
+      class="group relative flex h-full min-w-0 flex-col"
       :class="props.layout === 'rail' ? 'snap-start' : ''"
     >
       <NuxtLink
@@ -198,10 +198,11 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           @error="markImageError(product)"
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>
+        <span v-if="product.powerWatts" class="absolute bottom-2 left-2 z-10 rounded-sm bg-navy-950 px-2 py-0.5 text-[13px] font-extrabold tabular-nums text-gold-300 tb:hidden">{{ formatPower(product.powerWatts) }}</span>
 
       </NuxtLink>
 
-      <h3 class="mt-3 mb-1.5 min-h-[42px] line-clamp-2 text-[15px] font-bold leading-[1.4] text-navy-800 max-ph:text-sm">
+      <h3 class="mt-3 mb-1.5 min-h-[42px] line-clamp-2 text-[15px] font-bold leading-[1.4] text-navy-800 max-ph:min-h-[2.8em] max-ph:text-sm">
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
@@ -212,7 +213,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       </h3>
       <p class="mb-1 min-h-5 text-xs leading-5 text-slate-500">{{ quickSpecText(product) }}</p>
 
-      <p v-if="product.pricing?.mode === 'price'" class="m-0 flex flex-wrap items-baseline gap-2 text-base font-extrabold text-red-600">
+      <p v-if="product.pricing?.mode === 'price'" class="m-0 flex flex-wrap items-baseline gap-2 text-base font-extrabold text-red-600 max-tb:mt-auto max-tb:min-h-11 max-tb:content-center max-tb:pr-12">
         <template v-if="product.pricing.salePrice && product.pricing.regularPrice && product.pricing.salePrice < product.pricing.regularPrice">
           {{ formatMoney(product.pricing.salePrice) }}
           <span class="text-xs font-normal text-slate-400 line-through">{{ formatMoney(product.pricing.regularPrice) }}</span>
@@ -223,13 +224,13 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       </p>
       <p v-else-if="product.pricing?.mode !== 'quote'" class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
 
-      <div class="mt-auto grid gap-1.5 pt-3">
+      <div class="mt-auto grid gap-1.5 pt-3 max-tb:contents">
         <UButton
           v-if="product.pricing?.mode === 'quote'"
           type="button"
           color="primary"
           size="md"
-          class="min-h-11 w-full justify-center whitespace-nowrap rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
+          class="min-h-11 w-full justify-center whitespace-nowrap rounded-btn bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98] max-tb:mt-auto"
           :aria-label="`Liên hệ để nhận báo giá ${product.name}`"
           @click="openConsultation(product.name)"
         >
@@ -242,22 +243,22 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           color="primary"
           size="md"
           :loading="addingIds.has(product.id)"
-          class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
+          class="max-tb:absolute max-tb:bottom-0 max-tb:right-0 max-tb:size-11 max-tb:min-h-0 max-tb:rounded-full max-tb:p-0 min-h-11 w-full justify-center gap-2 rounded-btn bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
           :disabled="addingIds.has(product.id)"
           @click="addToCart(product, $event.currentTarget)"
         >
-          <template v-if="addingIds.has(product.id)">Đang thêm…</template>
-          <span v-else-if="addedIds.has(product.id)" class="grid-added"><UIcon name="i-lucide-check" class="size-4" aria-hidden="true" />Đã thêm</span>
-          <template v-else><UIcon name="i-lucide-shopping-bag" class="size-4" aria-hidden="true" />Thêm giỏ hàng</template>
+          <span v-if="addingIds.has(product.id)" class="max-tb:sr-only">Đang thêm…</span>
+          <span v-else-if="addedIds.has(product.id)" class="grid-added"><UIcon name="i-lucide-check" class="size-4" aria-hidden="true" /><span class="max-tb:sr-only">Đã thêm</span></span>
+          <template v-else><UIcon name="i-lucide-shopping-cart" class="size-4 max-tb:size-5" aria-hidden="true" /><span class="max-tb:sr-only">Thêm giỏ hàng</span></template>
         </UButton>
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          class="inline-flex min-h-9 items-center justify-center gap-1.5 text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="inline-flex min-h-9 items-center justify-center gap-1.5 text-sm font-bold text-navy-800 max-tb:hidden no-underline transition-colors hover:text-gold-700 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
         >
           Xem chi tiết <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
         </NuxtLink>
-        <div class="min-h-5 pt-0.5">
+        <div class="min-h-5 pt-0.5 max-tb:min-h-0 max-tb:pt-0">
           <p v-if="cartErrors.has(product.id)" class="m-0 text-sm font-semibold leading-5 text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
         </div>
       </div>
@@ -272,7 +273,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     </div>
     <button
       type="button"
-      class="inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-[4px] bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+      class="inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-btn bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
       @click="openConsultation('Tư vấn mã sản phẩm tương đương')"
     >
       <span>Nhận tư vấn mã tương đương</span>
@@ -312,5 +313,12 @@ function discountPercent(product: PublicCatalogProduct): number | null {
   .catalog-product-grid-rail {
     grid-auto-columns: calc((100% - 48px) / 4);
   }
+}
+/* Phones: swipe with a peek of the next card; the arrows above are hidden because a thumb does not need them. */
+@media (max-width: 820px) {
+  .catalog-product-grid-rail { grid-auto-columns: min(44%, 220px); gap: 12px; margin-inline: -16px; padding-inline: 16px; scroll-padding-inline: 16px; scroll-snap-type: x proximity; }
+}
+@media (max-width: 359px) {
+  .catalog-product-grid-rail { margin-inline: -12px; padding-inline: 12px; scroll-padding-inline: 12px; }
 }
 </style>

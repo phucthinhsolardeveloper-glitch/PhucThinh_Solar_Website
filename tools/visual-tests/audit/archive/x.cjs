@@ -1,0 +1,6 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const m=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'vi-VN'});
+for(const [u,t] of [['/san-pham/','Liên hệ để nhận báo giá'],['/lien-he/','Chi tiết nhu cầu tư vấn'],['/','Lựa chọn đèn theo mặt bằng']]){const p=await m.newPage();await p.goto('http://localhost:3100'+u,{waitUntil:'domcontentloaded'});await p.waitForTimeout(1500);for(let i=0;i<20;i++){await p.evaluate(()=>scrollBy(0,innerHeight));await p.waitForTimeout(60)}
+console.log(u,JSON.stringify(await p.evaluate(t=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const o=[];while(w.nextNode()){if(w.currentNode.textContent.includes(t)){const e=w.currentNode.parentElement;let chain=[];for(let x=e;x&&chain.length<5;x=x.parentElement){const s=getComputedStyle(x);chain.push(x.tagName+'.'+String(x.className).slice(0,50)+' d='+s.display+' v='+s.visibility+' h='+Math.round(x.getBoundingClientRect().height))}o.push(chain)}}return o},t),null,0).slice(0,900));await p.close()}
+const p=await m.newPage();await p.goto('http://localhost:3100/san-pham/',{waitUntil:'domcontentloaded'});await p.waitForTimeout(1500);console.log((await p.evaluate(()=>{const c=document.querySelector('main article, main .product-card');return c?c.innerText:''})).slice(0,300));
+await b.close()})()

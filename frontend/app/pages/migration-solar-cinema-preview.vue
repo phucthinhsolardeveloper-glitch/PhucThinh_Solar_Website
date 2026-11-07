@@ -73,7 +73,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="pts-container pt-4">
       <SiteBreadcrumb :items="[{ label: 'Solar Cinema — preview' }]" />
     </div>
@@ -88,7 +87,7 @@ onBeforeUnmount(() => {
             Từ tấm pin quang điện đến thiết bị biến tần và lưu trữ, mỗi thành phần có một vai trò trong cấu hình hệ thống phù hợp với nhu cầu sử dụng.
           </p>
           <div class="mt-8 flex flex-wrap items-center gap-4">
-            <NuxtLink to="/giai-phap/" class="inline-flex min-h-11 items-center rounded-[4px] bg-gold-500 px-6 py-3 font-bold text-navy-950 no-underline transition hover:bg-gold-400">
+            <NuxtLink to="/giai-phap/" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 py-3 font-bold text-navy-950 no-underline transition hover:bg-gold-400">
               Khám phá giải pháp <span class="ml-2" aria-hidden="true">→</span>
             </NuxtLink>
             <NuxtLink to="/san-pham/" class="inline-flex min-h-11 items-center font-semibold text-navy-800 underline-offset-4 hover:underline">
@@ -98,7 +97,7 @@ onBeforeUnmount(() => {
         </div>
 
         <figure ref="stageRef" class="m-0 min-w-0">
-          <div class="relative aspect-video overflow-hidden rounded-[4px] bg-navy-950">
+          <div class="relative aspect-video overflow-hidden rounded-btn bg-navy-950">
             <video
               ref="videoRef"
               class="absolute inset-0 block h-full w-full object-cover"
@@ -117,7 +116,7 @@ onBeforeUnmount(() => {
             <span class="film-edge absolute bottom-0 left-0 right-0 z-10 h-[2px]" :class="{ 'film-edge-active': isPlaying }" aria-hidden="true" />
             <button
               type="button"
-              class="absolute bottom-4 right-4 z-20 inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-[#061537]/85 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#061537] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400"
+              class="absolute bottom-4 right-4 z-20 inline-flex min-h-11 items-center gap-2 rounded-btn bg-[#061537]/85 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#061537] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400"
               :aria-label="isPlaying ? 'Tạm dừng video minh họa' : 'Phát video minh họa'"
               @click="togglePlayback"
             >
@@ -131,7 +130,6 @@ onBeforeUnmount(() => {
         </figure>
       </section>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>
 

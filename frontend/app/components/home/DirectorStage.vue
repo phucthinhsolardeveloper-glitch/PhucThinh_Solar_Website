@@ -37,6 +37,8 @@ function stop() {
 function start() {
   stop()
   if (paused || props.items.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  // Phones: the caption sits in flow, so an unasked slide change would push the page under the thumb.
+  if (window.matchMedia('(max-width: 820px)').matches) return
   timer = window.setInterval(() => select((active.value + 1) % props.items.length), props.interval)
 }
 function pause() { paused = true; stop() }
@@ -57,7 +59,7 @@ onBeforeUnmount(stop)
     @focusin="pause"
     @focusout="resume"
   >
-    <figure class="stage relative m-0 overflow-hidden rounded-[4px] bg-navy-950 max-[960px]:order-2" :class="reverse ? 'min-[961px]:order-2' : ''">
+    <figure class="stage relative m-0 overflow-hidden rounded-btn bg-navy-950 max-[960px]:order-2" :class="reverse ? 'min-[961px]:order-2' : ''">
       <img
         v-for="(item, index) in items"
         :key="item.key"
@@ -220,5 +222,26 @@ onBeforeUnmount(stop)
   .stage-caption { animation: none; }
   .stage-timer { display: none; }
   .scene-item { transition: none; }
+}
+
+/* Phones: choices as a 2-column segmented grid; photo at a fixed ratio with the full caption
+   on navy beneath it, so no description is clamped and no chip falls off the photo. */
+@media (max-width: 820px) {
+  .director { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .director > * { min-width: 0; }
+  .stage { min-height: 0; border-radius: var(--radius-md); }
+  .stage-layer { inset: 0 0 auto; height: auto; aspect-ratio: 16 / 10; }
+  .stage-layer.is-active { animation: none; }
+  .stage-veil { inset: 0 0 auto; aspect-ratio: 16 / 10; background: linear-gradient(180deg, transparent 62%, var(--color-navy-950) 100%); }
+  .stage-caption { position: relative; left: auto; right: auto; bottom: auto; max-width: none; margin-top: 62.5%; padding: 2px 16px 12px; }
+  .stage-caption strong { font-size: 21px; }
+  .stage-desc { display: block; overflow: visible; -webkit-line-clamp: unset; font-size: 15px; line-height: 1.55; }
+  .stage-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 0; padding-bottom: 0; }
+  .stage-timer { display: none; }
+
+  .scene-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; border-top: 0; }
+  .scene-list > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .scene-item, .scene-item.is-active { height: 100%; min-height: 52px; padding: 6px 12px; border: 1px solid rgb(10 34 81 / 14%); border-radius: var(--radius-sm); background: #fff; font-size: 14px; line-height: 1.25; letter-spacing: -0.01em; color: var(--color-navy-900); }
+  .scene-item.is-active { border-color: var(--color-navy-950); background: var(--color-navy-950); color: #fff; }
 }
 </style>

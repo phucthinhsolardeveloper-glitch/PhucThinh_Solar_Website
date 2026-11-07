@@ -203,7 +203,7 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 .cta-band__actions { display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-md); background: rgb(6 21 55 / 55%); backdrop-filter: blur(10px); }
 .cta-band__primary { display: flex; min-height: 60px; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px 0 22px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .cta-band__primary:hover { filter: brightness(1.06); }
-.cta-band__primary-arrow { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
+.cta-band__primary-arrow { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .cta-band__primary:hover .cta-band__primary-arrow { transform: translateX(4px); }
 .cta-band__channels { display: grid; gap: 4px; }
 .cta-band__channel { display: flex; min-height: 56px; align-items: center; gap: 14px; padding: 6px 10px; border-radius: var(--radius-sm); color: #fff; text-decoration: none; transition: background-color 0.25s ease; }
@@ -212,10 +212,8 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 .cta-band__channel strong { display: block; font-size: 20px; font-weight: 850; letter-spacing: -0.01em; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .cta-band__channel-icon { position: relative; display: grid; width: 44px; height: 44px; flex: none; place-items: center; border-radius: 50%; }
 .cta-band__channel-icon.is-phone { background: rgb(228 168 73 / 18%); color: var(--color-gold-300); }
-.cta-band__channel-icon.is-phone::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgb(228 168 73 / 55%); animation: cta-ring 2.4s ease-out infinite; }
 .cta-band__channel-icon.is-zalo { background: #0068ff; color: #fff; font-size: 12px; font-weight: 800; }
 .cta-band a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
-@keyframes cta-ring { from { opacity: 0.9; transform: scale(1); } to { opacity: 0; transform: scale(1.5); } }
 
 .cta-band--catalog { padding-block: clamp(28px, 3.5vw, 48px); }
 .cta-band--catalog .cta-band__copy h2 { font-size: clamp(24px, 2.2vw, 34px); }

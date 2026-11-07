@@ -53,7 +53,6 @@ watch([payload, token], trackOrderConversion)
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
@@ -90,21 +89,21 @@ watch([payload, token], trackOrderConversion)
         </div>
 
         <div class="mt-12 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-10 text-left sm:grid-cols-3">
-          <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
+          <div class="rounded-btn border-t-2 border-gold-500 bg-slate-50 p-5">
             <span class="tabular-nums text-xs font-extrabold text-gold-700">01</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Xác nhận đơn hàng</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
               Bộ phận điều phối Phúc Thịnh Solar liên hệ xác nhận thông tin người nhận, địa chỉ và phương thức vận chuyển.
             </p>
           </div>
-          <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
+          <div class="rounded-btn border-t-2 border-gold-500 bg-slate-50 p-5">
             <span class="tabular-nums text-xs font-extrabold text-gold-700">02</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Kiểm định & Xuất kho</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
               Thiết bị được kiểm tra thông số kỹ thuật, tem bảo hành chính hãng và đóng gói từ kho gần nhất (Gia Lai, Đà Nẵng, TP.HCM).
             </p>
           </div>
-          <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
+          <div class="rounded-btn border-t-2 border-gold-500 bg-slate-50 p-5">
             <span class="tabular-nums text-xs font-extrabold text-gold-700">03</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Giao hàng & Hỗ trợ kỹ thuật</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
@@ -119,11 +118,11 @@ watch([payload, token], trackOrderConversion)
             <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Liên hệ trực tiếp tổng đài Phúc Thịnh Solar trong giờ hành chính (T2 – T7):</p>
           </div>
           <div class="flex flex-wrap items-center gap-2.5 sm:shrink-0">
-            <a href="tel:0944555957" class="inline-flex min-h-10 items-center gap-2 rounded-[3px] bg-gold-500 px-3.5 py-2 text-xs font-extrabold text-navy-950 no-underline hover:bg-gold-400">
+            <a href="tel:0944555957" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-gold-500 px-3.5 py-2 text-xs font-extrabold text-navy-950 no-underline hover:bg-gold-400">
               <UIcon name="i-lucide-phone-call" class="size-3.5" aria-hidden="true" />
               <span>Bán hàng: 0944 555 957</span>
             </a>
-            <a href="tel:0945536899" class="inline-flex min-h-10 items-center gap-2 rounded-[3px] bg-white/10 px-3.5 py-2 text-xs font-bold text-white no-underline hover:bg-white/20">
+            <a href="tel:0945536899" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-white/10 px-3.5 py-2 text-xs font-bold text-white no-underline hover:bg-white/20">
               <UIcon name="i-lucide-wrench" class="size-3.5 text-gold-400" aria-hidden="true" />
               <span>Kỹ thuật: 0945 536 899</span>
             </a>
@@ -131,6 +130,5 @@ watch([payload, token], trackOrderConversion)
         </div>
       </div>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

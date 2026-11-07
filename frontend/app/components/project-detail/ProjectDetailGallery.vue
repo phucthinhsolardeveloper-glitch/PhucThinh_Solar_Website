@@ -91,6 +91,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
   setDocumentScrollLock(false)
 })
+const viewerSrc = useProgressiveImage(() => selected.value?.type === 'image' ? selected.value.src : null, (src) => optimizedImage(src, 900, 675))
 </script>
 
 <template>
@@ -153,7 +154,7 @@ onBeforeUnmount(() => {
             :aria-label="item.type === 'video' ? 'Phát video ' + (item.caption || 'dự án') : 'Mở ảnh ' + (index + 1) + ' trong thư viện dự án'"
             @click="open(item, $event.currentTarget as HTMLElement)"
           >
-            <span class="relative block overflow-hidden rounded-[4px] bg-slate-100">
+            <span class="relative block overflow-hidden rounded-btn bg-slate-100">
               <img v-if="item.src" :src="optimizedImage(item.src, 900, 675)" :alt="item.caption || (item.type === 'video' ? 'Video dự án' : 'Hình ảnh dự án')" class="block aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
               <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110 motion-reduce:group-hover:scale-100 motion-reduce:transition-none" aria-hidden="true">▶</span>
               <span
@@ -179,7 +180,7 @@ onBeforeUnmount(() => {
     <div
       v-if="selected"
       ref="lightboxPanel"
-      class="fixed inset-0 z-[100] grid place-items-center bg-[rgb(10_11_14/0.96)] p-4 pb-28 transition-opacity duration-200"
+      class="fixed inset-0 z-[100] grid place-items-center photo-viewer p-4 pb-28 transition-opacity duration-200"
       role="dialog"
       aria-modal="true"
       :aria-label="selected.type === 'video' ? 'Phát video dự án' : 'Xem ảnh dự án'"
@@ -187,7 +188,7 @@ onBeforeUnmount(() => {
     >
       <button
         type="button"
-        class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
+        class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
         aria-label="Đóng media"
         @click="close"
       >
@@ -197,7 +198,7 @@ onBeforeUnmount(() => {
       <button
         v-if="selected.type === 'image' && imageItems.length > 1"
         type="button"
-        class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+        class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
         aria-label="Ảnh trước"
         @click="moveImage(-1)"
       >
@@ -205,8 +206,8 @@ onBeforeUnmount(() => {
       </button>
 
       <figure v-if="selected.type === 'image'" class="m-0 max-h-[90vh] max-w-[min(1100px,90vw)] text-center">
-        <img :src="selected.src" :alt="selected.caption || 'Hình ảnh dự án'" class="max-h-[74vh] max-w-full object-contain rounded-[4px]">
-        <figcaption v-if="selected.caption" class="mt-3 text-sm text-white/90">{{ selected.caption }}</figcaption>
+        <img :src="viewerSrc" :alt="selected.caption || 'Hình ảnh dự án'" class="photo-viewer__media max-h-[74vh] max-w-full object-contain">
+        <figcaption v-if="selected.caption" class="photo-viewer__label mt-3 inline-block px-3 py-1.5 text-sm">{{ selected.caption }}</figcaption>
       </figure>
       <div v-else class="w-[min(1100px,94vw)] overflow-hidden rounded-chip bg-black shadow-2xl">
         <div v-if="selectedEmbedUrl" class="aspect-video">
@@ -229,7 +230,7 @@ onBeforeUnmount(() => {
       <button
         v-if="selected.type === 'image' && imageItems.length > 1"
         type="button"
-        class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+        class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
         aria-label="Ảnh sau"
         @click="moveImage(1)"
       >
@@ -256,11 +257,11 @@ onBeforeUnmount(() => {
 <style scoped>
 .lightbox-strip { position: absolute; right: 0; bottom: 16px; left: 0; display: flex; justify-content: safe center; gap: 8px; overflow-x: auto; padding: 4px 16px; scrollbar-width: none; }
 .lightbox-strip::-webkit-scrollbar { display: none; }
-.lightbox-strip__thumb { width: 72px; height: 54px; flex: none; overflow: hidden; padding: 0; border: 2px solid transparent; border-radius: 4px; background: #1c1f26; opacity: 0.5; cursor: pointer; transition: opacity 0.2s ease, border-color 0.2s ease; }
+.lightbox-strip__thumb { width: 72px; height: 54px; flex: none; overflow: hidden; padding: 0; border: 2px solid transparent; border-radius: var(--radius-btn); background: #fff; opacity: 0.7; cursor: pointer; transition: opacity 0.2s ease, border-color 0.2s ease; }
 .lightbox-strip__thumb img { width: 100%; height: 100%; object-fit: cover; }
-.lightbox-strip__thumb:hover { opacity: 0.85; }
+.lightbox-strip__thumb:hover { opacity: 1; }
 .lightbox-strip__thumb[aria-current] { border-color: var(--color-gold-400); opacity: 1; }
-.lightbox-strip__thumb:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lightbox-strip__thumb:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; }
 .project-gallery__grid {
   grid-auto-flow: dense;
 }

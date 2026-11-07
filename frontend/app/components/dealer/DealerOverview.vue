@@ -84,7 +84,7 @@ function cardImage(src: string): string {
 <template>
   <section
     v-if="dealer.overview.title || dealer.overview.descriptionContent.html || dealer.overview.description || dealer.overview.products.length"
-    class="mt-10 min-[992px]:mt-[clamp(36px,4.2vw,56px)]"
+    class="dealer-overview mt-10 min-[992px]:mt-[clamp(36px,4.2vw,56px)]"
   >
     <h2 v-if="dealer.overview.title" class="mb-4 text-[clamp(26px,3vw,40px)] font-black leading-tight tracking-tight text-navy-800">
       {{ dealer.overview.title || dealer.labels.overview }}
@@ -93,7 +93,7 @@ function cardImage(src: string): string {
     <EditorialRichText v-if="dealer.overview.descriptionContent.html" :content="dealer.overview.descriptionContent" class="dealer-overview-rich mb-7 max-w-[70ch]" />
     <p v-else-if="dealer.overview.description" class="mb-7 max-w-[70ch] whitespace-pre-line leading-relaxed text-slate-600">{{ dealer.overview.description }}</p>
 
-    <div v-if="dealer.overview.products.length > 1" class="mb-4 flex justify-end gap-2 min-[768px]:hidden" role="group" aria-label="Điều hướng sản phẩm phân phối">
+    <div v-if="dealer.overview.products.length > 1" class="dealer-products-nav mb-4 flex justify-end gap-2 min-[768px]:hidden" role="group" aria-label="Điều hướng sản phẩm phân phối">
       <button type="button" class="public-neutral-button grid size-11 place-items-center text-navy-800 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm trước" :disabled="!canScrollPrevious" @click="scrollProducts(-1)">
         <UIcon name="i-lucide-chevron-left" class="size-5" aria-hidden="true" />
       </button>
@@ -113,7 +113,7 @@ function cardImage(src: string): string {
       <a
         v-for="(product, index) in dealer.overview.products"
         :key="product.title + product.image"
-        class="group w-[min(76vw,300px)] min-w-0 flex-none snap-start text-inherit no-underline cursor-pointer min-[768px]:w-auto"
+        class="dealer-product group w-[min(76vw,300px)] min-w-0 flex-none snap-start text-inherit no-underline cursor-pointer min-[768px]:w-auto"
         :href="product.href ? links.generic(product.href) : `#dang-ky-dai-ly`"
         :target="product.href && !links.active ? '_blank' : undefined"
         :rel="product.href && !links.active ? 'noopener noreferrer' : undefined"
@@ -132,17 +132,17 @@ function cardImage(src: string): string {
           >
           <span
             v-if="product.image && !product.href"
-            class="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-[3px] bg-navy-950/80 px-2 py-1 text-[11px] font-bold text-white opacity-90 backdrop-blur-xs transition-colors group-hover:bg-gold-500 group-hover:text-navy-950"
+            class="dealer-spec-chip m-lg absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-chip bg-navy-950/80 px-2 py-1 text-[11px] font-bold text-white opacity-90 backdrop-blur-xs transition-colors group-hover:bg-gold-500 group-hover:text-navy-950"
           >
             <UIcon name="i-lucide-zoom-in" class="size-3.5" aria-hidden="true" />
             <span>Thông số</span>
           </span>
         </div>
         <div class="flex items-center justify-between gap-2">
-          <span class="min-w-0 truncate font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ product.title }}</span>
+          <span class="dealer-product__name min-w-0 truncate font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ product.title }}</span>
           <button
             type="button"
-            class="shrink-0 whitespace-nowrap rounded-[3px] px-2 py-1 text-xs font-extrabold transition-colors cursor-pointer"
+            class="dealer-product__pick shrink-0 whitespace-nowrap rounded-chip px-2 py-1 text-xs font-extrabold transition-colors cursor-pointer"
             :class="selectedProduct === product.title
               ? 'bg-gold-500 text-navy-950'
               : 'bg-slate-100 text-navy-800 hover:bg-gold-500 hover:text-navy-950'"
@@ -157,7 +157,7 @@ function cardImage(src: string): string {
     <Teleport to="body">
       <div
         v-if="activeProduct"
-        class="fixed inset-0 z-[100] grid place-items-center bg-navy-950/92 p-4 backdrop-blur-md"
+        class="fixed inset-0 z-[100] grid place-items-center photo-viewer p-4"
         role="dialog"
         aria-modal="true"
         :aria-label="`Thông số dòng sản phẩm ${activeProduct.title}`"
@@ -165,7 +165,7 @@ function cardImage(src: string): string {
       >
         <button
           type="button"
-          class="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 cursor-pointer"
+          class="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Đóng bảng thông số"
           @click="closeProduct"
         >
@@ -175,7 +175,7 @@ function cardImage(src: string): string {
         <button
           v-if="dealer.overview.products.length > 1"
           type="button"
-          class="absolute left-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          class="dealer-modal-arrow absolute left-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Dòng sản phẩm trước"
           @click="moveProduct(-1)"
         >
@@ -183,19 +183,24 @@ function cardImage(src: string): string {
         </button>
 
         <div class="flex max-h-[90vh] w-[min(980px,92vw)] flex-col items-center gap-4">
-          <img
-            :src="activeProduct.image"
-            :alt="activeProduct.title"
-            class="max-h-[74vh] max-w-full rounded-[4px] bg-white object-contain shadow-2xl"
-          >
-          <div class="flex w-full max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-[4px] bg-navy-900/95 px-4 py-3 text-white">
+          <!-- The frame holds its size and shows the card's photo until the large one has loaded. -->
+          <div class="photo-viewer__media dealer-viewer-frame" :style="{ backgroundImage: `url(${cardImage(activeProduct.image)})` }">
+            <img
+              :key="activeProduct.image"
+              :src="viewerImage(activeProduct.image)"
+              :alt="activeProduct.title"
+              class="dealer-viewer-frame__image"
+              @load="($event.target as HTMLElement).classList.add('is-loaded')"
+            >
+          </div>
+          <div class="flex w-full max-w-[760px] flex-wrap items-center justify-between gap-3 photo-viewer__label px-4 py-3">
             <div>
-              <span class="text-xs font-bold text-gold-400">Dòng sản phẩm ({{ Number(activeIndex) + 1 }} / {{ dealer.overview.products.length }})</span>
+              <span class="text-xs font-bold text-slate-600">Dòng sản phẩm ({{ Number(activeIndex) + 1 }} / {{ dealer.overview.products.length }})</span>
               <strong class="block text-lg font-black">{{ activeProduct.title }}</strong>
             </div>
             <button
               type="button"
-              class="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-gold-500 px-4 py-2 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400 cursor-pointer"
+              class="dealer-modal-register inline-flex min-h-11 items-center gap-2 rounded-btn bg-gold-500 px-4 py-2 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400 cursor-pointer"
               @click="chooseProductLine(activeProduct.title)"
             >
               <span>Đăng ký phân phối {{ activeProduct.title }}</span>
@@ -207,7 +212,7 @@ function cardImage(src: string): string {
         <button
           v-if="dealer.overview.products.length > 1"
           type="button"
-          class="absolute right-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          class="dealer-modal-arrow absolute right-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Dòng sản phẩm tiếp theo"
           @click="moveProduct(1)"
         >
@@ -219,11 +224,36 @@ function cardImage(src: string): string {
 </template>
 
 <style scoped>
+.dealer-viewer-frame { position: relative; width: min(74vh, 92vw, 760px); aspect-ratio: 1; overflow: hidden; background-color: #eef2f8; background-position: center; background-size: cover; }
+.dealer-viewer-frame__image { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; object-fit: contain; opacity: 0; transition: opacity .25s ease; }
+.dealer-viewer-frame__image.is-loaded { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .dealer-viewer-frame__image { transition: none; } }
 .dealer-products-track { scrollbar-width: none; }
 .dealer-products-track::-webkit-scrollbar { display: none; }
 .dealer-overview-rich :deep(p:empty) { display: none; }
 .dealer-overview-rich :deep(p) { margin-block: 0.45rem; }
 @media (prefers-reduced-motion: reduce) {
   .dealer-products-track { scroll-behavior: auto; }
+}
+
+/* Phones (<=820px). Desktop rules above stay untouched. */
+@media (max-width: 820px) {
+  .dealer-overview { margin-top: 28px; }
+  .dealer-overview h2 { margin-bottom: 10px; font-size: 26px; font-weight: 800; line-height: 1.18; letter-spacing: -0.02em; text-wrap: balance; }
+  .dealer-overview-rich { margin-bottom: 18px; }
+  .dealer-overview-rich :deep(p) { margin-block: 0.4rem; font-size: 16px; line-height: 1.6; }
+  .dealer-products-nav { margin-bottom: 8px; }
+  .dealer-product__name { overflow: visible; line-height: 1.3; text-overflow: clip; white-space: normal; }
+  .dealer-product__pick { min-height: 44px; padding-inline: 12px; border-radius: var(--radius-btn); font-size: 13px; }
+  .dealer-spec-chip { min-height: 28px; padding-inline: 10px; border-radius: 999px; font-size: 12px; }
+  .dealer-modal-register { width: 100%; justify-content: space-between; text-align: left; }
+  .dealer-modal-arrow { width: 44px; height: 44px; }
+}
+/* The rail bleeds to the screen edge while the first card keeps the page gutter. */
+@media (max-width: 767px) {
+  .dealer-products-track { gap: 12px; margin-inline: -16px; padding-inline: 16px; padding-bottom: 4px; scroll-padding-inline: 16px; }
+}
+@media (max-width: 359px) {
+  .dealer-products-track { margin-inline: -12px; padding-inline: 12px; scroll-padding-inline: 12px; }
 }
 </style>

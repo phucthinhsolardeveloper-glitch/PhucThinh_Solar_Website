@@ -30,7 +30,7 @@ const activeIndex = ref(0)
         @mouseenter="activeIndex = index"
         @focusin="activeIndex = index"
       >
-        <div v-if="item.image" class="app-card-media mb-4 overflow-hidden rounded-[4px] bg-navy-950">
+        <div v-if="item.image" class="app-card-media mb-4 overflow-hidden rounded-btn bg-navy-950">
           <img
             :src="item.image"
             :alt="item.title"

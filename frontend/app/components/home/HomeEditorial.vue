@@ -69,7 +69,7 @@ function requestConsultation(subject: string) {
   <section
     v-if="data.solutions.length"
     id="giai-phap"
-    class="py-[clamp(64px,7vw,112px)]"
+    class="py-[clamp(64px,7vw,112px)] max-tb:py-8"
     aria-labelledby="home-solutions-title"
   >
     <div class="pts-container">
@@ -78,7 +78,7 @@ function requestConsultation(subject: string) {
           <h2 id="home-solutions-title" class="m-0 max-w-[14ch] text-[clamp(30px,3vw,50px)] font-black leading-[1.06] tracking-[-.035em] text-navy-950">
             Giải pháp cho từng nhu cầu
           </h2>
-          <p class="mt-4 max-w-[40ch] text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-600">
+          <p class="mt-4 max-tb:mt-2 max-w-[40ch] text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-600">
             Chọn lĩnh vực sử dụng để xem phương án và thiết bị đi kèm.
           </p>
         </template>
@@ -87,14 +87,14 @@ function requestConsultation(subject: string) {
             <a
               v-for="chip in solutionChips[index]"
               :key="chip"
-              class="inline-flex min-h-[34px] items-center rounded-[3px] border border-white/30 bg-white/10 px-3 text-[13px] font-semibold text-white no-underline transition-colors hover:border-gold-400 hover:bg-gold-400 hover:text-navy-950"
+              class="inline-flex min-h-[34px] max-tb:min-h-11 items-center rounded-chip border border-white/30 bg-white/10 px-3 text-[13px] font-semibold text-white no-underline transition-colors hover:border-gold-400 hover:bg-gold-400 hover:text-navy-950"
               :href="links.generic(chipHref(chip, data.solutions[index]!))"
             >{{ chip }}</a>
           </span>
         </template>
         <template #foot="{ item }">
           <a
-            class="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[4px] bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950"
+            class="inline-flex min-h-[52px] max-tb:w-full items-center justify-center gap-2 rounded-btn bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950"
             href="#yeu-cau-tu-van"
             @click="requestConsultation(item.title)"
           >

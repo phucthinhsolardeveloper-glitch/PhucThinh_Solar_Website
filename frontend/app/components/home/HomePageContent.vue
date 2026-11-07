@@ -45,7 +45,6 @@ usePublicSocialMeta({
 
 <template>
   <div>
-    <SiteHeader :site="site" />
     <main>
       <div v-if="error || !home" class="mx-auto min-h-[55vh] w-[min(calc(100%-32px),2200px)] py-[72px]" role="status">
         <h1 class="text-[clamp(28px,4vw,48px)] font-bold text-navy-950">{{ fallbackTitle }}</h1>
@@ -61,6 +60,5 @@ usePublicSocialMeta({
         <HomePromoPopup v-if="home.popup && !preview" :popup="home.popup" />
       </template>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

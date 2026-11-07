@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import type { PublicSolutionCard } from '../../../shared/contracts/public-solutions'
 
-withDefaults(defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string; highlight?: string[] }>(), { highlight: () => [] })
+const props = withDefaults(defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string; highlight?: string[] }>(), { highlight: () => [] })
 const links = useMigrationLinks()
+
+// Phones show the cards on a rail, where the finder's match could be off-screen: bring it into view.
+const mosaicRef = ref<HTMLElement | null>(null)
+watch(() => props.highlight, async (slugs) => {
+  if (!slugs.length) return
+  await nextTick()
+  const rail = mosaicRef.value
+  const match = rail?.querySelector<HTMLElement>('.is-match')
+  if (!rail || !match || rail.scrollWidth <= rail.clientWidth) return
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const left = rail.scrollLeft + match.getBoundingClientRect().left - rail.getBoundingClientRect().left - (rail.clientWidth - match.offsetWidth) / 2
+  rail.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' })
+})
 </script>
 
 <template>
@@ -17,7 +30,7 @@ const links = useMigrationLinks()
       {{ emptyLabel }}
     </h2>
 
-    <div v-if="cards.length" class="mosaic" :class="{ 'is-single': cards.length === 1 }">
+    <div v-if="cards.length" ref="mosaicRef" class="mosaic" :class="{ 'is-single': cards.length === 1 }">
       <a
         v-for="(card, index) in cards"
         :key="card.slug"
@@ -70,7 +83,7 @@ const links = useMigrationLinks()
   min-width: 0;
   overflow: hidden;
   overflow: clip;
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: var(--color-navy-950);
   color: #fff;
   text-decoration: none;
@@ -187,5 +200,28 @@ const links = useMigrationLinks()
   .tile, .tile-image, .tile-desc, .tile-arrow, .tile-veil { transition: none; }
   .tile-match { animation: none; }
   .tile:hover .tile-image { transform: none; }
+}
+/* Phones: peer solutions on a swipe rail. Photo on top, full text on solid navy, so nothing is cut or sits on a bright photo. */
+@media (max-width: 820px) {
+  #cac-giai-phap { padding-block: 16px 24px; scroll-margin-top: 76px; }
+  .mosaic, .mosaic.is-single { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+  .mosaic:not(.is-single) {
+    display: flex;
+    gap: 12px;
+    margin-inline: calc(50% - 50vw);
+    padding: 4px calc(50vw - 50%) 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .mosaic::-webkit-scrollbar { display: none; }
+  .tile, .tile.is-lead { flex: 0 0 min(84%, 330px); flex-direction: column; min-height: 0; border-radius: var(--radius-md); scroll-snap-align: center; }
+  .tile-image { position: relative; inset: auto; flex: none; height: auto; aspect-ratio: 16 / 9; }
+  .tile-veil { inset: 0 0 auto; height: auto; aspect-ratio: 16 / 9; background: linear-gradient(180deg, rgb(6 21 55 / 0%) 55%, var(--color-navy-950) 100%); }
+  .tile-body { flex: 1; margin-top: 0; gap: 6px; padding: 10px 14px 14px; }
+  .tile-title, .is-lead .tile-title, .is-single .tile-title { font-size: 18px; font-weight: 800; line-height: 1.22; }
+  .tile-desc, .is-lead .tile-desc, .is-single .tile-desc { display: block; overflow: visible; max-width: none; max-height: none; opacity: 1; font-size: 14px; line-height: 1.5; -webkit-line-clamp: unset; }
+  .tile-cta { margin-top: auto; padding-top: 6px; font-size: 14px; }
 }
 </style>

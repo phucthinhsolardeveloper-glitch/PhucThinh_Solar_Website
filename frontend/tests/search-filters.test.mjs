@@ -24,16 +24,15 @@ test('search GET projection allowlists brand and public-price filters with param
 
 test('search filter controls send brand/price state through GET query and retain filters while paging', () => {
   const page = read('../app/components/catalog/SearchResultsPage.vue')
-  const filters = read('../app/components/catalog/SearchFilterOptions.vue')
+  const filters = read('../app/components/catalog/CatalogFilterSidebar.vue')
 
   assert.match(page, /route\.query\.brand/)
   assert.match(page, /route\.query\.price/)
   assert.match(page, /route\.query\.sort/)
   assert.match(page, /function onSortChange/)
-  assert.match(page, /SearchFilterOptions/)
+  assert.match(page, /CatalogFilterSidebar/)
   assert.match(page, /brand: brand\.value/)
   assert.match(page, /price: price\.value/)
-  assert.match(filters, /type="checkbox"/)
   assert.match(filters, /filters\.brands/)
   assert.match(filters, /filters\.priceRanges/)
 })

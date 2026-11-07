@@ -75,7 +75,7 @@ function formatDate(value: string): string {
 <template>
   <article class="mx-auto w-full max-w-[1280px]">
     <header class="mb-7 nav:mb-9">
-      <UBadge v-if="categoryName" color="primary" variant="soft" class="mb-4 rounded-[3px] px-2.5 py-1 text-xs font-semibold">
+      <UBadge v-if="categoryName" color="primary" variant="soft" class="mb-4 rounded-chip px-2.5 py-1 text-xs font-semibold">
         {{ categoryName }}
       </UBadge>
       <h1 class="max-w-[1000px] text-[clamp(30px,4vw,52px)] font-bold leading-[1.12] tracking-[-0.035em] text-navy-800">
@@ -135,7 +135,7 @@ function formatDate(value: string): string {
             </p>
             <button
               type="button"
-              class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-chip bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
               @click="openConsultation('Bài viết: ' + article.title)"
             >
               <span>Nhận tư vấn miễn phí</span>

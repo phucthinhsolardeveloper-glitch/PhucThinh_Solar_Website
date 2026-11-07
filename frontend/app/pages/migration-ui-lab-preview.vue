@@ -65,7 +65,7 @@ useHead({
       <div class="grid grid-cols-2 gap-6 sm:grid-cols-2">
         <div>
           <p class="mb-2 text-sm font-bold text-navy-900/70">Navy — bề mặt thương hiệu</p>
-          <div class="flex overflow-hidden rounded-[3px]">
+          <div class="flex overflow-hidden rounded-chip">
             <div class="h-12 flex-1 bg-navy-50" />
             <div class="h-12 flex-1 bg-navy-100" />
             <div class="h-12 flex-1 bg-navy-300" />
@@ -77,7 +77,7 @@ useHead({
         </div>
         <div>
           <p class="mb-2 text-sm font-bold text-navy-900/70">Gold — hành động chính</p>
-          <div class="flex overflow-hidden rounded-[3px]">
+          <div class="flex overflow-hidden rounded-chip">
             <div class="h-12 flex-1 bg-gold-50" />
             <div class="h-12 flex-1 bg-gold-200" />
             <div class="h-12 flex-1 bg-gold-300" />

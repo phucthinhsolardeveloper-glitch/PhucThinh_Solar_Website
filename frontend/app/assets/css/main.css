@@ -206,19 +206,19 @@
   /* --- Bo góc --------------------------------------------------------------
      Hệ phẳng 2-5px theo ADR 0007. Nuxt UI đọc --ui-radius cho mọi control của
      nó, nên đặt một lần ở đây là cả UButton/UModal/UInput theo cùng hệ. */
-  --radius-chip: 3px;
-  --radius-btn: 4px;
+  --radius-chip: 8px;
+  --radius-btn: 10px;
   /* Expressive scale (2026-11 visual language): pick by role, not one size for all. */
-  --radius-sm: 6px;    /* inputs, small chips, thumbnails */
-  --radius-md: 10px;   /* cards, media frames, notes */
-  --radius-lg: 16px;   /* feature panels, summaries, popovers */
+  --radius-sm: 10px;    /* inputs, small chips, thumbnails */
+  --radius-md: 14px;   /* cards, media frames, notes */
+  --radius-lg: 18px;   /* feature panels, summaries, popovers */
   --radius-xl: 24px;   /* hero cards and showcase stages */
   --radius-card: var(--radius-md);
 }
 
 :root {
   /* Nuxt UI v4 suy ra bán kính của mọi component từ biến này. */
-  --ui-radius: 4px;
+  --ui-radius: 6px;
   --pts-gold-gradient: linear-gradient(110deg, var(--color-gold-400) 0%, var(--color-gold-500) 100%);
   /* Elevation: soft navy-tinted shadows; float for popovers/panels, lift for hover, glow for gold actions. */
   --pts-shadow-soft: 0 1px 2px rgb(6 21 55 / 6%), 0 8px 24px -16px rgb(6 21 55 / 22%);
@@ -682,6 +682,11 @@
     box-shadow: 0 2px 5px rgba(6, 21, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
+  /* CMS icons are dark line art, so the selected chip turns them white. */
+  .public-filter-chip[aria-current="page"] img {
+    filter: brightness(0) invert(1);
+  }
+
   .public-filter-chip:active,
   .public-neutral-button:active:not(:disabled) {
     transform: translateY(0);
@@ -764,14 +769,435 @@
   }
 }
 
-/* Route changes: content cross-fades with a slight rise; the sticky header and floating
-   contact keep their own layers so they never flash between pages. */
-.pts-site-header { view-transition-name: site-header; }
-::view-transition-old(root) { animation: pts-vt-out 160ms ease both; }
-::view-transition-new(root) { animation: pts-vt-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-::view-transition-group(site-header) { animation: none; }
-@keyframes pts-vt-out { to { opacity: 0; } }
-@keyframes pts-vt-in { from { opacity: 0; transform: translateY(8px); } }
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+/* The phone bottom island must not cover the end of a page. */
+@media (max-width: 820px) {
+  body > * footer.bg-navy-950, footer.bg-navy-950 { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
 }
+
+/* Phones: long content folds behind one button (plugins/mobile-fold.client.ts). */
+.m-fold-more { display: none; }
+@media (max-width: 820px) {
+  [data-fold]:not(.m-fold-open) { position: relative; max-height: 420px; overflow: hidden; }
+  [data-fold="300"]:not(.m-fold-open) { max-height: 300px; }
+  [data-fold="560"]:not(.m-fold-open) { max-height: 560px; }
+  .m-fold-more { position: absolute; inset: auto 0 0; z-index: 5; display: flex; justify-content: center; padding: 72px 16px 14px; background: linear-gradient(180deg, transparent, #fff 62%); cursor: pointer; }
+  .m-fold-more span { min-height: 44px; padding: 11px 20px; border: 1px solid rgb(10 34 81 / 22%); border-radius: 999px; background: #fff; color: var(--color-navy-950); font-size: 14px; font-weight: 800; line-height: 20px; }
+  [data-fold-dark] > .m-fold-more { background: linear-gradient(180deg, transparent, var(--color-navy-950) 62%); }
+  /* Once open the button sits after the content and reads "Thu gọn". */
+  [data-fold].m-fold-open > .m-fold-more { position: static; padding: 12px 16px 16px; background: none; }
+  /* Items of equal rank swipe sideways instead of stacking into a long column. */
+  .m-rail { display: flex !important; gap: 12px !important; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .m-rail > * { flex: 0 0 80%; min-width: 0; scroll-snap-align: center; }
+}
+@media print { [data-fold] { max-height: none !important; } .m-fold-more { display: none !important; } }
+
+/* The dock's glass is the one material for every phone overlay: change it here and all follow. */
+:root {
+  --m-glass-bg: linear-gradient(180deg, rgb(20 52 116 / 74%), rgb(8 28 72 / 82%));
+  --m-glass-filter: blur(20px) saturate(180%);
+  --m-glass-rim: rgb(255 255 255 / 16%);
+  --m-glass-shadow: inset 0 1px 0 rgb(255 255 255 / 24%), inset 0 -1px 0 rgb(0 0 0 / 22%), 0 12px 30px rgb(6 21 55 / 34%);
+  --m-glass-lens: linear-gradient(180deg, rgb(255 255 255 / 26%), rgb(255 255 255 / 9%));
+  --m-glass-lens-shadow: inset 0 1px 0 rgb(255 255 255 / 40%), 0 2px 8px rgb(0 0 0 / 18%);
+  --m-glass-light-bg: linear-gradient(180deg, rgb(255 255 255 / 78%), rgb(226 234 246 / 58%));
+  --m-glass-light-rim: rgb(255 255 255 / 88%);
+  --m-glass-light-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgb(10 34 81 / 10%), 0 8px 20px rgb(6 21 55 / 14%);
+}
+.m-glass {
+  background: var(--m-glass-bg);
+  -webkit-backdrop-filter: var(--m-glass-filter);
+  backdrop-filter: var(--m-glass-filter);
+  border: 1px solid var(--m-glass-rim);
+  box-shadow: var(--m-glass-shadow);
+}
+/* Without transparency every surface keeps the same tint, opaque, so the dock, sidebar and island still match.
+   Windows reports this whenever "Transparency effects" is off. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --m-glass-bg: linear-gradient(180deg, rgb(27 58 122), rgb(10 30 74)); --m-glass-light-bg: linear-gradient(180deg, #f7f9fd, #e6ecf6); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --m-glass-bg: linear-gradient(180deg, rgb(27 58 122), rgb(10 30 74)); --m-glass-light-bg: linear-gradient(180deg, #f7f9fd, #e6ecf6); --m-glass-filter: none; }
+}
+
+/* Light liquid glass for layers floating over page content, phones only.
+   Rule: glass marks what floats above content. Content itself and product cards stay solid. */
+@media (max-width: 820px) {
+  .m-glass-light {
+    background: var(--m-glass-light-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter) !important;
+    backdrop-filter: var(--m-glass-filter) !important;
+    border-color: var(--m-glass-light-rim) !important;
+    box-shadow: var(--m-glass-light-shadow) !important;
+  }
+  /* The phone header is a floating capsule of glass, over the page and over the home hero alike. */
+  .pts-site-header { padding: 8px 8px 0; pointer-events: none; }
+  .pts-header-capsule {
+    pointer-events: auto;
+    border: 1px solid var(--m-glass-light-rim) !important;
+    border-radius: 22px;
+    background: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: var(--m-glass-light-shadow) !important;
+  }
+  /* The capsule's glass sits on a pseudo-layer: a backdrop-filter on the capsule itself would stop
+     the search panel inside it from blurring the page. */
+  .pts-header-capsule::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--m-glass-light-bg);
+    -webkit-backdrop-filter: var(--m-glass-filter);
+    backdrop-filter: var(--m-glass-filter);
+  }
+  /* The capsule is already the glass; the menu icon sits directly on it. */
+  .pts-mobile-nav-trigger { border: 0 !important; background: none !important; box-shadow: none !important; }
+  .pts-header-capsule > div { min-height: 56px; padding-block: 4px; padding-inline: 8px; }
+  .m-fold-more span { background: var(--m-glass-light-bg); -webkit-backdrop-filter: var(--m-glass-filter); backdrop-filter: var(--m-glass-filter); box-shadow: var(--m-glass-light-shadow); }
+  .m-glass-zalo { background: linear-gradient(180deg, rgb(40 130 255 / 92%), rgb(0 88 230 / 96%)) !important; border: 1px solid rgb(255 255 255 / 34%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 50%), 0 10px 24px rgb(0 70 190 / 34%) !important; }
+}
+
+/* Visible liquid glass for controls on phones. A clear pane on white is invisible, so these carry
+   their own tint, bright rim and shadow: .m-lg on light or photo backgrounds, .m-lg-dark on navy. */
+@media (max-width: 820px) {
+  .m-lg {
+    background: var(--m-glass-light-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter);
+    backdrop-filter: var(--m-glass-filter);
+    border: 1px solid var(--m-glass-light-rim) !important;
+    box-shadow: var(--m-glass-light-shadow) !important;
+    color: var(--color-navy-950);
+  }
+  .m-lg-dark {
+    background: var(--m-glass-lens) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter);
+    backdrop-filter: var(--m-glass-filter);
+    border: 1px solid var(--m-glass-rim) !important;
+    box-shadow: var(--m-glass-lens-shadow) !important;
+    color: #fff;
+  }
+}
+
+@media (max-width: 820px) {
+  html.m-typing .dock, html.m-typing .buy-island, html.m-typing .m-island, html.m-typing .checkout-bar, html.m-typing aside[aria-label="Liên hệ nhanh"] { display: none !important; }
+  .m-fold-more { width: 100%; }
+}
+/* The capsule header is 66px tall; the home hero slides fully beneath it. */
+@media (max-width: 820px) { #home-title { scroll-margin-top: 72px; } section.isolate.-mt-16 { margin-top: -66px; } }
+@media (max-width: 359px) { .m-rail { margin-inline: -12px; padding-inline: 12px; } }
+
+/* Every overlay on a phone (search, filter, cart notice) wears the dock's glass.
+   Components keep their light desktop styling; this re-tones them below 821px. */
+@media (max-width: 820px) {
+  .m-sheet-glass {
+    --color-hdr-ink: #fff;
+    --color-hdr-muted: #c9d5e5;
+    --color-hdr-line-soft: rgb(255 255 255 / 13%);
+    color: #fff !important;
+    background: var(--m-glass-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter) !important;
+    backdrop-filter: var(--m-glass-filter) !important;
+    border-color: var(--m-glass-rim) !important;
+    box-shadow: var(--m-glass-shadow) !important;
+  }
+  .m-sheet-glass .bg-white, .m-sheet-glass .bg-slate-50 { background: transparent !important; }
+  .m-sheet-glass :is(h2, h3, strong, b, [class*="text-navy-"]) { color: #fff !important; }
+  .m-sheet-glass [class*="text-slate-"] { color: #c9d5e5 !important; }
+  .m-sheet-glass [class*="border-slate-"], .m-sheet-glass [class*="border-gray-"], .m-sheet-glass [class*="border-hdr-"] { border-color: rgb(255 255 255 / 14%) !important; }
+  .m-sheet-glass [class*="text-gold-"] { color: var(--color-gold-300) !important; }
+  .m-sheet-glass .bg-gold-50 { background: rgb(228 168 73 / 18%) !important; }
+  .m-sheet-glass .public-neutral-button, .m-sheet-glass button.rounded-full.border {
+    background: var(--m-glass-lens) !important;
+    border: 1px solid var(--m-glass-rim) !important;
+    box-shadow: var(--m-glass-lens-shadow) !important;
+    color: #fff !important;
+  }
+  .m-sheet-glass a:hover, .m-sheet-glass a:active { background-color: rgb(255 255 255 / 10%) !important; }
+  .m-sheet-glass input[type="checkbox"] { accent-color: var(--color-gold-400); }
+  .m-sheet-glass select { border-color: var(--m-glass-rim) !important; background-color: rgb(255 255 255 / 12%) !important; color: #fff !important; }
+  /* The native picker opens on the system's light surface, so its rows keep dark text. */
+  .m-sheet-glass select option { background: #fff; color: var(--color-navy-950); }
+  .m-sheet-glass .m-gold-cta { color: var(--color-navy-950) !important; }
+
+  /* Search hangs under the capsule as a card of the same material. */
+  .pts-search-panel { left: 0; right: 0; margin-top: 8px; border: 1px solid; border-radius: 22px; padding-block: 12px; }
+  .pts-search-panel .pts-search-field { border-color: var(--m-glass-rim) !important; background: rgb(255 255 255 / 12%) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%); }
+  .pts-search-panel .pts-search-field input { color: #fff; font-size: 16px; }
+  .pts-search-panel .pts-search-field input::placeholder { color: #c9d5e5; }
+  .pts-search-panel .pts-search-field > .iconify { color: #c9d5e5 !important; }
+  .pts-search-panel .pts-search-field button { background: var(--pts-gold-gradient) !important; color: var(--color-navy-950) !important; }
+  .pts-search-panel button.rounded-full.border { min-height: 44px; }
+  .pts-search-panel button[aria-label="Đóng tìm kiếm"] { color: #fff; }
+  .cart-card { border-radius: 22px; }
+  .cart-card .cart-card__arrow { display: none; }
+  .cart-card .cart-card__item { background: rgb(255 255 255 / 10%) !important; }
+  .cart-card .cart-card__name { color: #fff !important; }
+  .cart-card .cart-card__qty, .cart-card .cart-card__close { color: #c9d5e5 !important; }
+  .cart-card .cart-card__primary { background: var(--pts-gold-gradient) !important; color: var(--color-navy-950) !important; }
+  .cart-card .cart-card__secondary { background: var(--m-glass-lens) !important; border-color: var(--m-glass-rim) !important; color: #fff !important; }
+}
+
+/* Phone shape and material system. Pages do not choose these one by one.
+   Shape:    the header capsule is the reference. Sheets and dialogs 22px like it; buttons, fields and
+             cards 16px; tags inside a card 8px. Nothing reads as a pill. Only the dock, Zalo and icon circles stay round.
+   Material: dark glass over content, light glass on pale or photo backgrounds, lens for a control on dark.
+   The tokens below keep the desktop's flat corners untouched. */
+@media (max-width: 820px) {
+  :root {
+    --ui-radius: 8px;
+    --radius-chip: 16px;
+    --radius-btn: 16px;
+    --radius-sm: 16px;
+    --radius-md: 16px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
+    --radius-card: 16px;
+  }
+  /* Text controls take the shared corner. Icon-only controls keep their own shape. */
+  a:where(:not(.rounded-none, .dock *, .buy-island *, .m-glass-zalo, [aria-label]:has(> .iconify:only-child, > svg:only-child))),
+  button:where(:not(.rounded-none, [role="combobox"], .dock *, .buy-island *, .m-glass-zalo, [aria-label]:has(> .iconify:only-child, > svg:only-child))),
+  summary, [role="button"], form[role="search"], .pts-search-field { border-radius: 16px !important; }
+  .public-neutral-button:not(.rounded-full) { border-radius: 16px !important; }
+  /* A small control gets a small corner, or it turns into a pill. */
+  :is(a, button):is([class*="min-h-9"], [class*="min-h-8"], [class*="h-8"], [class*="h-9"], [class*="text-xs"], [class*="text-[11px"], [class*="text-[12px"], .public-pagination-button) { border-radius: 10px !important; }
+  input:not([type="checkbox"], [type="radio"], .rounded-none), select, textarea, button[role="combobox"] { border-radius: 16px !important; }
+  /* Floating dialogs only: a sheet that fills the screen edge keeps square corners. */
+  [role="dialog"]:not([data-vaul-drawer], .pts-drawer__panel, [class*="inset-0"], .promo-popup, dialog) { border-radius: 22px !important; }
+  input[type="checkbox"], [role="checkbox"] { border-radius: 6px !important; }
+  /* A link marked by a side rule keeps a straight edge; a corner would bend the rule. */
+  nav a[class*="border-l-"] { border-radius: 0 !important; }
+  /* Every native picker shows the same chevron as the Nuxt UI selects beside it. */
+  select:not(.appearance-none) {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 36px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+  }
+
+  .app-card { border-radius: 16px !important; overflow: hidden; }
+  /* Three levels only: 22px sheet, 16px button and card, 8px for a tag sitting inside a card. */
+  article span.absolute[class*="rounded"], main span.rounded-full:not([class*="size-"], [class*="w-"], [class*="h-"]), .dealer-spec-chip, .news-badge { border-radius: 8px !important; }
+
+  /* Only the action that ends a page or a form is full size. Inline actions keep the size their layout gave them. */
+  :is(main, [role="dialog"]) form button[type="submit"]:not(.pts-search-field *, [role="search"] *), .cta-band__primary { min-height: 52px; font-size: 15px; font-weight: 800; }
+  /* A small control looks small and still takes a full thumb: the hit area grows, the drawing does not. */
+  .public-neutral-button, .product-support-link { position: relative; }
+  .public-neutral-button::after, .product-support-link::after { content: ""; position: absolute; inset: -8px 0; }
+
+  .pts-glass, .cta-band__actions, .dealer-hero__stats, .promo-popup__close, .news-badge, .contact-hero-call {
+    background: var(--m-glass-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter) !important;
+    backdrop-filter: var(--m-glass-filter) !important;
+    border-color: var(--m-glass-rim) !important;
+    box-shadow: var(--m-glass-shadow) !important;
+  }
+  .pts-glass-light, .pts-chapter-nav {
+    background: var(--m-glass-light-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter) !important;
+    backdrop-filter: var(--m-glass-filter) !important;
+    border-color: var(--m-glass-light-rim) !important;
+    box-shadow: var(--m-glass-light-shadow) !important;
+  }
+}
+
+/* The buying journey keeps one object in the same place: the dock becomes an island that carries
+   the next step, from the product page through cart to checkout. */
+.m-island { display: none; }
+@media (max-width: 820px) {
+  .m-island, .checkout-bar {
+    position: fixed !important;
+    left: 12px !important;
+    right: 72px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+    z-index: 40 !important;
+    display: flex !important;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 6px 6px 18px !important;
+    border: 1px solid var(--m-glass-rim) !important;
+    border-radius: 30px !important;
+    background: var(--m-glass-bg) !important;
+    -webkit-backdrop-filter: var(--m-glass-filter) !important;
+    backdrop-filter: var(--m-glass-filter) !important;
+    box-shadow: var(--m-glass-shadow) !important;
+  }
+  :is(.m-island, .checkout-bar) small { display: block; color: #c9d5e5 !important; font-size: 11px; font-weight: 600; line-height: 1.2; }
+  :is(.m-island, .checkout-bar) strong { color: #fff !important; font-size: 15px !important; font-weight: 800 !important; font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap; }
+  :is(.m-island, .checkout-bar) :is(a, button) {
+    display: inline-flex;
+    height: 46px;
+    min-height: 0 !important;
+    flex: none;
+    align-items: center;
+    padding: 0 20px !important;
+    border: 0;
+    border-radius: 24px !important;
+    background: var(--pts-gold-gradient) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+    color: var(--color-navy-950) !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  a, button, summary, [role="button"] { -webkit-tap-highlight-color: transparent; }
+
+  /* Pagination stays on one line: nearby pages, previous, next, first and last. */
+  nav[aria-label^="Phân trang"] { flex-wrap: nowrap !important; gap: 6px !important; }
+  nav[aria-label^="Phân trang"] > * { display: none !important; }
+  nav[aria-label^="Phân trang"] > :is([aria-current], :has(+ [aria-current]), [aria-current] + *, [aria-label="Trang đầu"], [aria-label="Trang trước"], [aria-label="Trang sau"], [aria-label="Trang cuối"]):not(.catalog-pagination__ellipsis) { display: inline-flex !important; min-width: 40px; }
+
+  /* Filter and sort stay in reach down a long list. */
+  .catalog-toolbar:has(.m-sticky-tools) { display: contents; }
+  .m-sticky-tools { position: sticky; top: 8px; z-index: 20; margin-block: 10px 20px; }
+  .filter-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding-inline: 5px; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); font-size: 11.5px; font-weight: 800; }
+}
+/* Press feedback on every device, through the scale property so it never fights a positioning transform. */
+@media (prefers-reduced-motion: no-preference) {
+  :is(a, button, summary, [role="button"]):active:not(:disabled, [aria-disabled="true"]) { scale: .975; }
+}
+
+@media (max-width: 820px) {
+  .m-chunk { display: block; }
+  .m-chunk + .m-chunk { margin-top: .6em; }
+}
+
+/* One heading scale on phones, so pages read as one site. */
+@media (max-width: 820px) {
+  /* Section titles share one size; titles inside a panel or form step down one level.
+     Card titles inside an article keep the size their card was laid out for. */
+  h2:not(.sr-only, footer h2, [role="dialog"] h2, article:not(:has(section, article, h1)) h2) { font-size: 22px !important; font-weight: 800 !important; line-height: 1.22 !important; letter-spacing: -.02em !important; }
+  :is(form, .finder) h2:not(.sr-only, footer h2, [role="dialog"] h2, article:not(:has(section, article, h1)) h2), h2.m-h-panel:not(.sr-only, footer h2, [role="dialog"] h2, article:not(:has(section, article, h1)) h2) { font-size: 18px !important; line-height: 1.25 !important; }
+  article:not(:has(section, article, h1)) :is(h2, h3):not([class*="min-h-"], .news-title:not(.text-2xl)) { font-size: 16px !important; font-weight: 800 !important; line-height: 1.3 !important; }
+  article .news-title.text-2xl { font-size: 18px !important; }
+  h3:not(.sr-only, footer h3, [role="dialog"] h3, article:not(:has(section, article, h1)) h3) { font-size: 16px !important; font-weight: 800 !important; line-height: 1.3 !important; }
+  #home-title { font-size: 30px !important; }
+  h1:not(.sr-only):not(#home-title):not(.pdp-title) { font-size: 26px !important; font-weight: 800 !important; line-height: 1.15 !important; letter-spacing: -.02em; }
+}
+
+/* Clicking a photo opens it on clear glass over the page: the same light direction as the header, on every viewer. */
+.photo-viewer, .glass-overlay {
+  background: rgb(240 245 252 / 58%);
+  color: var(--color-navy-950);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .photo-viewer, .glass-overlay { background: rgb(240 245 252 / 96%); }
+}
+.photo-viewer__media { border-radius: var(--radius-btn); filter: drop-shadow(0 16px 26px rgb(6 21 55 / 26%)); }
+.photo-viewer__btn {
+  border: 1px solid rgb(255 255 255 / 90%);
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 6px 18px rgb(6 21 55 / 16%);
+  color: var(--color-navy-950);
+  transition: background-color .2s ease, transform .2s ease;
+}
+.photo-viewer__btn { z-index: 2; }
+.photo-viewer__btn:hover { background: #fff; }
+.photo-viewer__btn:active { transform: scale(.95); }
+.photo-viewer__btn:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; }
+.photo-viewer__label {
+  border-radius: var(--radius-btn);
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 6px 18px rgb(6 21 55 / 12%);
+  color: var(--color-navy-950);
+}
+/* Phones: the arrows leave the photo and sit beside the counter, in reach of the thumb. */
+@media (max-width: 820px) {
+  .photo-viewer__media { max-height: 76dvh; }
+  .photo-viewer__arrow { top: auto; bottom: calc(14px + env(safe-area-inset-bottom)); translate: none; }
+}
+
+/* Chip rails with a gliding pill: each chip's surface moves to a layer under the pill, its label stays above. */
+[data-pill-rail] { isolation: isolate; }
+[data-pill-rail]:not(.sticky) { position: relative; }
+.rail-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #123a7a 0%, #0a2251 100%);
+  box-shadow: 0 2px 5px rgb(6 21 55 / 20%), inset 0 1px 0 rgb(255 255 255 / 10%);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: left center;
+  will-change: transform;
+}
+[data-pill-rail] .public-filter-chip {
+  position: relative;
+  background: none;
+  box-shadow: none;
+  color: var(--color-navy-800);
+  transition: color .28s ease, transform 180ms ease;
+}
+[data-pill-rail] .public-filter-chip::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(241 243 246 / 94%) 100%);
+  box-shadow: 0 1px 2px rgb(6 21 55 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%);
+  transition: opacity .2s ease;
+}
+[data-pill-rail] .public-filter-chip:not([data-pill-on]):hover { background: none; box-shadow: none; }
+[data-pill-rail] .public-filter-chip[data-pill-on] { color: #fff; }
+[data-pill-rail] .public-filter-chip[data-pill-on]::before { opacity: 0; }
+[data-pill-rail] .public-filter-chip img { transition: filter .28s ease; }
+[data-pill-rail] .public-filter-chip:not([data-pill-on]) img { filter: none; }
+[data-pill-rail] .public-filter-chip[data-pill-on] img { filter: brightness(0) invert(1); }
+
+/* Product category rail: the same glide in the page's gold, with each chip keeping its outline. */
+.rail-pill[data-tone="gold"] { background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); }
+[data-pill-rail] .catalog-category-chip {
+  position: relative;
+  border-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--color-navy-800);
+  transition: transform 180ms ease;
+}
+[data-pill-rail] .catalog-category-chip::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -1px;
+  border: 1px solid #d6dce5;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(241 243 246 / 94%) 100%);
+  box-shadow: 0 1px 2px rgb(6 21 55 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%);
+  transition: opacity .2s ease, border-color .18s ease;
+}
+[data-pill-rail] .catalog-category-chip:not([data-pill-on]):hover::before { border-color: rgb(10 34 81 / 58%); }
+[data-pill-rail] .catalog-category-chip[data-pill-on] { color: var(--color-navy-950); }
+[data-pill-rail] .catalog-category-chip[data-pill-on]::before { opacity: 0; }
+
+/* Section rails on product, about and solution pages: text chips with the same gliding pill. */
+[data-pill-rail] > a, [data-pill-rail] > div > a, [data-pill-rail] > li > a { position: relative; }
+[data-pill-rail] a[data-pill-on] { color: #fff; }
+[data-pill-rail] a[data-pill-on]:hover { background: none; color: #fff; }
+
+/* Search fields carry their own clear button, and the panel above the page stays fully readable. */
+form[role="search"] input[type="search"]::-webkit-search-cancel-button { display: none; }
+@media (min-width: 821px) { .pts-search-panel { background: #fff !important; } }
+
+/* Lines end sensibly: headings balance, body text avoids a lone last word (see plugins/vi-line-breaks.client.ts). */
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li, figcaption, dd, blockquote { text-wrap: pretty; }
+
+/* Dropdown options show the current item by their background, not the page's focus outline. */
+[role="option"]:focus-visible, [role="option"][data-highlighted] { outline: none !important; box-shadow: none; }
+[role="option"][data-highlighted] { background: #f1f4f9; }
+
+/* Long text: straight edges on both sides, with the last line left as it falls. */
+.text-justified { text-align: justify; text-align-last: left; text-justify: inter-word; text-wrap: wrap; }
+.text-justified .m-chunk { text-align: inherit; text-align-last: left; }

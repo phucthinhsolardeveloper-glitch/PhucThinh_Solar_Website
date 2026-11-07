@@ -84,7 +84,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
@@ -149,7 +148,6 @@ usePublicSocialMeta({
         </template>
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>
 

@@ -30,7 +30,6 @@ useSeoMeta({
     hồi quy do đợt chuyển đổi này.
   -->
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="mx-auto w-full max-w-[1766px] px-4">
@@ -45,6 +44,5 @@ useSeoMeta({
       <div class="h-16" aria-hidden="true" />
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

@@ -18,7 +18,6 @@ useSeoMeta({ title: 'Thanh toán — Nuxt preview', robots: 'noindex, nofollow, 
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <main class="pts-container py-16 max-ph:py-10">
       <SiteBreadcrumb :items="[{ label: 'Giỏ hàng', to: links.generic('/gio-hang/') }, { label: 'Thanh toán' }]" />
       <h1 class="mb-6 text-[clamp(30px,5vw,46px)] font-black tracking-tight">Thanh toán</h1>
@@ -52,6 +51,5 @@ useSeoMeta({ title: 'Thanh toán — Nuxt preview', robots: 'noindex, nofollow, 
         Quay lại giỏ hàng
       </NuxtLink>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

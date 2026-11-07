@@ -14,7 +14,7 @@ function documentHref(document: PublicProductDocument): string {
 </script>
 
 <template>
-  <section
+  <section data-fold="480"
     class="grid gap-8 border-t border-gray-200 py-12 tb:py-16 nav:gap-12"
     :class="hasMediaColumn ? 'nav:grid-cols-[1.25fr_0.75fr]' : 'nav:grid-cols-[1fr_auto] nav:items-start'"
     aria-label="Video, tài liệu và bảo hành sản phẩm"
@@ -26,8 +26,8 @@ function documentHref(document: PublicProductDocument): string {
       :class="hasMediaColumn ? 'nav:order-2' : ''"
     >
       <h2 class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-900">Chính sách bảo hành</h2>
-      <div v-if="extras.warranty.summary" class="mb-5 flex items-center gap-3.5 border-l-4 border-gold-500 bg-slate-50 px-4 py-3.5">
-        <span class="grid size-10 shrink-0 place-items-center rounded-[4px] bg-navy-900 text-gold-300" aria-hidden="true">
+      <div v-if="extras.warranty.summary" class="mb-5 flex items-center gap-3.5 border-l-4 border-gold-500 max-tb:rounded-md max-tb:border-l-0 bg-slate-50 px-4 py-3.5">
+        <span class="grid size-10 shrink-0 place-items-center rounded-btn bg-navy-900 text-gold-300" aria-hidden="true">
           <UIcon name="i-lucide-shield-check" class="size-5" />
         </span>
         <div>
@@ -37,7 +37,7 @@ function documentHref(document: PublicProductDocument): string {
       </div>
       <div v-if="extras.warranty.override" class="max-w-[72ch]">
         <h3 class="mb-2 text-base font-extrabold text-navy-900">Chính sách riêng của sản phẩm</h3>
-        <p class="mb-0 whitespace-pre-line text-[15.5px] leading-7 text-slate-600">{{ extras.warranty.override }}</p>
+        <p class="mb-0 whitespace-pre-line text-[15.5px] leading-7 text-slate-600"><ChunkedText :text="extras.warranty.override" /></p>
       </div>
       <div v-else-if="extras.warranty.policies.length">
         <p class="mb-3 text-slate-500">Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p>
@@ -80,7 +80,7 @@ function documentHref(document: PublicProductDocument): string {
           </div>
           <button
             type="button"
-            class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-[3px] bg-navy-900 px-3 py-1.5 text-xs font-bold text-gold-300 transition-colors hover:bg-navy-800"
+            class="product-support-link inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-chip bg-navy-900 px-3 py-1.5 text-xs font-bold text-gold-300 transition-colors hover:bg-navy-800"
             @click="openConsultation('Yêu cầu video thực tế & tài liệu kỹ thuật sản phẩm')"
           >
             <span>Nhận tài liệu & video</span>
