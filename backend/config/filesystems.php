@@ -30,6 +30,13 @@ return [
 
     'disks' => [
 
+        // Generated thumbnails (/thumbs/...), rebuilt on demand, safe to delete.
+        'thumbs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/thumbs'),
+            'throw' => false,
+        ],
+
         // The PHP site's upload folder (shared volume). Read-only locally; writable where Laravel owns writes.
         'legacy_upload' => [
             'driver' => 'local',

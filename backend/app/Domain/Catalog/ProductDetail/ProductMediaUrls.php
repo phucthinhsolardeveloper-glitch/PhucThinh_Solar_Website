@@ -55,14 +55,26 @@ final class ProductMediaUrls
         return $this->exists($path) ? '/'.$path : '';
     }
 
-    /** upload/... lives in the shared upload volume, assets/... in the legacy checkout. */
+    /** upload/... lives in the shared upload volume, assets/... in the shipped assets folder. */
     public function exists(string $publicPath): bool
     {
+        $file = $this->absolute($publicPath);
+
+        return $file !== '' && is_file($file);
+    }
+
+    /** Disk path of a public file path, or '' outside upload/ and assets/ or when it tries to climb out. */
+    public function absolute(string $publicPath): string
+    {
+        $publicPath = ltrim($publicPath, '/');
+        if (str_contains($publicPath, '..') || str_contains($publicPath, "\0")) {
+            return '';
+        }
         if (str_starts_with($publicPath, 'upload/')) {
-            return is_file($this->uploadRoot.'/'.substr($publicPath, 7));
+            return $this->uploadRoot.'/'.substr($publicPath, 7);
         }
 
-        return $this->assetsRoot !== '' && str_starts_with($publicPath, 'assets/') && is_file($this->assetsRoot.'/'.substr($publicPath, 7));
+        return $this->assetsRoot !== '' && str_starts_with($publicPath, 'assets/') ? $this->assetsRoot.'/'.substr($publicPath, 7) : '';
     }
 
     public function product(mixed $value): string

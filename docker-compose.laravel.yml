@@ -9,6 +9,9 @@ services:
     container_name: pts-laravel13-local
     restart: "no"
     working_dir: /app
+    environment:
+      # artisan serve answers several requests at once (Nuxt SSR fans out API calls).
+      PHP_CLI_SERVER_WORKERS: "4"
     volumes:
       - ./backend:/app
       # The legacy PHP container's upload volume, read-only, so image resolution sees the same files as PHP.
