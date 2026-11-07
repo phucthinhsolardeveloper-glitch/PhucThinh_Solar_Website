@@ -19,8 +19,6 @@ test('route classifier contract accepts only supported kinds with their exact ca
     { schemaVersion: 1, slug: 'du-an-mau', kind: 'project', canonicalPath: '/du-an-mau/' },
     { schemaVersion: 1, slug: 'du-an-ca-nhan', kind: 'project-category', canonicalPath: '/du-an-ca-nhan' },
     { schemaVersion: 1, slug: 'bao-hanh', kind: 'policy', canonicalPath: '/ho-tro/bao-hanh/' },
-    { schemaVersion: 1, slug: 'nhom-tin-tuc', kind: 'legacy-only', canonicalPath: null, reason: 'unsupported-taxonomy' },
-    { schemaVersion: 1, slug: 'tin-tuc', kind: 'legacy-only', canonicalPath: null, reason: 'unsupported-route' },
   ]
   for (const result of valid) assert.equal(isPublicRouteResolveResult(result), true, result.kind)
 })
@@ -36,7 +34,7 @@ test('route classifier contract rejects malformed, mismatched, private, or guess
     { schemaVersion: 1, slug: 'den', kind: 'brand', canonicalPath: '/den/' },
     { schemaVersion: 1, slug: 'video-item', kind: 'video', canonicalPath: '/video-item/' },
     { schemaVersion: 1, slug: 'static-page', kind: 'static', canonicalPath: '/static-page/' },
-    { schemaVersion: 1, slug: 'hidden', kind: 'legacy-only', canonicalPath: '/hidden/', reason: 'unsupported-taxonomy' },
+    { schemaVersion: 1, slug: 'hidden', kind: 'legacy-only', canonicalPath: null, reason: 'unsupported-taxonomy' },
     { schemaVersion: 1, slug: 'news', kind: 'news', canonicalPath: '/news/', id: 123 },
   ]
   for (const result of invalid) assert.equal(isPublicRouteResolveResult(result), false)

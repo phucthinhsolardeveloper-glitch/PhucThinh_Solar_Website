@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\DB;
 
-// The v1 endpoint keeps the PHP query rules and error codes; full field parity is checked by pts:parity.
+// Query rules and error codes of the product endpoint; every field is covered by pts:snapshot.
 
-it('rejects extra parameters and malformed slugs like PHP', function () {
+it('rejects extra parameters and malformed slugs', function () {
     $this->getJson('/api/v1/product-detail?slug=abc&x=1')->assertStatus(400)->assertExactJson(['error' => ['code' => 'BAD_QUERY']]);
     $this->getJson('/api/v1/product-detail?slug=Bad%20Slug')->assertStatus(400);
     $this->getJson('/api/v1/product-detail')->assertStatus(400);

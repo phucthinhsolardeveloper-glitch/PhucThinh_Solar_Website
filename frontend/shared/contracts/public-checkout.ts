@@ -1,5 +1,5 @@
 export interface PublicCheckoutOption { id: number; name: string }
-export interface PublicCheckoutPayment extends PublicCheckoutOption { description: string; code: 'legacy' | 'vnpay' }
+export interface PublicCheckoutPayment extends PublicCheckoutOption { description: string; code: 'manual' | 'vnpay' }
 export interface PublicCheckoutPayload {
   schemaVersion: 1
   locale: 'vi'
@@ -46,7 +46,7 @@ function id(value: unknown): value is number { return typeof value === 'number' 
 function option(value: unknown): value is PublicCheckoutOption { return record(value) && id(value.id) && text(value.name) }
 function payment(value: unknown): value is PublicCheckoutPayment {
   return record(value) && (id(value.id) || value.id === -1) && text(value.name) && text(value.description, true)
-    && (value.code === 'legacy' || value.code === 'vnpay') && (value.id === -1 ? value.code === 'vnpay' : value.code === 'legacy')
+    && (value.code === 'manual' || value.code === 'vnpay') && (value.id === -1 ? value.code === 'vnpay' : value.code === 'manual')
 }
 export function isPublicCheckoutPayload(value: unknown): value is PublicCheckoutPayload {
   return record(value) && value.schemaVersion === 1 && value.locale === 'vi'

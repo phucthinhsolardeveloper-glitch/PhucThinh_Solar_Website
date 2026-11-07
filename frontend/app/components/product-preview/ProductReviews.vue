@@ -4,7 +4,6 @@ import { isPublicProductExtrasPayload } from '#shared/contracts/public-product-e
 import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 
 const props = defineProps<{ productId: number; slug: string; reviews: PublicProductExtrasPayload['reviews']; csrfToken: string }>()
-const runtimeConfig = useRuntimeConfig()
 const reducedMotion = useReducedMotion()
 const writing = ref(false)
 const submitting = ref(false)
@@ -59,15 +58,7 @@ function dateText(timestamp: number): string {
 }
 
 function reviewVideoSource(pathname: string): string {
-  if (!/^\/upload\/video\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:mp4|mkv)$/i.test(pathname)) return ''
-  try {
-    const origin = new URL(runtimeConfig.public.phpPublicOrigin)
-    if (!['http:', 'https:'].includes(origin.protocol) || origin.username || origin.password
-      || origin.pathname !== '/' || origin.search || origin.hash) return ''
-    return new URL(pathname, origin).toString()
-  } catch {
-    return ''
-  }
+  return /^\/upload\/video\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:mp4|mkv)$/i.test(pathname) ? pathname : ''
 }
 
 function selectPhotos(event: Event) {

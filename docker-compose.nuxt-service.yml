@@ -19,7 +19,6 @@ services:
       # Comma-separated exact host[:port] entries only - never a wildcard.
       NUXT_PHP_ORIGIN_ALLOWLIST: ${NUXT_PHP_ORIGIN_ALLOWLIST:-pts-php81-local:80,host.docker.internal:8080,127.0.0.1:8080}
       NUXT_PREVIEW_MEDIA_PROXY: ${NUXT_PREVIEW_MEDIA_PROXY:-false}
-      NUXT_PUBLIC_PHP_PUBLIC_ORIGIN: ${NUXT_PUBLIC_PHP_PUBLIC_ORIGIN:-http://localhost:8080}
     ports:
       - "127.0.0.1:3101:3000"
     networks:

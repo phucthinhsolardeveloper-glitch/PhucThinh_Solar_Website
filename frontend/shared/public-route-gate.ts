@@ -15,8 +15,6 @@ export const CART_PUBLIC_PATH = '/gio-hang/'
 export const CART_CHECKOUT_POST_PATH = '/api/v1/checkout'
 export const ORDER_SUCCESS_PUBLIC_PATH = '/cam-on/'
 
-// Static exact-match fallback paths (no slug).
-const STATIC_PUBLIC_PATHS: readonly string[] = [HOME_PUBLIC_PATH, ABOUT_PUBLIC_PATH, SOLUTIONS_PUBLIC_PATH, CONTACT_PUBLIC_PATH, DEALER_PUBLIC_PATH, NEWS_PUBLIC_PATH, PROJECTS_PUBLIC_PATH, GALLERY_PUBLIC_PATH, VIDEO_PUBLIC_PATH, CATALOG_PUBLIC_PATH, BRAND_ROOT_PUBLIC_PATH, SEARCH_PUBLIC_PATH, CART_PUBLIC_PATH, ORDER_SUCCESS_PUBLIC_PATH]
 const RESERVED_BARE_SLUGS = new Set([
   'he-thong-dai-ly', 've-chung-toi', 'product', 'index', 'sitemap', 'lien-he',
   'gioi-thieu', 'dai-ly', 'tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien',
@@ -24,10 +22,7 @@ const RESERVED_BARE_SLUGS = new Set([
   'gio-hang', 'cam-on', 'account', 'ngon-ngu', 'admin', 'api', 'administrator', 'upload',
   'thumbs', 'watermark',
 ])
-// Slug-bearing fallback paths: PDP has no trailing slash (matches
-// publicProductEntityPath()'s canonical form, see ROUTE_PARITY_MATRIX.md
-// F03); brand detail keeps the trailing slash (F06).
-const DYNAMIC_PUBLIC_PATH_PATTERNS: readonly RegExp[] = [/^\/san-pham\/[a-z0-9]+(?:-[a-z0-9]+)*$/, /^\/thuong-hieu\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/]
+// Product pages have no trailing slash; brand pages keep it.
 
 export function productDetailPublicPath(slug: string): string {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error('Invalid product slug')
@@ -69,27 +64,4 @@ export function isProductCategoryHierarchy(value: unknown): value is string[] {
     && value.length >= 1
     && value.length <= 4
     && value.every((slug) => typeof slug === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))
-}
-
-export function phpPublicRouteUrl(originValue: unknown, pathname: string, query?: Record<string, string>): string {
-  const categoryPath = (() => {
-    const match = pathname.match(/^\/danh-muc-san-pham\/(.+)\/$/)
-    return match ? isProductCategoryHierarchy(match[1]!.split('/')) : false
-  })()
-  const projectCategoryPath = /^\/danh-muc-du-an\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(pathname)
-  const bareSlugMatch = pathname.match(/^\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/)
-  const bareSlugPath = bareSlugMatch !== null && !RESERVED_BARE_SLUGS.has(bareSlugMatch[1]!)
-  const isKnown = STATIC_PUBLIC_PATHS.includes(pathname) || DYNAMIC_PUBLIC_PATH_PATTERNS.some((pattern) => pattern.test(pathname)) || categoryPath || projectCategoryPath || bareSlugPath
-  if (!isKnown) throw new Error('Unsupported public route fallback')
-  if (typeof originValue !== 'string' || !originValue.trim()) throw new Error('PHP public origin is required')
-
-  const origin = new URL(originValue)
-  if (!['http:', 'https:'].includes(origin.protocol) || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
-    throw new Error('Untrusted PHP public origin')
-  }
-  const target = new URL(pathname, origin)
-  for (const [key, value] of Object.entries(query ?? {})) {
-    if (value) target.searchParams.set(key, value)
-  }
-  return target.toString()
 }

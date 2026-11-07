@@ -1,16 +1,14 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { phpPublicRouteUrl, projectCategoryPublicPath } from '../shared/public-route-gate.ts'
+import { projectCategoryPublicPath } from '../shared/public-route-gate.ts'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '../shared/project-category-route.ts'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('legacy project category paths are validated and can safely fall back to PHP', () => {
+test('project category paths are validated', () => {
   assert.equal(projectCategoryPublicPath('ho-gia-dinh'), '/danh-muc-du-an/ho-gia-dinh/')
-  assert.equal(phpPublicRouteUrl('https://php.internal', projectCategoryPublicPath('ho-gia-dinh'), { p: '2' }), 'https://php.internal/danh-muc-du-an/ho-gia-dinh/?p=2')
   assert.throws(() => projectCategoryPublicPath('../admin'), /Invalid project category slug/)
-  assert.throws(() => phpPublicRouteUrl('https://php.internal', '/danh-muc-du-an/a//b/'), /Unsupported public route fallback/)
 })
 
 test('Nuxt project category page parsing accepts only bounded positive pages', () => {

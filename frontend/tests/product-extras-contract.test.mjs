@@ -59,6 +59,6 @@ test('review media and paged parent/reply contracts stay bounded and same-origin
   assert.match(reviewUi, /Tải thêm nhận xét/)
   assert.match(reviewUi, /Xem thêm phản hồi/)
   assert.match(reviewUi, /reviewVideoSource\(review\.video\.url\)/)
-  assert.match(reviewUi, /new URL\(pathname, origin\)\.toString\(\)/)
+  assert.doesNotMatch(reviewUi, /phpPublicOrigin/)
   assert.match(reviewUi, /:poster="review\.video\.poster \|\| undefined"/)
 })

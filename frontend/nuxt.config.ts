@@ -138,7 +138,6 @@ export default defineNuxtConfig({
       policyDetailPublicRouteIndexable: true,
       cartPublicRouteIndexable: false,
       orderSuccessPublicRouteIndexable: false,
-      phpPublicOrigin: 'http://127.0.0.1:8080',
     },
   },
 })

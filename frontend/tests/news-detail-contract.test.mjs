@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { isNewsDetailSlug, isPublicNewsDetailPayload } from '../shared/contracts/public-news-detail.ts'
 
-const article = { schemaVersion: 1, locale: 'vi', id: 8, title: 'Bài viết CMS', slug: 'bai-viet-cms', canonical: '/bai-viet-cms/', date: '2026-10-26', datePublished: '2026-10-26', dateModified: '2026-10-27', author: { name: 'Phúc Thịnh Solar' }, description: 'Mô tả', cover: '/upload/news/article.webp', showCover: true, content: { format: 'sanitized-html', html: '<p>Nội dung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }, category: {}, media: { gallery: [{ image: '/upload/news/gallery.jpg', alt: '' }], videos: [{ url: 'https://www.youtube.com/watch?v=abc', title: '' }] }, seo: { title: 'Bài viết CMS | Phúc Thịnh Solar', description: 'Mô tả', keywords: '', canonical: '/bai-viet-cms' }, readOnly: true, legacyViewMutation: false }
+const article = { schemaVersion: 1, locale: 'vi', id: 8, title: 'Bài viết CMS', slug: 'bai-viet-cms', canonical: '/bai-viet-cms/', date: '2026-10-26', datePublished: '2026-10-26', dateModified: '2026-10-27', author: { name: 'Phúc Thịnh Solar' }, description: 'Mô tả', cover: '/upload/news/article.webp', showCover: true, content: { format: 'sanitized-html', html: '<p>Nội dung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }, category: {}, media: { gallery: [{ image: '/upload/news/gallery.jpg', alt: '' }], videos: [{ url: 'https://www.youtube.com/watch?v=abc', title: '' }] }, seo: { title: 'Bài viết CMS | Phúc Thịnh Solar', description: 'Mô tả', keywords: '', canonical: '/bai-viet-cms' } }
 const cta = { title: 'Cần tư vấn?', description: 'Liên hệ để được hỗ trợ.', buttonLabel: 'Nhận tư vấn', image: '', hotline: { label: 'Gọi ngay hotline', text: '0901 234 567', tel: '0901234567' } }
 const good = { article, cta, related: [{ id: 9, title: 'Tin khác', slug: 'tin-khac', canonical: '/tin-khac/', date: '', author: 'Phúc Thịnh Solar', description: '', image: '' }] }
 test('accepts safe read-only detail DTO', () => assert.equal(isPublicNewsDetailPayload(good), true))
@@ -29,8 +29,7 @@ test('rejects unsafe slugs, media and raw HTML', () => {
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, cover: '/upload/news/../../secret.jpg' } }), false)
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, media: { ...article.media, videos: [{ url: 'javascript:alert(1)', title: '' }] } } }), false)
 })
-test('requires no legacy view mutation and rejects wrong content contract', () => {
-  assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, legacyViewMutation: true } }), false)
+test('rejects a wrong content contract', () => {
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, content: { format: 'plain-text', value: 'x', richTextDeferred: true } } }), false)
 })
 test('rejects content that carries unsanitized markup or wrong sanitizer metadata', () => {

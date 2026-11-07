@@ -17,10 +17,7 @@ export interface PublicBrandDetailPayload {
   pagination: { page: number; perPage: number; total: number }
   filters?: PublicBrandDetailFilters
   selected: { sort: PublicCatalogSortKey; priceKeys?: Array<'1' | '2' | '3'> }
-  parity: {
-    prices: { included: true } | { included: false; reason: string }
-    seoOverrides: { included: true } | { included: false; reason: 'legacy_seo_override_table_not_delegated' }
-  }
+  pricesVisible: boolean
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -60,16 +57,11 @@ function isBrandFilters(value: unknown): value is PublicBrandDetailFilters {
       && hasExactKeys(range, ['key', 'label']) && ['1', '2', '3'].includes(range.key as string) && isSafeText(range.label))
 }
 
-function isPriceParity(value: unknown): value is PublicBrandDetailPayload['parity']['prices'] {
-  return isRecord(value) && (hasExactKeys(value, ['included']) && value.included === true
-    || hasExactKeys(value, ['included', 'reason']) && value.included === false && value.reason === 'public_pricing_disabled')
-}
-
 export function isPublicBrandDetailPayload(value: unknown): value is PublicBrandDetailPayload {
   if (!isRecord(value)) return false
   const hasFilters = Object.prototype.hasOwnProperty.call(value, 'filters')
   const hasSeo = Object.prototype.hasOwnProperty.call(value, 'seo')
-  const keys = ['schemaVersion', 'locale', 'path', 'brand', 'products', 'pagination', 'selected', 'parity']
+  const keys = ['schemaVersion', 'locale', 'path', 'brand', 'products', 'pagination', 'selected', 'pricesVisible']
   if (hasFilters) keys.push('filters')
   if (hasSeo) keys.push('seo')
   if (!hasExactKeys(value, keys)) return false
@@ -87,11 +79,7 @@ export function isPublicBrandDetailPayload(value: unknown): value is PublicBrand
   if (!(hasPriceKeys
     ? hasExactKeys(value.selected, ['sort', 'priceKeys']) && Array.isArray(value.selected.priceKeys) && value.selected.priceKeys.every((key) => ['1', '2', '3'].includes(key as string))
     : hasExactKeys(value.selected, ['sort']))) return false
-  if (!isRecord(value.parity) || !hasExactKeys(value.parity, ['prices', 'seoOverrides'])) return false
-  if (!isPriceParity(value.parity.prices)) return false
-  const seoOverrides = value.parity.seoOverrides
-  return isRecord(seoOverrides) && (hasExactKeys(seoOverrides, ['included']) && seoOverrides.included === true
-    || hasExactKeys(seoOverrides, ['included', 'reason']) && seoOverrides.included === false && seoOverrides.reason === 'legacy_seo_override_table_not_delegated')
+  return typeof value.pricesVisible === 'boolean'
 }
 
 export function isBrandSlug(value: unknown): value is string {

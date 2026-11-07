@@ -17,8 +17,7 @@ export interface PublicProjectDetailPayload {
   schemaVersion: 1; locale: 'vi'; project: PublicProjectDetail
   content: PublicSanitizedRichText
   seo: PublicProjectDetailSeo
-  canonical: { url: string; sources: Record<string, string> }
-  parity: Record<string, { included: false; reason: string }>
+  canonical: { url: string }
 }
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 function record(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
@@ -32,8 +31,8 @@ function projectCta(value: unknown): value is PublicProjectDetailCta { return re
 function gallery(value: unknown): value is PublicProjectGalleryItem { return record(value) && (value.type === 'image' || value.type === 'video') && media(value.src, '/upload/news/', true) && text(value.caption, true) && (value.type === 'image' || (text(value.href) && /^https?:\/\//.test(value.href))) }
 export function isProjectSlug(value: unknown): value is string { return typeof value === 'string' && slugPattern.test(value) }
 export function isPublicProjectDetailPayload(value: unknown): value is PublicProjectDetailPayload {
-  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.project) || !isPublicSanitizedRichText(value.content) || !record(value.seo) || !text(value.seo.title) || !text(value.seo.description, true) || !text(value.seo.keywords, true) || !record(value.canonical) || !text(value.canonical.url) || !record(value.parity)) return false
+  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.project) || !isPublicSanitizedRichText(value.content) || !record(value.seo) || !text(value.seo.title) || !text(value.seo.description, true) || !text(value.seo.keywords, true) || !record(value.canonical) || !text(value.canonical.url)) return false
   const project = value.project
-  if (!id(project.id) || !text(project.title) || !isProjectSlug(project.slug) || project.url !== `/${project.slug}/` || value.canonical.url !== `/${project.slug}` || !text(project.summary, true) || !media(project.coverImage, '/upload/news/', true) || !(project.category === null || category(project.category)) || !text(project.client, true) || !text(project.address, true) || !text(project.startDate, true) || !text(project.endDate, true) || !Array.isArray(project.gallery) || !project.gallery.every(gallery) || !Array.isArray(project.relatedEquipment) || !project.relatedEquipment.every(equipment) || !Array.isArray(project.relatedProjects) || !project.relatedProjects.every(relatedProject) || !(project.cta === null || projectCta(project.cta))) return false
-  return Object.values(value.parity).every((row) => record(row) && row.included === false && text(row.reason))
+  if (!id(project.id) || !text(project.title) || !isProjectSlug(project.slug) || project.url !== `/${project.slug}/` || value.canonical.url !== `/${project.slug}` || !text(project.summary, true) || !media(project.coverImage, '/upload/news/', true) || !(project.category === null || category(project.category)) || !text(project.client, true) || !text(project.address, true) || !text(project.startDate, true) || !text(project.endDate, true) || !Array.isArray(project.gallery) || !project.gallery.every(gallery) || !Array.isArray(project.relatedEquipment) || !project.relatedEquipment.every(equipment) || !Array.isArray(project.relatedProjects) || !project.relatedProjects.every(relatedProject)) return false
+  return project.cta === null || projectCta(project.cta)
 }

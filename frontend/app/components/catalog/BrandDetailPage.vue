@@ -59,7 +59,7 @@ const sortOptions = computed(() => {
     { value: 'new', label: 'Mới nhất' },
     { value: 'new-desc', label: 'Cũ nhất' },
   ]
-  return data.value?.parity.prices.included ? options : options.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
+  return data.value?.pricesVisible ? options : options.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
 })
 function sortLink(value: string) {
   const next = { ...route.query }

@@ -200,7 +200,7 @@ const sortOptions = computed(() => {
     { value: 'new', label: 'Mới nhất' },
     { value: 'new-desc', label: 'Cũ nhất' },
   ]
-  if (catalogData.value?.parity.prices.included) return base
+  if (catalogData.value?.pricesVisible) return base
   return base.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
 })
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')

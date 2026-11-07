@@ -55,11 +55,7 @@ export interface PublicCatalogPayload {
   categoryHero: PublicCatalogHero | null
   categoryContent: { title: string; applications: PublicCatalogApplication[]; faq: PublicCatalogFaq[] }
   support: PublicCatalogSupport | null
-  parity: {
-    prices: { included: true } | { included: false; reason: string }
-    filters: { included: true } | { included: false; reason: string }
-    sort: { included: true } | { included: false; reason: string }
-  }
+  pricesVisible: boolean
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -99,11 +95,11 @@ function isCategory(value: unknown): value is PublicCatalogCategory {
 
 export function isPublicCatalogProduct(value: unknown): value is PublicCatalogProduct {
   if (!isRecord(value)) return false
-  const legacy = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
+  const basic = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
   const extended = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'pricing'])
   const extendedWithSpecs = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'quickSpecs', 'pricing'])
-  const baseIsValid = (legacy || extended || extendedWithSpecs) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path))
-  if (!baseIsValid || legacy) return baseIsValid
+  const baseIsValid = (basic || extended || extendedWithSpecs) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path))
+  if (!baseIsValid || basic) return baseIsValid
   const pricingIsValid = (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing)
   if (!pricingIsValid) return false
   // CMS technical fields can legitimately contain comparison signs (for example
@@ -117,14 +113,6 @@ export function isPricing(value: unknown): value is PublicCatalogPricing {
   if (!isRecord(value) || !hasExactKeys(value, ['mode', 'currency', 'regularPrice', 'salePrice']) || value.currency !== 'VND') return false
   if (value.mode === 'quote') return value.regularPrice === null && value.salePrice === null
   return value.mode === 'price' && isMoney(value.regularPrice) && isMoney(value.salePrice) && (value.regularPrice !== null || value.salePrice !== null)
-}
-
-function isPriceParity(value: unknown): value is PublicCatalogPayload['parity']['prices'] {
-  return isRecord(value) && (hasExactKeys(value, ['included']) && value.included === true || hasExactKeys(value, ['included', 'reason']) && value.included === false && (value.reason === 'public_pricing_disabled' || value.reason === 'public_pricing_authority_not_delegated'))
-}
-
-function isTogglableParity(value: unknown, legacyReason: string): value is { included: true } | { included: false; reason: string } {
-  return isRecord(value) && (hasExactKeys(value, ['included']) && value.included === true || hasExactKeys(value, ['included', 'reason']) && value.included === false && value.reason === legacyReason)
 }
 
 function isBrand(value: unknown): value is PublicCatalogBrand {
@@ -178,10 +166,10 @@ function isCatalogSelected(value: unknown): value is NonNullable<PublicCatalogPa
 
 export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPayload {
   if (!isRecord(value)) return false
-  const baseKeys = ['schemaVersion', 'locale', 'seo', 'canonical', 'category', 'categories', 'products', 'pagination', 'parity']
-  const legacy = hasExactKeys(value, baseKeys)
+  const baseKeys = ['schemaVersion', 'locale', 'seo', 'canonical', 'category', 'categories', 'products', 'pagination', 'pricesVisible']
+  const basic = hasExactKeys(value, baseKeys)
   const extended = hasExactKeys(value, [...baseKeys, 'filters', 'selected', 'categoryHero', 'categoryContent', 'support'])
-  if (!(legacy || extended) || value.schemaVersion !== 1 || value.locale !== 'vi') return false
+  if (!(basic || extended) || value.schemaVersion !== 1 || value.locale !== 'vi') return false
   if (!(Array.isArray(value.category) && value.category.length === 0 || isCategory(value.category))) return false
   if (!isRecord(value.seo) || !(hasExactKeys(value.seo, ['title', 'description', 'keywords']) || hasExactKeys(value.seo, ['title', 'description', 'keywords', 'image'])) || !isSafeText(value.seo.title) || !isSafeText(value.seo.description, true) || !isSafeText(value.seo.keywords, true) || /[<>]/.test(value.seo.title) || /[<>]/.test(value.seo.description) || /[<>]/.test(value.seo.keywords) || value.seo.image !== undefined && !isPublicCatalogVisual(value.seo.image)) return false
   const expectedCanonical = Array.isArray(value.category) ? '/san-pham/' : value.category.url
@@ -190,8 +178,7 @@ export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPa
   if (!isRecord(value.pagination) || !hasExactKeys(value.pagination, ['page', 'perPage', 'total']) || typeof value.pagination.page !== 'number' || !Number.isSafeInteger(value.pagination.page) || value.pagination.page < 1 || value.pagination.page > 10000 || typeof value.pagination.perPage !== 'number' || !Number.isSafeInteger(value.pagination.perPage) || value.pagination.perPage < 1 || value.pagination.perPage > 48 || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false
   if (extended && (!isCatalogFilters(value.filters) || !isCatalogSelected(value.selected))) return false
   if (extended && (!(value.categoryHero === null || isRecord(value.categoryHero) && hasExactKeys(value.categoryHero, ['image', 'alt']) && isPublicCatalogVisual(value.categoryHero.image) && isSafeText(value.categoryHero.alt, true)) || !isCategoryContent(value.categoryContent) || !(value.support === null || isRecord(value.support) && hasExactKeys(value.support, ['title', 'description', 'image', 'href']) && isSafeText(value.support.title) && isSafeText(value.support.description, true) && isPublicCatalogVisual(value.support.image) && typeof value.support.href === 'string' && (value.support.href === '' || value.support.href.startsWith('/'))))) return false
-  if (!isRecord(value.parity) || !hasExactKeys(value.parity, ['prices', 'filters', 'sort'])) return false
-  return isPriceParity(value.parity.prices) && isTogglableParity(value.parity.filters, 'legacy_filter_parity_not_verified') && isTogglableParity(value.parity.sort, 'legacy_sort_parity_not_verified')
+  return typeof value.pricesVisible === 'boolean'
 }
 
 export function isCatalogSlugChain(value: string): boolean {

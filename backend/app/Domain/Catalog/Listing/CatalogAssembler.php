@@ -146,11 +146,7 @@ class CatalogAssembler
                 'sort' => $request->sort,
                 'needKeys' => $request->needKeys,
             ],
-            'parity' => [
-                'prices' => $pricesVisible ? ['included' => true] : ['included' => false, 'reason' => 'public_pricing_disabled'],
-                'filters' => ['included' => true],
-                'sort' => ['included' => true],
-            ],
+            'pricesVisible' => $pricesVisible,
         ], (new CatalogLanding($db, $this->urls))->extras($request->categoryPath, $selectedId, $categoryRow, $category));
     }
 

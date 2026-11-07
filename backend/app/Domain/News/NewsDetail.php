@@ -93,8 +93,6 @@ class NewsDetail extends PageSupport
                 'category' => $category,
                 'media' => $media,
                 'seo' => ['title' => $seoTitle, 'description' => self::text($seo['descriptionvi'] ?? '') ?: $description, 'keywords' => self::text($seo['keywordsvi'] ?? ''), 'canonical' => '/'.$articleSlug],
-                'readOnly' => true,
-                'legacyViewMutation' => false,
             ],
             'related' => $this->related($related),
             'cta' => $this->cta(),

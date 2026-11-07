@@ -7,8 +7,8 @@ use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
 
 /**
- * One-segment URL classifier (api/pts_v1_public_route_resolve.php): which published entity owns
- * "/<slug>" in the same priority order as the PHP router ($requick), and its canonical path.
+ * One-segment URL classifier: which published entity owns "/<slug>" (categories, brands, products,
+ * albums, then posts by kind) and its canonical path. Anything without a page is a 404.
  */
 class PublicRouteResolver extends PageSupport
 {
@@ -45,8 +45,9 @@ class PublicRouteResolver extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $slug = $get['slug'];
+        $notFound = [404, ['error' => ['code' => 'PUBLIC_ROUTE_NOT_FOUND']]];
         if (in_array($slug, self::RESERVED, true)) {
-            return [200, ['schemaVersion' => 1, 'slug' => $slug, 'kind' => 'legacy-only', 'canonicalPath' => null, 'reason' => 'unsupported-route']];
+            return $notFound;
         }
         $parts = [];
         $params = [];
@@ -57,13 +58,15 @@ class PublicRouteResolver extends PageSupport
         }
         $match = $this->row('select id, route_field, route_com from ('.implode(' union all ', $parts).') as route_matches order by route_priority, id limit 0,1', $params);
         if (! $match || (int) $match['id'] < 1) {
-            return [404, ['error' => ['code' => 'PUBLIC_ROUTE_NOT_FOUND']]];
+            return $notFound;
         }
+        $payload = $this->classify((int) $match['id'], (string) $match['route_field'], (string) $match['route_com'], $slug);
 
-        return [200, $this->classify((int) $match['id'], (string) $match['route_field'], (string) $match['route_com'], $slug)];
+        return $payload === null ? $notFound : [200, $payload];
     }
 
-    private function classify(int $id, string $field, string $com, string $slug): array
+    /** @return array<string, mixed>|null */
+    private function classify(int $id, string $field, string $com, string $slug): ?array
     {
         $kind = self::KIND[$com] ?? null;
         [$routeKind, $path] = match (true) {
@@ -79,13 +82,8 @@ class PublicRouteResolver extends PageSupport
             $field === 'id' && $com === 'chinh-sach' => $this->postPath($id, 'ho-tro', 'policy'),
             default => [null, null],
         };
-        $isProductCategory = $com === 'san-pham' && in_array($field, ['idl', 'idc', 'idi', 'ids'], true);
-        $payload = ['schemaVersion' => 1, 'slug' => $slug, 'kind' => $routeKind ?? 'legacy-only', 'canonicalPath' => $path];
-        if ($routeKind === null) {
-            $payload['reason'] = $isProductCategory || ! in_array($field, ['idl', 'idb', 'id'], true) ? 'unsupported-taxonomy' : 'unsupported-route';
-        }
 
-        return $payload;
+        return $routeKind === null ? null : ['schemaVersion' => 1, 'slug' => $slug, 'kind' => $routeKind, 'canonicalPath' => $path];
     }
 
     /** danh-muc-san-pham/<path>/ when that path resolves back to the same visible category. */
@@ -103,7 +101,7 @@ class PublicRouteResolver extends PageSupport
     /** Knowledge and solution category pages exist only when they list at least one published, slugged post. */
     private function editorialCategory(int $id, string $kind, string $com, string $slug): array
     {
-        $listed = $this->row("select id, slug from post_categories c where id=? and kind=? and is_visible=1 and exists(select 1 from posts p where p.category_id=c.id and p.kind=? and p.is_visible=1 and p.slug<>'') limit 1", [$id, $kind, $kind]);
+        $listed = $this->row('select id, slug from post_categories where id=? and kind=? and is_visible=1 limit 1', [$id, $kind]);
         $relative = (string) ($listed['slug'] ?? '');
         if ($relative !== '' && $relative === $slug && preg_match(self::SLUG, $relative)) {
             return [$com === 'tin-tuc' ? 'news-category' : 'solution-category', '/'.$relative];

@@ -48,9 +48,8 @@ export interface PublicProductDetailPayload {
   applications?: PublicProductApplications | null
   buyingGuides?: PublicProductBuyingGuide[]
   documents: PublicProductDocument[]
-  canonical: { url: string; sources: Record<string, string> }
+  canonical: { url: string }
   seo: { title: string; description: string; keywords: string }
-  parity: Record<string, { included: false; reason: string }>
 }
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -143,7 +142,7 @@ function document(value: unknown): value is PublicProductDocument {
 export function isProductSlug(value: unknown): value is string { return typeof value === 'string' && slugPattern.test(value) }
 
 export function isPublicProductDetailPayload(value: unknown): value is PublicProductDetailPayload {
-  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.product) || !isPricing(value.pricing) || !content(value.content) || !Array.isArray(value.documents) || value.documents.length > 30 || !value.documents.every(document) || !record(value.canonical) || !text(value.canonical.url) || !record(value.seo) || !seoText(value.seo.title) || !seoText(value.seo.description, true) || !seoText(value.seo.keywords, true) || !record(value.parity)) return false
+  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.product) || !isPricing(value.pricing) || !content(value.content) || !Array.isArray(value.documents) || value.documents.length > 30 || !value.documents.every(document) || !record(value.canonical) || !text(value.canonical.url) || !record(value.seo) || !seoText(value.seo.title) || !seoText(value.seo.description, true) || !seoText(value.seo.keywords, true)) return false
   if ('breadcrumbs' in value && (!Array.isArray(value.breadcrumbs) || value.breadcrumbs.length < 1 || value.breadcrumbs.length > 5 || !value.breadcrumbs.every(breadcrumb))) return false
   if ('applications' in value && !applications(value.applications)) return false
   if ('buyingGuides' in value && (!Array.isArray(value.buyingGuides) || value.buyingGuides.length > 3 || !value.buyingGuides.every(buyingGuide))) return false
@@ -153,6 +152,5 @@ export function isPublicProductDetailPayload(value: unknown): value is PublicPro
   if (!Array.isArray(product.media) || !product.media.every(image) || !Array.isArray(product.specifications) || !product.specifications.every(spec)) return false
   if ('packageContents' in product && !text(product.packageContents, true)) return false
   if ('decisionMetrics' in product && (!Array.isArray(product.decisionMetrics) || product.decisionMetrics.length > 4 || !product.decisionMetrics.every(decisionMetric))) return false
-  if ('brand' in product && !text(product.brand, true)) return false
-  return Object.values(value.parity).every((row) => record(row) && row.included === false && text(row.reason))
+  return !('brand' in product) || text(product.brand, true)
 }

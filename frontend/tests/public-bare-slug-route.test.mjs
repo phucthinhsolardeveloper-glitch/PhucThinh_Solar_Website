@@ -6,10 +6,7 @@ import { bareSlugPublicPath } from '../shared/public-route-gate.ts'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('public resolver dispositions preserve legacy-only fallback and canonical redirects', () => {
-  assert.deepEqual(publicBareSlugDisposition({ schemaVersion: 1, slug: 'unclassified', kind: 'legacy-only', canonicalPath: null, reason: 'unsupported-route' }, {}), {
-    mode: 'legacy', path: '/unclassified/',
-  })
+test('public resolver dispositions redirect catalog, brand, solution and policy slugs to their canonical path', () => {
   assert.deepEqual(publicBareSlugDisposition({ schemaVersion: 1, slug: 'lamp', kind: 'pdp', canonicalPath: '/san-pham/lamp' }, {}), {
     mode: 'canonical', path: '/san-pham/lamp', statusCode: 301,
   })
@@ -61,7 +58,7 @@ test('bare route validates path before resolving and maps confirmed legacy alias
   assert.match(page, /editorialPublicResponseStatus\(true, resolutionStatus, true\)/)
   assert.match(page, /if \(!activeDetail\.value\) useSeoMeta\(\{ robots: 'noindex, nofollow, noarchive' \}\)/)
   assert.match(page, /bareSlugPublicPath\(slug\)/)
-  assert.match(page, /phpPublicRouteUrl\(config\.public\.phpPublicOrigin, disposition\.path\)/)
+  assert.doesNotMatch(page, /phpPublicRouteUrl|phpPublicOrigin|external: true/)
   assert.match(page, /redirectCode: disposition\.statusCode/)
   assert.match(page, /ProjectCategoryPage/)
   assert.match(page, /NewsCategoryPage/)

@@ -82,18 +82,8 @@ class ProductDetailAssembler
             'documents' => $this->applications->documents($db->table('product_documents')->where('product_id', $id)
                 ->where('is_visible', true)->where('path', '<>', '')->orderBy('sort_order')->orderBy('id')
                 ->get(['kind as document_type', 'title', 'path as file_path'])->map(fn ($r) => (array) $r)),
-            'canonical' => ['url' => '/san-pham/'.$slug, 'sources' => [
-                'product' => 'publicProductEntityPath(product)',
-                'routeResolver' => 'public_route_resolver.php',
-                'categoryUrls' => 'product_category_urls.php',
-            ]],
+            'canonical' => ['url' => '/san-pham/'.$slug],
             'seo' => $this->seo($name, $seo),
-            'parity' => [
-                'quote' => ['included' => false, 'reason' => 'legacy_quote_flow_stays_php'],
-                'reviews' => ['included' => false, 'reason' => 'legacy_comment_mutation_stays_php'],
-                'related' => ['included' => false, 'reason' => 'legacy_merchandising_order_not_verified'],
-                'jsonLd' => ['included' => false, 'reason' => 'php_structured_data_authority_not_delegated'],
-            ],
         ];
     }
 

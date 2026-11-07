@@ -97,8 +97,6 @@ class SolutionDetail extends PageSupport
             'equipment' => $equipment,
             'cta' => ['label' => 'Nhận tư vấn giải pháp', 'href' => '/lien-he/#yeu-cau-tu-van'],
             'campaignCta' => $this->campaignCta($ctaRows),
-            'editorial' => ['rendered' => false, 'reason' => 'toc_derived_client_side_from_sanitized_html'],
-            'parity' => ['toc' => ['included' => false, 'reason' => 'toc_derived_client_side_from_sanitized_html']],
         ]];
     }
 

@@ -52,9 +52,8 @@ const good = {
     { type: 'datasheet', title: 'Thông số kỹ thuật', url: '/upload/product-documents/den-that.pdf' },
     { type: 'manual', title: 'Hướng dẫn lắp đặt', url: 'https://docs.example.com/den-that.docx' },
   ],
-  canonical: { url: '/san-pham/den-that', sources: { product: 'publicProductEntityPath(product)' } },
+  canonical: { url: '/san-pham/den-that' },
   seo: { title: 'Đèn thật | Phúc Thịnh Solar', description: 'Mô tả SEO', keywords: 'đèn solar' },
-  parity: { quote: { included: false, reason: 'legacy_quote_flow_stays_php' } },
 }
 
 test('validates product detail DTO', () => assert.equal(isPublicProductDetailPayload(good), true))

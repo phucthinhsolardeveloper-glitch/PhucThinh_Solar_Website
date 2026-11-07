@@ -22,7 +22,4 @@ return [
 
     // Checkout asks for a delivery address when true.
     'order_shipping' => (bool) env('ORDER_SHIPPING', true),
-
-    // The old PHP app inside the local Docker network, read only by pts:parity during the move.
-    'parity_source' => env('PARITY_SOURCE_URL', 'http://pts-php81-local'),
 ];

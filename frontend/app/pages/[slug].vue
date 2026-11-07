@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isPublicRouteResolveResult, isPublicRouteResolveSlug } from '#shared/contracts/public-route-resolve'
-import { bareSlugPublicPath, phpPublicRouteUrl } from '#shared/public-route-gate'
+import { bareSlugPublicPath } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus, solutionLegacyRedirectPath } from '#shared/editorial-public-route'
 import { publicBareSlugDisposition } from '#shared/public-bare-slug-route'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
@@ -17,7 +17,6 @@ import NotFoundExperience from '~/components/NotFoundExperience.vue'
 definePageMeta({ layout: false, key: (route) => route.path })
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
@@ -69,10 +68,7 @@ if (aliasTarget) {
   setHttpStatus(502)
 } else {
   const disposition = publicBareSlugDisposition(resolutionData.value)
-  if (disposition.mode === 'legacy') {
-    pageState.value = 'redirecting'
-    await navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, disposition.path), { external: true, redirectCode: 307 })
-  } else if (disposition.mode === 'canonical') {
+  if (disposition.mode === 'canonical') {
     pageState.value = 'redirecting'
     await navigateTo(disposition.path, { redirectCode: disposition.statusCode })
   } else if (['project-category', 'news-category', 'solution-category'].includes(disposition.kind) && route.path !== resolutionData.value.canonicalPath

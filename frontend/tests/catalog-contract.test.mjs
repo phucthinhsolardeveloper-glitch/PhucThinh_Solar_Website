@@ -12,19 +12,15 @@ const good = {
   categories: [{ id: 10, name: 'Điện mặt trời', slug: 'dien-mat-troi', url: '/danh-muc-san-pham/dien-mat-troi/' }],
   products: [{ id: 20, name: 'Sản phẩm thật từ CMS', slug: 'san-pham-that', url: '/san-pham/san-pham-that', media: ['/upload/product/photo.webp'], powerWatts: 650, quickSpecs: ['650W', 'IP65', '10-15 giờ'], pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
   pagination: { page: 1, perPage: 20, total: 1 },
-  parity: {
-    prices: { included: true },
-    filters: { included: false, reason: 'legacy_filter_parity_not_verified' },
-    sort: { included: false, reason: 'legacy_sort_parity_not_verified' },
-  },
+  pricesVisible: true,
 }
 const catalogApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_catalog.php', import.meta.url), 'utf8')
 
 test('accepts the exact Phase A catalog DTO', () => assert.equal(isPublicCatalogPayload(good), true))
-test('keeps the original v1 catalog payload valid during staggered integration', () => {
-  const { powerWatts, quickSpecs, pricing, ...legacyProduct } = good.products[0]
-  const legacy = { ...good, products: [legacyProduct], parity: { ...good.parity, prices: { included: false, reason: 'public_pricing_authority_not_delegated' } } }
-  assert.equal(isPublicCatalogPayload(legacy), true)
+test('accepts products without prices when public pricing is off', () => {
+  const { powerWatts, quickSpecs, pricing, ...basicProduct } = good.products[0]
+  assert.equal(isPublicCatalogPayload({ ...good, products: [basicProduct], pricesVisible: false }), true)
+  assert.equal(isPublicCatalogPayload({ ...good, pricesVisible: 'yes' }), false)
 })
 test('rejects private fields, unsafe media and invalid pagination', () => {
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], price: 100 }] }), false)
@@ -121,7 +117,6 @@ const extended = {
     subcategories: [{ id: 7, name: 'Kẹp tấm pin', slug: 'kep-tam-pin' }],
   },
   selected: { brandIds: [5], priceKeys: ['2'], subcategoryIds: [], sort: 'default' },
-  parity: { ...good.parity, filters: { included: true }, sort: { included: true } },
 }
 
 test('accepts the extended shape with real brand/price/subcategory filters and sort', () => {

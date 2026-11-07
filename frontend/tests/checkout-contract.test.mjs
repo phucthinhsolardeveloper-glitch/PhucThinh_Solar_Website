@@ -12,7 +12,7 @@ const good = {
   cartReady: true,
   cities: [{ id: 1, name: 'Gia Lai' }],
   payments: [
-    { id: 3, name: 'Chuyển khoản', description: 'Theo hướng dẫn', code: 'legacy' },
+    { id: 3, name: 'Chuyển khoản', description: 'Theo hướng dẫn', code: 'manual' },
     { id: -1, name: 'VNPay', description: '', code: 'vnpay' },
   ],
 }
@@ -20,7 +20,7 @@ const good = {
 test('accepts checkout metadata with session tokens and visible options', () => assert.equal(isPublicCheckoutPayload(good), true))
 test('rejects malformed tokens and mismatched payment code', () => {
   assert.equal(isPublicCheckoutPayload({ ...good, csrfToken: 'bad' }), false)
-  assert.equal(isPublicCheckoutPayload({ ...good, payments: [{ id: -1, name: 'VNPay', description: '', code: 'legacy' }] }), false)
+  assert.equal(isPublicCheckoutPayload({ ...good, payments: [{ id: -1, name: 'VNPay', description: '', code: 'manual' }] }), false)
 })
 test('validates wards and session-bound thank-you DTO', () => {
   assert.equal(isPublicCheckoutWardsPayload({ schemaVersion: 1, locale: 'vi', cityId: 1, wards: [{ id: 2, name: 'Phường thật' }] }), true)

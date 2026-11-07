@@ -140,7 +140,7 @@ class Shop
             $name = Text::plain($row['namevi']);
             if ($id !== 0 && $name !== '') {
                 $payments[] = ['id' => $id, 'name' => $name, 'description' => Text::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['descvi'])),
-                    'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'legacy'];
+                    'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'manual'];
             }
         }
         $pricesVisible = $this->settings->productPricesVisible();

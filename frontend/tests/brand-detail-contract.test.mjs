@@ -16,7 +16,7 @@ const good = {
   products: [{ id: 20, name: 'Tấm pin LONGi 650WP', slug: 'tam-pin-longi-650wp', url: '/san-pham/tam-pin-longi-650wp', media: ['/upload/product/photo.webp'], powerWatts: 650, pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
   pagination: { page: 1, perPage: 20, total: 1 },
   selected: { sort: 'default' },
-  parity: { prices: { included: true }, seoOverrides: { included: true } },
+  pricesVisible: true,
 }
 
 test('accepts the real brand detail DTO', () => assert.equal(isPublicBrandDetailPayload(good), true))
@@ -30,9 +30,9 @@ test('validates brand SEO fields and restricts Admin brand photos to safe produc
   assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, image: '/upload/news/brand.webp' } }), false)
   assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, image: '/upload/product/../private.php' } }), false)
   assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, description: '<script>bad</script>' } }), false)
-  const legacy = { ...good, seo: undefined, parity: { prices: { included: true }, seoOverrides: { included: false, reason: 'legacy_seo_override_table_not_delegated' } } }
-  delete legacy.seo
-  assert.equal(isPublicBrandDetailPayload(legacy), true)
+  const withoutSeo = { ...good }
+  delete withoutSeo.seo
+  assert.equal(isPublicBrandDetailPayload(withoutSeo), true)
 })
 test('accepts only the catalog sort keys already supported by the brand PHP API', () => {
   assert.equal(isPublicBrandDetailPayload({ ...good, selected: { sort: 'abc' } }), true)
@@ -64,9 +64,9 @@ test('rejects unsafe product media and invented pagination bounds', () => {
   assert.equal(isPublicBrandDetailPayload({ ...good, products: [{ ...good.products[0], media: ['/upload/product/../secret.php'] }] }), false)
   assert.equal(isPublicBrandDetailPayload({ ...good, pagination: { ...good.pagination, perPage: 49 } }), false)
 })
-test('rejects a price parity shape outside prices.included true/public_pricing_disabled', () => {
-  assert.equal(isPublicBrandDetailPayload({ ...good, parity: { ...good.parity, prices: { included: false, reason: 'something_else' } } }), false)
-  assert.equal(isPublicBrandDetailPayload({ ...good, parity: { ...good.parity, prices: { included: false, reason: 'public_pricing_disabled' } } }), true)
+test('requires a boolean pricesVisible flag', () => {
+  assert.equal(isPublicBrandDetailPayload({ ...good, pricesVisible: 'no' }), false)
+  assert.equal(isPublicBrandDetailPayload({ ...good, pricesVisible: false }), true)
 })
 
 test('brand GET includes only published, existing Admin gallery media using parameterized product ids', () => {

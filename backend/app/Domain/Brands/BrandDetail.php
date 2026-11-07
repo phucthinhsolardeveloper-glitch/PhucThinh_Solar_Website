@@ -104,10 +104,7 @@ class BrandDetail extends PageSupport
             'pagination' => ['page' => $page, 'perPage' => $perPage, 'total' => max(0, $total)],
             'filters' => ['brands' => $brandOptions, 'priceRanges' => $pricesVisible ? array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES) : []],
             'selected' => ['sort' => $sort, 'priceKeys' => $priceKeys],
-            'parity' => [
-                'prices' => $pricesVisible ? ['included' => true] : ['included' => false, 'reason' => 'public_pricing_disabled'],
-                'seoOverrides' => ['included' => true],
-            ],
+            'pricesVisible' => $pricesVisible,
         ]];
     }
 }

@@ -100,12 +100,7 @@ class ProjectDetail extends PageSupport
                 'description' => ! empty($seoRow['descriptionvi']) ? Text::cms($seoRow['descriptionvi']) : '',
                 'keywords' => ! empty($seoRow['keywordsvi']) ? Text::cms($seoRow['keywordsvi']) : '',
             ],
-            'canonical' => ['url' => '/'.$projectSlug, 'sources' => ['project' => 'legacy canonical entity path /'.$slug, 'gallery' => 'news.php detail branch',
-                'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot']],
-            'parity' => [
-                'viewCount' => ['included' => false, 'reason' => 'read_only_preview_does_not_increment_legacy_view_count'],
-                'contactSubmission' => ['included' => false, 'reason' => 'legacy_contact_flow_stays_php'],
-            ],
+            'canonical' => ['url' => '/'.$projectSlug],
         ]];
     }
 

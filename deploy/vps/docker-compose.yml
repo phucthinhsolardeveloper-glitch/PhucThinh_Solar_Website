@@ -46,7 +46,6 @@ services:
       NUXT_PHP_ORIGIN_ALLOWLIST: web:80,127.0.0.1:8080,localhost:8080
       NUXT_PREVIEW_MEDIA_PROXY: "false"
       NUXT_PUBLIC_CANONICAL_SITE_ORIGIN: https://phucthinhsolar.com
-      NUXT_PUBLIC_PHP_PUBLIC_ORIGIN: https://${SITE_DOMAIN:?SITE_DOMAIN is required}
       TZ: ${TZ:-Asia/Ho_Chi_Minh}
     networks:
       - edge

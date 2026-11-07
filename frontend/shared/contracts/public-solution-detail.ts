@@ -14,9 +14,6 @@ export interface PublicSolutionDetailPayload {
   equipment: { name: string; description: string; url: string; image: string }[]
   cta: { label: string; href: '/lien-he/#yeu-cau-tu-van' }
   campaignCta: PublicSolutionDetailCampaignCta | null
-  /** PHP supplies sanitized fragments; Nuxt derives the TOC from their headings. */
-  editorial: { rendered: false; reason: string }
-  parity: Record<string, { included: false; reason: string }>
 }
 
 const record = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -41,7 +38,5 @@ export function isPublicSolutionDetailPayload(value: unknown): value is PublicSo
   if (!record(value.navigation) || value.navigation.allUrl !== '/giai-phap/' || !Array.isArray(value.navigation.items) || !value.navigation.items.every((item) => record(item) && text(item.title) && slug(item.slug) && solutionUrl(item.url, item.slug) && image(item.image) && typeof item.active === 'boolean')) return false
   if (!Array.isArray(value.equipment) || value.equipment.length > 4 || !value.equipment.every((item) => record(item) && text(item.name) && text(item.description, true) && publicUrl(item.url) && image(item.image))) return false
   if (!record(value.cta) || value.cta.label !== 'Nhận tư vấn giải pháp' || value.cta.href !== '/lien-he/#yeu-cau-tu-van') return false
-  if (!(value.campaignCta === null || campaignCta(value.campaignCta))) return false
-  if (!record(value.editorial) || value.editorial.rendered !== false || !text(value.editorial.reason)) return false
-  return record(value.parity) && Object.values(value.parity).every((item) => record(item) && item.included === false && text(item.reason))
+  return value.campaignCta === null || campaignCta(value.campaignCta)
 }

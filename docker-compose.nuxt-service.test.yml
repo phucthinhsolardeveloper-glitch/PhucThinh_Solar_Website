@@ -34,7 +34,6 @@ services:
     environment:
       NUXT_PHP_ORIGIN: http://php-upstream:80
       NUXT_PHP_ORIGIN_ALLOWLIST: php-upstream:80
-      NUXT_PUBLIC_PHP_PUBLIC_ORIGIN: http://php-upstream:80
 networks:
   existing-pts-local:
     external: true

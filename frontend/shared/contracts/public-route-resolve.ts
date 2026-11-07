@@ -1,7 +1,5 @@
 export type PublicRouteResolveSupportedKind = 'pdp' | 'category' | 'brand' | 'gallery' | 'news' | 'news-category' | 'solution' | 'solution-category' | 'project' | 'project-category' | 'policy'
-export type PublicRouteResolveResult =
-  | { schemaVersion: 1; slug: string; kind: PublicRouteResolveSupportedKind; canonicalPath: string }
-  | { schemaVersion: 1; slug: string; kind: 'legacy-only'; canonicalPath: null; reason: 'unsupported-taxonomy' | 'unsupported-route' }
+export type PublicRouteResolveResult = { schemaVersion: 1; slug: string; kind: PublicRouteResolveSupportedKind; canonicalPath: string }
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
@@ -34,11 +32,6 @@ function supportedCanonicalPath(kind: PublicRouteResolveSupportedKind, slug: str
 
 export function isPublicRouteResolveResult(value: unknown): value is PublicRouteResolveResult {
   if (!record(value) || value.schemaVersion !== 1 || typeof value.slug !== 'string' || !SLUG.test(value.slug)) return false
-  if (value.kind === 'legacy-only') {
-    return hasExactKeys(value, ['schemaVersion', 'slug', 'kind', 'canonicalPath', 'reason'])
-      && value.canonicalPath === null
-      && (value.reason === 'unsupported-taxonomy' || value.reason === 'unsupported-route')
-  }
   const kinds: PublicRouteResolveSupportedKind[] = ['pdp', 'category', 'brand', 'gallery', 'news', 'news-category', 'solution', 'solution-category', 'project', 'project-category', 'policy']
   if (typeof value.kind !== 'string' || !kinds.includes(value.kind as PublicRouteResolveSupportedKind)) return false
   return hasExactKeys(value, ['schemaVersion', 'slug', 'kind', 'canonicalPath'])
