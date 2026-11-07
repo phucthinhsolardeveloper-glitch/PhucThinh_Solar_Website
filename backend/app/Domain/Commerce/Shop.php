@@ -369,6 +369,31 @@ class Shop
             'totalPrice' => max(0, (int) round((float) $order->total_price))], 'conversionPending' => $fire]];
     }
 
+    /**
+     * Where a classic form submit goes next: the thank-you page or payment page on success, otherwise
+     * back to the cart with a one-time notice (read by GET /checkout-notice) and the typed values.
+     *
+     * @param  array{0: int, 1: array<string, mixed>}  $result
+     */
+    public function formRedirect(array $result): string
+    {
+        [$status, $body] = $result;
+        if ($status === 200 && isset($body['redirect'])) {
+            return (string) $body['redirect'];
+        }
+        $error = $body['error'] ?? [];
+        $notice = ['messages' => [], 'toast' => null, 'form' => null];
+        if (($error['code'] ?? '') === 'VALIDATION_FAILED') {
+            $notice['messages'] = array_slice((array) $error['messages'], 0, 8);
+            $notice['form'] = $body['form'] ?? null;
+        } else {
+            $notice['toast'] = ['status' => 'error', 'text' => (string) ($error['message'] ?? 'Đơn hàng không hợp lệ. Vui lòng thử lại sau.')];
+        }
+        $this->session->put('checkout_notice', $notice);
+
+        return ($error['code'] ?? '') === 'QUOTE_ONLY' ? '/lien-he/' : '/gio-hang/';
+    }
+
     /** @return array<string, mixed> GET /checkout-notice: one-time messages left for the cart page */
     public function notice(): array
     {

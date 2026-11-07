@@ -104,3 +104,16 @@ it('marks an order paid only for a correctly signed VNPay IPN with the right amo
     expect((int) DB::connection('legacy')->table('table_order')->where('id', $id)->value('payment_status'))->toBe(1);
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '02');
 });
+
+it('accepts the classic checkout form and sends errors back to the cart as a one-time notice', function () {
+    $product = buyableProduct();
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 1]);
+    $checkout = shop('GET', '/api/v1/checkout');
+    $response = test()->withUnencryptedCookies($GLOBALS['shopCookies'])->post('/api/v1/checkout', [
+        'form_csrf' => $checkout->json('csrfToken'), 'checkout_token' => $checkout->json('checkoutToken'), 'dataOrder' => ['fullname' => 'Khách thử', 'phone' => 'sai'],
+    ]);
+    $response->assertStatus(303)->assertRedirect('/gio-hang/');
+    shop('GET', '/api/v1/checkout-notice')->assertJsonPath('form.fullname', 'Khách thử')->assertJsonPath('messages.1', 'Số điện thoại không hợp lệ')
+        ->assertJsonMissingPath('messages.99');
+    shop('GET', '/api/v1/checkout-notice')->assertJsonPath('messages', []);
+});

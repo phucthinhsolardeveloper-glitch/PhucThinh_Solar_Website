@@ -26,8 +26,19 @@ class ShopController extends Controller
         return PagesController::json($shop->checkoutPayload());
     }
 
-    public function placeOrder(Request $request, Shop $shop): JsonResponse
+    /**
+     * JSON from the new checkout, or the classic form post of the current checkout page
+     * (form_csrf, checkout_token, dataOrder[...]); the form gets redirects, like sources/order.php gave.
+     */
+    public function placeOrder(Request $request, Shop $shop): Response
     {
+        if (! $request->isJson()) {
+            $data = $request->post('dataOrder');
+            $result = $shop->placeOrder(['csrfToken' => $request->post('form_csrf'), 'checkoutToken' => $request->post('checkout_token'), 'data' => is_array($data) ? $data : []], (string) $request->ip());
+
+            return redirect($shop->formRedirect($result), 303);
+        }
+
         return self::reply($shop->placeOrder(json_decode($request->getContent(), true), (string) $request->ip()));
     }
 
