@@ -6,12 +6,12 @@ use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
+use App\Support\StatusFlags;
+use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -53,8 +53,8 @@ class Shop
                 continue;
             }
             $id = (int) $product['id'];
-            $slug = LegacyText::slug($product['slugvi'] ?? '');
-            $name = LegacyText::plain($product['namevi'] ?? '');
+            $slug = Text::slug($product['slugvi'] ?? '');
+            $name = Text::plain($product['namevi'] ?? '');
             $quantity = max(1, min(999, (int) $line['qty']));
             if ($id <= 0 || $slug === '' || $name === '' || ! preg_match(self::CODE, (string) $line['code'])) {
                 continue;
@@ -63,7 +63,7 @@ class Shop
             $unit = $price['mode'] === 'price' ? (($price['salePrice'] ?? 0) > 0 ? $price['salePrice'] : $price['regularPrice']) : null;
             $items[] = ['code' => (string) $line['code'], 'productId' => $id, 'name' => $name, 'slug' => $slug, 'url' => '/san-pham/'.$slug,
                 'image' => $this->urls->product($product['photo'] ?? ''), 'quantity' => $quantity,
-                'color' => LegacyText::plain($this->cart->optionLabel('color', (int) $line['color'])), 'size' => LegacyText::plain($this->cart->optionLabel('size', (int) $line['size'])),
+                'color' => Text::plain($this->cart->optionLabel('color', (int) $line['color'])), 'size' => Text::plain($this->cart->optionLabel('size', (int) $line['size'])),
                 'pricing' => $price, 'unitPrice' => $unit, 'lineTotal' => $unit !== null ? $unit * $quantity : null];
             if (count($items) >= 100) {
                 break;
@@ -137,9 +137,9 @@ class Shop
         $payments = [];
         foreach ($this->payments->visible() as $row) {
             $id = (int) $row['id'];
-            $name = LegacyText::plain($row['namevi']);
+            $name = Text::plain($row['namevi']);
             if ($id !== 0 && $name !== '') {
-                $payments[] = ['id' => $id, 'name' => $name, 'description' => LegacyText::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['descvi'])),
+                $payments[] = ['id' => $id, 'name' => $name, 'description' => Text::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['descvi'])),
                     'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'legacy'];
             }
         }
@@ -154,7 +154,7 @@ class Shop
         }
 
         return ['schemaVersion' => 1, 'locale' => 'vi', 'csrfToken' => FormToken::issue(), 'checkoutToken' => $this->checkoutToken(),
-            'shippingEnabled' => (bool) config('site.order_shipping'), 'cartReady' => $ready, 'cities' => array_map(fn ($c) => ['id' => $c['id'], 'name' => LegacyText::plain($c['name'])], $this->forms->cities()),
+            'shippingEnabled' => (bool) config('site.order_shipping'), 'cartReady' => $ready, 'cities' => array_map(fn ($c) => ['id' => $c['id'], 'name' => Text::plain($c['name'])], $this->forms->cities()),
             'payments' => $payments];
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Catalog;
 
-use App\Legacy\Support\StatusFlags;
+use App\Support\StatusFlags;
 
 /**
  * Whether a product shows a price or asks for a quote. The PHP site computes this in three places

@@ -3,9 +3,9 @@
 namespace App\Domain\Pages;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Content\RichText;
-use App\Legacy\Support\LegacyText;
+use App\Support\RichText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /** Dealer page (api/pts_v1_dealer.php): pitch, products, benefits, testimonials, figures, sign-up form. */
 class DealerAssembler extends PageSupport
@@ -18,7 +18,7 @@ class DealerAssembler extends PageSupport
     /** @return array<string, mixed> */
     public function build(): array
     {
-        $text = fn ($v) => LegacyText::cms($v);
+        $text = fn ($v) => Text::cms($v);
         $rich = fn ($v) => RichText::dto(RichText::sanitize($v));
         $static = [];
         foreach ($this->rows("select case section when 'dealer.intro' then 'dai-ly-1' when 'dealer.overview' then 'dai-ly-2' else 'dai-ly-3' end as type, coalesce(title,'') as namevi, coalesce(summary,'') as descvi, if(is_visible,'hienthi','') as status from page_items where section in ('dealer.intro','dealer.overview','dealer.support') order by id desc") as $row) {

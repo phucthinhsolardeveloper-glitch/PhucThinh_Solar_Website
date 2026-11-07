@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Legacy\Content;
+namespace App\Domain\Solutions;
 
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 
 /** Selection rules shared by the solution and project pages (libraries/solution_hub.php). */
 final class SolutionHub
@@ -37,7 +37,7 @@ final class SolutionHub
 
     public static function field(array $row, string $field): string
     {
-        return isset($row[$field.'vi']) ? LegacyText::cms($row[$field.'vi']) : '';
+        return isset($row[$field.'vi']) ? Text::cms($row[$field.'vi']) : '';
     }
 
     public static function navName(array $row): string

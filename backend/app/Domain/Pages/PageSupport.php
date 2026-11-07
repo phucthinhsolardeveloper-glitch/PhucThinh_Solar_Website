@@ -3,7 +3,7 @@
 namespace App\Domain\Pages;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -35,9 +35,9 @@ abstract class PageSupport
         $row = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page=? limit 0,1", [$type]);
 
         return [
-            'title' => $text(LegacyText::flat($row['titlevi'] ?? '')),
-            'description' => $text(LegacyText::flat($row['descriptionvi'] ?? '')),
-            'keywords' => $text(LegacyText::flat($row['keywordsvi'] ?? '')),
+            'title' => $text(Text::flat($row['titlevi'] ?? '')),
+            'description' => $text(Text::flat($row['descriptionvi'] ?? '')),
+            'keywords' => $text(Text::flat($row['keywordsvi'] ?? '')),
             'image' => $this->urls->visual($row['photo'] ?? '', 'upload/seopage/'),
         ];
     }

@@ -3,8 +3,8 @@
 namespace App\Domain\Media;
 
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Support\LegacyText;
 use App\Models\Album;
+use App\Support\Text;
 
 /**
  * Photo albums and videos (api/pts_v1_gallery.php, pts_v1_gallery_detail.php, pts_v1_video.php).
@@ -51,7 +51,7 @@ class MediaLibrary extends PageSupport
         foreach ($this->rows("select id, path as photo, coalesce(caption,'') as namevi, 'hienthi' as status from album_images where album_id=? and is_visible=1 order by sort_order,id desc", [(int) $row['id']]) as $image) {
             $url = $this->productImage($image['photo']);
             if (self::visible($image) && $url !== '') {
-                $images[] = ['id' => max(0, (int) $image['id']), 'image' => $url, 'caption' => LegacyText::cms($image['namevi'])];
+                $images[] = ['id' => max(0, (int) $image['id']), 'image' => $url, 'caption' => Text::cms($image['namevi'])];
             }
             if (count($images) >= 120) {
                 break;
@@ -72,7 +72,7 @@ class MediaLibrary extends PageSupport
         }
         $videos = [];
         foreach ($this->rows("select id, title as namevi, url as link_video, 'hienthi' as status from videos where is_visible=1 order by sort_order,id desc") as $row) {
-            $title = LegacyText::cms($row['namevi']);
+            $title = Text::cms($row['namevi']);
             $youtube = self::youtubeId($row['link_video']);
             if (self::visible($row) && (int) $row['id'] > 0 && $title !== '' && $youtube !== '') {
                 $videos[] = ['id' => (int) $row['id'], 'title' => $title, 'youtubeId' => $youtube, 'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$youtube, 'thumbnail' => 'https://img.youtube.com/vi/'.$youtube.'/0.jpg'];
@@ -88,13 +88,13 @@ class MediaLibrary extends PageSupport
     private function albumDto(array $row): ?array
     {
         $id = (int) $row['id'];
-        $title = LegacyText::cms($row['namevi']);
-        $slug = LegacyText::slug($row['slugvi']);
+        $title = Text::cms($row['namevi']);
+        $slug = Text::slug($row['slugvi']);
         if (! self::visible($row) || $id <= 0 || $title === '' || $slug === '') {
             return null;
         }
 
-        return ['id' => $id, 'title' => $title, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => LegacyText::cms($row['descvi']), 'image' => $this->productImage($row['photo'])];
+        return ['id' => $id, 'title' => $title, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms($row['descvi']), 'image' => $this->productImage($row['photo'])];
     }
 
     private function productImage(mixed $file): string
@@ -119,8 +119,8 @@ class MediaLibrary extends PageSupport
 
     private static function seo(array $row, string $title, string $description, string $canonical, ?string $image = null): array
     {
-        $seo = ['title' => LegacyText::cms($row['titlevi'] ?? '') ?: LegacyText::cms($title), 'description' => LegacyText::cms($row['descriptionvi'] ?? '') ?: LegacyText::cms($description),
-            'keywords' => LegacyText::cms($row['keywordsvi'] ?? ''), 'canonical' => $canonical];
+        $seo = ['title' => Text::cms($row['titlevi'] ?? '') ?: Text::cms($title), 'description' => Text::cms($row['descriptionvi'] ?? '') ?: Text::cms($description),
+            'keywords' => Text::cms($row['keywordsvi'] ?? ''), 'canonical' => $canonical];
         if ($image !== null) {
             $seo['image'] = $image;
         }

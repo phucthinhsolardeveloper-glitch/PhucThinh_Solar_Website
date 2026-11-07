@@ -4,9 +4,9 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Support\LegacyText;
 use App\Models\PostCategory;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /**
  * Knowledge hub (api/pts_v1_news.php): six articles a page, newest first, optional search and category
@@ -79,9 +79,9 @@ class NewsListing extends PageSupport
             [$selected, $field] = $resolved;
             $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
             $selected['_meta'] = ['type' => 'tin-tuc', 'level' => $type, 'path' => implode('/', $segments), 'seo' => [
-                'title' => LegacyText::flat($seoRow['titlevi'] ?? ''),
-                'description' => LegacyText::flat($seoRow['descriptionvi'] ?? ''),
-                'keywords' => LegacyText::flat($seoRow['keywordsvi'] ?? ''),
+                'title' => Text::flat($seoRow['titlevi'] ?? ''),
+                'description' => Text::flat($seoRow['descriptionvi'] ?? ''),
+                'keywords' => Text::flat($seoRow['keywordsvi'] ?? ''),
                 'image' => $this->urls->visual($selected['photo'] ?? '', 'upload/news/'),
             ]];
         }
@@ -131,8 +131,8 @@ class NewsListing extends PageSupport
         $category = $selected ? $this->categoryDto($selected + ['_photo' => $selected['photo'] ?? ''], $selected['_meta']) : null;
         $article = fn (array $row, bool $featured) => $this->articleDto($row + ['_photo' => $this->newsPhotoExists($row['photo']) ? $row['photo'] : ''], $categoryMap, $featured);
         $hotline = is_scalar($this->settings->options()['hotline'] ?? null) ? trim((string) $this->settings->options()['hotline']) : '';
-        $introTitle = LegacyText::cms($intro['namevi'] ?? '');
-        $introDescription = LegacyText::cms($intro['descvi'] ?? '');
+        $introTitle = Text::cms($intro['namevi'] ?? '');
+        $introDescription = Text::cms($intro['descvi'] ?? '');
         $defaultDescription = 'Kiến thức năng lượng mặt trời, thông tin sản phẩm và câu chuyện từ Phúc Thịnh Solar.';
 
         return [200, [
@@ -141,7 +141,7 @@ class NewsListing extends PageSupport
             'path' => '/tin-tuc/',
             'title' => $category ? $category['name'] : ($introTitle ?: 'Kiến thức'),
             'description' => $category ? $category['description'] : ($introDescription ?: $defaultDescription),
-            'seo' => $this->pageSeo('tin-tuc', fn ($v) => LegacyText::cms($v)),
+            'seo' => $this->pageSeo('tin-tuc', fn ($v) => Text::cms($v)),
             'category' => $category,
             'categories' => $categoryDtos,
             'featured' => $heroEnabled && ! $category && $query === '' ? array_values(array_filter(array_map(fn ($row) => $article($row, true), $featuredRows))) : [],
@@ -165,7 +165,7 @@ class NewsListing extends PageSupport
         foreach ($segments as $i => $segment) {
             $row = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, coalesce(image,'') as photo, 'hienthi' as status from post_categories"
                 ." where kind='article' and slug=? and depth=? and ".($i ? 'parent_id=?' : 'parent_id is null').' and is_visible=1 limit 1', $i ? [$segment, $i + 1, $parentId] : [$segment, 1]);
-            if (! $row || (int) $row['id'] <= 0 || ! self::visible($row) || LegacyText::slug($row['slugvi']) !== $segment) {
+            if (! $row || (int) $row['id'] <= 0 || ! self::visible($row) || Text::slug($row['slugvi']) !== $segment) {
                 return null;
             }
             $parentId = (int) $row['id'];
@@ -184,26 +184,26 @@ class NewsListing extends PageSupport
     private function categoryDto(array $row, array $meta = []): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $name = LegacyText::cms($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        $name = Text::cms($row['namevi'] ?? '');
+        $slug = Text::slug($row['slugvi'] ?? '');
         if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
             return null;
         }
 
-        return ['id' => $id, 'name' => $name, 'description' => LegacyText::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/'.$slug.'/', 'canonicalPath' => '/'.$slug,
+        return ['id' => $id, 'name' => $name, 'description' => Text::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/'.$slug.'/', 'canonicalPath' => '/'.$slug,
             'image' => self::media($row['_photo'] ?? '')] + array_intersect_key($meta, array_flip(['type', 'level', 'path', 'seo']));
     }
 
     private function articleDto(array $row, array $categories, bool $featured): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $title = LegacyText::cms($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        $title = Text::cms($row['namevi'] ?? '');
+        $slug = Text::slug($row['slugvi'] ?? '');
         if (! self::visible($row) || $id <= 0 || $title === '' || $slug === '') {
             return null;
         }
-        $content = LegacyText::cms($row['contentvi'] ?? '');
-        $description = LegacyText::cms($row['descvi'] ?? '') ?: $content;
+        $content = Text::cms($row['contentvi'] ?? '');
+        $description = Text::cms($row['descvi'] ?? '') ?: $content;
         if (mb_strlen($description) > 180) {
             $description = mb_substr($description, 0, 177).'…';
         }
@@ -233,13 +233,13 @@ class NewsListing extends PageSupport
                 continue;
             }
             $anyVisible = true;
-            $title = LegacyText::cms($row['namevi']);
-            $description = LegacyText::cms($row['descvi']);
+            $title = Text::cms($row['namevi']);
+            $description = Text::cms($row['descvi']);
             if ($title === '' && $description === '') {
                 continue;
             }
 
-            return ['title' => $title, 'description' => $description, 'buttonLabel' => LegacyText::cms($row['content1vi']),
+            return ['title' => $title, 'description' => $description, 'buttonLabel' => Text::cms($row['content1vi']),
                 'image' => self::media($this->newsPhotoExists($row['photo']) ? $row['photo'] : ''), 'hotline' => $phone];
         }
         if ($anyVisible || ! $rows) {

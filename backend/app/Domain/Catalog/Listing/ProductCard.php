@@ -4,8 +4,8 @@ namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
+use App\Support\StatusFlags;
+use App\Support\Text;
 
 /** A product tile in lists (ptsCatalogProductDto): pictures, power, up to three quick specs, price. */
 class ProductCard
@@ -18,8 +18,8 @@ class ProductCard
     public function dto(array $row, PricingPolicy $pricing, array $gallery = []): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $name = LegacyText::plain($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        $name = Text::plain($row['namevi'] ?? '');
+        $slug = Text::slug($row['slugvi'] ?? '');
         if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || $slug === '') {
             return null;
         }
@@ -31,7 +31,7 @@ class ProductCard
         $power = is_numeric($row['cong_suat'] ?? null) && (float) $row['cong_suat'] > 0 && is_finite((float) $row['cong_suat']) ? (float) $row['cong_suat'] : null;
         $quick = $power !== null ? [(int) round($power).'W'] : [];
         foreach (['waterproof_rating', 'lighting_time'] as $field) {
-            $value = LegacyText::plain($row[$field] ?? '');
+            $value = Text::plain($row[$field] ?? '');
             if ($value !== '' && ! preg_match(self::MISSING, $value)) {
                 $quick[] = $value;
             }

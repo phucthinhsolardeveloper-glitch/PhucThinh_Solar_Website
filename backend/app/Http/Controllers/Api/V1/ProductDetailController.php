@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Domain\Catalog\ProductDetail\ProductDetailAssembler;
 use App\Http\Controllers\Controller;
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class ProductDetailController extends Controller
         if (array_diff(array_keys($query), ['slug']) || (isset($query['slug']) && ! is_string($query['slug']))) {
             return $this->error(400, 'BAD_QUERY');
         }
-        $slug = LegacyText::slug(trim((string) ($query['slug'] ?? ''), '/'));
+        $slug = Text::slug(trim((string) ($query['slug'] ?? ''), '/'));
         if ($slug === '') {
             return $this->error(400, 'BAD_QUERY');
         }

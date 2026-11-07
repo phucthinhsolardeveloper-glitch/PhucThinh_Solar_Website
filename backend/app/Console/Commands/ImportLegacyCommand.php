@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Legacy\Support\ContentBlocks;
+use App\Support\ContentBlocks;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;

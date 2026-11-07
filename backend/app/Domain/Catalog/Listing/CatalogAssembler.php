@@ -6,10 +6,10 @@ use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductContentPresenter;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
 use App\Models\Category;
 use App\Support\SiteSettings;
+use App\Support\StatusFlags;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -109,7 +109,7 @@ class CatalogAssembler
         // Brand choices follow the category only, so ticking a brand never empties the list of brands.
         $brands = [];
         foreach ($db->select("select distinct b.id, b.name as namevi, b.sort_order from products p inner join brands b on b.id = p.brand_id and b.is_visible = 1 where {$baseWhere} order by b.sort_order, b.id desc", $baseParams) as $row) {
-            $name = LegacyText::plain($row->namevi);
+            $name = Text::plain($row->namevi);
             if ((int) $row->id > 0 && $name !== '') {
                 $brands[] = ['id' => (int) $row->id, 'name' => $name];
             }
@@ -117,8 +117,8 @@ class CatalogAssembler
         $subcategories = [];
         if ($listId > 0) {
             foreach ($this->tree->children($listId) as $node) {
-                $name = LegacyText::plain($node['name']);
-                $slug = LegacyText::slug($node['slug']);
+                $name = Text::plain($node['name']);
+                $slug = Text::slug($node['slug']);
                 if ($node['is_visible'] && $name !== '' && $slug !== '') {
                     $subcategories[] = ['id' => (int) $node['id'], 'name' => $name, 'slug' => $slug];
                 }
@@ -158,8 +158,8 @@ class CatalogAssembler
     private function categoryDto(array $row, array $slugs): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $name = LegacyText::plain($row['namevi'] ?? '');
-        $clean = array_map(fn ($slug) => LegacyText::slug($slug), $slugs);
+        $name = Text::plain($row['namevi'] ?? '');
+        $clean = array_map(fn ($slug) => Text::slug($slug), $slugs);
         if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || ! $clean || in_array('', $clean, true)) {
             return null;
         }

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 
 /**
  * Product specification rules of the PHP site, in one place: profile choice (productPdpResolveProfile),
@@ -304,8 +304,8 @@ class ProductSpecs
         $usedLabels = [];
         foreach ($rows as [$rawKey, $rawLabel, $rawValue]) {
             $key = preg_match('/^[a-z0-9_]+$/', $rawKey) ? $rawKey : 'spec_'.count($specs);
-            $label = LegacyText::plain($rawLabel);
-            $value = LegacyText::plain($rawValue);
+            $label = Text::plain($rawLabel);
+            $value = Text::plain($rawValue);
             $usedLabels[] = mb_strtolower(trim($label));
             if ($label !== '' && ($value !== '' || ! in_array($key, $optional, true))) {
                 $specs[] = ['key' => $key, 'label' => $label, 'value' => $value];
@@ -321,8 +321,8 @@ class ProductSpecs
             $usedLabels[] = 'độ cao lắp đặt';
         }
         foreach ($this->additional($row) as $extra) {
-            $label = LegacyText::plain($extra['label']);
-            $value = LegacyText::plain($extra['value']);
+            $label = Text::plain($extra['label']);
+            $value = Text::plain($extra['value']);
             $lower = mb_strtolower($label);
             if ($label === '' || $value === '' || in_array($lower, $denylist, true)) {
                 continue;
@@ -380,7 +380,7 @@ class ProductSpecs
                 ['installation_height', 'Chiều cao lắp', $height, 'm', 'height'],
                 ['warranty', 'Bảo hành', $this->value($row, 'warranty'), 'tháng', 'shield'],
             ] as [$key, $label, $value, $unit, $icon]) {
-                $metrics[] = ['key' => $key, 'label' => $label, 'value' => LegacyText::plain($value), 'unit' => $unit, 'icon' => $icon, 'iconImage' => $images[$key], 'iconDir' => 'pdp-lighting'];
+                $metrics[] = ['key' => $key, 'label' => $label, 'value' => Text::plain($value), 'unit' => $unit, 'icon' => $icon, 'iconImage' => $images[$key], 'iconDir' => 'pdp-lighting'];
             }
 
             return $metrics;
@@ -393,8 +393,8 @@ class ProductSpecs
             $iconImage = $images[$key] ?? '';
             $metrics[] = [
                 'key' => (string) $key,
-                'label' => LegacyText::plain($profile['fields'][$key] ?? $key),
-                'value' => LegacyText::plain($this->value($row, (string) $key)),
+                'label' => Text::plain($profile['fields'][$key] ?? $key),
+                'value' => Text::plain($this->value($row, (string) $key)),
                 'unit' => config('pdp_metrics.metric_units')[$key] ?? '',
                 'icon' => config('pdp_metrics.metric_icons')[$key] ?? 'bolt',
                 'iconImage' => $iconImage,

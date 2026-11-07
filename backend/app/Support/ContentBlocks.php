@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Legacy\Support;
+namespace App\Support;
 
 /**
  * Decoding of the JSON block lists the PHP admin stores HTML-escaped (productSectionsDecode()).

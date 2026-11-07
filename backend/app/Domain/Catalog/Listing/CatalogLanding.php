@@ -3,9 +3,9 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
 use App\Models\Category;
+use App\Support\StatusFlags;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -97,22 +97,22 @@ final class CatalogLanding
         $title = '';
         foreach ($cards as $block) {
             if ($title === '') {
-                $title = LegacyText::plain($block['title'] ?? '');
+                $title = Text::plain($block['title'] ?? '');
             }
             foreach (is_array($block['items'] ?? null) ? $block['items'] : [] as $item) {
-                $itemTitle = is_array($item) ? LegacyText::plain($item['title'] ?? '') : '';
+                $itemTitle = is_array($item) ? Text::plain($item['title'] ?? '') : '';
                 if ($itemTitle === '') {
                     continue;
                 }
                 $photo = (string) ($item['photo'] ?? '');
                 $image = $this->urls->visual($photo, 'upload/product/') ?: $this->urls->visual($photo, 'assets/images/site-visuals/');
-                $applications[] = ['title' => $itemTitle, 'description' => LegacyText::plain($item['desc'] ?? ''), 'image' => $image, 'href' => self::href($item['link'] ?? '')];
+                $applications[] = ['title' => $itemTitle, 'description' => Text::plain($item['desc'] ?? ''), 'image' => $image, 'href' => self::href($item['link'] ?? '')];
             }
         }
         $faqs = [];
         foreach ($faq as $item) {
-            $question = LegacyText::plain($item['question'] ?? '');
-            $answer = LegacyText::plain($item['answer'] ?? '');
+            $question = Text::plain($item['question'] ?? '');
+            $answer = Text::plain($item['answer'] ?? '');
             if ($question !== '' && $answer !== '') {
                 $faqs[] = ['question' => $question, 'answer' => $answer];
             }
@@ -189,7 +189,7 @@ final class CatalogLanding
             ?: $this->urls->visual($hero['photo'], 'assets/images/site-visuals/')
             ?: $this->urls->visual($hero['photo'], 'upload/product/');
 
-        return $image !== '' ? ['image' => $image, 'alt' => LegacyText::plain($hero['alt'])] : null;
+        return $image !== '' ? ['image' => $image, 'alt' => Text::plain($hero['alt'])] : null;
     }
 
     /** First published "catalog-campaign" banner; a built-in invitation only when Admin has none at all. */
@@ -207,14 +207,14 @@ final class CatalogLanding
         if ($rows->isEmpty()) {
             $banner = ['name' => 'Cần hỗ trợ chọn sản phẩm phù hợp?', 'desc' => 'Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.', 'photo' => 'catalog-equipment-system.jpg', 'link' => 'lien-he/'];
         }
-        $title = $banner ? LegacyText::plain($banner['name']) : '';
+        $title = $banner ? Text::plain($banner['name']) : '';
         if ($title === '') {
             return null;
         }
 
         return [
             'title' => $title,
-            'description' => LegacyText::plain($banner['desc']),
+            'description' => Text::plain($banner['desc']),
             'image' => $this->urls->visual($banner['photo'], 'upload/photo/') ?: $this->urls->visual($banner['photo'], 'assets/images/site-visuals/'),
             'href' => self::href($banner['link']),
         ];
@@ -235,15 +235,15 @@ final class CatalogLanding
             $row = (array) ($this->db->table('seo_metas')->where('page', 'san-pham')->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi', 'image as photo']) ?? []);
             $image = $this->urls->visual($row['photo'] ?? '', 'upload/seopage/');
         }
-        $title = ! empty($row['titlevi']) ? LegacyText::seo($row['titlevi']) : LegacyText::seo(($categoryRow['namevi'] ?? '') ?: 'Sản phẩm');
+        $title = ! empty($row['titlevi']) ? Text::seo($row['titlevi']) : Text::seo(($categoryRow['namevi'] ?? '') ?: 'Sản phẩm');
         if ($title !== '' && stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
 
         return [
             'title' => $title,
-            'description' => ! empty($row['descriptionvi']) ? LegacyText::seo($row['descriptionvi']) : '',
-            'keywords' => ! empty($row['keywordsvi']) ? LegacyText::seo($row['keywordsvi']) : '',
+            'description' => ! empty($row['descriptionvi']) ? Text::seo($row['descriptionvi']) : '',
+            'keywords' => ! empty($row['keywordsvi']) ? Text::seo($row['keywordsvi']) : '',
             'image' => $image,
         ];
     }

@@ -4,10 +4,10 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Content\RichText;
-use App\Legacy\Support\LegacyText;
 use App\Models\Post;
+use App\Support\RichText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /**
  * Article pages: knowledge articles (api/pts_v1_news_detail.php) and support/policy pages
@@ -39,14 +39,14 @@ class NewsDetail extends PageSupport
         }
         $id = (int) $row['id'];
         $title = self::text($row['namevi']);
-        $articleSlug = LegacyText::slug($row['slugvi']);
+        $articleSlug = Text::slug($row['slugvi']);
         if (! self::visible($row) || $id <= 0 || $title === '' || $articleSlug === '') {
             return $notFound;
         }
         $category = [];
         if ((int) $row['id_list'] > 0) {
             $list = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, 'hienthi' as status from post_categories where id=? and kind='article' and is_visible=1 limit 1", [(int) $row['id_list']]);
-            if ($list && ($listSlug = LegacyText::slug($list['slugvi'])) !== '') {
+            if ($list && ($listSlug = Text::slug($list['slugvi'])) !== '') {
                 $category = ['id' => (int) $list['id'], 'name' => self::text($list['namevi']), 'slug' => $listSlug, 'url' => '/'.$listSlug.'/'];
             }
         }
@@ -145,7 +145,7 @@ class NewsDetail extends PageSupport
     {
         $out = [];
         foreach ($rows as $row) {
-            $slug = LegacyText::slug($row['slugvi']);
+            $slug = Text::slug($row['slugvi']);
             $title = self::text($row['namevi']);
             if (! self::visible($row) || (int) $row['id'] <= 0 || $slug === '' || $title === '') {
                 continue;

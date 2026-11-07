@@ -3,10 +3,10 @@
 namespace App\Domain\Projects;
 
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Content\RichText;
-use App\Legacy\Content\SolutionHub;
-use App\Legacy\Support\LegacyText;
+use App\Domain\Solutions\SolutionHub;
 use App\Models\Post;
+use App\Support\RichText;
+use App\Support\Text;
 
 /** One completed project (api/pts_v1_project_detail.php): story, gallery, equipment used, nearby projects. */
 class ProjectDetail extends PageSupport
@@ -29,12 +29,12 @@ class ProjectDetail extends PageSupport
             return [404, ['error' => ['code' => 'PROJECT_NOT_FOUND']]];
         }
         $id = (int) $row['id'];
-        $projectSlug = LegacyText::slug($row['slugvi']);
-        $title = LegacyText::cms($row['namevi']);
+        $projectSlug = Text::slug($row['slugvi']);
+        $title = Text::cms($row['namevi']);
         $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 0,1", [Post::class, $id]);
         $categoryRow = $this->row("select id, name as namevi, slug as slugvi, 'hienthi' as status from post_categories where id = ? and kind = 'project' and is_visible = 1 limit 1", [(int) $row['id_list']]);
-        $categoryName = LegacyText::cms($categoryRow['namevi'] ?? '');
-        $categorySlug = LegacyText::slug($categoryRow['slugvi'] ?? '');
+        $categoryName = Text::cms($categoryRow['namevi'] ?? '');
+        $categorySlug = Text::slug($categoryRow['slugvi'] ?? '');
         $category = (int) ($categoryRow['id'] ?? 0) > 0 && $categoryName !== '' && $categorySlug !== ''
             ? ['id' => (int) $categoryRow['id'], 'name' => $categoryName, 'slug' => $categorySlug, 'url' => '/danh-muc-du-an/'.$categorySlug.'/'] : null;
 
@@ -44,7 +44,7 @@ class ProjectDetail extends PageSupport
             if (! self::visible($item) || $item['kind'] !== 'man') {
                 continue;
             }
-            $caption = LegacyText::cms($item['namevi']);
+            $caption = Text::cms($item['namevi']);
             $image = $this->strictImage($item['photo'], 'upload/news/');
             if ($item['val'] === 'du-an' && $image !== '') {
                 $gallery[] = ['type' => 'image', 'src' => $image, 'caption' => $caption];
@@ -55,21 +55,21 @@ class ProjectDetail extends PageSupport
         $equipment = [];
         foreach ($this->rows("select p.id, p.name as namevi, p.slug as slugvi, coalesce(p.image,'') as photo, coalesce(p.code,'') as code, 'hienthi' as status from post_products pp inner join products p on p.id = pp.product_id"
             .' where pp.post_id = ? and pp.is_visible = 1 and p.is_visible = 1 order by pp.sort_order,pp.id', [$id]) as $product) {
-            $name = LegacyText::cms($product['namevi']);
-            $productSlug = LegacyText::slug($product['slugvi']);
+            $name = Text::cms($product['namevi']);
+            $productSlug = Text::slug($product['slugvi']);
             if (self::visible($product) && (int) $product['id'] > 0 && $name !== '' && $productSlug !== '') {
-                $equipment[] = ['id' => (int) $product['id'], 'name' => $name, 'slug' => $productSlug, 'url' => '/san-pham/'.$productSlug, 'code' => LegacyText::cms($product['code']), 'image' => $this->strictImage($product['photo'], 'upload/product/')];
+                $equipment[] = ['id' => (int) $product['id'], 'name' => $name, 'slug' => $productSlug, 'url' => '/san-pham/'.$productSlug, 'code' => Text::cms($product['code']), 'image' => $this->strictImage($product['photo'], 'upload/product/')];
             }
         }
         $nearby = [];
         foreach ($this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(address,'') as address, 'hienthi' as status from posts where id<>? and category_id <=> ? and kind='project' and is_visible=1 order by sort_order,id desc limit 0,3", [$id, $row['id_list']]) as $other) {
-            $otherSlug = LegacyText::slug($other['slugvi']);
-            $otherTitle = LegacyText::cms($other['namevi']);
+            $otherSlug = Text::slug($other['slugvi']);
+            $otherTitle = Text::cms($other['namevi']);
             if (self::visible($other) && (int) $other['id'] > 0 && $otherSlug !== '' && $otherTitle !== '') {
-                $nearby[] = ['id' => (int) $other['id'], 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => LegacyText::cms($other['address']), 'image' => $this->strictImage($other['photo'], 'upload/news/')];
+                $nearby[] = ['id' => (int) $other['id'], 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => Text::cms($other['address']), 'image' => $this->strictImage($other['photo'], 'upload/news/')];
             }
         }
-        $seoTitle = ! empty($seoRow['titlevi']) ? LegacyText::cms($seoRow['titlevi']) : $title;
+        $seoTitle = ! empty($seoRow['titlevi']) ? Text::cms($seoRow['titlevi']) : $title;
         if ($seoTitle !== '' && stripos($seoTitle, 'phúc thịnh s') === false) {
             $seoTitle .= ' | Phúc Thịnh Solar';
         }
@@ -82,11 +82,11 @@ class ProjectDetail extends PageSupport
                 'title' => $title,
                 'slug' => $projectSlug,
                 'url' => '/'.$projectSlug.'/',
-                'summary' => LegacyText::cms($row['descvi']),
+                'summary' => Text::cms($row['descvi']),
                 'coverImage' => $this->strictImage($row['photo'], 'upload/news/'),
                 'category' => $category,
-                'client' => LegacyText::cms($row['tenkhachhang']),
-                'address' => LegacyText::cms($row['address']),
+                'client' => Text::cms($row['tenkhachhang']),
+                'address' => Text::cms($row['address']),
                 'startDate' => self::date($row['project_start_date']),
                 'endDate' => self::date($row['project_end_date']),
                 'gallery' => $gallery,
@@ -97,8 +97,8 @@ class ProjectDetail extends PageSupport
             'content' => RichText::dto(RichText::sanitize($row['contentvi'])),
             'seo' => [
                 'title' => $seoTitle,
-                'description' => ! empty($seoRow['descriptionvi']) ? LegacyText::cms($seoRow['descriptionvi']) : '',
-                'keywords' => ! empty($seoRow['keywordsvi']) ? LegacyText::cms($seoRow['keywordsvi']) : '',
+                'description' => ! empty($seoRow['descriptionvi']) ? Text::cms($seoRow['descriptionvi']) : '',
+                'keywords' => ! empty($seoRow['keywordsvi']) ? Text::cms($seoRow['keywordsvi']) : '',
             ],
             'canonical' => ['url' => '/'.$projectSlug, 'sources' => ['project' => 'legacy canonical entity path /'.$slug, 'gallery' => 'news.php detail branch',
                 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot']],
@@ -127,7 +127,7 @@ class ProjectDetail extends PageSupport
         }
         $trust = [];
         foreach ($this->items('projects.trust', 3, true) as $item) {
-            $label = LegacyText::cms($item['namevi']);
+            $label = Text::cms($item['namevi']);
             if (self::visible($item) && $label !== '') {
                 $trust[] = ['label' => $label, 'icon' => $this->strictImage($item['photo'], 'upload/news/'), 'faIcon' => 'fa-check'];
             }

@@ -3,9 +3,9 @@
 namespace App\Domain\Reviews;
 
 use App\Domain\Leads\LeadSubmission;
-use App\Legacy\Support\LegacyText;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
+use App\Support\Text;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -164,7 +164,7 @@ class ReviewSubmission
     /** Saves under upload/<folder>/ with the PHP naming (slug of the name, dash, 4 digits). */
     private static function store(UploadedFile $file, string $folder): ?string
     {
-        $name = LegacyText::changeTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
+        $name = Text::changeTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
         $name .= '-'.random_int(1000, 9999).'.'.strtolower($file->getClientOriginalExtension());
 
         return Storage::disk('uploads')->putFileAs($folder, $file, $name) ? $name : null;

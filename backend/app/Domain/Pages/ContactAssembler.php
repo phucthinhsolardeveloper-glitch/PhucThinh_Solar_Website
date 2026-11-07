@@ -3,8 +3,8 @@
 namespace App\Domain\Pages;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /** Contact page (api/pts_v1_contact.php): intro, picture, company contacts, branches with Google Maps links. */
 class ContactAssembler extends PageSupport
@@ -17,7 +17,7 @@ class ContactAssembler extends PageSupport
     /** @return array<string, mixed> */
     public function build(): array
     {
-        $text = fn ($v) => LegacyText::flat($v);
+        $text = fn ($v) => Text::flat($v);
         $visualRows = $this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from banners where placement='contact-visual' order by sort_order,id desc");
         $visual = null;
         foreach ($visualRows as $row) {

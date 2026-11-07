@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Legacy\Support;
+namespace App\Support;
 
 /**
  * The PHP-era status column: a comma list such as "hienthi,noibat", tested with find_in_set().

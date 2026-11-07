@@ -4,8 +4,8 @@ namespace App\Domain\Home;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -91,9 +91,9 @@ class HomeAssembler
             'locale' => 'vi',
             'path' => '/',
             'seo' => [
-                'title' => self::text(LegacyText::flat($seoRow['titlevi'] ?? '')),
-                'description' => self::text(LegacyText::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => self::text(LegacyText::flat($seoRow['keywordsvi'] ?? '')),
+                'title' => self::text(Text::flat($seoRow['titlevi'] ?? '')),
+                'description' => self::text(Text::flat($seoRow['descriptionvi'] ?? '')),
+                'keywords' => self::text(Text::flat($seoRow['keywordsvi'] ?? '')),
                 'image' => self::text($this->urls->visual($logo->photo ?? '', 'upload/photo/')),
             ],
             'hero' => $hero,

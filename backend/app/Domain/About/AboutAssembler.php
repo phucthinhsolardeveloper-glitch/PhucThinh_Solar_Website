@@ -3,8 +3,8 @@
 namespace App\Domain\About;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -139,9 +139,9 @@ class AboutAssembler
             'path' => '/gioi-thieu/',
             'title' => 'Giới thiệu Phúc Thịnh Solar',
             'seo' => [
-                'title' => self::text(LegacyText::flat($seoRow['titlevi'] ?? '')),
-                'description' => self::text(LegacyText::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => self::text(LegacyText::flat($seoRow['keywordsvi'] ?? '')),
+                'title' => self::text(Text::flat($seoRow['titlevi'] ?? '')),
+                'description' => self::text(Text::flat($seoRow['descriptionvi'] ?? '')),
+                'keywords' => self::text(Text::flat($seoRow['keywordsvi'] ?? '')),
                 'image' => $this->urls->visual($seoRow['photo'] ?? '', 'upload/seopage/'),
             ],
             'story' => ['eyebrow' => $l['storyEyebrow'], 'title' => $l['storyTitle'], 'intro' => $intro, 'body' => $body, 'image' => $this->image($story['photo'] ?? '', 'upload/news/')],
@@ -254,7 +254,7 @@ class AboutAssembler
     {
         $plain = self::text($value);
 
-        return $plain === '' ? '' : str_replace('-', ' ', LegacyText::changeTitle($plain));
+        return $plain === '' ? '' : str_replace('-', ' ', Text::changeTitle($plain));
     }
 
     /** First row whose normalised name contains one of the needles (ptsAboutFind). */

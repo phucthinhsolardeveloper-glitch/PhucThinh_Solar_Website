@@ -3,7 +3,7 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\CategoryTree;
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 
 /** SQL fragments for the catalog filters and orderings, kept parameterised (product_price_filter.php, product_need_filter.php, product_sort.php). */
 final class CatalogFilters
@@ -149,6 +149,6 @@ final class CatalogFilters
     /** Search slug of a keyword, as the PHP $func->changeTitle() builds it. */
     public static function keywordSlug(string $text): string
     {
-        return LegacyText::changeTitle($text);
+        return Text::changeTitle($text);
     }
 }

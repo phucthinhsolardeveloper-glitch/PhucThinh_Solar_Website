@@ -4,11 +4,10 @@ namespace App\Domain\Solutions;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Content\RichText;
-use App\Legacy\Content\SolutionHub;
-use App\Legacy\Support\LegacyText;
 use App\Models\PostCategory;
+use App\Support\RichText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /**
  * Solutions hub (api/pts_v1_solutions.php): intro, solution cards ticked "solutionhub", equipment
@@ -65,9 +64,9 @@ class SolutionsListing extends PageSupport
             if ($group) {
                 $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $group['id']]);
                 $category = $this->category($group, $groups, $solutions, [
-                    'title' => LegacyText::flat($seoRow['titlevi'] ?? ''),
-                    'description' => LegacyText::flat($seoRow['descriptionvi'] ?? ''),
-                    'keywords' => LegacyText::flat($seoRow['keywordsvi'] ?? ''),
+                    'title' => Text::flat($seoRow['titlevi'] ?? ''),
+                    'description' => Text::flat($seoRow['descriptionvi'] ?? ''),
+                    'keywords' => Text::flat($seoRow['keywordsvi'] ?? ''),
                     'image' => $this->urls->visual($group['photo'] ?? '', 'upload/news/'),
                 ]);
             }
@@ -162,14 +161,14 @@ class SolutionsListing extends PageSupport
     private function category(array $group, array $groups, array $solutions, array $seo): ?array
     {
         $id = (int) $group['id'];
-        $slug = LegacyText::slug($group['slugvi']);
-        $name = LegacyText::cms($group['namevi']);
+        $slug = Text::slug($group['slugvi']);
+        $name = Text::cms($group['namevi']);
         if ($id <= 0 || $slug === '' || $name === '') {
             return null;
         }
         $cards = [];
         foreach (SolutionHub::select($solutions) as $row) {
-            $itemSlug = LegacyText::slug(SolutionHub::field($row, 'slug'));
+            $itemSlug = Text::slug(SolutionHub::field($row, 'slug'));
             if ((int) $row['id_list'] !== $id || $itemSlug === '') {
                 continue;
             }
@@ -183,16 +182,16 @@ class SolutionsListing extends PageSupport
         $featured = SolutionHub::select($solutions, 'solutionhub');
         $navigation = [];
         foreach ($groups as $nav) {
-            $navSlug = LegacyText::slug($nav['slugvi']);
+            $navSlug = Text::slug($nav['slugvi']);
             $navId = (int) $nav['id'];
-            $navName = LegacyText::cms($nav['namevi']);
+            $navName = Text::cms($nav['namevi']);
             if ($navId <= 0 || $navSlug === '' || $navName === '') {
                 continue;
             }
             $url = '/danh-muc-giai-phap/'.$navSlug.'/';
             foreach ($featured as $row) {
                 if ((int) $row['id_list'] === $navId) {
-                    $representative = LegacyText::slug(SolutionHub::field($row, 'slug'));
+                    $representative = Text::slug(SolutionHub::field($row, 'slug'));
                     if ($representative !== '') {
                         $url = '/giai-phap/'.$representative.'/';
                     }
@@ -205,7 +204,7 @@ class SolutionsListing extends PageSupport
         return [
             'id' => $id,
             'name' => $name,
-            'description' => LegacyText::cms($group['descvi']) ?: 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
+            'description' => Text::cms($group['descvi']) ?: 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
             'seo' => self::seo($seo),
             'slug' => $slug,
             'canonicalPath' => '/'.$slug,
@@ -242,7 +241,7 @@ class SolutionsListing extends PageSupport
 
     private static function seo(array $seo): array
     {
-        $text = fn ($v) => is_scalar($v) ? trim((string) preg_replace('/\s+/u', ' ', (string) preg_replace('/[\x00-\x1F\x7F]+/u', ' ', LegacyText::cms($v)))) : '';
+        $text = fn ($v) => is_scalar($v) ? trim((string) preg_replace('/\s+/u', ' ', (string) preg_replace('/[\x00-\x1F\x7F]+/u', ' ', Text::cms($v)))) : '';
 
         return ['title' => $text($seo['title'] ?? ''), 'description' => $text($seo['description'] ?? ''), 'keywords' => $text($seo['keywords'] ?? ''), 'image' => self::path($seo['image'] ?? '')];
     }

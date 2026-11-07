@@ -2,7 +2,7 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 
 /**
  * Turns resolved content blocks into the PDP content DTO (ptsPdpContentDto + productSplitFaqBlocks):
@@ -40,14 +40,14 @@ final class ProductContentPresenter
                 continue;
             }
             if ($type === 'heading' || $type === 'text') {
-                $text = LegacyText::content($block['text'] ?? '');
+                $text = Text::content($block['text'] ?? '');
                 if ($text !== '') {
                     $blocks[] = ['type' => $type, 'text' => $text];
                 }
             } elseif ($type === 'list') {
                 $items = [];
                 foreach ((array) ($block['items'] ?? []) as $item) {
-                    $item = LegacyText::content($item);
+                    $item = Text::content($item);
                     if ($item !== '') {
                         $items[] = $item;
                     }
@@ -61,12 +61,12 @@ final class ProductContentPresenter
             } elseif ($type === 'image') {
                 $image = $this->urls->content($block['photo'] ?? '');
                 if ($image !== '') {
-                    $blocks[] = ['type' => 'image', 'image' => $image, 'caption' => LegacyText::content($block['caption'] ?? '')];
+                    $blocks[] = ['type' => 'image', 'image' => $image, 'caption' => Text::content($block['caption'] ?? '')];
                 }
             } elseif ($type === 'media') {
                 $image = $this->urls->content($block['photo'] ?? '');
-                $title = LegacyText::content($block['title'] ?? '');
-                $text = LegacyText::content($block['text'] ?? '');
+                $title = Text::content($block['title'] ?? '');
+                $text = Text::content($block['text'] ?? '');
                 if ($image === '' && $title === '' && $text === '') {
                     continue;
                 }
@@ -77,8 +77,8 @@ final class ProductContentPresenter
 
         $faqs = [];
         foreach ($faqBlocks as $faq) {
-            $question = LegacyText::content($faq['question'] ?? '');
-            $answer = LegacyText::content($faq['answer'] ?? '');
+            $question = Text::content($faq['question'] ?? '');
+            $answer = Text::content($faq['answer'] ?? '');
             if ($question !== '' && $answer !== '') {
                 $faqs[] = ['question' => $question, 'answer' => $answer];
             }
@@ -92,7 +92,7 @@ final class ProductContentPresenter
 
     public static function isApplicationHeading(mixed $value): bool
     {
-        $heading = LegacyText::content($value);
+        $heading = Text::content($value);
 
         return mb_stripos($heading, 'ứng dụng') !== false || mb_stripos($heading, 'phù hợp') !== false;
     }

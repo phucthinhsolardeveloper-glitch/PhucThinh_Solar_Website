@@ -4,9 +4,9 @@ namespace App\Domain\Site;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Content\RichText;
-use App\Legacy\Support\LegacyText;
+use App\Support\RichText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -76,8 +76,8 @@ class SiteAssembler
         $badge = $photo('bct', true);
 
         $brand = [
-            'name' => LegacyText::flat($this->settings->siteName()) ?: 'Phúc Thịnh Solar',
-            'hotline' => LegacyText::flat($options['hotline'] ?? ''),
+            'name' => Text::flat($this->settings->siteName()) ?: 'Phúc Thịnh Solar',
+            'hotline' => Text::flat($options['hotline'] ?? ''),
             'logo' => $this->asset($photo('logo', false)['photo'] ?? ''),
             'logoFooter' => $this->asset($photo('logo-footer', false)['photo'] ?? ''),
         ];
@@ -85,7 +85,7 @@ class SiteAssembler
         if (strlen($zalo) >= 8 && strlen($zalo) <= 15) {
             $brand['zaloHref'] = 'https://zalo.me/'.$zalo;
         }
-        $technical = LegacyText::flat($options['hotline_technical'] ?? '');
+        $technical = Text::flat($options['hotline_technical'] ?? '');
         if ($technical !== '') {
             $brand['technicalHotline'] = $technical;
         }
@@ -113,9 +113,9 @@ class SiteAssembler
             'catalog' => $this->catalogMenu($lists, $cats, $items),
             'productCategoryTree' => $this->tree($lists, $cats, $items, $subs),
             'footer' => $this->footer($options, $badge),
-            'catalogBenefits' => array_map(fn ($row) => ['title' => LegacyText::excerpt($row['namevi'], 60), 'description' => LegacyText::excerpt($row['descvi'], 90)],
+            'catalogBenefits' => array_map(fn ($row) => ['title' => Text::excerpt($row['namevi'], 60), 'description' => Text::excerpt($row['descvi'], 90)],
                 $this->rows("select title as namevi, summary as descvi from page_items where section='catalog.benefits' and is_visible=1 order by sort_order,id desc limit 0,4")),
-            'quickSearches' => array_values(array_filter(array_map(fn ($row) => LegacyText::excerpt($row['namevi'], 48),
+            'quickSearches' => array_values(array_filter(array_map(fn ($row) => Text::excerpt($row['namevi'], 48),
                 $this->rows("select title as namevi from page_items where section='search.suggestions' and is_visible=1 order by sort_order,id desc limit 0,7")))),
         ];
     }
@@ -145,7 +145,7 @@ class SiteAssembler
             if (! in_array('hienthi', $flags($row), true) || ($hubOnly && ! in_array('solutionhub', $flags($row), true))) {
                 continue;
             }
-            $label = LegacyText::flat(($row['title_indexvi'] ?? '') !== '' ? $row['title_indexvi'] : $row['namevi']);
+            $label = Text::flat(($row['title_indexvi'] ?? '') !== '' ? $row['title_indexvi'] : $row['namevi']);
             $links[] = self::link($label, 'giai-phap/'.self::slug($row).'/');
         }
         $nav[2]['children'] = array_values(array_filter($links));
@@ -248,7 +248,7 @@ class SiteAssembler
         $byList = $group($cats, 'id_list');
         $byCat = $group($items, 'id_cat');
         $byItem = $group($subs, 'id_item');
-        $node = fn (array $row, string $level) => ['id' => (int) $row['id'], 'name' => LegacyText::flat($row['namevi']), 'slug' => self::slug($row), 'url' => self::url($this->path($row, $level)), 'children' => []];
+        $node = fn (array $row, string $level) => ['id' => (int) $row['id'], 'name' => Text::flat($row['namevi']), 'slug' => self::slug($row), 'url' => self::url($this->path($row, $level)), 'children' => []];
         $valid = fn (array $n) => $n['id'] > 0 && $n['name'] !== '' && $n['slug'] !== '';
         $tree = [];
         foreach ($lists as $list) {
@@ -294,8 +294,8 @@ class SiteAssembler
         $locations = [];
         foreach ($this->rows('select name as namevi, address, id, map_url as ggmap from store_locations where is_visible=1'
             ." order by case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end,sort_order,id desc") as $row) {
-            $name = LegacyText::flat($row['namevi']);
-            $address = LegacyText::flat($row['address']);
+            $name = Text::flat($row['namevi']);
+            $address = Text::flat($row['address']);
             if ($name !== '' && $address !== '') {
                 $locations[] = ['name' => $name, 'address' => $address, 'mapUrl' => self::url($row['ggmap'])];
             }
@@ -312,7 +312,7 @@ class SiteAssembler
         $content = (string) preg_replace('/MST:\s*5901151081\b.*?(?:<br\s*\/?>|$)/iu', '', $content, 1);
         $content = (string) preg_replace('~<a\b(?=[^>]*\bhref="tel:)[^>]*>.*?</a>~is', '', $content);
         $dto = [
-            'companyName' => LegacyText::flat($footer['namevi'] ?? ''),
+            'companyName' => Text::flat($footer['namevi'] ?? ''),
             'contactText' => RichText::dto($content),
             'policies' => $policies,
             'locations' => $locations,
@@ -402,7 +402,7 @@ class SiteAssembler
     /** @return array{label: string, href: string}|array{} */
     private static function link(mixed $label, string $href): array
     {
-        $label = LegacyText::flat($label);
+        $label = Text::flat($label);
         $href = self::url($href);
 
         return $label === '' || $href === '' ? [] : ['label' => $label, 'href' => $href];

@@ -4,8 +4,8 @@ namespace App\Domain\Commerce;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductRecord;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
+use App\Support\StatusFlags;
+use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
 
@@ -113,6 +113,6 @@ class Cart
 
     public static function text(mixed $value): string
     {
-        return LegacyText::plain($value);
+        return Text::plain($value);
     }
 }

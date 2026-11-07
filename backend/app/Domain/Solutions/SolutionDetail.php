@@ -3,10 +3,9 @@
 namespace App\Domain\Solutions;
 
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Content\RichText;
-use App\Legacy\Content\SolutionHub;
-use App\Legacy\Support\LegacyText;
 use App\Models\Post;
+use App\Support\RichText;
+use App\Support\Text;
 
 /** One solution page (api/pts_v1_solution_detail.php): body, gallery, sibling solutions, equipment, CTA. */
 class SolutionDetail extends PageSupport
@@ -70,22 +69,22 @@ class SolutionDetail extends PageSupport
             $equipment[] = ['name' => $name, 'description' => self::field($item, 'desc'), 'url' => '/danh-muc-san-pham/'.($listSlug !== '' ? $listSlug.'/' : ''),
                 'image' => $this->strictImage($item['photo'], 'upload/product/')];
         }
-        $canonical = self::canonical(LegacyText::slug($row['slugvi']));
+        $canonical = self::canonical(Text::slug($row['slugvi']));
 
         return [200, [
             'schemaVersion' => 1,
             'locale' => 'vi',
             'path' => $canonical,
             'seo' => [
-                'title' => LegacyText::flat($seoRow['titlevi'] ?? ''),
-                'description' => LegacyText::flat($seoRow['descriptionvi'] ?? ''),
-                'keywords' => LegacyText::flat($seoRow['keywordsvi'] ?? ''),
+                'title' => Text::flat($seoRow['titlevi'] ?? ''),
+                'description' => Text::flat($seoRow['descriptionvi'] ?? ''),
+                'keywords' => Text::flat($seoRow['keywordsvi'] ?? ''),
                 'image' => $this->urls->visual($row['photo'] ?? '', 'upload/news/'),
             ],
             'solution' => [
                 'id' => $id,
                 'title' => self::text($row['namevi']),
-                'slug' => LegacyText::slug($row['slugvi']),
+                'slug' => Text::slug($row['slugvi']),
                 'url' => $canonical,
                 'category' => self::text($category['namevi'] ?? ''),
                 'summary' => self::text($row['descvi']),

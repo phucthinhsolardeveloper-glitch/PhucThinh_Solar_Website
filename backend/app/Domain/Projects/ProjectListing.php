@@ -5,9 +5,9 @@ namespace App\Domain\Projects;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Support\LegacyText;
 use App\Models\PostCategory;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /**
  * Completed projects (api/pts_v1_projects.php). The first page without a category lifts one project
@@ -57,9 +57,9 @@ class ProjectListing extends PageSupport
             $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
             // As in PHP, the selected category carries no picture of its own (its row is taken before pictures are checked).
             $category = $this->categoryDto($selected + ['_photo' => ''], [
-                'title' => LegacyText::cms(LegacyText::flat($seoRow['titlevi'] ?? '')),
-                'description' => LegacyText::cms(LegacyText::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => LegacyText::cms(LegacyText::flat($seoRow['keywordsvi'] ?? '')),
+                'title' => Text::cms(Text::flat($seoRow['titlevi'] ?? '')),
+                'description' => Text::cms(Text::flat($seoRow['descriptionvi'] ?? '')),
+                'keywords' => Text::cms(Text::flat($seoRow['keywordsvi'] ?? '')),
                 'image' => $this->urls->visual($selected['photo'] ?? '', 'upload/news/'),
             ]);
         }
@@ -99,7 +99,7 @@ class ProjectListing extends PageSupport
             'locale' => 'vi',
             'path' => '/du-an-da-thuc-hien/',
             'title' => $category ? 'Dự án '.$category['name'] : 'Dự án đã thực hiện',
-            'seo' => $this->pageSeo('du-an', fn ($v) => LegacyText::cms($v)),
+            'seo' => $this->pageSeo('du-an', fn ($v) => Text::cms($v)),
             'intro' => $this->intro($introRows, $category),
             'category' => $category,
             'categories' => $categoryDtos,
@@ -115,12 +115,12 @@ class ProjectListing extends PageSupport
     private function categoryDto(array $row, ?array $seo = null): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $name = LegacyText::cms($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        $name = Text::cms($row['namevi'] ?? '');
+        $slug = Text::slug($row['slugvi'] ?? '');
         if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
             return null;
         }
-        $dto = ['id' => $id, 'name' => $name, 'description' => LegacyText::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/danh-muc-du-an/'.$slug.'/',
+        $dto = ['id' => $id, 'name' => $name, 'description' => Text::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/danh-muc-du-an/'.$slug.'/',
             'canonicalPath' => '/'.$slug, 'image' => NewsListing::media($row['_photo'])];
         if ($seo !== null) {
             $dto['seo'] = $seo;
@@ -132,14 +132,14 @@ class ProjectListing extends PageSupport
     private function projectDto(array $row, array $categories, bool $featured): ?array
     {
         $id = (int) $row['id'];
-        $name = LegacyText::cms($row['namevi']);
-        $slug = LegacyText::slug($row['slugvi']);
+        $name = Text::cms($row['namevi']);
+        $slug = Text::slug($row['slugvi']);
         if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
             return null;
         }
         $categoryId = (int) ($row['id_list'] ?? 0);
 
-        return ['id' => $id, 'title' => $name, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => LegacyText::cms($row['descvi']), 'address' => LegacyText::cms($row['address']),
+        return ['id' => $id, 'title' => $name, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms($row['descvi']), 'address' => Text::cms($row['address']),
             'image' => NewsListing::media($this->photo($row['photo'])), 'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null, 'featured' => $featured];
     }
 
@@ -152,12 +152,12 @@ class ProjectListing extends PageSupport
                 break;
             }
         }
-        $introDescription = LegacyText::cms($intro['descvi'] ?? '');
+        $introDescription = Text::cms($intro['descvi'] ?? '');
 
         return [
             'visible' => $category !== null || ! $rows || $intro !== [],
-            'title' => LegacyText::cms($category['name'] ?? '') ?: (LegacyText::cms($intro['namevi'] ?? '') ?: 'Dự án đã thực hiện'),
-            'description' => LegacyText::cms($category['description'] ?? '') ?: ($introDescription ?: 'Phúc Thịnh Solar tự hào đồng hành cùng khách hàng kiến tạo những công trình năng lượng sạch, bền vững cho tương lai.'),
+            'title' => Text::cms($category['name'] ?? '') ?: (Text::cms($intro['namevi'] ?? '') ?: 'Dự án đã thực hiện'),
+            'description' => Text::cms($category['description'] ?? '') ?: ($introDescription ?: 'Phúc Thịnh Solar tự hào đồng hành cùng khách hàng kiến tạo những công trình năng lượng sạch, bền vững cho tương lai.'),
         ];
     }
 
@@ -165,7 +165,7 @@ class ProjectListing extends PageSupport
     {
         $items = [];
         foreach ($this->items('projects.benefits', 3, true) as $row) {
-            $label = LegacyText::cms($row['namevi']);
+            $label = Text::cms($row['namevi']);
             if (self::visible($row) && $label !== '') {
                 $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo']))];
             }
@@ -192,10 +192,10 @@ class ProjectListing extends PageSupport
             }
 
             return [
-                'eyebrow' => LegacyText::cms($row['title_indexvi']) ?: 'Đồng hành cùng năng lượng sạch',
-                'title' => LegacyText::cms($row['namevi']) ?: 'Bạn có công trình cần tư vấn?',
-                'description' => LegacyText::cms($row['descvi']) ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
-                'buttonLabel' => LegacyText::cms(trim((string) $row['content1vi']) !== '' ? $row['content1vi'] : 'Nhận tư vấn miễn phí'),
+                'eyebrow' => Text::cms($row['title_indexvi']) ?: 'Đồng hành cùng năng lượng sạch',
+                'title' => Text::cms($row['namevi']) ?: 'Bạn có công trình cần tư vấn?',
+                'description' => Text::cms($row['descvi']) ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+                'buttonLabel' => Text::cms(trim((string) $row['content1vi']) !== '' ? $row['content1vi'] : 'Nhận tư vấn miễn phí'),
                 'image' => NewsListing::media($this->photo($row['photo']) ?: $fallbackPhoto),
                 'trust' => $this->trust(),
                 'hotline' => $hotline === '' ? null : ['label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline)],
@@ -210,7 +210,7 @@ class ProjectListing extends PageSupport
         $icons = ['headset', 'cogs', 'shield'];
         $items = [];
         foreach ($this->items('projects.trust', 3, true) as $index => $row) {
-            $label = LegacyText::cms($row['namevi']);
+            $label = Text::cms($row['namevi']);
             if (self::visible($row) && $label !== '') {
                 $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo'])), 'icon' => $icons[min($index, 2)]];
             }

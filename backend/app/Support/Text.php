@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Legacy\Support;
+namespace App\Support;
 
 /** Text clean-up helpers shared by the public DTOs (ptsPdpText, ptsPdpContentText, ptsPdpSeoText). */
-final class LegacyText
+final class Text
 {
     /** One line of plain text: entities decoded, tags stripped, whitespace collapsed. */
     public static function plain(mixed $value): string

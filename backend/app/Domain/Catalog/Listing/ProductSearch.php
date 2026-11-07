@@ -3,8 +3,8 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\PricingPolicy;
-use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
+use App\Support\Text;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -44,7 +44,7 @@ class ProductSearch
         if ($page > 10000 || $perPage > 48) {
             return $bad;
         }
-        $slugForm = LegacyText::changeTitle(htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'));
+        $slugForm = Text::changeTitle(htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'));
         if ($slugForm === '') {
             return $bad;
         }
@@ -96,7 +96,7 @@ class ProductSearch
         }
         $brands = [];
         foreach ($db->select('select id, name as namevi from brands where is_visible = 1 order by sort_order,id desc') as $row) {
-            $name = LegacyText::plain($row->namevi);
+            $name = Text::plain($row->namevi);
             if ((int) $row->id > 0 && $name !== '') {
                 $brands[] = ['id' => (int) $row->id, 'name' => $name];
             }
@@ -105,7 +105,7 @@ class ProductSearch
         return [200, [
             'schemaVersion' => 1,
             'locale' => 'vi',
-            'keyword' => LegacyText::plain($keyword),
+            'keyword' => Text::plain($keyword),
             'products' => $products,
             'pagination' => ['page' => $page, 'perPage' => $perPage, 'total' => $total],
             'filters' => ['brands' => $brands, 'priceRanges' => $pricesVisible ? array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES) : []],

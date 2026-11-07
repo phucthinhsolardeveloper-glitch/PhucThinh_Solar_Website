@@ -7,9 +7,9 @@ use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Support\LegacyText;
 use App\Models\Brand;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /** Products of one brand (api/pts_v1_brand_detail.php, /thuong-hieu/<slug>/), with sort, price filter and paging. */
 class BrandDetail extends PageSupport
@@ -40,8 +40,8 @@ class BrandDetail extends PageSupport
         $notFound = [404, ['error' => ['code' => 'BRAND_NOT_FOUND']]];
         $brand = $this->row("select id, name as namevi, slug as slugvi, 'hienthi' as status, coalesce(image,'') as photo from brands where slug = ? and is_visible = 1 limit 1", [$slug]);
         $id = (int) ($brand['id'] ?? 0);
-        $name = LegacyText::plain($brand['namevi'] ?? '');
-        $brandSlug = LegacyText::slug($brand['slugvi'] ?? '');
+        $name = Text::plain($brand['namevi'] ?? '');
+        $brandSlug = Text::slug($brand['slugvi'] ?? '');
         if (! $brand || $id <= 0 || ! self::visible($brand) || $brandSlug === '' || $name === '') {
             return $notFound;
         }
@@ -81,14 +81,14 @@ class BrandDetail extends PageSupport
         }
         $brandOptions = [];
         foreach ($this->rows("select name as namevi, slug as slugvi, id, 'san-pham' as type, 'hienthi' as status from brands where is_visible = 1 order by sort_order,id desc") as $option) {
-            $optionName = LegacyText::plain($option['namevi']);
-            $optionSlug = LegacyText::slug($option['slugvi']);
+            $optionName = Text::plain($option['namevi']);
+            $optionSlug = Text::slug($option['slugvi']);
             if ((int) $option['id'] > 0 && $optionName !== '' && $optionSlug !== '' && self::visible($option)) {
                 $brandOptions[] = ['id' => (int) $option['id'], 'name' => $optionName, 'slug' => $optionSlug, 'url' => '/thuong-hieu/'.$optionSlug.'/'];
             }
         }
         $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Brand::class, $id]);
-        $title = ! empty($seoRow['titlevi']) ? LegacyText::seo($seoRow['titlevi']) : LegacyText::seo($name);
+        $title = ! empty($seoRow['titlevi']) ? Text::seo($seoRow['titlevi']) : Text::seo($name);
         if ($title !== '' && stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
@@ -98,8 +98,8 @@ class BrandDetail extends PageSupport
             'locale' => 'vi',
             'path' => '/thuong-hieu/'.$brandSlug.'/',
             'brand' => ['id' => $id, 'name' => $name, 'slug' => $brandSlug, 'url' => '/thuong-hieu/'.$brandSlug.'/'],
-            'seo' => ['title' => $title, 'description' => ! empty($seoRow['descriptionvi']) ? LegacyText::seo($seoRow['descriptionvi']) : '',
-                'keywords' => ! empty($seoRow['keywordsvi']) ? LegacyText::seo($seoRow['keywordsvi']) : '', 'image' => $this->urls->visual($brand['photo'], 'upload/product/')],
+            'seo' => ['title' => $title, 'description' => ! empty($seoRow['descriptionvi']) ? Text::seo($seoRow['descriptionvi']) : '',
+                'keywords' => ! empty($seoRow['keywordsvi']) ? Text::seo($seoRow['keywordsvi']) : '', 'image' => $this->urls->visual($brand['photo'], 'upload/product/')],
             'products' => $products,
             'pagination' => ['page' => $page, 'perPage' => $perPage, 'total' => max(0, $total)],
             'filters' => ['brands' => $brandOptions, 'priceRanges' => $pricesVisible ? array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES) : []],

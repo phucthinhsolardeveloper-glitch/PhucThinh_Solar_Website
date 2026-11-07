@@ -2,7 +2,7 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
-use App\Legacy\Support\LegacyText;
+use App\Support\Text;
 
 /**
  * "Where to use it" cards (ptsPdpApplicationsDto), buying cues (ptsPdpBuyingGuidesDto) and documents
@@ -58,14 +58,14 @@ class ProductApplications
                 }
             }
             $url = $this->urls->application($image);
-            $cards[] = ['title' => LegacyText::plain($title), 'text' => LegacyText::plain($item['text']), 'image' => $url];
+            $cards[] = ['title' => Text::plain($title), 'text' => Text::plain($item['text']), 'image' => $url];
             if ($key !== '' && $url !== '') {
                 $seen[$key] = true;
             }
         }
 
         return [
-            'title' => LegacyText::plain($this->specs->profile($profileKey)['application_title'] ?? ''),
+            'title' => Text::plain($this->specs->profile($profileKey)['application_title'] ?? ''),
             'items' => array_slice($cards, 0, 3),
         ];
     }
@@ -80,8 +80,8 @@ class ProductApplications
             if (! preg_match('/^[a-z0-9_]+$/', (string) $key) || in_array($key, $metrics, true)) {
                 continue;
             }
-            $value = LegacyText::plain($this->specs->value($row, (string) $key));
-            $label = LegacyText::plain($label);
+            $value = Text::plain($this->specs->value($row, (string) $key));
+            $label = Text::plain($label);
             if ($label === '' || $value === '') {
                 continue;
             }
@@ -104,7 +104,7 @@ class ProductApplications
         $seen = [];
         foreach ($rows as $row) {
             $type = in_array($row['document_type'] ?? '', self::DOCUMENT_TYPES, true) ? $row['document_type'] : '';
-            $title = LegacyText::plain($row['title'] ?? '');
+            $title = Text::plain($row['title'] ?? '');
             $url = $this->urls->document($row['file_path'] ?? '');
             if ($type === '' || $title === '' || $url === '' || isset($seen[$url])) {
                 continue;
@@ -143,14 +143,14 @@ class ProductApplications
             }
             if ($type === 'media') {
                 $image = $this->urls->application($block['photo'] ?? '');
-                $title = LegacyText::plain(strip_tags((string) ($block['title'] ?? '')));
-                $text = LegacyText::plain(strip_tags((string) ($block['text'] ?? '')));
+                $title = Text::plain(strip_tags((string) ($block['title'] ?? '')));
+                $text = Text::plain(strip_tags((string) ($block['text'] ?? '')));
                 if ($image !== '' || $title !== '' || $text !== '') {
                     $items[] = ['title' => $title !== '' ? $title : 'Ứng dụng sản phẩm', 'text' => $text, 'image' => $image];
                 }
             } elseif ($type === 'list') {
                 foreach ((array) ($block['items'] ?? []) as $entry) {
-                    $text = LegacyText::plain($entry);
+                    $text = Text::plain($entry);
                     if ($text === '') {
                         continue;
                     }

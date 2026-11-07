@@ -8,9 +8,9 @@ use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Support\LegacyText;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
+use App\Support\Text;
 
 /**
  * Product page extras (api/pts_v1_product_extras.php): related products, warranty links, reviews with
@@ -78,11 +78,11 @@ class ProductExtras extends PageSupport
             }
         }
 
-        $override = LegacyText::plain($row['chinhsachmuahangvi'] ?? '');
+        $override = Text::plain($row['chinhsachmuahangvi'] ?? '');
         $policies = [];
         if ($override === '') {
             foreach ($this->rows("select title as namevi, slug as slugvi, 'hienthi' as status from posts where kind='policy' and is_visible=1 order by sort_order,id desc") as $policy) {
-                $name = LegacyText::plain($policy['namevi']);
+                $name = Text::plain($policy['namevi']);
                 $policySlug = preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', (string) $policy['slugvi']) ? $policy['slugvi'] : '';
                 if ($name !== '' && $policySlug !== '' && mb_stripos($name, 'bảo hành') !== false) {
                     $policies[] = ['label' => $name, 'href' => '/ho-tro/'.$policySlug.'/'];
@@ -110,9 +110,9 @@ class ProductExtras extends PageSupport
             }
             $reviews[] = [
                 'id' => $reviewId,
-                'title' => LegacyText::plain($review['title']),
-                'content' => LegacyText::plain($review['content']),
-                'name' => LegacyText::plain($review['fullname']),
+                'title' => Text::plain($review['title']),
+                'content' => Text::plain($review['content']),
+                'name' => Text::plain($review['fullname']),
                 'star' => max(1, min(5, (int) $review['star'])),
                 'verified' => str_contains(','.$review['status'].',', ',verified-purchase,'),
                 'date' => (int) strtotime((string) $review['date_posted']),
@@ -135,15 +135,15 @@ class ProductExtras extends PageSupport
 
         $commitments = [];
         foreach ($this->items('product.commitments', 8, true) as $commitment) {
-            $name = LegacyText::plain($commitment['namevi']);
+            $name = Text::plain($commitment['namevi']);
             if ($name !== '') {
                 $commitments[] = ['name' => $name, 'image' => $this->photo($commitment['photo'])];
             }
         }
         $needs = [];
         foreach ((array) ($profile['needs'] ?? []) as $code => $label) {
-            if (preg_match('/^[a-z0-9_-]{1,64}$/', (string) $code) && LegacyText::plain($label) !== '') {
-                $needs[] = ['code' => (string) $code, 'label' => LegacyText::plain($label)];
+            if (preg_match('/^[a-z0-9_-]{1,64}$/', (string) $code) && Text::plain($label) !== '') {
+                $needs[] = ['code' => (string) $code, 'label' => Text::plain($label)];
             }
         }
 
@@ -154,7 +154,7 @@ class ProductExtras extends PageSupport
             'profileKey' => $profileKey,
             'csrfToken' => FormToken::issue(),
             'videoEmbedUrl' => ($video = MediaLibrary::youtubeId($row['video_url'] ?? '', requireScheme: false)) !== '' ? 'https://www.youtube-nocookie.com/embed/'.$video : '',
-            'warranty' => ['summary' => LegacyText::plain($row['warranty'] ?? ''), 'override' => $override, 'policies' => $policies],
+            'warranty' => ['summary' => Text::plain($row['warranty'] ?? ''), 'override' => $override, 'policies' => $policies],
             'related' => $related,
             'reviews' => [
                 'total' => $reviewTotal,
@@ -180,9 +180,9 @@ class ProductExtras extends PageSupport
     {
         $items = [];
         foreach ($this->rows("select name as fullname, content, if(by_staff,'admin','') as poster, created_at as date_posted from reviews where parent_id=? and product_id=? and status='approved' order by created_at desc, id desc limit {$offset},5", [$parent, $productId]) as $reply) {
-            $content = LegacyText::plain($reply['content']);
+            $content = Text::plain($reply['content']);
             if ($content !== '') {
-                $items[] = ['name' => LegacyText::plain($reply['fullname']), 'content' => $content, 'isAdmin' => $reply['poster'] === 'admin', 'date' => (int) strtotime((string) $reply['date_posted'])];
+                $items[] = ['name' => Text::plain($reply['fullname']), 'content' => $content, 'isAdmin' => $reply['poster'] === 'admin', 'date' => (int) strtotime((string) $reply['date_posted'])];
             }
         }
 

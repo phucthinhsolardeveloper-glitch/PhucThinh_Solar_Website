@@ -4,10 +4,10 @@ namespace App\Domain\Catalog\ProductDetail;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
-use App\Legacy\Support\LegacyText;
-use App\Legacy\Support\StatusFlags;
 use App\Models\Product;
 use App\Support\SiteSettings;
+use App\Support\StatusFlags;
+use App\Support\Text;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -40,8 +40,8 @@ class ProductDetailAssembler
         }
         $row = ProductRecord::from((array) $product, $this->tree);
         $id = (int) $row['id'];
-        $name = LegacyText::plain($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        $name = Text::plain($row['namevi'] ?? '');
+        $slug = Text::slug($row['slugvi'] ?? '');
         if ($name === '' || $slug === '' || ! (new StatusFlags($row['status'] ?? ''))->visible()) {
             return null;
         }
@@ -65,13 +65,13 @@ class ProductDetailAssembler
                 'name' => $name,
                 'slug' => $slug,
                 'url' => '/san-pham/'.$slug,
-                'code' => LegacyText::plain($row['code'] ?? ''),
-                'summary' => LegacyText::plain($row['descvi'] ?? ''),
-                'brand' => LegacyText::plain($brand),
+                'code' => Text::plain($row['code'] ?? ''),
+                'summary' => Text::plain($row['descvi'] ?? ''),
+                'brand' => Text::plain($brand),
                 'profile' => $profile,
                 'media' => $this->media($row),
                 'specifications' => $this->specs->table($row, $profile),
-                'packageContents' => LegacyText::plain($this->specs->packageContents($row['package_contents'] ?? '')),
+                'packageContents' => Text::plain($this->specs->packageContents($row['package_contents'] ?? '')),
                 'decisionMetrics' => $this->specs->decisionMetrics($row, $profile),
             ],
             'breadcrumbs' => $this->breadcrumbs($row),
@@ -118,7 +118,7 @@ class ProductDetailAssembler
     {
         $crumbs = [['label' => 'Sản phẩm', 'url' => '/san-pham/']];
         foreach ($row['category_id'] ? $this->tree->chain($row['category_id']) : [] as $node) {
-            $label = LegacyText::plain($node['name']);
+            $label = Text::plain($node['name']);
             if ($node['is_visible'] && $label !== '') {
                 $crumbs[] = ['label' => $label, 'url' => '/'.$this->tree->path((int) $node['id'])];
             }
@@ -130,15 +130,15 @@ class ProductDetailAssembler
     /** @return array{title: string, description: string, keywords: string} */
     private function seo(string $name, array $seo): array
     {
-        $title = ! empty($seo['titlevi']) ? LegacyText::seo($seo['titlevi']) : LegacyText::seo($name);
+        $title = ! empty($seo['titlevi']) ? Text::seo($seo['titlevi']) : Text::seo($name);
         if ($title !== '' && mb_stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
 
         return [
             'title' => $title,
-            'description' => ! empty($seo['descriptionvi']) ? LegacyText::seo($seo['descriptionvi']) : '',
-            'keywords' => ! empty($seo['keywordsvi']) ? LegacyText::seo($seo['keywordsvi']) : '',
+            'description' => ! empty($seo['descriptionvi']) ? Text::seo($seo['descriptionvi']) : '',
+            'keywords' => ! empty($seo['keywordsvi']) ? Text::seo($seo['keywordsvi']) : '',
         ];
     }
 }
