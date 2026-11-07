@@ -25,6 +25,9 @@ class ParityCommand extends Command
      */
     private const ACCEPTED = [
         'news-detail' => ['.body.article.showCover' => 'PHP looked for the cover picture in HTML-escaped text and never found it; the cover is now hidden when the article repeats it'],
+        'search' => [
+            '.body.pagination.total@{"keyword":"50%"}' => 'PHP also searched the picture file metadata (names, sizes); "50" matched picture names, not product text',
+        ],
         'catalog' => [
             '.body.categoryContent.faq[*].question' => 'PHP always showed the parent category FAQ on sub-category pages; the FAQ Admin wrote for the sub-category now shows',
             '.body.categoryContent.faq[*].answer' => 'same as above',
@@ -83,7 +86,9 @@ class ParityCommand extends Command
             $diffs = [];
             $this->diff($left, $right, '', $diffs);
             if ($snapshot !== null) {
-                $diffs = array_values(array_diff($diffs, array_keys(self::ACCEPTED[$endpoint] ?? [])));
+                $caseKey = (string) json_encode($query, JSON_UNESCAPED_UNICODE);
+                $accepted = array_map(fn ($key) => str_contains($key, '@') ? (explode('@', $key, 2)[1] === $caseKey ? explode('@', $key, 2)[0] : null) : $key, array_keys(self::ACCEPTED[$endpoint] ?? []));
+                $diffs = array_values(array_diff($diffs, array_filter($accepted)));
             }
             if (! $diffs) {
                 $identical++;
