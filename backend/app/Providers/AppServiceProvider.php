@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Auth\LegacyAdminUserProvider;
 use App\Legacy\Auth\LegacyPasswordVerifier;
 use App\Legacy\Catalog\ProductImageResolver;
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
             (string) config('legacy.admin_password.salt'),
         ));
         $this->app->singleton(LegacySettings::class);
+        $this->app->bind(ProductMediaUrls::class, fn () => new ProductMediaUrls(rtrim((string) config('legacy.upload_path'), '/')));
         $this->app->bind(ProductImageResolver::class, fn () => new ProductImageResolver(
             rtrim((string) config('legacy.upload_path'), '/').'/product',
         ));
