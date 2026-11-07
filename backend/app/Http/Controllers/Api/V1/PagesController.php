@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\Media\MediaLibrary;
 use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\ContactAssembler;
@@ -60,6 +61,21 @@ class PagesController extends Controller
     public function solutionDetail(Request $request, SolutionDetail $detail): JsonResponse
     {
         return self::result($detail->handle($request->query()));
+    }
+
+    public function gallery(Request $request, MediaLibrary $media): JsonResponse
+    {
+        return self::result($media->albums($request->query()));
+    }
+
+    public function galleryDetail(Request $request, MediaLibrary $media): JsonResponse
+    {
+        return self::result($media->albumPage($request->query()));
+    }
+
+    public function video(Request $request, MediaLibrary $media): JsonResponse
+    {
+        return self::result($media->videos($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */
