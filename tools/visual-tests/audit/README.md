@@ -48,4 +48,3 @@ Chạy từ `tools/visual-tests` với `PLAYWRIGHT_BROWSERS_PATH=$PWD/.browsers`
 | `button-hover.cjs` | Rê chuột qua mọi nút vàng trên 9 trang: nút nào xê dịch hoặc bật `filter` thì sẽ giật |
 | `page-speed.cjs` | Tác vụ dài khi tải trang, mở menu, cuộn, với CPU chậm 4 lần |
 | `word-scan.cjs "từ" ...` | Tìm chữ trên tối đa 80 trang, kể cả chữ ẩn trong dữ liệu trang, dùng khi gỡ một dữ kiện cũ |
-
