@@ -51,3 +51,4 @@ Chạy từ `tools/visual-tests` với `PLAYWRIGHT_BROWSERS_PATH=$PWD/.browsers`
 - `catalog-brands-filter.cjs [thư mục]`: đếm logo thương hiệu ở đầu trang Sản phẩm và trang danh mục, rồi chọn 2 thương hiệu trong bộ lọc trên điện thoại để kiểm tra bộ lọc không tự đóng.
 - `solution-first-screen.cjs [thư mục]`: trên điện thoại ngắn và dài, thanh chuyển giải pháp có nằm trong màn đầu không, và lớp tối có che mép dưới ảnh banner không.
 - `phone-overlays.cjs [thư mục]`: trên điện thoại, thẻ "Đã thêm vào giỏ" nằm trọn trong màn, nút "Xem thêm" không đè thanh mua hàng, và các thẻ Tầm nhìn – Sứ mệnh vuốt tới đều hiện.
+- `shop-flow.cjs`: product -> add to cart -> cart -> checkout form, with the backend session cookie; never submits.
