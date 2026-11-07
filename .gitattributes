@@ -1,0 +1,2 @@
+# Third-party library kept exactly as published; whitespace checks apply to our own code.
+frontend/public/pts-living-energy/vendor/** -whitespace

@@ -917,4 +917,3 @@ html.pts-embed .hotspot{font-size:11px}
 html.pts-embed .device-menu .device-item,html.pts-embed .control-panel .toggle-row strong,html.pts-embed .control-panel .v04-battery-option strong{font-size:12px}
 /* Phones: the page's Zalo bubble sits below the stage, so the dock can use the full width. */
 @media(max-width:820px){html.pts-embed .embed-dock{right:8px}}
-

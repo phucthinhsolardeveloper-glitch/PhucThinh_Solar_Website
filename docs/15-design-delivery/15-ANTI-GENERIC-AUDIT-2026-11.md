@@ -59,4 +59,3 @@ Quy ước kỹ thuật cho route mới:
 - Không dùng `pageTransition` toàn cục và không dùng `mode="out-in"` có mờ về 0 cho khối lớn: chúng làm lộ nền trắng giữa hai trạng thái. Nội dung cũ giữ nguyên tới khi nội dung mới sẵn sàng (xem `migration-policy-preview.vue`). Đổi ảnh phải giải mã trước (xem `ProductPreviewGallery.vue`).
 - `plugins/fetch-cache.client.ts` lưu đệm DTO công khai 120 giây ở tầng `fetch`. Không thêm route có phiên, giỏ hàng hoặc form vào danh sách.
 - Kính chỉ dành cho lớp nổi trên nội dung: `.m-glass` (navy) và `.m-glass-light` (sáng). Nội dung và thẻ sản phẩm giữ nền đặc.
-
