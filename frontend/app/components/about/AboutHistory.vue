@@ -236,7 +236,7 @@ h3 button:hover .about-history__title, .is-open .about-history__title { color: v
 .about-history__fold { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .42s cubic-bezier(.22, 1, .36, 1), visibility .42s; }
 .is-open .about-history__fold { grid-template-rows: 1fr; visibility: visible; }
 .about-history__fold > div { min-height: 0; overflow: hidden; }
-.about-history__fold p { margin: 0 0 8px; color: #52627c; font-size: 16px; line-height: 1.6; text-align: justify; }
+.about-history__fold p { margin: 0 0 8px; color: #52627c; font-size: 16px; line-height: 1.6; }
 .is-open .about-history__fold p { animation: history-text .55s cubic-bezier(.22, 1, .36, 1) both; }
 .is-open .about-history__fold p:nth-child(2) { animation-delay: 70ms; }
 .is-open .about-history__fold p:nth-child(3) { animation-delay: 140ms; }

@@ -776,6 +776,8 @@
   [data-fold]:not(.m-fold-open) { position: relative; max-height: 420px; overflow: hidden; }
   [data-fold="300"]:not(.m-fold-open) { max-height: 300px; }
   [data-fold="560"]:not(.m-fold-open) { max-height: 560px; }
+  /* The fold keeps its button inside its own layer, so floating bars such as the buy bar stay on top. */
+  [data-fold] { isolation: isolate; }
   .m-fold-more { position: absolute; inset: auto 0 0; z-index: 5; display: flex; justify-content: center; padding: 40px 16px 8px; background: linear-gradient(180deg, transparent, #fff 62%); cursor: pointer; }
   /* A small label with a chevron. The whole strip stays tappable, so the pill itself can be slim. */
   .m-fold-more span, .m-more-button span { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 18%); border-radius: var(--radius-sm); background: #fff; color: var(--color-navy-900); font-size: 13px; font-weight: 700; line-height: 1; }

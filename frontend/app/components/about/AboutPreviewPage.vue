@@ -76,7 +76,8 @@ function prepareReveals() {
   }, { rootMargin: '0px 0px -8% 0px' })
   aboutRoot.value.querySelectorAll('section:not(#lich-su-phat-trien):not(#ve-phuc-thinh)').forEach((section) => {
     section.querySelectorAll<HTMLElement>('h2, figure, li, article').forEach((block, index) => {
-      if (block.closest('dialog') || block.getBoundingClientRect().top < window.innerHeight) return
+      // Items in a sideways rail are revealed by swiping, which an observer on the page never sees.
+      if (block.closest('dialog, .m-rail') || block.getBoundingClientRect().top < window.innerHeight) return
       block.classList.add('rv')
       block.style.setProperty('--rv-delay', `${Math.min(index, 6) * 70}ms`)
       revealObserver?.observe(block)

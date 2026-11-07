@@ -5,7 +5,7 @@ const { event } = useCartFeedback()
 const { showHeader } = useSiteHeader()
 const links = useMigrationLinks()
 const card = ref<CartFeedbackEvent | null>(null)
-const position = ref<{ top: number; right: number; arrow: number }>({ top: 96, right: 24, arrow: 22 })
+const position = ref<{ top: number; right: number; arrow: number; above?: boolean }>({ top: 96, right: 24, arrow: 22 })
 const paused = ref(false)
 let hideTimer: ReturnType<typeof setTimeout> | undefined
 let remaining = 0
@@ -71,10 +71,13 @@ function placeCard() {
   // The header may still be sliding in; place against its resting position.
   const right = window.innerWidth <= 640 ? 12 : Math.max(12, window.innerWidth - target.rect.right - 8)
   const cartCenter = target.rect.x + target.rect.width / 2
+  // On phones the cart is in the bottom dock, so the card opens above it instead of below the screen edge.
+  const above = target.rect.top > window.innerHeight / 2
   position.value = {
-    top: Math.max(12, target.rect.bottom + target.lift + 12),
+    top: above ? window.innerHeight - target.rect.top + 12 : Math.max(12, target.rect.bottom + target.lift + 12),
     right,
     arrow: Math.max(16, window.innerWidth - right - cartCenter - 7),
+    above,
   }
 }
 
@@ -113,8 +116,8 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKey); clearTimeo
           v-if="card"
           :key="card.id"
           class="m-sheet-glass cart-card"
-          :class="{ 'is-paused': paused }"
-          :style="{ top: `${position.top}px`, right: `${position.right}px`, '--show': `${SHOW_MS}ms`, '--arrow': `${position.arrow}px` }"
+          :class="{ 'is-paused': paused, 'is-above': position.above }"
+          :style="{ [position.above ? 'bottom' : 'top']: `${position.top}px`, right: `${position.right}px`, '--show': `${SHOW_MS}ms`, '--arrow': `${position.arrow}px` }"
           aria-label="Đã thêm vào giỏ hàng"
           @mouseenter="pause"
           @mouseleave="resume"
@@ -182,6 +185,9 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKey); clearTimeo
 .cart-card-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
 .cart-card-enter-from { opacity: 0; transform: translateY(-10px) scale(0.97); transform-origin: top right; }
 .cart-card-leave-to { opacity: 0; transform: translateY(-6px); }
+/* Opening above the dock: the pointer sits on the bottom edge and the card rises into place. */
+.cart-card.is-above .cart-card__arrow { top: auto; bottom: -7px; transform: rotate(225deg); }
+.cart-card.is-above.cart-card-enter-from { transform: translateY(10px) scale(0.97); transform-origin: bottom right; }
 @media (max-width: 640px) {
   .cart-card { right: 12px !important; left: 12px; width: auto; }
 }

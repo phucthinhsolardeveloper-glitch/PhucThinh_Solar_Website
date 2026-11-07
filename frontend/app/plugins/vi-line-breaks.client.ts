@@ -39,14 +39,17 @@ function fixEnding(block: Element) {
 // Long running text gets straight edges on both sides, and centred copy or short lines keep their alignment.
 // A paragraph is only justified if no word gap stretches too far: a large hole reads worse than an uneven edge.
 const JUSTIFY_MIN_WORDS = 12
-const JUSTIFY_MIN_WIDTH = 260
-const JUSTIFY_MAX_GAP_EM = 0.8
+// Narrow cards and rails have too few words per line to justify without visible holes.
+const JUSTIFY_MIN_WIDTH = 320
+const JUSTIFY_MAX_GAP_EM = 0.6
 const JUSTIFY_BLOCKS = 'main p, main li, article p, article li'
 const JUSTIFY_SKIP = 'nav,button,[role="listbox"],[data-no-justify],.sug,.m-chunk-skip'
 
 function fixAlignment(block: Element) {
   if (!block.matches(JUSTIFY_BLOCKS) || block.closest(JUSTIFY_SKIP)) return
   block.classList.remove('text-justified')
+  // A list item that holds a title, a link or another block is a card, not running text.
+  if (block.tagName === 'LI' && [...block.children].some((child) => getComputedStyle(child).display !== 'inline')) return
   const style = getComputedStyle(block)
   const left = style.textAlign === 'start' || style.textAlign === 'left'
   const wide = (block as HTMLElement).clientWidth >= JUSTIFY_MIN_WIDTH
