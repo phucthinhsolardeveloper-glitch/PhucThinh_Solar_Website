@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    // Inbox for new leads and orders (mail_config.php admin_to in the PHP site).
+    'admin_to' => env('MAIL_ADMIN_TO', ''),
+
 ];

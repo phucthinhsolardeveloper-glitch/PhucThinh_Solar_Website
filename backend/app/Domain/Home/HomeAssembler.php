@@ -224,7 +224,7 @@ class HomeAssembler
             if (! self::visible($point) || count($points) >= 4) {
                 continue;
             }
-            $fallback = self::ABOUT_POINTS[count($points)] ?? ['label' => '', 'description' => ''];
+            $fallback = self::ABOUT_POINTS[count($points)];
             $points[] = ['label' => self::text($point['namevi']), 'description' => self::text($point['descvi']) ?: $fallback['description'], 'image' => $this->path($point['photo'], 'upload/news/')];
         }
         if (! $points) {

@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $isApi = fn (Request $request) => $request->is('api/*');
         $middleware->convertEmptyStringsToNull(except: [$isApi]);
         $middleware->trimStrings(except: [$isApi]);
+        // Caddy and the Nuxt server sit in front; the visitor IP (rate limits) comes from X-Forwarded-For.
+        $middleware->trustProxies(at: array_filter(explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1'))));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

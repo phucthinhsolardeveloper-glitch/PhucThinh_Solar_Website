@@ -20,6 +20,7 @@ Route::prefix('v1')->group(function () {
     Route::get('gallery-detail', [PagesController::class, 'galleryDetail']);
     Route::get('home', HomeController::class);
     Route::get('lead-form', [PagesController::class, 'leadForm']);
+    Route::post('lead-form', [PagesController::class, 'submitLead']);
     Route::get('news', [PagesController::class, 'news']);
     Route::get('news-detail', [PagesController::class, 'newsDetail']);
     Route::get('policy-detail', [PagesController::class, 'policyDetail']);

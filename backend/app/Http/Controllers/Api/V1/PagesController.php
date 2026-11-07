@@ -6,6 +6,7 @@ use App\Domain\Brands\BrandDetail;
 use App\Domain\Catalog\Listing\ProductSearch;
 use App\Domain\Catalog\ProductDetail\ProductExtras;
 use App\Domain\Forms\FormMetadata;
+use App\Domain\Leads\LeadSubmission;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
@@ -109,6 +110,13 @@ class PagesController extends Controller
     public function leadForm(Request $request, FormMetadata $forms): JsonResponse
     {
         return self::result($forms->leadForm($request->query()));
+    }
+
+    public function submitLead(Request $request, LeadSubmission $leads): JsonResponse
+    {
+        [$status, $body] = $leads->handle(json_decode($request->getContent(), true), (string) $request->ip());
+
+        return response()->json($body, $status, ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     public function checkoutWards(Request $request, FormMetadata $forms): JsonResponse
