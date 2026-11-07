@@ -8,7 +8,7 @@ const phpFallback: PublicHomePayload['campaigns'] = [
   { name: 'Chiếu sáng sân vườn và lối đi', description: 'Tạo không gian an toàn, chỉn chu và vận hành độc lập bằng năng lượng sạch.', image: '/assets/images/site-visuals/home-outdoor-lighting.jpg', href: '/san-pham/' },
 ]
 const items = computed(() => props.campaigns.length ? props.campaigns.slice(0, 3) : props.campaignsConfigured ? [] : phpFallback)
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 </script>
 

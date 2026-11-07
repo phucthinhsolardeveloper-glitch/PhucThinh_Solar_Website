@@ -2,7 +2,7 @@
 import type { PublicSolutionsIntro } from '../../../shared/contracts/public-solutions'
 
 defineProps<{ intro: PublicSolutionsIntro }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 </script>
 
 <template>

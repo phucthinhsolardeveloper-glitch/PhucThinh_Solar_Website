@@ -2,7 +2,7 @@
 import type { PublicProductDocument } from '#shared/contracts/public-product-detail'
 
 defineProps<{ documents: PublicProductDocument[] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 const typeLabels: Record<PublicProductDocument['type'], string> = {
   datasheet: 'Datasheet',
@@ -13,8 +13,7 @@ const typeLabels: Record<PublicProductDocument['type'], string> = {
 }
 
 function documentHref(document: PublicProductDocument): string {
-  if (document.url.startsWith('https://') || !links.active.value) return document.url
-  return `/_api/product-document?path=${encodeURIComponent(document.url)}`
+  return document.url
 }
 </script>
 

@@ -5,7 +5,7 @@ import { ORDER_SUCCESS_PUBLIC_PATH } from '#shared/public-route-gate'
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
 const route = useRoute()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const requestFetch = useRequestFetch()
 const token = computed(() => typeof route.query.token === 'string' ? route.query.token : '')
 const hasValidToken = computed(() => /^[a-f0-9]{48}$/.test(token.value))

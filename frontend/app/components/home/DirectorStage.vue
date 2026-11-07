@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
 const active = defineModel<number>('active', { default: 0 })
 const previous = ref(-1)
 const current = computed(() => props.items[active.value] ?? props.items[0])
-const links = useMigrationLinks()
+const links = usePublicLinks()
 let timer: number | undefined
 let paused = false
 

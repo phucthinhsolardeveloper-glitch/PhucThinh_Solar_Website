@@ -33,7 +33,7 @@ test('projects CTA keeps the PHP eyebrow and trust row in the public DTO', () =>
 })
 
 test('projects SEO follows the active Admin keys and overrides only metadata with safe images', () => {
-  const page = readFileSync(new URL('../app/pages/migration-projects-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/ProjectsView.vue', import.meta.url), 'utf8')
   const categoryPage = readFileSync(new URL('../app/components/projects/ProjectCategoryPage.vue', import.meta.url), 'utf8')
   assert.match(projectsApi, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$selectedCategory\['id'\], 'news', 'man_list', 'du-an'\)/)
   assert.match(projectsApi, /#_seopage where type = \? limit 1', array\('du-an'\)/)

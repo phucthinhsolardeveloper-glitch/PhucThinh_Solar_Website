@@ -2,7 +2,7 @@
 import type { PublicProject } from '#shared/contracts/public-projects'
 
 defineProps<{ project: PublicProject; viewLabel: string }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 </script>
 
 <template>

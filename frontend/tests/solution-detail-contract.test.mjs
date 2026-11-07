@@ -16,7 +16,7 @@ const good = {
 }
 const solutionPage = readFileSync(new URL('../app/components/solution-detail/SolutionDetailPage.vue', import.meta.url), 'utf8')
 const solutionHubPage = readFileSync(new URL('../app/pages/giai-phap.vue', import.meta.url), 'utf8')
-const solutionDetailRoute = readFileSync(new URL('../app/pages/migration-solution-detail-preview.vue', import.meta.url), 'utf8')
+const solutionDetailRoute = readFileSync(new URL('../app/components/views/SolutionDetailView.vue', import.meta.url), 'utf8')
 
 test('accepts safe solution detail DTO', () => assert.equal(isPublicSolutionDetailPayload(good), true))
 test('solution detail derives its TOC from sanitized content and reports that PHP omits it', () => {

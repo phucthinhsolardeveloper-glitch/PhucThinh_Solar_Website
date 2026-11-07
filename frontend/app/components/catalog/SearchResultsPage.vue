@@ -11,13 +11,12 @@ import { publicSeoDescription } from '#shared/public-seo'
 import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
- * Tách từ migration-search-preview.vue (xem đó + pages/tim-kiem/index.vue)
  * để dùng chung đúng một logic cho cả preview noindex và route public thật -
  * không nhân bản. Link nội bộ dùng route.path (không hardcode).
  */
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const route = useRoute()
 const selfPath = computed(() => route.path)
 const keyword = computed(() => typeof route.query.keyword === 'string' ? route.query.keyword.trim() : '')
@@ -57,7 +56,7 @@ const searchQuery = computed(() => ({
 }))
 
 const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
-  'migration-search',
+  'search',
   () => $fetch('/_api/search', { query: searchQuery.value }),
   { watch: [searchQuery] },
 )

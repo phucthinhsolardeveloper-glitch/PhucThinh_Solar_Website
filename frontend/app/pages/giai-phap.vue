@@ -41,7 +41,7 @@ const pageTitle = computed(() => data.value?.seo?.title || data.value?.title || 
 const pageDescription = computed(() => data.value?.seo?.description || data.value?.intro?.description || '')
 const pageKeywords = computed(() => data.value?.seo?.keywords || '')
 const pageImage = computed(() => data.value?.seo?.image || data.value?.intro?.image || undefined)
-const links = useMigrationLinks()
+const links = usePublicLinks()
 useSeoMeta({
   title: computed(() => isHubRoute.value ? pageTitle.value : undefined),
   description: computed(() => isHubRoute.value ? pageDescription.value : undefined),

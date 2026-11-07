@@ -10,12 +10,11 @@ const contactPage = read('components/contact/ContactPageContent.vue')
 const contactForm = read('components/contact/ContactLeadForm.vue')
 const dealerForm = read('components/dealer/DealerLeadForm.vue')
 
-test('cart navigation follows the current public or preview route', () => {
-  assert.match(cart, /const links = useMigrationLinks\(\)/)
+test('cart navigation uses the public links', () => {
+  assert.match(cart, /const links = usePublicLinks\(\)/)
   assert.match(cart, /links\.generic\('\/san-pham\/'\)/)
   assert.match(cart, /links\.product\(item\.slug\)/)
   assert.match(cart, /v-if="!payload\.canCheckout"[\s\S]*cần báo giá/)
-  assert.match(cart, /v-else-if="isMigrationPreview"[\s\S]*role="status"[\s\S]*không tạo đơn hàng/)
   assert.match(cart, /<NuxtLink[\s\S]*v-else[\s\S]*to="\/thanh-toan\/"/)
   assert.doesNotMatch(cart, /migration-checkout-preview|Tiếp tục thanh toán/)
   assert.doesNotMatch(cart, /Thanh toán trực tuyến chưa được mở|checkoutRouteEnabled/)

@@ -31,21 +31,21 @@ test('uses only the current policy cover for social metadata and validates its m
   assert.equal(isPublicPolicyDetail({ ...good, cover: '' }), true)
   assert.equal(isPublicPolicyDetail({ ...good, cover: '/upload/news/../../private.jpg' }), false)
   assert.equal(isPublicPolicyDetail({ ...good, cover: '/upload/news/policy.svg' }), false)
-  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/PolicyView.vue', import.meta.url), 'utf8')
   assert.match(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.cover\s*\|\|\s*undefined\)/)
   assert.doesNotMatch(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.related/)
 })
 
 test('policy metadata date renders in Vietnamese day/month/year', () => {
-  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/PolicyView.vue', import.meta.url), 'utf8')
   assert.match(page, /function formatMetadataDate[\s\S]*new Intl\.DateTimeFormat\('vi-VN'/)
   assert.match(page, /formatMetadataDate\(data\.date\)/)
 })
 
 test('public policy JSON-LD uses only validated DTO fields and a canonical public URL', () => {
-  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/PolicyView.vue', import.meta.url), 'utf8')
   assert.match(page, /canonicalPublicOrigin, canonicalPublicUrl/)
-  assert.match(page, /const policyJsonLd = computed\(\(\) => \{[\s\S]*?if \(!isPublicRoute\.value \|\| !policy \|\| error\.value\) return null/)
+  assert.match(page, /const policyJsonLd = computed\(\(\) => \{[\s\S]*?if \(!policy \|\| error\.value\) return null/)
   assert.match(page, /const url = canonicalPublicUrl\(siteOrigin, policy\.canonical\)/)
   assert.match(page, /'@type': 'NewsArticle'/)
   assert.match(page, /mainEntityOfPage: \{ '@type': 'WebPage', '@id': url \}/)
@@ -60,7 +60,7 @@ test('public policy JSON-LD uses only validated DTO fields and a canonical publi
 // Owner decision 2026-11-03: the related-news carousel is replaced by a policy rail in the hero
 // that links every policy (current one marked with aria-current).
 test('policy pages link all policies through an accessible rail', () => {
-  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/PolicyView.vue', import.meta.url), 'utf8')
   assert.match(page, /<nav v-if="policies\.length"[^>]*class="policy-rail" aria-label="Chính sách và hỗ trợ">/)
   assert.match(page, /:aria-current="isCurrentPolicy\(pol\.href\) \? 'page' : undefined"/)
   assert.match(page, /:to="links\.generic\(pol\.href\)"/)

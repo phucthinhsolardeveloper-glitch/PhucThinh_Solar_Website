@@ -66,7 +66,6 @@ test('catalog matches PHP list-search visibility and keeps the lighting need fil
 test('PDP renders allow-listed decision metrics and package contents; brand can select supported sorting', () => {
   const productPage = read('components/product-preview/ProductPreviewPage.vue')
   const publicProductRoute = read('pages/san-pham/[slug].vue')
-  const productPreviewRoute = read('pages/migration-product-preview.vue')
   const metrics = read('components/product-preview/ProductPreviewDecisionMetrics.vue')
   const brand = read('components/catalog/BrandDetailPage.vue')
   assert.match(productPage, /ProductPreviewDecisionMetrics/)
@@ -74,8 +73,6 @@ test('PDP renders allow-listed decision metrics and package contents; brand can 
   assert.match(publicProductRoute, /payload\.value\?\.breadcrumbs/)
   assert.match(publicProductRoute, /<SiteBreadcrumb :items="breadcrumbItems"/)
   assert.match(publicProductRoute, /:breadcrumbs="payload!\.breadcrumbs \?\? \[\]"/)
-  assert.match(productPreviewRoute, /payload\.value\?\.breadcrumbs/)
-  assert.doesNotMatch(productPreviewRoute, /Sản phẩm preview/)
   assert.match(productPage, /productCategories\.map\(\(item\) => item\.label\)/)
   assert.match(productPage, /product\.brand/)
   assert.match(metrics, /metric\.iconImage/)

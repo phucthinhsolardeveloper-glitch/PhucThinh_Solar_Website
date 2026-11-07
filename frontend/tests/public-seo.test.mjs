@@ -156,21 +156,21 @@ test('each renderable public content route wires the canonical and social metada
     'app/components/home/HomePageContent.vue',
     'app/pages/gioi-thieu.vue',
     'app/pages/giai-phap.vue',
-    'app/pages/migration-solution-detail-preview.vue',
+    'app/components/views/SolutionDetailView.vue',
     'app/components/contact/ContactPageContent.vue',
     'app/components/dealer/DealerPageContent.vue',
     'app/components/catalog/CatalogPage.vue',
     'app/pages/san-pham/[slug].vue',
     'app/components/catalog/BrandDetailPage.vue',
     'app/components/catalog/SearchResultsPage.vue',
-    'app/pages/migration-news-preview.vue',
-    'app/pages/migration-news-detail-preview.vue',
-    'app/pages/migration-projects-preview.vue',
-    'app/pages/migration-project-detail-preview.vue',
-    'app/pages/migration-gallery-preview.vue',
-    'app/pages/migration-gallery-detail-preview.vue',
-    'app/pages/migration-video-preview.vue',
-    'app/pages/migration-policy-preview.vue',
+    'app/components/views/NewsView.vue',
+    'app/components/views/NewsDetailView.vue',
+    'app/components/views/ProjectsView.vue',
+    'app/components/views/ProjectDetailView.vue',
+    'app/components/views/GalleryView.vue',
+    'app/components/views/GalleryDetailView.vue',
+    'app/components/views/VideoView.vue',
+    'app/components/views/PolicyView.vue',
   ]
   for (const path of owners) assert.match(read(path), /usePublicSocialMeta\(/, `${path} needs public metadata`)
 })
@@ -183,11 +183,11 @@ test('SEO image fallbacks use the Admin SEO photo before the shared logo fallbac
   assert.match(read('app/pages/gioi-thieu.vue'), /image: computed\(\(\) => about\.value\?\.seo\?\.image \|\| undefined\)/)
   assert.match(read('app/components/contact/ContactPageContent.vue'), /image: computed\(\(\) => contact\.value\?\.seo\.image \|\| undefined\)/)
   assert.match(read('app/components/dealer/DealerPageContent.vue'), /image: computed\(\(\) => dealer\.value\?\.seo\?\.image \|\| undefined\)/)
-  assert.match(read('app/pages/migration-video-preview.vue'), /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| undefined\)/)
+  assert.match(read('app/components/views/VideoView.vue'), /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| undefined\)/)
   assert.match(read('app/components/catalog/CatalogPage.vue'), /image: computed\(\(\) => catalogData\.value\?\.seo\.image \|\| \(route\.path === '\/thuong-hieu\/' \? undefined : catalogData\.value\?\.categoryHero\?\.image\)\)/)
-  assert.match(read('app/pages/migration-projects-preview.vue'), /image: computed\(\(\) => projects\.value\?\.seo\?\.image \|\| undefined\)/)
-  assert.match(read('app/pages/migration-news-preview.vue'), /image: computed\(\(\) => news\.value\?\.seo\?\.image \|\| undefined\)/)
-  assert.match(read('app/pages/migration-solution-detail-preview.vue'), /image: computed\(\(\) => data\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/views/ProjectsView.vue'), /image: computed\(\(\) => projects\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/views/NewsView.vue'), /image: computed\(\(\) => news\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/views/SolutionDetailView.vue'), /image: computed\(\(\) => data\.value\?\.seo\?\.image \|\| undefined\)/)
 })
 
 test('public editorial metadata hides filtered, empty, and failed pages from indexing', () => {

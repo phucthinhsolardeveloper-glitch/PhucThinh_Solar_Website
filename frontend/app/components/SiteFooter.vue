@@ -42,7 +42,7 @@ function socialKind(label: string, href: string): 'facebook' | 'youtube' | 'othe
   return 'other'
 }
 const footer = computed(() => props.site.footer)
-const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
+const { generic: footerHref, external: isExternalLink } = usePublicLinks()
 
 function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`

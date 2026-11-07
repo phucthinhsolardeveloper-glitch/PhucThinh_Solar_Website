@@ -13,7 +13,6 @@ import { isPublicSeoIndexable, publicSeoDescription, publicSeoRobots } from '#sh
 import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
- * Tách từ migration-catalog-preview.vue (xem đó + pages/san-pham/index.vue)
  * để dùng chung đúng một logic cho cả preview noindex và route public thật -
  * không nhân bản. Link nội bộ dùng route.path (không hardcode) nên component
  * này tự khớp đúng URL của bất kỳ trang nào render nó.
@@ -21,7 +20,7 @@ import { publicPageQueryValue } from '#shared/public-pagination'
 const props = defineProps<{ categoryPath?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const filterDrawerOpen = ref(false)
 // The drawer library forces a layout when it mounts, so it only mounts on first use.
 const filterDrawerMounted = ref(false)
@@ -49,7 +48,7 @@ const query = computed(() => ({
   ...(keyword.value ? { keyword: keyword.value } : {}),
   ...(need.value ? { need: need.value } : {}),
 }))
-const catalogDataKey = computed(() => `migration-catalog:${route.path}:${JSON.stringify(query.value)}`)
+const catalogDataKey = computed(() => `catalog:${route.path}:${JSON.stringify(query.value)}`)
 
 /*
  * Doi filter/sort luon ve trang 1 - giu dung quy uoc pagination hien co
@@ -93,7 +92,7 @@ function closeFilterDrawerAfterNavigation(event: MouseEvent) {
   if (!link) return
   if (new URL(link.href, window.location.href).pathname !== window.location.pathname) closeFilterDrawer()
 }
-const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
+const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('catalog-site', async () => {
   const payload = await $fetch<unknown>('/_api/site')
   if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP site data contract' })
   return payload
@@ -113,7 +112,7 @@ function findCategory(nodes: PublicProductCategoryNode[], chain: string): Public
 }
 
 const selectedCategory = computed(() => findCategory(siteData.value?.productCategoryTree ?? [], category.value))
-if (import.meta.server && !links.active.value && props.categoryPath && siteData.value && !selectedCategory.value) {
+if (import.meta.server && props.categoryPath && siteData.value && !selectedCategory.value) {
   setResponseStatus(404, 'Not Found')
 }
 const isPublicCatalogPath = computed(() => route.path === '/san-pham/' || route.path === '/thuong-hieu/' || route.path.startsWith('/danh-muc-san-pham/'))

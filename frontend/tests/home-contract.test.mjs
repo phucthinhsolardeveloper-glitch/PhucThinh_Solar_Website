@@ -163,7 +163,7 @@ test('Admin popup is optional, validated and shown on the homepage only once per
   assert.equal(isPublicHomePayload({ ...good, popup: { ...popup, image: 'https://outside.test/a.png' } }), false)
   assert.equal(isPublicHomePayload({ ...good, popup: { ...popup, key: '<x>' } }), false)
   const component = readFileSync(new URL('../app/components/home/HomePromoPopup.vue', import.meta.url), 'utf8')
-  assert.match(homePreview, /<HomePromoPopup v-if="home\.popup && !preview"/)
+  assert.match(homePreview, /<HomePromoPopup v-if="home\.popup"/)
   assert.match(component, /const STORAGE_KEY = 'pts-popup-campaign'/)
   assert.match(component, /role="dialog" aria-modal="true"/)
   assert.match(component, /event\.key === 'Escape'/)

@@ -7,10 +7,9 @@ import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const route = useRoute()
 const config = useRuntimeConfig()
-const isPublicRoute = computed(() => route.path === VIDEO_PUBLIC_PATH)
 const page = computed(() => typeof route.query.p === 'string' && /^[1-9][0-9]*$/.test(route.query.p) ? Number(route.query.p) : 1)
 const query = computed(() => page.value > 1 ? { p: String(page.value) } : {})
 const { data, error, pending } = await useFetch<unknown>('/_api/video', { query })
@@ -20,14 +19,14 @@ const setDocumentScrollLock = useDocumentScrollLock()
 const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.value.pagination.total / payload.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value,
+  true,
   errorStatus,
   payload.value === null,
 )
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 function pageTo(value: number) {
-  return { path: isPublicRoute.value ? VIDEO_PUBLIC_PATH : '/migration-video-preview', query: value > 1 ? { p: String(value) } : {} }
+  return { path: VIDEO_PUBLIC_PATH, query: value > 1 ? { p: String(value) } : {} }
 }
 const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
@@ -75,17 +74,15 @@ onBeforeUnmount(() => {
   setDocumentScrollLock(false)
 })
 
-const pageTitle = computed(() => isPublicRoute.value
-  ? publicSeoTitle(payload.value?.seo.title, 'Video')
-  : payload.value?.seo.title || 'Video — Nuxt preview')
+const pageTitle = computed(() => publicSeoTitle(payload.value?.seo.title, 'Video'))
 
 useSeoMeta({
   title: pageTitle,
   description: computed(() => payload.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!payload.value && !error.value),
+  enabled: computed(() => !!payload.value && !error.value),
   title: pageTitle,
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: VIDEO_PUBLIC_PATH,

@@ -13,9 +13,9 @@ const read = (file) => readFileSync(resolve(root, file), 'utf8')
  * đúng import đó để kiểm tra nội dung thật, không grep mù trên wrapper rỗng.
  */
 test('public gallery and video keep the real empty-state copy and interactive entry points', () => {
-  const galleryPreview = read('app/pages/migration-gallery-preview.vue')
-  const galleryDetailPreview = read('app/pages/migration-gallery-detail-preview.vue')
-  const video = read('app/pages/migration-video-preview.vue')
+  const galleryPreview = read('app/components/views/GalleryView.vue')
+  const galleryDetailPreview = read('app/components/views/GalleryDetailView.vue')
+  const video = read('app/components/views/VideoView.vue')
   assert.match(galleryPreview, /Không tìm thấy kết quả|Chưa có/)
   assert.match(video, /Không tìm thấy kết quả|Chưa có/)
   assert.match(galleryDetailPreview, /@click="open\(/)
@@ -23,10 +23,10 @@ test('public gallery and video keep the real empty-state copy and interactive en
 })
 
 test('public listing/detail surfaces retain the PHP-equivalent CTA and related-content hooks', () => {
-  const projectsPreview = read('app/pages/migration-projects-preview.vue')
-  const newsPreview = read('app/pages/migration-news-preview.vue')
-  const newsDetailPreview = read('app/pages/migration-news-detail-preview.vue')
-  const projectDetailPreview = read('app/pages/migration-project-detail-preview.vue')
+  const projectsPreview = read('app/components/views/ProjectsView.vue')
+  const newsPreview = read('app/components/views/NewsView.vue')
+  const newsDetailPreview = read('app/components/views/NewsDetailView.vue')
+  const projectDetailPreview = read('app/components/views/ProjectDetailView.vue')
   assert.match(projectsPreview, /ProjectsCta/)
   assert.match(newsPreview, /NewsCta/)
   assert.match(newsDetailPreview, /NewsDetailRelated/)

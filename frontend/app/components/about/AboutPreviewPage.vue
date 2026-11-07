@@ -7,7 +7,7 @@ const { data: brandCatalogData } = await useAsyncData<PublicCatalogPayload | nul
   const payload: unknown = await $fetch('/_api/catalog', { query: { per_page: '1' } })
   return isPublicCatalogPayload(payload) ? payload : null
 }, { default: () => null })
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const { isHeaderHidden } = useSiteHeader()
 const aboutNavRef = ref<HTMLElement | null>(null)

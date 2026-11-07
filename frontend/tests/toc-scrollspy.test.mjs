@@ -17,7 +17,7 @@ test('TOC scrolling honors reduced motion, transfers keyboard focus, and resumes
 
 test('News and policy TOCs expose active state and use the shared scrollspy', () => {
   const news = read('../app/components/news-detail/NewsDetailArticle.vue')
-  const policy = read('../app/pages/migration-policy-preview.vue')
+  const policy = read('../app/components/views/PolicyView.vue')
   for (const source of [news, policy]) {
     assert.match(source, /useTocScrollspy\(/)
     assert.match(source, /data-toc-id="item\.id"/)

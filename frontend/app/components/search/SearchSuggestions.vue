@@ -9,7 +9,7 @@ import SearchHighlight from '~/components/search/SearchHighlight.vue'
 const props = defineProps<{ keyword: string, site: PublicSitePayload, searchPath: string, idPrefix: string }>()
 const emit = defineEmits<{ leave: [term?: string], pickTerm: [term: string] }>()
 
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const keywordRef = computed(() => props.keyword)
 const { result, pending, failed, active, query } = useProductSuggest(keywordRef)

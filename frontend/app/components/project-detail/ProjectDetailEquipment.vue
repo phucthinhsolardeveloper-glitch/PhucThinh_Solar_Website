@@ -2,7 +2,7 @@
 import type { PublicProjectEquipment } from '#shared/contracts/public-project-detail'
 
 defineProps<{ items: PublicProjectEquipment[] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 </script>
 

@@ -25,7 +25,7 @@ const solutionItems = computed<DirectorStageItem[]>(() => props.data.solutions.m
   href: solution.href,
   linkLabel: 'Xem giải pháp',
 })))
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const phpResizableEditorialImage = /^\/(?:upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
 

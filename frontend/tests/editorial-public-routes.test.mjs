@@ -28,8 +28,8 @@ test('public editorial detail preserves upstream 404 and 502 while preview respo
   assert.equal(editorialPublicResponseStatus(true, 400), undefined)
   assert.equal(editorialPublicResponseStatus(false, 404), undefined)
   assert.equal(editorialPublicResponseStatus(false, 502), undefined)
-  assert.match(read('app/pages/migration-solution-detail-preview.vue'), /setResponseStatus\(responseStatus/)
-  assert.match(read('app/pages/migration-policy-preview.vue'), /setResponseStatus\(responseStatus/)
+  assert.match(read('app/components/views/SolutionDetailView.vue'), /setResponseStatus\(responseStatus/)
+  assert.match(read('app/components/views/PolicyView.vue'), /setResponseStatus\(responseStatus/)
   assert.match(read('server/routes/_api/policy-detail.get.ts'), /passThroughStatuses: \[404\]/)
 })
 
@@ -41,10 +41,10 @@ test('public editorial hubs preserve not-found and set 502 for unavailable or in
   assert.equal(editorialPublicHubResponseStatus(false, 502, true), undefined)
   assert.equal(editorialPublicHubResponseStatus(false, undefined, true), undefined)
   for (const path of [
-    'app/pages/migration-news-preview.vue',
-    'app/pages/migration-projects-preview.vue',
-    'app/pages/migration-gallery-preview.vue',
-    'app/pages/migration-video-preview.vue',
+    'app/components/views/NewsView.vue',
+    'app/components/views/ProjectsView.vue',
+    'app/components/views/GalleryView.vue',
+    'app/components/views/VideoView.vue',
     'app/pages/giai-phap.vue',
   ]) {
     assert.match(read(path), /editorialPublicHubResponseStatus/)
@@ -71,12 +71,12 @@ test('verified legacy solution alias redirects to the live canonical solution', 
   assert.match(read('app/middleware/solution-detail-public-route.ts'), /solutionLegacyRedirectPath\(slug\)[\s\S]*navigateTo\(legacyRedirect, \{ redirectCode: 301 \}\)/)
 })
 
-test('static editorial wrappers reuse preview pages without runtime route flags or PHP fallback', () => {
+test('static editorial pages render their view component and redirect old paths', () => {
   const routes = [
-    ['tin-tuc/index.vue', 'migration-news-preview.vue', 'news-public-route', 'NEWS_PUBLIC_PATH'],
-    ['du-an-da-thuc-hien/index.vue', 'migration-projects-preview.vue', 'projects-public-route', 'PROJECTS_PUBLIC_PATH'],
-    ['thu-vien-anh/index.vue', 'migration-gallery-preview.vue', 'gallery-public-route', 'GALLERY_PUBLIC_PATH'],
-    ['video/index.vue', 'migration-video-preview.vue', 'video-public-route', 'VIDEO_PUBLIC_PATH'],
+    ['tin-tuc/index.vue', 'NewsView.vue', 'news-public-route', 'NEWS_PUBLIC_PATH'],
+    ['du-an-da-thuc-hien/index.vue', 'ProjectsView.vue', 'projects-public-route', 'PROJECTS_PUBLIC_PATH'],
+    ['thu-vien-anh/index.vue', 'GalleryView.vue', 'gallery-public-route', 'GALLERY_PUBLIC_PATH'],
+    ['video/index.vue', 'VideoView.vue', 'video-public-route', 'VIDEO_PUBLIC_PATH'],
   ]
   for (const [pagePath, previewPage, middlewareName, pathConstant] of routes) {
     const page = read(`app/pages/${pagePath}`)
@@ -91,8 +91,8 @@ test('static editorial wrappers reuse preview pages without runtime route flags 
 
 test('dynamic editorial wrappers validate route slugs and remain Nuxt-owned', () => {
   const routes = [
-    ['giai-phap/[slug].vue', 'migration-solution-detail-preview.vue', 'solution-detail-public-route'],
-    ['ho-tro/[slug].vue', 'migration-policy-preview.vue', 'policy-detail-public-route'],
+    ['giai-phap/[slug].vue', 'SolutionDetailView.vue', 'solution-detail-public-route'],
+    ['ho-tro/[slug].vue', 'PolicyView.vue', 'policy-detail-public-route'],
   ]
   for (const [pagePath, previewPage, middlewareName] of routes) {
     const page = read(`app/pages/${pagePath}`)
@@ -116,37 +116,33 @@ test('dynamic editorial wrappers validate route slugs and remain Nuxt-owned', ()
   assert.match(solutionsHubMiddleware, /to\.path !== SOLUTIONS_PUBLIC_PATH[\s\S]*return/)
 })
 
-test('public wrappers use separate SEO indexability settings; preview URLs remain noindex', () => {
+test('editorial views use separate SEO indexability settings', () => {
   const pages = [
-    ['migration-news-preview.vue', 'newsPublicRouteIndexable'],
-    ['migration-projects-preview.vue', 'projectsPublicRouteIndexable'],
-    ['migration-gallery-preview.vue', 'galleryPublicRouteIndexable'],
-    ['migration-video-preview.vue', 'videoPublicRouteIndexable'],
-    ['migration-solution-detail-preview.vue', 'solutionDetailPublicRouteIndexable'],
-    ['migration-policy-preview.vue', 'policyDetailPublicRouteIndexable'],
+    ['NewsView.vue', 'newsPublicRouteIndexable'],
+    ['ProjectsView.vue', 'projectsPublicRouteIndexable'],
+    ['GalleryView.vue', 'galleryPublicRouteIndexable'],
+    ['VideoView.vue', 'videoPublicRouteIndexable'],
+    ['SolutionDetailView.vue', 'solutionDetailPublicRouteIndexable'],
+    ['PolicyView.vue', 'policyDetailPublicRouteIndexable'],
   ]
   for (const [path, indexableFlag] of pages) {
-    const source = read(`app/pages/${path}`)
-    assert.doesNotMatch(source, /PublicRouteEnabled/)
+    const source = read(`app/components/views/${path}`)
+    assert.doesNotMatch(source, /PublicRouteEnabled|isPublicRoute|isBarePublicRoute/)
     assert.match(source, new RegExp(`config\\.public\\.${indexableFlag}`))
     assert.match(source, /editorialPublicRouteRobots/)
-    assert.match(source, /isPublicRoute\.value|isBarePublicRoute\.value/)
   }
-  assert.match(read('app/pages/migration-solution-detail-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)
-  assert.match(read('app/pages/migration-policy-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)
+  assert.match(read('app/components/views/SolutionDetailView.vue'), /isSafeEditorialSlug\(slug\.value\)/)
+  assert.match(read('app/components/views/PolicyView.vue'), /isSafeEditorialSlug\(slug\.value\)/)
 })
 
-test('public category, dealer, gallery, video and policy titles mirror PHP brand suffix rules', () => {
+test('public category, dealer, gallery, video and policy titles carry the brand suffix', () => {
   for (const path of [
     'app/components/news/NewsCategoryPage.vue',
     'app/components/projects/ProjectCategoryPage.vue',
     'app/components/solutions/SolutionCategoryPage.vue',
     'app/components/dealer/DealerPageContent.vue',
-    'app/pages/migration-gallery-preview.vue',
-    'app/pages/migration-video-preview.vue',
-    'app/pages/migration-policy-preview.vue',
-  ]) assert.match(read(path), /publicSeoTitle\(/, `${path} should apply PHP brand suffixes to public SEO titles`)
-  assert.match(read('app/pages/migration-gallery-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
-  assert.match(read('app/pages/migration-video-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
-  assert.match(read('app/pages/migration-policy-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
+    'app/components/views/GalleryView.vue',
+    'app/components/views/VideoView.vue',
+    'app/components/views/PolicyView.vue',
+  ]) assert.match(read(path), /publicSeoTitle\(/, `${path} should apply the brand suffix to public SEO titles`)
 })

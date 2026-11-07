@@ -3,20 +3,13 @@ import type { PublicNewsCategory } from '#shared/contracts/public-news'
 
 const props = defineProps<{ categories: PublicNewsCategory[]; selected: PublicNewsCategory | null; allLabel: string; filtersLabel: string; query?: string }>()
 const queryString = computed(() => props.query ? `?q=${encodeURIComponent(props.query)}` : '')
-// Preview filters must stay in Nuxt even before the canonical public News route is enabled.
-const { active: isMigrationPreview } = useMigrationLinks()
-const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-preview/' : '/tin-tuc/')
+const filtersPath = '/tin-tuc/'
 const railRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(railRef)
 useSlidingPill(railRef, 'news')
 
 function categoryHref(category: PublicNewsCategory): string {
-  if (!isMigrationPreview.value) return `${category.canonicalPath}${queryString.value}`
-
-  const params = new URLSearchParams()
-  if (props.query) params.set('q', props.query)
-  params.set('category', category.slug)
-  return `${filtersPath.value}?${params.toString()}`
+  return `${category.canonicalPath}${queryString.value}`
 }
 </script>
 

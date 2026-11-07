@@ -3,8 +3,7 @@ import type { PublicHomePayload } from '#shared/contracts/public-home'
 
 defineProps<{ groups: PublicHomePayload['productGroups'] }>()
 
-const links = useMigrationLinks()
-const isMigrationPreview = links.active
+const links = usePublicLinks()
 const oversizedProductImages: Record<string, string> = {
   '/upload/product/x3-pro-30-2-9905.png': '/assets/images/site-visuals/media-fallbacks/product-x3-pro-30.webp',
   '/upload/product/x3-pro-20-2-2061.png': '/assets/images/site-visuals/media-fallbacks/product-x3-pro-20.webp',
@@ -31,7 +30,7 @@ function productImage(src: string): string {
         <ul class="m-0 grid list-none grid-cols-2 gap-x-4 gap-y-8 p-0 max-ph:gap-x-3 max-ph:gap-y-7 tb:grid-cols-3 nav:grid-cols-4">
           <li v-for="product in group.products" :key="product.id" class="min-w-0">
             <NuxtLink
-              :external="!isMigrationPreview"
+              external
               :to="links.product(product.slug)"
               class="group block min-w-0 text-navy-950 no-underline transition-transform duration-150 active:scale-[0.98]"
             >

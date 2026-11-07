@@ -1,20 +1,20 @@
 import type { PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCartPayload } from '#shared/contracts/public-cart'
 import { isCurrentCartRead } from '#shared/cart-refresh-guard'
-import { migrationCartErrorMessage } from './migrationCartError'
+import { cartErrorMessage } from './cartError'
 
 export type MigrationCartMutation =
   | { action: 'add'; productId: number; quantity: number; color?: number; size?: number }
   | { action: 'update'; productId: number; code: string; quantity: number }
   | { action: 'delete'; code: string }
 
-export function useMigrationCart() {
-  const cart = useState<PublicCartPayload | null>('migration-cart-payload', () => null)
-  const loading = useState('migration-cart-loading', () => false)
-  const error = useState<string | null>('migration-cart-error', () => null)
-  const cartRevision = useState('migration-cart-revision', () => 0)
-  const refreshSequence = useState('migration-cart-refresh-sequence', () => 0)
-  const pendingRequests = useState('migration-cart-pending-requests', () => 0)
+export function useShopCart() {
+  const cart = useState<PublicCartPayload | null>('cart-payload', () => null)
+  const loading = useState('cart-loading', () => false)
+  const error = useState<string | null>('cart-error', () => null)
+  const cartRevision = useState('cart-revision', () => 0)
+  const refreshSequence = useState('cart-refresh-sequence', () => 0)
+  const pendingRequests = useState('cart-pending-requests', () => 0)
 
   function beginRequest() {
     pendingRequests.value += 1
@@ -76,7 +76,7 @@ export function useMigrationCart() {
       cartRevision.value += 1
       return await refresh()
     } catch (reason) {
-      error.value = migrationCartErrorMessage(reason)
+      error.value = cartErrorMessage(reason)
       throw reason
     } finally {
       finishRequest()

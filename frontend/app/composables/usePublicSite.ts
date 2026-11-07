@@ -1,7 +1,7 @@
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 
-export const PUBLIC_SITE_ASYNC_KEY = 'migration-site'
+export const PUBLIC_SITE_ASYNC_KEY = 'site'
 
 export const publicSiteFallback: PublicSitePayload = {
   schemaVersion: 1,
@@ -10,7 +10,7 @@ export const publicSiteFallback: PublicSitePayload = {
 }
 
 /**
- * The migration shell owns the single SSR request for the public site DTO.
+ * The site shell owns the single SSR request for the public site DTO.
  * The fallback contains shell identity only; it is not marketing content.
  */
 export async function usePublicSite() {

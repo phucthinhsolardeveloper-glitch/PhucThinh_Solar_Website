@@ -5,18 +5,17 @@ import { formatProjectDate } from '../shared/project-date.ts'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('news category links use the canonical DTO URL publicly and retain query filtering in preview', () => {
+test('news category links use the canonical DTO URL and keep the search text', () => {
   const filters = read('../app/components/news/NewsFilters.vue')
 
-  assert.match(filters, /if \(!isMigrationPreview\.value\) return `\$\{category\.canonicalPath\}\$\{queryString\.value\}`/)
-  assert.match(filters, /params\.set\('category', category\.slug\)/)
+  assert.match(filters, /return `\$\{category\.canonicalPath\}\$\{queryString\.value\}`/)
   assert.match(filters, /:to="categoryHref\(category\)"/)
 })
 
-test('project category links use the canonical DTO URL publicly and retain query filtering in preview', () => {
+test('project category links use the canonical DTO URL', () => {
   const filters = read('../app/components/projects/ProjectFilters.vue')
 
-  assert.match(filters, /\?category=\$\{encodeURIComponent\(category\.slug\)\}`\s*:\s*category\.url/)
+  assert.match(filters, /return category\.url/)
   assert.match(filters, /:to="categoryHref\(category\)"/)
 })
 
@@ -55,6 +54,6 @@ test('project dates match legacy d/m/Y output and reject invalid calendar dates'
 })
 
 test('policy detail shows the PHP-equivalent message when body content is empty', () => {
-  const page = read('../app/pages/migration-policy-preview.vue')
+  const page = read('../app/components/views/PolicyView.vue')
   assert.match(page, /<section v-if="data\.content\.html"[\s\S]*?<\/section>\s*<p v-else[^>]*role="status">Nội dung đang cập nhật<\/p>/)
 })

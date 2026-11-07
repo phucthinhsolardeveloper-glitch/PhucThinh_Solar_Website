@@ -117,7 +117,7 @@ const nodeCenters = computed(() => {
   })
 })
 
-const links = useMigrationLinks()
+const links = usePublicLinks()
 </script>
 
 <template>

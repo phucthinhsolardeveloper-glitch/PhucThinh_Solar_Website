@@ -12,7 +12,7 @@ test('requires PHP bare-slug canonical metadata while preserving the slash URL f
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, canonical: '/bai-viet-cms' } }), false)
 })
 test('emits Admin SEO keywords on the public bare-slug page', () => {
-  const page = readFileSync(new URL('../app/pages/migration-news-detail-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/NewsDetailView.vue', import.meta.url), 'utf8')
   assert.match(page, /payload\.value\?\.article\.seo\.keywords/)
   assert.match(page, /useHead\(\{ meta: computed\(\(\) => pageKeywords\.value \? \[\{ name: 'keywords', content: pageKeywords\.value \}\] : \[\]\) \}\)/)
   assert.match(page, /payload\.article\.category\.name, to: links\.generic\(payload\.article\.category\.url\)/)
@@ -105,7 +105,7 @@ test('news detail share offers each social destination present in the PHP templa
 
 test('news detail page renders CTA after related articles and uses PHP canonical/date values in JSON-LD', async () => {
   const { readFileSync } = await import('node:fs')
-  const page = readFileSync(new URL('../app/pages/migration-news-detail-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/NewsDetailView.vue', import.meta.url), 'utf8')
   const component = readFileSync(new URL('../app/components/news-detail/NewsDetailArticle.vue', import.meta.url), 'utf8')
   assert.match(page, /<NewsDetailRelated[^>]+\/>\s*<NewsCta v-if="payload\.cta"/)
   assert.match(page, /canonicalPublicOrigin\(config\.public\.canonicalSiteOrigin\)/)

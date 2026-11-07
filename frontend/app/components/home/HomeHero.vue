@@ -9,7 +9,7 @@ const heroImageUnavailable = computed(() => {
   const image = current.value?.image?.trim() ?? ''
   return !image || failedImages.value.has(image)
 })
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const reducedMotion = ref(false)
 let autoplayTimer: number | undefined
 let touchStartX: number | null = null

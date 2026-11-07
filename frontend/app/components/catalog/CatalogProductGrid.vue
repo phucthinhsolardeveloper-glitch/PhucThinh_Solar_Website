@@ -2,8 +2,7 @@
 import type { PublicCatalogProduct } from '#shared/contracts/public-catalog'
 
 const props = withDefaults(defineProps<{ products: PublicCatalogProduct[]; layout?: 'grid' | 'rail' }>(), { layout: 'grid' })
-const links = useMigrationLinks()
-const isMigrationPreview = links.active
+const links = usePublicLinks()
 const railRef = ref<HTMLElement | null>(null)
 const failedImages = ref<Set<number>>(new Set())
 const failedThumbnailImages = ref<Set<number>>(new Set())
@@ -49,9 +48,9 @@ function markImageError(product: PublicCatalogProduct) {
 }
 
 // Per-card add-to-cart state, kept local to this grid (not the shared
-// useMigrationCart `loading`/`error` state, which is a single global flag -
+// useShopCart `loading`/`error` state, which is a single global flag -
 // reusing it here would make every card show "Đang thêm…" at once).
-const { mutate } = useMigrationCart()
+const { mutate } = useShopCart()
 const { celebrate } = useCartFeedback()
 const { openConsultation } = useStorefrontModal()
 const addingIds = ref<Set<number>>(new Set())
@@ -173,7 +172,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       :class="props.layout === 'rail' ? 'snap-start' : ''"
     >
       <NuxtLink
-        :external="!isMigrationPreview"
+        external
         :to="productHref(product)"
         class="pts-panel-sheen relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
       >
@@ -204,7 +203,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
 
       <h3 class="mt-3 mb-1.5 min-h-[42px] line-clamp-2 text-[15px] font-bold leading-[1.4] text-navy-800 max-ph:min-h-[2.8em] max-ph:text-sm">
         <NuxtLink
-          :external="!isMigrationPreview"
+          external
           :to="productHref(product)"
           class="text-inherit no-underline transition-colors group-hover:text-gold-700 focus-visible:underline"
         >
@@ -252,7 +251,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           <template v-else><UIcon name="i-lucide-shopping-cart" class="size-4 max-tb:size-5" aria-hidden="true" /><span class="max-tb:sr-only">Thêm giỏ hàng</span></template>
         </UButton>
         <NuxtLink
-          :external="!isMigrationPreview"
+          external
           :to="productHref(product)"
           class="inline-flex min-h-9 items-center justify-center gap-1.5 text-sm font-bold text-navy-800 max-tb:hidden no-underline transition-colors hover:text-gold-700 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
         >

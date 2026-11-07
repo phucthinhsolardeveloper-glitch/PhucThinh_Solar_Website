@@ -22,7 +22,7 @@ test('news category filters remain horizontally scrollable without a visible scr
 })
 
 test('projects empty state takes only the space its message needs', () => {
-  const page = read('../app/pages/migration-projects-preview.vue')
+  const page = read('../app/components/views/ProjectsView.vue')
   assert.match(page, /v-if="!projects\.featured && !projects\.projects\.length" class="py-6 text-slate-500"/)
   assert.doesNotMatch(page, /v-if="!projects\.featured && !projects\.projects\.length" class="[^\"]*min-h-/)
 })

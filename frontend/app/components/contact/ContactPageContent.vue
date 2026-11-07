@@ -5,18 +5,17 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && config.public.contactPublicRouteIndexable === true
+const indexable = computed(() => config.public.contactPublicRouteIndexable === true
   && !!contact.value && !siteError.value && !error.value)
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const { data, error } = await useFetch<unknown>('/_api/contact')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const contact = computed(() => isPublicContactPayload(data.value) ? data.value : null)
-const pageTitle = computed(() => props.preview ? 'Liên hệ — internal preview' : contact.value?.seo.title || 'Liên hệ — Phúc Thịnh Solar')
-const pageKeywords = computed(() => props.preview ? '' : contact.value?.seo.keywords || '')
+const pageTitle = computed(() => contact.value?.seo.title || 'Liên hệ — Phúc Thịnh Solar')
+const pageKeywords = computed(() => contact.value?.seo.keywords || '')
 
-if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !contact.value)) {
+if (import.meta.server && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !contact.value)) {
   setResponseStatus(502, 'Bad Gateway')
 }
 
@@ -27,7 +26,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && !!contact.value && !error.value && !siteError.value),
+  enabled: computed(() => !!contact.value && !error.value && !siteError.value),
   title: pageTitle,
   description: computed(() => contact.value?.seo.description || ''),
   canonicalPath: '/lien-he/',

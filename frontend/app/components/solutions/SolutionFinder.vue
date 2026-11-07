@@ -3,7 +3,7 @@ import type { PublicSolutionCard } from '../../../shared/contracts/public-soluti
 
 const props = defineProps<{ cards: PublicSolutionCard[] }>()
 const emit = defineEmits<{ recommend: [slugs: string[]] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 
 type Place = 'home' | 'business' | 'public' | 'farm'

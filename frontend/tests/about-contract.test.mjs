@@ -109,13 +109,11 @@ test('About page provides a keyboard-accessible full certificate gallery', async
   assert.match(source, /:zalo="about\.cta\.zaloUrl/)
 })
 
-test('About public and preview pages expose one main landmark without nesting it in the content component', async () => {
-  const [component, publicPage, previewPage] = await Promise.all([
+test('About page exposes one main landmark without nesting it in the content component', async () => {
+  const [component, publicPage] = await Promise.all([
     readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8'),
     readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8'),
-    readFile(new URL('../app/pages/migration-about-preview.vue', import.meta.url), 'utf8'),
   ])
   assert.match(component, /<div ref="aboutRoot" class="overflow-x-clip text-navy-800">/)
   assert.equal((publicPage.match(/<main\b/g) ?? []).length, 1)
-  assert.match(previewPage, /<main>[\s\S]*<AboutPreviewPage v-else/)
 })

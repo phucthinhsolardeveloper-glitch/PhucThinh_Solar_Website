@@ -11,18 +11,17 @@ import HomeContact from '~/components/home/HomeContact.vue'
 import HomePromoPopup from '~/components/home/HomePromoPopup.vue'
 import EnergyStageSection from '~/components/experience-v3/EnergyStageSection.vue'
 
-const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && config.public.homePublicRouteIndexable === true
+const indexable = computed(() => config.public.homePublicRouteIndexable === true
   && !!home.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const { data: homeData, error } = await useFetch<unknown>('/_api/home')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const home = computed(() => isPublicHomePayload(homeData.value) ? homeData.value : null)
-const fallbackTitle = computed(() => props.preview ? 'Phúc Thịnh Solar — homepage preview' : 'Phúc Thịnh Solar')
+const fallbackTitle = computed(() => 'Phúc Thịnh Solar')
 
-if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !home.value)) {
+if (import.meta.server && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !home.value)) {
   setResponseStatus(502, 'Bad Gateway')
 }
 
@@ -35,7 +34,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && !!home.value && !siteError.value && !error.value),
+  enabled: computed(() => !!home.value && !siteError.value && !error.value),
   title: computed(() => home.value?.seo.title || fallbackTitle.value),
   description: computed(() => home.value?.seo.description || fallbackDescription),
   canonicalPath: '/',
@@ -57,7 +56,7 @@ usePublicSocialMeta({
         <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
         <HomeEditorial :data="home" />
         <HomeContact :contact="home.contact" />
-        <HomePromoPopup v-if="home.popup && !preview" :popup="home.popup" />
+        <HomePromoPopup v-if="home.popup" :popup="home.popup" />
       </template>
     </main>
   </div>

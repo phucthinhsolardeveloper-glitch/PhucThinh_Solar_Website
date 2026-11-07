@@ -12,8 +12,6 @@ import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const isPublicRoute = computed(() => route.path === PROJECTS_PUBLIC_PATH)
-const publicProjectsEnabled = computed(() => isPublicRoute.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const category = computed(() => typeof route.query.category === 'string' ? route.query.category : undefined)
@@ -29,7 +27,7 @@ const requestQuery = computed(() => ({
   page: String(page.value),
 }))
 const { data, error } = await useAsyncData<unknown>(
-  () => `migration-projects-${JSON.stringify(requestQuery.value)}`,
+  () => `projects-${JSON.stringify(requestQuery.value)}`,
   () => $fetch('/_api/projects', { query: requestQuery.value }),
   { watch: [requestQuery] },
 )
@@ -42,12 +40,12 @@ const pageTitle = computed(() => projects.value?.seo?.title || projects.value?.t
 const pageDescription = computed(() => projects.value?.seo?.description || projects.value?.intro.description || '')
 const pageKeywords = computed(() => projects.value?.seo?.keywords || '')
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicHubResponseStatus(publicProjectsEnabled.value, errorStatus, projects.value === null)
+const responseStatus = editorialPublicHubResponseStatus(true, errorStatus, projects.value === null)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 function pageLink(nextPage: number) {
   return {
-    path: isPublicRoute.value ? PROJECTS_PUBLIC_PATH : '/migration-projects-preview',
+    path: PROJECTS_PUBLIC_PATH,
     query: {
       ...(category.value ? { category: category.value } : {}),
       ...(nextPage > 1 ? { p: String(nextPage) } : {}),
@@ -56,10 +54,10 @@ function pageLink(nextPage: number) {
 }
 
 useSeoMeta({
-  title: () => isPublicRoute.value ? pageTitle.value : 'Dự án — internal preview',
+  title: () => pageTitle.value,
   description: () => pageDescription.value,
   robots: computed(() => editorialPublicRouteRobots(
-    isPublicRoute.value,
+    true,
     config.public.projectsPublicRouteIndexable,
     !!projects.value && !error.value,
     ['category', 'p', 'page'].some((key) => key in route.query),
@@ -67,7 +65,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!projects.value && !error.value),
+  enabled: computed(() => !!projects.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/du-an-da-thuc-hien/',
@@ -86,8 +84,8 @@ usePublicSocialMeta({
 
     <main class="pb-20">
       <div v-if="error || !projects" class="pts-container min-h-[30vh] py-6" role="status">
-        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
-        <p class="text-slate-500">{{ isPublicRoute ? 'Danh sách dự án tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu dự án giả.' }}</p>
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ 'Dự án' }}</h1>
+        <p class="text-slate-500">{{ 'Danh sách dự án tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' }}</p>
       </div>
 
       <template v-else>

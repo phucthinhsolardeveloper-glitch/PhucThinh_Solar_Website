@@ -2,7 +2,7 @@
 import type { PublicNewsDetailRelated } from '#shared/contracts/public-news-detail'
 
 defineProps<{ items: PublicNewsDetailRelated[] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const track = ref<HTMLUListElement | null>(null)
 
 function formatDate(value: string): string {

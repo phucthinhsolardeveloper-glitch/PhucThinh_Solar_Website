@@ -12,7 +12,7 @@ test('project listing CTA stays wired to the PHP visibility and image contract',
   const phpSource = readPhp('sources/project_hub.php')
   const phpApi = readPhp('api/pts_v1_projects.php')
   const phpDto = readPhp('libraries/pts_public_projects_api.php')
-  const page = readFrontend('app/pages/migration-projects-preview.vue')
+  const page = readFrontend('app/components/views/ProjectsView.vue')
   const cta = readFrontend('app/components/projects/ProjectsCta.vue')
 
   assert.match(phpTemplate, /if\(\$projectShowCta\)/)

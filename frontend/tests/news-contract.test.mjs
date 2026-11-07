@@ -45,7 +45,7 @@ test('accepts resolved multi-level category metadata only when its leaf slug mat
 
 test('news Admin SEO uses #_seopage at the hub and depth-specific #_seo at taxonomy routes', () => {
   const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_news.php', import.meta.url), 'utf8')
-  const page = readFileSync(new URL('../app/pages/migration-news-preview.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/views/NewsView.vue', import.meta.url), 'utf8')
   const categoryPage = readFileSync(new URL('../app/components/news/NewsCategoryPage.vue', import.meta.url), 'utf8')
   assert.match(api, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$selectedCategory\['id'\], 'news', \$seoActions\[\$categoryType\], 'tin-tuc'\)/)
   assert.match(api, /'list' => 'man_list'.*'cat' => 'man_cat'.*'item' => 'man_item'.*'sub' => 'man_sub'/s)

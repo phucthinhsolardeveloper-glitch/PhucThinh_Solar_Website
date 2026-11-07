@@ -3,7 +3,7 @@ import type { PublicNewsDetailPayload } from '#shared/contracts/public-news-deta
 import type { PublicCatalogPayload, PublicCatalogProduct } from '#shared/contracts/public-catalog'
 
 const props = defineProps<{ article: PublicNewsDetailPayload['article'] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 
 // Topic -> catalog category. The article is scored on its own words, title weighted highest.

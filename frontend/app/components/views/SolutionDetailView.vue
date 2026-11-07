@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicSolutionDetailPayload } from '../../shared/contracts/public-solution-detail'
+import type { PublicSolutionDetailPayload } from '#shared/contracts/public-solution-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { SOLUTIONS_PUBLIC_PATH } from '#shared/public-route-gate'
@@ -8,12 +8,11 @@ import SolutionDetailPage from '~/components/solution-detail/SolutionDetailPage.
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const links = useMigrationLinks()
-const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
+const links = usePublicLinks()
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
-const isPublicRoute = computed(() => route.path.startsWith(SOLUTIONS_PUBLIC_PATH) && route.path !== SOLUTIONS_PUBLIC_PATH)
 const { data: fetched, error } = await useAsyncData<PublicSolutionDetailPayload>(
-  () => `migration-solution-detail-${slug.value}`,
+  () => `solution-detail-${slug.value}`,
   () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
     return $fetch('/_api/solution-detail', { query: { slug: slug.value } })
@@ -24,7 +23,7 @@ const { data: fetched, error } = await useAsyncData<PublicSolutionDetailPayload>
 const data = shallowRef(fetched.value)
 watch(fetched, (value) => { if (value) data.value = value })
 const responseStatus = editorialPublicResponseStatus(
-  isPublicRoute.value,
+  true,
   (error.value as { statusCode?: unknown } | null)?.statusCode,
   !data.value,
 )
@@ -38,21 +37,17 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-const pageTitle = computed(() => isPublicRoute.value
-  ? data.value?.seo?.title || data.value?.solution.title || 'Giải pháp'
-  : 'Giải pháp — internal preview')
-const pageDescription = computed(() => isPublicRoute.value
-  ? data.value?.seo?.description || data.value?.solution.summary || ''
-  : data.value?.solution.summary || '')
-const pageKeywords = computed(() => isPublicRoute.value ? data.value?.seo?.keywords || undefined : undefined)
+const pageTitle = computed(() => data.value?.seo?.title || data.value?.solution.title || 'Giải pháp')
+const pageDescription = computed(() => data.value?.seo?.description || data.value?.solution.summary || '')
+const pageKeywords = computed(() => data.value?.seo?.keywords || undefined)
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
+  enabled: computed(() => !!data.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: computed(() => route.path),
@@ -71,8 +66,8 @@ usePublicSocialMeta({
       </div>
 
       <div v-if="error || !data" class="pts-container min-h-[45vh] py-12">
-        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Không tìm thấy giải pháp' : 'Giải pháp — internal preview' }}</h1>
-        <p class="text-slate-500">{{ isPublicRoute ? 'Nội dung giải pháp tạm thời chưa tải được. Vui lòng kiểm tra lại liên kết hoặc thử lại sau.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị nội dung giả.' }}</p>
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ 'Không tìm thấy giải pháp' }}</h1>
+        <p class="text-slate-500">{{ 'Nội dung giải pháp tạm thời chưa tải được. Vui lòng kiểm tra lại liên kết hoặc thử lại sau.' }}</p>
       </div>
 
       <SolutionDetailPage v-else :data="data" :hotline="site.brand.hotline" />

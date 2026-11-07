@@ -2,7 +2,7 @@
 import type { PublicSolutionCard } from '../../../shared/contracts/public-solutions'
 
 const props = withDefaults(defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string; highlight?: string[] }>(), { highlight: () => [] })
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 // Phones show the cards on a rail, where the finder's match could be off-screen: bring it into view.
 const mosaicRef = ref<HTMLElement | null>(null)

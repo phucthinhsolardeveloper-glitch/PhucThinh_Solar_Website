@@ -39,8 +39,8 @@ async function recaptchaToken(security: PublicLeadFormSecurity, action: string):
 }
 
 export function useLeadForm() {
-  const security = useState<PublicLeadFormSecurity | null>('migration-lead-form-security', () => null)
-  const loadingSecurity = useState('migration-lead-form-security-loading', () => false)
+  const security = useState<PublicLeadFormSecurity | null>('lead-form-security', () => null)
+  const loadingSecurity = useState('lead-form-security-loading', () => false)
 
   async function ensureSecurity() {
     if (security.value) return security.value

@@ -4,7 +4,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 const props = defineProps<{ dealer: PublicDealerPayload; selectedProduct?: string }>()
 const emit = defineEmits<{ (e: 'selectProduct', title: string): void }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const productTrack = ref<HTMLElement | null>(null)
 const canScrollPrevious = ref(false)
 const canScrollNext = ref(false)
@@ -115,8 +115,8 @@ function cardImage(src: string): string {
         :key="product.title + product.image"
         class="dealer-product group w-[min(76vw,300px)] min-w-0 flex-none snap-start text-inherit no-underline cursor-pointer min-[768px]:w-auto"
         :href="product.href ? links.generic(product.href) : `#dang-ky-dai-ly`"
-        :target="product.href && !links.active ? '_blank' : undefined"
-        :rel="product.href && !links.active ? 'noopener noreferrer' : undefined"
+        :target="product.href ? '_blank' : undefined"
+        :rel="product.href ? 'noopener noreferrer' : undefined"
         @click="product.href ? undefined : ($event.preventDefault(), openProduct(index))"
       >
         <div

@@ -1,14 +1,14 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { migrationCartErrorMessage } from '../app/composables/migrationCartError.ts'
+import { cartErrorMessage } from '../app/composables/cartError.ts'
 
 const source = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 const leadComposable = source('../app/composables/useLeadForm.ts')
 const reviewComponent = source('../app/components/product-preview/ProductReviews.vue')
 const leadApi = source('../../backend/app/Domain/Leads/LeadSubmission.php')
 const reviewApi = source('../../backend/app/Domain/Reviews/ReviewSubmission.php')
-const cartComposable = source('../app/composables/useMigrationCart.ts')
+const cartComposable = source('../app/composables/useShopCart.ts')
 const cartRoute = source('../server/routes/_api/cart.post.ts')
 const caddy = source('../../Caddyfile.local-full-nuxt')
 
@@ -35,10 +35,10 @@ test('the Nuxt rehearsal Caddy sends same-origin API requests to Laravel', () =>
 })
 
 test('cart error extraction preserves API object and string error contracts', () => {
-  assert.equal(migrationCartErrorMessage({ data: { error: { message: 'Sản phẩm hiện nhận báo giá trực tiếp.' } } }), 'Sản phẩm hiện nhận báo giá trực tiếp.')
-  assert.equal(migrationCartErrorMessage({ data: { error: 'Giỏ hàng không hợp lệ.' } }), 'Giỏ hàng không hợp lệ.')
-  assert.equal(migrationCartErrorMessage({ data: { error: {}, statusMessage: 'Phiên giỏ hàng không hợp lệ.' } }), 'Phiên giỏ hàng không hợp lệ.')
-  assert.equal(migrationCartErrorMessage({ data: { error: {} } }), 'Không thể cập nhật giỏ hàng.')
+  assert.equal(cartErrorMessage({ data: { error: { message: 'Sản phẩm hiện nhận báo giá trực tiếp.' } } }), 'Sản phẩm hiện nhận báo giá trực tiếp.')
+  assert.equal(cartErrorMessage({ data: { error: 'Giỏ hàng không hợp lệ.' } }), 'Giỏ hàng không hợp lệ.')
+  assert.equal(cartErrorMessage({ data: { error: {}, statusMessage: 'Phiên giỏ hàng không hợp lệ.' } }), 'Phiên giỏ hàng không hợp lệ.')
+  assert.equal(cartErrorMessage({ data: { error: {} } }), 'Không thể cập nhật giỏ hàng.')
 })
 
 test('cart UI mutations bridge to the API cart with the session cookie', () => {

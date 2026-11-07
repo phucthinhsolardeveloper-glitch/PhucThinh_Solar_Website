@@ -3,8 +3,7 @@ import type { PublicProductCategoryNode } from '#shared/contracts/public-site'
 
 defineOptions({ name: 'CatalogCategoryBranch' })
 defineProps<{ node: PublicProductCategoryNode; selected: string }>()
-const links = useMigrationLinks()
-const isMigrationPreview = links.active
+const links = usePublicLinks()
 
 function categoryLink(url: string) {
   return links.generic(url)
@@ -26,7 +25,7 @@ function categoryLink(url: string) {
              focus-visible:text-gold-700 focus-visible:underline focus-visible:underline-offset-[3px]"
       :class="selected === node.url ? 'text-gold-700 underline underline-offset-[3px]' : ''"
       :aria-current="selected === node.url ? 'page' : undefined"
-      :external="!isMigrationPreview"
+      external
       :to="categoryLink(node.url)"
     >
       {{ node.name }}

@@ -2,7 +2,7 @@
 import type { PublicHomePopup } from '#shared/contracts/public-home'
 
 const props = defineProps<{ popup: PublicHomePopup }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 // Same storage key as the PHP storefront so a visitor never sees one campaign twice per session.
 const STORAGE_KEY = 'pts-popup-campaign'

@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
   video?: CtaVideo | null
 }>(), { video: null, description: '', image: '', trust: () => [], hotline: '', hotlineLabel: 'Gọi hotline', zalo: '', buttonLabel: 'Nhận tư vấn', subject: '', fallbackHref: '/lien-he/#yeu-cau-tu-van' })
 
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 
 const fallbackImages = {

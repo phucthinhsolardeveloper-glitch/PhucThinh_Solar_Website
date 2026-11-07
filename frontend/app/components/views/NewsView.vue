@@ -13,10 +13,9 @@ import NewsFilters from '~/components/news/NewsFilters.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const isPublicRoute = computed(() => route.path === NEWS_PUBLIC_PATH)
-const publicPath = computed(() => isPublicRoute.value ? NEWS_PUBLIC_PATH : '/migration-news-preview/')
+const publicPath = computed(() => NEWS_PUBLIC_PATH)
 const robots = computed(() => editorialPublicRouteRobots(
-  isPublicRoute.value,
+  true,
   config.public.newsPublicRouteIndexable,
   !!news.value && !error.value,
   Object.keys(requestQuery.value).length > 0,
@@ -28,12 +27,12 @@ const requestQuery = computed(() => {
   for (const key of ['q', 'p', 'category']) if (typeof route.query[key] === 'string' && route.query[key]) query[key] = route.query[key] as string
   return query
 })
-const { data, error, pending } = await useAsyncData<unknown>('migration-news', () => $fetch('/_api/news', { query: requestQuery.value }), { watch: [requestQuery] })
+const { data, error, pending } = await useAsyncData<unknown>('news', () => $fetch('/_api/news', { query: requestQuery.value }), { watch: [requestQuery] })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const news = computed(() => isPublicNewsPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value,
+  true,
   errorStatus,
   news.value === null,
 )
@@ -62,11 +61,9 @@ const pageNumbers = computed(() => {
   for (let page = 1; page <= total; page++) if (page === 1 || page === total || Math.abs(page - current) <= 2) { if (result.length && typeof result[result.length - 1] === 'number' && page > (result[result.length - 1] as number) + 1) result.push('…'); result.push(page) }
   return result
 })
-const pageTitle = computed(() => isPublicRoute.value
-  ? news.value?.seo?.title || news.value?.title || 'Kiến thức'
-  : `${news.value?.title || 'Kiến thức'} — internal preview`)
+const pageTitle = computed(() => news.value?.seo?.title || news.value?.title || 'Kiến thức')
 const pageDescription = computed(() => news.value?.seo?.description || news.value?.description || '')
-const pageKeywords = computed(() => isPublicRoute.value ? news.value?.seo?.keywords || '' : '')
+const pageKeywords = computed(() => news.value?.seo?.keywords || '')
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
@@ -74,7 +71,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!news.value && !error.value),
+  enabled: computed(() => !!news.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: NEWS_PUBLIC_PATH,
@@ -93,8 +90,8 @@ usePublicSocialMeta({
 
     <main class="pts-container pb-16" :aria-busy="pending">
       <div v-if="!news" class="min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
-          <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Kiến thức' : 'Kiến thức — internal preview' }}</h1>
-          <p class="text-slate-500">{{ isPublicRoute ? 'Bài viết tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị bài viết giả.' }}</p>
+          <h1 class="mb-3 text-3xl font-black tracking-tight">{{ 'Kiến thức' }}</h1>
+          <p class="text-slate-500">{{ 'Bài viết tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' }}</p>
         </div>
 
         <template v-else>

@@ -16,10 +16,9 @@ const props = defineProps<{ slug: string }>()
 
 const route = useRoute()
 const selfPath = computed(() => route.path)
-const { active: isMigrationPreview, generic: migrationHref } = useMigrationLinks()
+const { generic: publicHref } = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const config = useRuntimeConfig()
-const publicEnabled = computed(() => !isMigrationPreview.value)
 const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
@@ -35,13 +34,13 @@ const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () =
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
 const { data, error, pending } = await useAsyncData<PublicBrandDetailPayload>(
-  () => `migration-brand-detail-${props.slug}`,
+  () => `brand-detail-${props.slug}`,
   () => $fetch('/_api/brand-detail', { query: query.value }),
   { watch: [query] },
 )
 
 const brandErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-if (import.meta.server && publicEnabled.value && (error.value || !data.value)) {
+if (import.meta.server && (error.value || !data.value)) {
   const status = brandErrorStatus === 404 ? 404 : 502
   setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
 }
@@ -97,8 +96,8 @@ function pageLink(nextPage: number) {
   return { path: selfPath.value, query: next }
 }
 
-const brandIndexable = computed(() => publicEnabled.value
-  && isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
+const brandIndexable = computed(() =>
+  isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
   && !!data.value && !error.value && !['page', 'p', 'sort', 'price'].some((key) => key in route.query))
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
 const brandDescription = computed(() => data.value?.seo?.description || '')
@@ -112,7 +111,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => brandKeywords.value ? [{ name: 'keywords', content: brandKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => publicEnabled.value && !!data.value && !error.value),
+  enabled: computed(() => !!data.value && !error.value),
   title: brandTitle,
   description: brandSocialDescription,
   canonicalPath: computed(() => route.path),
@@ -167,7 +166,7 @@ usePublicSocialMeta({
               <h2 id="brand-category-filter-title" class="mb-3 text-sm font-extrabold text-navy-950">Danh mục sản phẩm</h2>
               <ul class="m-0 list-none space-y-1.5 p-0">
                 <li v-for="category in site.productCategories" :key="category.id">
-                  <NuxtLink :to="migrationHref(category.url)" class="flex items-center justify-between gap-2 rounded-chip py-1 text-sm text-[#20344b] no-underline transition-colors hover:text-gold-700">
+                  <NuxtLink :to="publicHref(category.url)" class="flex items-center justify-between gap-2 rounded-chip py-1 text-sm text-[#20344b] no-underline transition-colors hover:text-gold-700">
                     <span>{{ category.name }}</span>
                     <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0 text-slate-400" aria-hidden="true" />
                   </NuxtLink>
@@ -180,7 +179,7 @@ usePublicSocialMeta({
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="brandOption in data.filters.brands" :key="brandOption.id">
                   <NuxtLink
-                    :to="migrationHref(brandOption.url)"
+                    :to="publicHref(brandOption.url)"
                     class="flex items-center justify-between rounded-chip px-2.5 py-1.5 text-sm no-underline transition-colors"
                     :class="brandOption.id === data.brand.id ? 'pts-gold-fill font-bold' : 'text-[#20344b] hover:bg-white hover:text-navy-950'"
                     :aria-current="brandOption.id === data.brand.id ? 'page' : undefined"

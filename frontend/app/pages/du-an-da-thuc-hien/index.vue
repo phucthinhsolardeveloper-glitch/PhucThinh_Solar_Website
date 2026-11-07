@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MigrationProjectsPreviewPage from '~/pages/migration-projects-preview.vue'
+import MigrationProjectsPreviewPage from '~/components/views/ProjectsView.vue'
 definePageMeta({ layout: false, middleware: 'projects-public-route' })
 </script>
 

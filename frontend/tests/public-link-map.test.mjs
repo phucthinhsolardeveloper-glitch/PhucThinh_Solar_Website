@@ -1,26 +1,11 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { useMigrationLinks } from '../app/composables/useMigrationLinks.ts'
+import { usePublicLinks } from '../app/composables/usePublicLinks.ts'
 
 const app = new URL('../app/', import.meta.url)
 const repo = new URL('../../', import.meta.url)
 const readApp = (path) => readFileSync(new URL(path, app), 'utf8')
-
-function withRoute(path, callback) {
-  const originalRoute = globalThis.useRoute
-  const originalComputed = globalThis.computed
-  globalThis.useRoute = () => ({ path })
-  globalThis.computed = (getter) => Object.defineProperty({}, 'value', { get: getter })
-  try {
-    return callback(useMigrationLinks())
-  } finally {
-    if (originalRoute === undefined) delete globalThis.useRoute
-    else globalThis.useRoute = originalRoute
-    if (originalComputed === undefined) delete globalThis.computed
-    else globalThis.computed = originalComputed
-  }
-}
 
 test('public routes used by Home, shell, catalog, PDP, and policy links exist in the Nuxt route tree', () => {
   const routeFiles = [
@@ -50,59 +35,28 @@ test('public routes used by Home, shell, catalog, PDP, and policy links exist in
   }
 })
 
-test('canonical hrefs stay public outside preview and map to existing Nuxt preview pages inside preview', () => {
-  withRoute('/san-pham/den-that', (links) => {
-    assert.equal(links.active.value, false)
-    assert.equal(links.generic('/'), '/')
-    assert.equal(links.generic('/gio-hang/'), '/gio-hang/')
-    assert.equal(links.generic('/lien-he/#yeu-cau-tu-van'), '/lien-he/#yeu-cau-tu-van')
-    assert.equal(links.generic('/danh-muc-san-pham/den-nlmt/den-duong/'), '/danh-muc-san-pham/den-nlmt/den-duong/')
-    assert.equal(links.product('den-that'), '/san-pham/den-that')
-    assert.equal(links.solution('dien-mat-troi'), '/giai-phap/dien-mat-troi/')
-    assert.equal(links.brand('longi'), '/thuong-hieu/longi/')
-    assert.equal(links.generic('/ho-tro/chinh-sach-bao-hanh/'), '/ho-tro/chinh-sach-bao-hanh/')
-  })
-
-  withRoute('/migration-product-preview', (links) => {
-    assert.equal(links.active.value, true)
-    const staticLinks = [
-      ['/', '/migration-home-preview'],
-      ['/gioi-thieu/', '/migration-about-preview'],
-      ['/giai-phap/', '/migration-solutions-preview'],
-      ['/du-an-da-thuc-hien/', '/migration-projects-preview'],
-      ['/tin-tuc/', '/migration-news-preview'],
-      ['/dai-ly/', '/migration-dealer-preview'],
-      ['/lien-he/', '/migration-contact-preview'],
-      ['/san-pham/', '/migration-catalog-preview'],
-      ['/gio-hang/', '/migration-cart-preview'],
-      ['/tim-kiem/', '/migration-search-preview'],
-      ['/thu-vien-anh/', '/migration-gallery-preview'],
-      ['/video/', '/migration-video-preview'],
-    ]
-    for (const [href, target] of staticLinks) assert.equal(links.generic(href), target)
-    assert.equal(links.generic('/lien-he/#yeu-cau-tu-van'), '/migration-contact-preview#yeu-cau-tu-van')
-    assert.equal(links.generic('/danh-muc-san-pham/den-nlmt/den-duong/'), '/migration-catalog-preview?category=den-nlmt%2Fden-duong')
-    assert.equal(links.product('den-that'), '/migration-product-preview?slug=den-that')
-    assert.equal(links.solution('dien-mat-troi'), '/migration-solution-detail-preview?slug=dien-mat-troi')
-    assert.equal(links.brand('longi'), '/migration-brand-detail-preview?slug=longi')
-    assert.equal(links.generic('/ho-tro/chinh-sach-bao-hanh/'), '/migration-policy-preview?slug=chinh-sach-bao-hanh')
-    assert.equal(links.news('bai-viet-that'), '/migration-news-detail-preview?slug=bai-viet-that')
-    assert.equal(links.project('du-an-that'), '/migration-project-detail-preview?slug=du-an-that')
-    assert.equal(links.gallery('album-that'), '/migration-gallery-detail-preview?slug=album-that')
-  })
+test('link builders return the canonical public paths', () => {
+  const links = usePublicLinks()
+  assert.equal(links.generic('/gio-hang/'), '/gio-hang/')
+  assert.equal(links.generic('/lien-he/#yeu-cau-tu-van'), '/lien-he/#yeu-cau-tu-van')
+  assert.equal(links.product('den-that'), '/san-pham/den-that')
+  assert.equal(links.solution('dien-mat-troi'), '/giai-phap/dien-mat-troi/')
+  assert.equal(links.brand('longi'), '/thuong-hieu/longi/')
+  assert.equal(links.news('bai-viet-that'), '/bai-viet-that/')
+  assert.equal(links.project('du-an-that'), '/du-an-that/')
+  assert.equal(links.gallery('album-that'), '/album-that/')
+  assert.equal(links.external('https://zalo.me/1'), true)
+  assert.equal(links.external('/lien-he/'), false)
 })
 
-test('PDP cart and document links use public assets on public routes and preview proxy only in preview', () => {
+test('PDP cart and document links use public paths', () => {
   const purchase = readApp('components/product-preview/ProductPurchasePanel.vue')
   const documents = readApp('components/product-preview/ProductPreviewDocuments.vue')
   const page = readApp('components/product-preview/ProductPreviewPage.vue')
 
-  assert.match(purchase, /useMigrationLinks\(\)/)
+  assert.match(purchase, /usePublicLinks\(\)/)
   assert.match(purchase, /navigateTo\(links\.generic\('\/gio-hang\/'\)\)/)
-  assert.doesNotMatch(purchase, /navigateTo\('\/migration-cart-preview'\)/)
-  assert.match(documents, /links\.active\.value/)
-  assert.match(documents, /!links\.active\.value\) return document\.url/)
-  assert.match(documents, /_api\/product-document\?path=/)
+  assert.match(documents, /return document\.url/)
   assert.match(page, /:consultation-available="Boolean\(extras\)"/)
   assert.match(purchase, /v-if="pricing\.mode === 'quote' && consultationAvailable"[\s\S]*href="#pts-pdp-consultation"/)
 })

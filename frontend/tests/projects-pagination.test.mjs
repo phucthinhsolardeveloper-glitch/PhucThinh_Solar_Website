@@ -7,7 +7,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 test('projects pagination follows PHP `p` URLs and maps them to the DTO `page` query', () => {
   const php = read('../../domains/phucthinhsolar.com/public_html/sources/project_hub.php')
   const api = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php')
-  const page = read('../app/pages/migration-projects-preview.vue')
+  const page = read('../app/components/views/ProjectsView.vue')
 
   assert.match(php, /\$_GET\['p'\]/)
   assert.match(api, /\$_GET\['page'\]/)
@@ -17,9 +17,9 @@ test('projects pagination follows PHP `p` URLs and maps them to the DTO `page` q
 })
 
 test('projects pagination keeps the selected category, route family, and noindex query behavior', () => {
-  const page = read('../app/pages/migration-projects-preview.vue')
+  const page = read('../app/components/views/ProjectsView.vue')
 
-  assert.match(page, /path: isPublicRoute\.value \? PROJECTS_PUBLIC_PATH : '\/migration-projects-preview'/)
+  assert.match(page, /path: PROJECTS_PUBLIC_PATH,/)
   assert.match(page, /category: category\.value/)
   assert.match(page, /p: String\(nextPage\)/)
   assert.match(page, /'category', 'p', 'page'/)

@@ -2,7 +2,7 @@
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
 
 const props = defineProps<{ about: PublicHomePayload['about'] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const phpResizablePointImage = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i
 
 const fallbackPoints: PublicHomeAboutPoint[] = [

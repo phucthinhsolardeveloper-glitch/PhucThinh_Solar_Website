@@ -8,17 +8,16 @@ import DealerSections from '~/components/dealer/DealerSections.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import { publicSeoTitle } from '#shared/public-seo'
 
-const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && config.public.dealerPublicRouteIndexable === true
+const indexable = computed(() => config.public.dealerPublicRouteIndexable === true
   && !!dealer.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
-const { data, error } = await useAsyncData<unknown>('migration-dealer', () => $fetch('/_api/dealer'))
+const { data, error } = await useAsyncData<unknown>('dealer', () => $fetch('/_api/dealer'))
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const dealer = computed(() => isPublicDealerPayload(data.value) ? data.value : null)
 
-if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !dealer.value)) {
+if (import.meta.server && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !dealer.value)) {
   setResponseStatus(502, 'Bad Gateway')
 }
 
@@ -67,7 +66,7 @@ const quickLinks = computed(() => {
   }
   return links
 })
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 // CMS stats count up once on load; SSR and reduced motion keep the final value.
 const statShown = ref<string[]>([])
@@ -88,11 +87,9 @@ onMounted(() => {
   requestAnimationFrame(step)
 })
 
-const pageTitle = computed(() => props.preview
-  ? 'Đại lý — internal preview'
-  : publicSeoTitle(dealer.value?.seo?.title || dealer.value?.title, 'Đại lý'))
-const pageDescription = computed(() => props.preview ? '' : dealer.value?.seo?.description || '')
-const pageKeywords = computed(() => props.preview ? undefined : dealer.value?.seo?.keywords || undefined)
+const pageTitle = computed(() => publicSeoTitle(dealer.value?.seo?.title || dealer.value?.title, 'Đại lý'))
+const pageDescription = computed(() => dealer.value?.seo?.description || '')
+const pageKeywords = computed(() => dealer.value?.seo?.keywords || undefined)
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
@@ -100,7 +97,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && !!dealer.value && !error.value && !siteError.value),
+  enabled: computed(() => !!dealer.value && !error.value && !siteError.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/dai-ly/',

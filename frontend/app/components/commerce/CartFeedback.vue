@@ -3,7 +3,7 @@ import type { CartFeedbackEvent } from '~/composables/useCartFeedback'
 
 const { event } = useCartFeedback()
 const { showHeader } = useSiteHeader()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const card = ref<CartFeedbackEvent | null>(null)
 const position = ref<{ top: number; right: number; arrow: number; above?: boolean }>({ top: 96, right: 24, arrow: 22 })
 const paused = ref(false)

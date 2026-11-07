@@ -52,8 +52,8 @@ test('rejects unsafe video hosts, IDs and pagination overflow', () => {
 })
 
 test('uses Admin SEO image before gallery or video card media without changing card images', () => {
-  const galleryPage = readFileSync(new URL('../app/pages/migration-gallery-preview.vue', import.meta.url), 'utf8')
-  const videoPage = readFileSync(new URL('../app/pages/migration-video-preview.vue', import.meta.url), 'utf8')
+  const galleryPage = readFileSync(new URL('../app/components/views/GalleryView.vue', import.meta.url), 'utf8')
+  const videoPage = readFileSync(new URL('../app/components/views/VideoView.vue', import.meta.url), 'utf8')
   const galleryApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_gallery.php', import.meta.url), 'utf8')
   const videoApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_video.php', import.meta.url), 'utf8')
   assert.match(galleryPage, /image: computed\(\(\) => gallery\.value\?\.seo\.image \|\| gallery\.value\?\.albums\.find\(\(album\) => album\.image\)\?\.image\)/)

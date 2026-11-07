@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{ kind: 'video' | 'gallery'; title: string; description: string; consultSubject: string; consultLabel: string }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const paths = [
   { to: '/du-an-da-thuc-hien/', icon: 'i-lucide-building-2', title: 'Dự án đã thực hiện', text: 'Hồ sơ công trình điện mặt trời và chiếu sáng đã bàn giao.' },

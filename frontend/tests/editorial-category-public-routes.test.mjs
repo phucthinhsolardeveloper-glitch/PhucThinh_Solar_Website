@@ -23,7 +23,7 @@ test('solution category page uses the read-only filtered GET DTO as an always-on
   assert.match(page, /category\.value\?\.canonicalPath/)
   assert.doesNotMatch(page, /PublicRouteEnabled/)
   assert.match(page, /editorialPublicResponseStatus\(true,/)
-  assert.match(page, /const links = useMigrationLinks\(\)/)
+  assert.match(page, /const links = usePublicLinks\(\)/)
   assert.match(page, /:to="links\.generic\(item\.url\)"/)
   assert.match(adapter, /query: category === undefined \? \{\} : \{ category \}/)
   assert.match(adapter, /passThroughStatuses: \[400, 404\]/)

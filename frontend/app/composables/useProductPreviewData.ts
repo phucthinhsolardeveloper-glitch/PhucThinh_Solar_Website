@@ -9,7 +9,6 @@ import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 
 /**
- * Tách từ migration-product-preview.vue (xem đó + pages/san-pham/[slug].vue)
  * để dùng chung đúng một logic fetch + JSON-LD cho cả preview noindex và
  * route public thật - không nhân bản.
  */

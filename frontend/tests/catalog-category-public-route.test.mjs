@@ -17,7 +17,7 @@ test('public category route is Nuxt-owned and reuses the catalog page for valida
   assert.match(middleware, /to\.path !== categoryPath/)
   assert.match(catalogPage, /categoryPath\?: string/)
   assert.match(catalogPage, /props\.categoryPath/)
-  assert.match(catalogPage, /catalogDataKey = computed\(\(\) => `migration-catalog:\$\{route\.path\}:\$\{JSON\.stringify\(query\.value\)\}`\)/)
+  assert.match(catalogPage, /catalogDataKey = computed\(\(\) => `catalog:\$\{route\.path\}:\$\{JSON\.stringify\(query\.value\)\}`\)/)
   assert.match(catalogPage, /useAsyncData<PublicCatalogPayload>\(\s*catalogDataKey/)
   assert.match(catalogPage, /catalogCategoryPublicRouteIndexable/)
   assert.match(middleware, /productCategorySegmentsFromPublicPath\(to\.path\)/)

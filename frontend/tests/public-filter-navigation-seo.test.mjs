@@ -4,24 +4,19 @@ import { test } from 'node:test'
 
 const read = (file) => readFileSync(new URL(file, import.meta.url), 'utf8')
 
-test('news category links use preview paths in migration and canonical paths otherwise', () => {
+test('news category links use canonical paths and keep the search text', () => {
   const source = read('../app/components/news/NewsFilters.vue')
-  assert.match(source, /useMigrationLinks\(\)/)
-  assert.match(source, /isMigrationPreview\.value \? '\/migration-news-preview\/' : '\/tin-tuc\/'/)
+  assert.match(source, /const filtersPath = '\/tin-tuc\/'/)
   assert.match(source, /:to="`\$\{filtersPath\}\$\{queryString\}`"/)
   assert.match(source, /<NuxtLink[\s\S]*:to="categoryHref\(category\)"/)
   assert.match(source, /return `\$\{category\.canonicalPath\}\$\{queryString\.value\}`/)
-  assert.match(source, /params\.set\('category', category\.slug\)/)
-  assert.match(source, /return `\$\{filtersPath\.value\}\?\$\{params\.toString\(\)\}`/)
 })
 
-test('project category links remain inside preview and are public-ready', () => {
+test('project category links use the canonical category URL', () => {
   const source = read('../app/components/projects/ProjectFilters.vue')
-  assert.match(source, /useMigrationLinks\(\)/)
-  assert.match(source, /isMigrationPreview\.value \? '\/migration-projects-preview\/' : '\/du-an-da-thuc-hien\/'/)
+  assert.match(source, /const filtersPath = '\/du-an-da-thuc-hien\/'/)
   assert.match(source, /:to="filtersPath"/)
   assert.match(source, /<NuxtLink[\s\S]*:to="categoryHref\(category\)"/)
-  assert.match(source, /category=\$\{encodeURIComponent\(category\.slug\)\}/)
 })
 
 test('interactive filters keep the page mounted and avoid global route-scroll animation', () => {
@@ -34,11 +29,11 @@ test('interactive filters keep the page mounted and avoid global route-scroll an
   assert.match(styles, /html\s*\{\s*scroll-behavior:\s*auto;/)
   // Reactive key: Nuxt carries the previous key's data into the new entry, so
   // the grid stays mounted while route/query changes refetch.
-  assert.match(catalog, /const catalogDataKey = computed\(\(\) => `migration-catalog:\$\{route\.path\}:\$\{JSON\.stringify\(query\.value\)\}`\)/)
+  assert.match(catalog, /const catalogDataKey = computed\(\(\) => `catalog:\$\{route\.path\}:\$\{JSON\.stringify\(query\.value\)\}`\)/)
   assert.match(catalog, /useAsyncData<PublicCatalogPayload>\(\s*catalogDataKey,/)
   assert.match(catalog, /v-if="catalogPending && !catalogData"/)
   assert.match(catalog, /:aria-busy="catalogPending"/)
-  assert.match(search, /useAsyncData<PublicSearchPayload>\(\s*'migration-search'/)
+  assert.match(search, /useAsyncData<PublicSearchPayload>\(\s*'search'/)
   assert.match(search, /pending && !data/)
   assert.match(header, /setDocumentScrollLock\(overlayOpen\)/)
   assert.match(scrollLock, /window\.innerWidth - document\.documentElement\.clientWidth/)
@@ -56,7 +51,7 @@ test('header parent navigation remains active on bare category slug routes', () 
 
 test('catalog links stay in Nuxt preview while category pages are being migrated', () => {
   const source = read('../app/components/catalog/CatalogPage.vue')
-  assert.match(source, /const links = useMigrationLinks\(\)/)
+  assert.match(source, /const links = usePublicLinks\(\)/)
   assert.match(source, /links\.generic\(activeCategoryRoot\.value\?\.url \?\? '\/san-pham\/'\)/)
   assert.match(source, /:to="links\.generic\(item\.url\)"/)
   assert.match(source, /item\.href \? links\.generic\(item\.href\) : undefined/)

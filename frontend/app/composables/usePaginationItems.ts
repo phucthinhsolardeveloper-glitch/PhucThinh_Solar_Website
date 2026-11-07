@@ -1,7 +1,6 @@
 export interface PaginationItem { key: string; page: number | null }
 
 /**
- * Tách từ migration-catalog-preview.vue để migration-brand-detail-preview.vue
  * dùng chung đúng một thuật toán rút gọn trang (giữ 7 trang trở xuống hiện
  * đủ, nhiều hơn thì rút gọn quanh trang hiện tại + đầu/cuối) thay vì chép lại.
  */

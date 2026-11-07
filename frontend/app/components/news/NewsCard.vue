@@ -13,7 +13,7 @@ withDefaults(defineProps<{
   readMoreLabel: string
   variant?: 'grid' | 'lead' | 'secondary'
 }>(), { variant: 'grid' })
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const phpResizableNewsImage = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i
 
 function cardImage(src: string, width: 600 | 900, height: 338 | 506): string {

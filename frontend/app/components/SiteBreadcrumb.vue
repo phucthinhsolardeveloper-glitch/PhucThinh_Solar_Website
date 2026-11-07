@@ -10,13 +10,13 @@ const props = defineProps<{
   items: BreadcrumbItem[]
 }>()
 
-const { generic: migrationHref, external: isExternalLink } = useMigrationLinks()
+const { generic: publicHref, external: isExternalLink } = usePublicLinks()
 const route = useRoute()
 const config = useRuntimeConfig()
-const homeTo = computed(() => migrationHref('/'))
+const homeTo = computed(() => publicHref('/'))
 const compactItems = computed(() => props.items.length > 2 ? props.items.slice(-2) : props.items)
 const breadcrumbStructuredData = computed(() => {
-  if (route.path.startsWith('/migration-') || route.path.startsWith('/_api') || /^\/san-pham\/[^/]+$/.test(route.path)) return null
+  if (route.path.startsWith('/_api') || /^\/san-pham\/[^/]+$/.test(route.path)) return null
   return publicBreadcrumbStructuredData(config.public.canonicalSiteOrigin, route.path, props.items.map((item) => ({
     label: item.label,
     ...(item.to ? { path: item.to } : {}),
@@ -48,9 +48,9 @@ useHead({
         <span class="text-slate-300" aria-hidden="true">/</span>
         <NuxtLink
           v-if="item.to"
-          :external="isExternalLink(migrationHref(item.to))"
+          :external="isExternalLink(publicHref(item.to))"
           class="text-slate-600 no-underline transition-colors hover:text-gold-700"
-          :to="migrationHref(item.to)"
+          :to="publicHref(item.to)"
         >
           {{ item.label }}
         </NuxtLink>
@@ -66,9 +66,9 @@ useHead({
         <span class="text-slate-300" aria-hidden="true">/</span>
         <NuxtLink
           v-if="item.to"
-          :external="isExternalLink(migrationHref(item.to))"
+          :external="isExternalLink(publicHref(item.to))"
           class="shrink-0 text-slate-600 no-underline transition-colors hover:text-gold-700"
-          :to="migrationHref(item.to)"
+          :to="publicHref(item.to)"
         >
           {{ item.label }}
         </NuxtLink>

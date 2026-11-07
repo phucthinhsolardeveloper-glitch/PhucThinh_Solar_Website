@@ -9,8 +9,7 @@ const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const config = useRuntimeConfig()
-const links = useMigrationLinks()
-const isPublicRoute = computed(() => route.path === GALLERY_PUBLIC_PATH)
+const links = usePublicLinks()
 const page = computed(() => typeof route.query.p === 'string' && /^[1-9][0-9]*$/.test(route.query.p) ? Number(route.query.p) : 1)
 const query = computed(() => page.value > 1 ? { p: String(page.value) } : {})
 const { data, error, pending } = await useFetch<unknown>('/_api/gallery', { query })
@@ -18,27 +17,25 @@ const gallery = computed<PublicGalleryPayload | null>(() => isPublicGalleryPaylo
 const totalPages = computed(() => gallery.value ? Math.max(1, Math.ceil(gallery.value.pagination.total / gallery.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value,
+  true,
   errorStatus,
   gallery.value === null,
 )
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 function pageTo(value: number) {
-  return { path: isPublicRoute.value ? GALLERY_PUBLIC_PATH : '/migration-gallery-preview', query: value > 1 ? { p: String(value) } : {} }
+  return { path: GALLERY_PUBLIC_PATH, query: value > 1 ? { p: String(value) } : {} }
 }
 
-const pageTitle = computed(() => isPublicRoute.value
-  ? publicSeoTitle(gallery.value?.seo.title, 'Thư viện ảnh')
-  : gallery.value?.seo.title || 'Thư viện ảnh — Nuxt preview')
+const pageTitle = computed(() => publicSeoTitle(gallery.value?.seo.title, 'Thư viện ảnh'))
 
 useSeoMeta({
   title: pageTitle,
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!gallery.value && !error.value),
+  enabled: computed(() => !!gallery.value && !error.value),
   title: pageTitle,
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: GALLERY_PUBLIC_PATH,

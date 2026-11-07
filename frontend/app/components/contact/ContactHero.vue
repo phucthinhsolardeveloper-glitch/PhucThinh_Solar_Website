@@ -3,7 +3,7 @@ import { publicEmailHref, publicPhoneHref } from '#shared/contact-links'
 import type { PublicContactPayload } from '#shared/contracts/public-contact'
 
 const props = defineProps<{ contact: PublicContactPayload; pageTitle: string }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const emailHref = computed(() => publicEmailHref(props.contact.contact.email))
 const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
 </script>

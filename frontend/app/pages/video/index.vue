@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MigrationVideoPreviewPage from '~/pages/migration-video-preview.vue'
+import MigrationVideoPreviewPage from '~/components/views/VideoView.vue'
 definePageMeta({ layout: false, middleware: 'video-public-route' })
 </script>
 

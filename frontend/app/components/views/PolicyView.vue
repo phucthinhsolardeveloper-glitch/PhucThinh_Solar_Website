@@ -10,11 +10,10 @@ const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const config = useRuntimeConfig()
-const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
-const isPublicRoute = computed(() => route.path.startsWith(POLICY_PUBLIC_ROOT))
 const { data: fetched, error, pending } = await useAsyncData<PublicPolicyDetail>(
-  () => 'migration-policy-' + slug.value,
+  () => 'policy-' + slug.value,
   async () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
     const payload = await $fetch<unknown>('/_api/policy-detail', { query: { slug: slug.value } })
@@ -39,12 +38,12 @@ onMounted(() => {
   else setTimeout(warm, 800)
 })
 const responseStatus = editorialPublicResponseStatus(
-  isPublicRoute.value,
+  true,
   (error.value as { statusCode?: unknown } | null)?.statusCode,
   !data.value,
 )
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const emptyRichText = { format: 'sanitized-html' as const, html: '', sanitizedBy: 'pts_public_richtext' as const, sanitizerVersion: 1 as const }
 const editorial = computed(() => buildEditorialToc(data.value?.content ?? emptyRichText))
 const tocContainerRef = ref<HTMLElement | null>(null)
@@ -85,18 +84,16 @@ watch(slug, async () => {
 const policies = computed(() => site.value.footer?.policies ?? [])
 function isCurrentPolicy(href: string) { return href.replace(/\/+$/, '').endsWith(`/${slug.value}`) }
 
-const pageTitle = computed(() => isPublicRoute.value
-  ? publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ')
-  : data.value?.seo.title || 'Chính sách hỗ trợ — Nuxt preview')
+const pageTitle = computed(() => publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ'))
 const socialDescription = computed(() => publicSeoDescription(data.value?.seo.description, site.value.brand.name))
 
 useSeoMeta({
   title: pageTitle,
   description: computed(() => data.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
+  enabled: computed(() => !!data.value && !error.value),
   title: pageTitle,
   description: socialDescription,
   canonicalPath: computed(() => route.path),
@@ -105,7 +102,7 @@ usePublicSocialMeta({
 })
 const policyJsonLd = computed(() => {
   const policy = data.value
-  if (!isPublicRoute.value || !policy || error.value) return null
+  if (!policy || error.value) return null
   const siteOrigin = canonicalPublicOrigin(config.public.canonicalSiteOrigin)
   const url = canonicalPublicUrl(siteOrigin, policy.canonical)
   if (!siteOrigin || !url || !policy.title.trim() || !policy.author.name.trim()) return null

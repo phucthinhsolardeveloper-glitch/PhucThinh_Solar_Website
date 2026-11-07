@@ -10,30 +10,26 @@ import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && [
-  `/${route.params.slug}`,
-  `/${route.params.slug}/`,
-].includes(route.path))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
-const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
-const { data, error } = await useAsyncData('migration-news-detail', () => $fetch('/_api/news-detail', { query: { slug: slug.value } }), { watch: [slug] })
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
+const { data, error } = await useAsyncData('news-detail', () => $fetch('/_api/news-detail', { query: { slug: slug.value } }), { watch: [slug] })
 const payload = computed(() => isPublicNewsDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !payload.value)
+const responseStatus = editorialPublicResponseStatus(true, errorStatus, !payload.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-const links = useMigrationLinks()
-const pageKeywords = computed(() => isBarePublicRoute.value ? payload.value?.article.seo.keywords || '' : '')
+const links = usePublicLinks()
+const pageKeywords = computed(() => payload.value?.article.seo.keywords || '')
 
 useSeoMeta({
-  title: () => payload.value?.article.seo.title || (isBarePublicRoute.value ? 'Kiến thức' : 'Kiến thức — internal preview'),
+  title: () => payload.value?.article.seo.title || 'Kiến thức',
   description: () => payload.value?.article.seo.description || '',
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.newsDetailPublicRouteIndexable, !!payload.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsDetailPublicRouteIndexable, !!payload.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && !!payload.value && !error.value),
+  enabled: computed(() => !!payload.value && !error.value),
   title: computed(() => payload.value?.article.seo.title || 'Kiến thức'),
   description: computed(() => payload.value?.article.seo.description || ''),
   canonicalPath: computed(() => payload.value?.article.seo.canonical || route.path),
@@ -83,8 +79,8 @@ useHead({
     <main class="pts-container py-8 nav:py-16">
 
       <div v-if="error || !payload" class="min-h-[45vh] py-16">
-        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy bài viết' : (isBarePublicRoute ? 'Không thể tải bài viết' : 'Preview bài viết') }}</h1>
-        <p class="mb-4 text-slate-500">{{ isBarePublicRoute ? 'Nội dung bài viết hiện không khả dụng.' : 'Không thể tải bài viết CMS thật với slug này. Preview không hiển thị dữ liệu giả.' }}</p>
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy bài viết' : 'Không thể tải bài viết' }}</h1>
+        <p class="mb-4 text-slate-500">{{ 'Nội dung bài viết hiện không khả dụng.' }}</p>
         <a class="font-bold text-gold-700" :href="links.generic('/tin-tuc/')">Quay lại Kiến thức →</a>
       </div>
 

@@ -3,13 +3,12 @@ import type { PublicProductExtrasPayload } from '#shared/contracts/public-produc
 import type { PublicProductDocument } from '#shared/contracts/public-product-detail'
 
 const props = defineProps<{ extras: PublicProductExtrasPayload | null; documents: PublicProductDocument[] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const hasMediaColumn = computed(() => Boolean(props.extras?.videoEmbedUrl) || props.documents.length > 0)
 
 function documentHref(document: PublicProductDocument): string {
-  if (document.url.startsWith('https://') || !links.active.value) return document.url
-  return `/_api/product-document?path=${encodeURIComponent(document.url)}`
+  return document.url
 }
 </script>
 

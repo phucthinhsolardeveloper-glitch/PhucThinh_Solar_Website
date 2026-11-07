@@ -10,7 +10,7 @@ import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : typeof route.query.slug === 'string' ? route.query.slug : '')
 const { data: siteData } = await useFetch<unknown>('/_api/site', {

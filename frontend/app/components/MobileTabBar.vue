@@ -6,8 +6,8 @@ const props = defineProps<{ site: PublicSitePayload }>()
 // Phone navigation: a navy liquid-glass island. A single lens of light slides to the current
 // destination, so changing page feels like one continuous gesture rather than a redraw.
 const route = useRoute()
-const links = useMigrationLinks()
-const { cart } = useMigrationCart()
+const links = usePublicLinks()
+const { cart } = useShopCart()
 const { $warmRoute } = useNuxtApp()
 publishPublicContactLinks(props.site)
 const { hotline, phoneHref, zaloHref } = usePublicContactLinks()

@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs'
 
 const page = readFileSync(new URL('../app/components/product-preview/ProductPreviewPage.vue', import.meta.url), 'utf8')
 const publicPage = readFileSync(new URL('../app/pages/san-pham/[slug].vue', import.meta.url), 'utf8')
-const previewPage = readFileSync(new URL('../app/pages/migration-product-preview.vue', import.meta.url), 'utf8')
 const applications = readFileSync(new URL('../app/components/product-preview/ProductPreviewApplications.vue', import.meta.url), 'utf8')
 const guides = readFileSync(new URL('../app/components/product-preview/ProductPreviewBuyingGuide.vue', import.meta.url), 'utf8')
 
@@ -13,7 +12,7 @@ test('PDP exposes CMS applications and buying guide sections with section naviga
   assert.match(page, /id: 'huong-dan-lua-chon', label: 'Lựa chọn'/)
   assert.match(page, /<ProductPreviewApplications v-if="applications\?\.items\.length"/)
   assert.match(page, /<ProductPreviewBuyingGuide v-if="buyingGuides\?\.length"/)
-  for (const routePage of [publicPage, previewPage]) {
+  for (const routePage of [publicPage]) {
     assert.match(routePage, /:applications="payload!\.applications"/)
     assert.match(routePage, /:buying-guides="payload!\.buyingGuides"/)
   }

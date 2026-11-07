@@ -7,7 +7,7 @@ import SolutionsStory from '~/components/solutions/SolutionsStory.vue'
 import { publicPhoneHref } from '#shared/contact-links'
 
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 
 function equipmentIcon(url: string, name: string): string {

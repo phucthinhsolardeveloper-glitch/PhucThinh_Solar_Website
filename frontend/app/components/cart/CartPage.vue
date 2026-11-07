@@ -8,18 +8,17 @@ import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
 
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
-const { cart, loading, error, refresh, mutate } = useMigrationCart()
-const links = useMigrationLinks()
-const isMigrationPreview = links.active
+const { cart, loading, error, refresh, mutate } = useShopCart()
+const links = usePublicLinks()
 const checkoutNotice = ref<PublicCheckoutNoticePayload | null>(null)
 const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
-const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_api/cart', { key: 'migration-cart-page', default: () => null })
+const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_api/cart', { key: 'cart-page', default: () => null })
 if (isPublicCartPayload(initialCart.value)) cart.value = initialCart.value
-else if (!isMigrationPreview.value && import.meta.server) setResponseStatus(502, 'Bad Gateway')
-if (!isMigrationPreview.value && import.meta.server && initialCartError.value) setResponseStatus(502, 'Bad Gateway')
+else if (import.meta.server) setResponseStatus(502, 'Bad Gateway')
+if (import.meta.server && initialCartError.value) setResponseStatus(502, 'Bad Gateway')
 
 usePublicSocialMeta({
-  enabled: computed(() => !isMigrationPreview.value),
+  enabled: true,
   title: 'Giỏ hàng | Phúc Thịnh Solar',
   description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
   canonicalPath: '/gio-hang/',
@@ -275,9 +274,6 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
             <p v-if="!payload.canCheckout" class="cart-summary__note">
               Giỏ có sản phẩm cần báo giá; hãy liên hệ tư vấn trước khi đặt hàng.
             </p>
-            <p v-else-if="isMigrationPreview" class="cart-summary__note" role="status">
-              Checkout đang ở chế độ preview chỉ đọc; trang này không nhận thông tin giao hàng và không tạo đơn hàng.
-            </p>
             <NuxtLink
               v-else
               to="/thanh-toan/"
@@ -301,7 +297,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
         </div>
       </template>
     </main>
-    <div v-if="payload && hasCartItems && !isMigrationPreview" class="m-island print:hidden" :class="{ 'is-away': checkoutActionReached }">
+    <div v-if="payload && hasCartItems" class="m-island print:hidden" :class="{ 'is-away': checkoutActionReached }">
       <span><small>Tổng tạm tính</small><strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong></span>
       <NuxtLink v-if="payload.canCheckout" to="/thanh-toan/" @click="openCheckout">Thanh toán</NuxtLink>
       <button v-else type="button" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">Nhận báo giá</button>

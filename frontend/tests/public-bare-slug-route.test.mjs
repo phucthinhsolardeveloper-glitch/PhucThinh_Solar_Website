@@ -73,17 +73,16 @@ test('bare route validates path before resolving and maps confirmed legacy alias
   assert.match(page, /reservedRouteRoots = new Set\(\['ho-tro'\]\)/)
 })
 
-test('public gallery links use bare canonical slugs while preview keeps its editor-safe URL', () => {
-  const links = read('../app/composables/useMigrationLinks.ts')
-  assert.match(links, /active\.value && SLUG\.test\(slug\) \? '\/migration-gallery-detail-preview\?slug='/)
-  assert.match(links, /: '\/' \+ slug \+ '\/'/)
+test('public gallery links use bare canonical slugs', () => {
+  const links = read('../app/composables/usePublicLinks.ts')
+  assert.match(links, /const gallery = \(slug: string\): string => '\/' \+ slug \+ '\/'/)
 })
 
 test('detail views consume a bare route slug and use separate SEO indexability settings', () => {
   const pages = [
-    ['../app/pages/migration-news-detail-preview.vue', 'newsDetailPublicRouteIndexable'],
-    ['../app/pages/migration-project-detail-preview.vue', 'projectDetailPublicRouteIndexable'],
-    ['../app/pages/migration-gallery-detail-preview.vue', 'galleryDetailPublicRouteIndexable'],
+    ['../app/components/views/NewsDetailView.vue', 'newsDetailPublicRouteIndexable'],
+    ['../app/components/views/ProjectDetailView.vue', 'projectDetailPublicRouteIndexable'],
+    ['../app/components/views/GalleryDetailView.vue', 'galleryDetailPublicRouteIndexable'],
   ]
   for (const [path, indexable] of pages) {
     const page = read(path)

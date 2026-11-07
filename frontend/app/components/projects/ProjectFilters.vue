@@ -2,17 +2,13 @@
 import type { PublicProjectCategory } from '#shared/contracts/public-projects'
 
 defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCategory | null; allLabel: string; filtersLabel: string }>()
-// Preview filters use the DTO query endpoint; public filters use the PHP-owned category URL.
-const { active: isMigrationPreview } = useMigrationLinks()
-const filtersPath = computed(() => isMigrationPreview.value ? '/migration-projects-preview/' : '/du-an-da-thuc-hien/')
+const filtersPath = '/du-an-da-thuc-hien/'
 const railRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(railRef)
 useSlidingPill(railRef, 'projects')
 
 function categoryHref(category: PublicProjectCategory): string {
-  return isMigrationPreview.value
-    ? `${filtersPath.value}?category=${encodeURIComponent(category.slug)}`
-    : category.url
+  return category.url
 }
 </script>
 

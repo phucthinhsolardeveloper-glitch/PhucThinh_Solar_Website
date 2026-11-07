@@ -5,7 +5,7 @@ import type { PublicCatalogPayload, PublicCatalogProduct } from '#shared/contrac
 import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 
 const props = defineProps<{ equipment: PublicSolutionEquipment[]; categoryTree?: PublicProductCategoryNode[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 
 interface Showcase { products: PublicCatalogProduct[] }
 

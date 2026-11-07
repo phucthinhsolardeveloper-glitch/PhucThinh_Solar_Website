@@ -8,7 +8,7 @@ import { formatProjectDate } from '#shared/project-date'
 import { restructureLineBreaks } from '~/utils/lineBreakLists'
 
 const props = defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const faIcons: Record<string, string> = { 'fa-check': 'i-lucide-check', 'fa-headset': 'i-lucide-headset', 'fa-cogs': 'i-lucide-settings-2', 'fa-shield-alt': 'i-lucide-shield-check' }
 const ctaTrust = computed(() => (props.project.cta?.trust ?? []).map((item) => ({ label: item.label, image: item.icon, icon: faIcons[item.faIcon] })))

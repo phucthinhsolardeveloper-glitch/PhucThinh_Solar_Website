@@ -24,8 +24,8 @@ function appendRequirement(tag: string) {
   if (current.includes(tag)) return
   form.requirements = current ? `${current}; ${tag}` : tag
 }
-const { data: cartData } = await useFetch<unknown>('/_api/cart', { key: 'migration-checkout-cart', default: () => null })
-const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_api/checkout', { key: 'migration-checkout-meta', default: () => null })
+const { data: cartData } = await useFetch<unknown>('/_api/cart', { key: 'checkout-cart', default: () => null })
+const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_api/checkout', { key: 'checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
 const checkout = computed<PublicCheckoutPayload | null>(() => isPublicCheckoutPayload(checkoutData.value) ? checkoutData.value : null)
 

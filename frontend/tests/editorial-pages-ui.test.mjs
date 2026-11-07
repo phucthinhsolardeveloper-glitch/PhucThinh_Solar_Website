@@ -25,7 +25,7 @@ test('project detail gallery uses an accessible in-page media dialog', () => {
 })
 
 test('news detail centers single-column articles when no generated TOC is available', () => {
-  const page = read('../app/pages/migration-news-detail-preview.vue')
+  const page = read('../app/components/views/NewsDetailView.vue')
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   assert.match(page, /<NewsDetailArticle[^>]+\/>[\s\S]*?<NewsDetailProducts[^>]+\/>[\s\S]*?<NewsDetailRelated/)
   assert.match(page, /<main class="pts-container py-8 nav:py-16">/)
@@ -42,15 +42,15 @@ test('news detail centers single-column articles when no generated TOC is availa
 })
 
 test('gallery and video pages rely on CMS titles without static marketing eyebrow copy', () => {
-  const gallery = read('../app/pages/migration-gallery-preview.vue')
-  const album = read('../app/pages/migration-gallery-detail-preview.vue')
-  const video = read('../app/pages/migration-video-preview.vue')
+  const gallery = read('../app/components/views/GalleryView.vue')
+  const album = read('../app/components/views/GalleryDetailView.vue')
+  const video = read('../app/components/views/VideoView.vue')
   const visibleMarkup = [gallery, album, video].map((page) => page.split('<template>')[1] || '').join('\n')
   assert.doesNotMatch(visibleMarkup, /Hình ảnh thực tế|Video thực tế|Album ảnh|được quản lý trực tiếp từ CMS|được xuất từ nguồn CMS/)
 })
 
 test('policy TOC uses the shared anchor-preserving builder', () => {
-  const page = read('../app/pages/migration-policy-preview.vue')
+  const page = read('../app/components/views/PolicyView.vue')
   assert.match(page, /buildEditorialToc\(data\.value\?\.content/)
   assert.doesNotMatch(page, /policy-section-/)
 })
@@ -61,15 +61,6 @@ test('solution detail restages its content as chapters with a hero and switcher 
   assert.match(page, /<SolutionsStory v-if="hasContent" :contents="\[solutionContent, solutionExtraContent\]" :show-index="false" \/>/)
   assert.match(page, /class="public-filter-chip flex min-h-11/)
   assert.match(page, /prefers-reduced-motion: reduce/)
-})
-
-test('solution hub TOC stays compact until the two-column desktop layout is available', () => {
-  const preview = read('../app/pages/migration-solutions-preview.vue')
-  for (const page of [preview]) {
-    assert.match(page, /max-h-\[220px\].*nav:sticky nav:top-24 nav:max-h-\[calc\(100vh-116px\)\]/)
-    assert.doesNotMatch(page, /min-\[901px\]:sticky|min-\[901px\]:max-h-/)
-    assert.match(page, /nav:grid-cols-\[270px_minmax\(0,1fr\)\]/)
-  }
 })
 
 test('solution detail gallery opens an accessible lightbox with keyboard navigation', () => {
@@ -88,7 +79,7 @@ test('solution detail gallery opens an accessible lightbox with keyboard navigat
 })
 
 test('policy article keeps the PHP reading measure', () => {
-  const page = read('../app/pages/migration-policy-preview.vue')
+  const page = read('../app/components/views/PolicyView.vue')
   assert.match(page, /<main class="pts-container py-8 nav:py-14"/)
   assert.match(page, /<div class="pts-container">[\s\S]*<SiteBreadcrumb/)
   assert.match(page, /<article v-else class="mx-auto w-full max-w-\[1280px\]">/)
@@ -104,18 +95,18 @@ test('editorial cover and related images use the documented news aspect ratio an
 })
 
 test('gallery keeps the PHP album thumb ratio while removing decorative card surfaces', () => {
-  const gallery = read('../app/pages/migration-gallery-preview.vue')
+  const gallery = read('../app/components/views/GalleryView.vue')
   const phpAlbum = read('../../domains/phucthinhsolar.com/public_html/templates/album/album_tpl.php')
   assert.match(phpAlbum, /sizes'\s*=>\s*'480x360x1'/)
   assert.match(gallery, /aspect-\[4\/3\]/)
   assert.doesNotMatch(gallery, /border border-gray-200 bg-white/)
-  const video = read('../app/pages/migration-video-preview.vue')
+  const video = read('../app/components/views/VideoView.vue')
   assert.doesNotMatch(video, /group overflow-hidden rounded-chip border border-gray-200 bg-white/)
 })
 
 test('news and project touch targets meet 44px and editorial images keep their route ratios', () => {
   const newsFilters = read('../app/components/news/NewsFilters.vue')
-  const newsPage = read('../app/pages/migration-news-preview.vue')
+  const newsPage = read('../app/components/views/NewsView.vue')
   const projectFilters = read('../app/components/projects/ProjectFilters.vue')
   const projectCard = read('../app/components/projects/ProjectCard.vue')
   assert.match(newsFilters, /min-h-11/)
@@ -157,10 +148,9 @@ test('solution imagery stays 8:5, empty CTA follows shared links, and equipment 
 })
 
 test('editorial text controls meet the 44px hit-area rule and project tabs support arrow-key navigation', () => {
-  const news = read('../app/pages/migration-news-preview.vue')
-  const policy = read('../app/pages/migration-policy-preview.vue')
+  const news = read('../app/components/views/NewsView.vue')
+  const policy = read('../app/components/views/PolicyView.vue')
   const solutionsHub = read('../app/pages/giai-phap.vue')
-  const solutionsPreview = read('../app/pages/migration-solutions-preview.vue')
   const richText = read('../app/components/editorial/EditorialRichText.vue')
   const phpSolutionHub = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_list_tpl.php')
   const phpSolutionStyles = read('../../domains/phucthinhsolar.com/public_html/assets/css/solution-hub.css')
@@ -176,7 +166,6 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   assert.match(solutionsHub, /<SolutionsStory v-if="data && !error && data\.editorial\.content\.html" :contents="\[data\.editorial\.content\]"/)
   assert.match(story, /<EditorialRichText v-for="\(content, index\) in contents" :key="index" :content="content" variant="solution" \/>/)
   assert.match(story, /\.story-index a \{[^}]*min-height: 56px/)
-  assert.match(solutionsPreview, /<EditorialRichText :content="data\.editorial\.content" variant="solution" \/>/)
   assert.match(richText, /cms-content--editorial-solution h2[\s\S]*?border: 0;/)
   assert.match(phpSolutionHub, /aria-label="Mục lục trang Giải pháp"/)
   assert.match(phpSolutionStyles, /\.pts-sh-editorial-grid>\.pts-sd-toc\{max-height:calc\(100vh - 150px\);[^}]*background:var\(--sh-navy\)!important/)

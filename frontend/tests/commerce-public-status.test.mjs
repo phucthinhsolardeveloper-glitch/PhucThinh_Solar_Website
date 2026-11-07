@@ -9,7 +9,7 @@ test('public cart API failure cannot render as a successful HTTP response', () =
   const page = read('app/components/cart/CartPage.vue')
   const route = read('app/pages/gio-hang/index.vue')
   assert.match(page, /initialCartError/)
-  assert.match(page, /!isMigrationPreview\.value && import\.meta\.server/)
+  assert.match(page, /import\.meta\.server/)
   assert.match(page, /setResponseStatus\(502, 'Bad Gateway'\)/)
   assert.match(page, /usePublicSocialMeta\(\{[\s\S]*canonicalPath: '\/gio-hang\/'/)
   assert.match(route, /robots: 'noindex, nofollow, noarchive'/)

@@ -18,8 +18,8 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const { active: isMigrationPreview, generic: shellHref, external: isExternalLink } = useMigrationLinks()
-const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart()
+const { generic: shellHref, external: isExternalLink } = usePublicLinks()
+const { cart: shopCart, refresh: refreshShopCart } = useShopCart()
 const { openConsultation } = useStorefrontModal()
 const config = useRuntimeConfig()
 const siteStructuredData = computed(() => publicSiteStructuredData(config.public.canonicalSiteOrigin, route.path, props.site))
@@ -612,7 +612,7 @@ function handleHeaderFocusin() {
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
   window.addEventListener('scroll', handleWindowScroll, { passive: true })
-  if (cartCountAvailable.value) void refreshMigrationCart()
+  if (cartCountAvailable.value) void refreshShopCart()
 })
 onBeforeUnmount(() => {
   cancelCatalogClose()
@@ -797,15 +797,15 @@ onBeforeUnmount(() => {
                    transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
             :class="dockShowsCart ? 'hidden' : 'inline-flex'"
             :to="shellHref('/gio-hang/')"
-            :aria-label="cartBadgeReady && cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
+            :aria-label="cartBadgeReady && cartCountAvailable && shopCart ? `Giỏ hàng có ${shopCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
             data-cart-target
           >
             <ClientOnly>
             <span
-              v-if="cartCountAvailable && migrationCart?.count"
+              v-if="cartCountAvailable && shopCart?.count"
               class="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-gold-500 px-1 text-[10px] font-black leading-4 text-navy-950"
-            >{{ migrationCart.count }}</span>
+            >{{ shopCart.count }}</span>
             </ClientOnly>
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>

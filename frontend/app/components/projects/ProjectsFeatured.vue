@@ -13,7 +13,7 @@ const props = defineProps<{
   ctaLabel?: string
 }>()
 const emit = defineEmits<{ cta: [] }>()
-const links = useMigrationLinks()
+const links = usePublicLinks()
 const image = computed(() => props.project?.image || props.backdrop || '')
 
 const heroRef = ref<HTMLElement | null>(null)

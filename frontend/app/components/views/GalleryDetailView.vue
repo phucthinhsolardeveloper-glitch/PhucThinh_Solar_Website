@@ -5,13 +5,12 @@ import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shar
 const { site } = await usePublicSite()
 const route = useRoute()
 const config = useRuntimeConfig()
-const links = useMigrationLinks()
-const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && route.path === `/${route.params.slug}/`)
-const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
+const links = usePublicLinks()
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const { data, error, pending } = await useFetch<unknown>('/_api/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !gallery.value)
+const responseStatus = editorialPublicResponseStatus(true, errorStatus, !gallery.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const selectedIndex = ref<number | null>(null)
 const setDocumentScrollLock = useDocumentScrollLock()
@@ -81,12 +80,12 @@ onBeforeUnmount(() => {
 })
 
 useSeoMeta({
-  title: computed(() => gallery.value?.seo.title || (isBarePublicRoute.value ? 'Thư viện ảnh' : 'Album ảnh — Nuxt preview')),
+  title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && !!gallery.value && !error.value),
+  enabled: computed(() => !!gallery.value && !error.value),
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),
@@ -105,8 +104,8 @@ const viewerSrc = useProgressiveImage(() => lightbox.value?.image.image, (src) =
     <main class="pts-container py-10 nav:py-14">
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải album…</div>
       <div v-else-if="error || !gallery" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
-        <h1 class="mb-2 text-2xl font-black">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy album' : 'Không thể tải album' }}</h1>
-        <p class="mb-4">{{ isBarePublicRoute ? 'Nội dung album hiện không khả dụng.' : 'Album có thể chưa được bật hiển thị hoặc slug không còn tồn tại.' }}</p>
+        <h1 class="mb-2 text-2xl font-black">{{ responseStatus === 404 ? 'Không tìm thấy album' : 'Không thể tải album' }}</h1>
+        <p class="mb-4">{{ 'Nội dung album hiện không khả dụng.' }}</p>
         <NuxtLink :to="links.generic('/thu-vien-anh/')" class="font-bold underline">Quay lại thư viện ảnh</NuxtLink>
       </div>
       <article v-else>
