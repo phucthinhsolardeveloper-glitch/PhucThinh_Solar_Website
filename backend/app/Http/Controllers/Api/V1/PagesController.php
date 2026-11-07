@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\Brands\BrandDetail;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
@@ -76,6 +77,11 @@ class PagesController extends Controller
     public function video(Request $request, MediaLibrary $media): JsonResponse
     {
         return self::result($media->videos($request->query()));
+    }
+
+    public function brandDetail(Request $request, BrandDetail $detail): JsonResponse
+    {
+        return self::result($detail->handle($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */

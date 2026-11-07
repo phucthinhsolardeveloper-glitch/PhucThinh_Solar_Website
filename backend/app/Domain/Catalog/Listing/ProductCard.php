@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Domain\Catalog\Listing;
+
+use App\Domain\Catalog\PricingPolicy;
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Legacy\Support\LegacyText;
+use App\Legacy\Support\StatusFlags;
+
+/** A product tile in lists (ptsCatalogProductDto): pictures, power, up to three quick specs, price. */
+class ProductCard
+{
+    private const MISSING = '/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)(?:\s|$)/iu';
+
+    public function __construct(private readonly ProductMediaUrls $urls) {}
+
+    /** @param list<string> $gallery gallery file names already checked on disk, shown between the two main photos */
+    public function dto(array $row, PricingPolicy $pricing, array $gallery = []): ?array
+    {
+        $id = (int) ($row['id'] ?? 0);
+        $name = LegacyText::plain($row['namevi'] ?? '');
+        $slug = LegacyText::slug($row['slugvi'] ?? '');
+        if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || $slug === '') {
+            return null;
+        }
+        $media = [$this->urls->product($row['photo'] ?? '')];
+        foreach ($gallery as $file) {
+            $media[] = '/upload/product/'.$file;
+        }
+        $media[] = $this->urls->product($row['photo2'] ?? '');
+        $power = is_numeric($row['cong_suat'] ?? null) && (float) $row['cong_suat'] > 0 && is_finite((float) $row['cong_suat']) ? (float) $row['cong_suat'] : null;
+        $quick = $power !== null ? [(int) round($power).'W'] : [];
+        foreach (['waterproof_rating', 'lighting_time'] as $field) {
+            $value = LegacyText::plain($row[$field] ?? '');
+            if ($value !== '' && ! preg_match(self::MISSING, $value)) {
+                $quick[] = $value;
+            }
+        }
+
+        return [
+            'id' => $id,
+            'name' => $name,
+            'slug' => $slug,
+            'url' => '/san-pham/'.$slug,
+            'media' => array_values(array_unique(array_filter($media))),
+            'powerWatts' => $power,
+            'quickSpecs' => array_slice($quick, 0, 3),
+            'pricing' => $pricing->forProduct($row),
+        ];
+    }
+}

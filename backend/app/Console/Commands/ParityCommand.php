@@ -36,6 +36,10 @@ class ParityCommand extends Command
             'gallery', 'video' => [[], ['p' => '2'], ['p' => '0'], ['p' => 'x'], ['q' => '1']],
             'gallery-detail' => array_merge(DB::connection('legacy')->table('table_product')->where('type', 'thu-vien-anh')->pluck('slugvi')->map(fn ($s) => ['slug' => (string) $s])->all(),
                 [['slug' => 'khong-co'], ['slug' => 'Bad'], [], ['slug' => 'a', 'x' => '1']]),
+            'brand-detail' => array_merge(
+                DB::connection('legacy')->table('table_product_brand')->where('type', 'san-pham')->pluck('slugvi')->flatMap(fn ($s) => [['slug' => (string) $s], ['slug' => (string) $s, 'sort' => 'abc'],
+                    ['slug' => (string) $s, 'sort' => 'price-desc', 'price' => '2,3'], ['slug' => (string) $s, 'page' => '2', 'per_page' => '5']])->all(),
+                [['slug' => 'khong-co'], ['slug' => 'a', 'price' => '1,1'], ['slug' => 'a', 'x' => '1'], [], ['slug' => 'a', 'sort' => 'A']]),
             'news-detail' => $this->slugCases('tin-tuc'),
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,

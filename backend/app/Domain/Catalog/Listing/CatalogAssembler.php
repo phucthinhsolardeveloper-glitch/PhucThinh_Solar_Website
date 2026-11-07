@@ -29,6 +29,7 @@ class CatalogAssembler
     public function __construct(
         private readonly ProductMediaUrls $urls,
         private readonly LegacySettings $settings,
+        private readonly ProductCard $cards,
     ) {}
 
     /** @return array<string, mixed>|null null when the category path does not resolve */
@@ -94,7 +95,7 @@ class CatalogAssembler
         $pricing = new PricingPolicy($pricesVisible);
         $products = [];
         foreach ($rows as $row) {
-            $dto = $this->productDto((array) $row, $pricing);
+            $dto = $this->cards->dto((array) $row, $pricing);
             if ($dto !== null) {
                 $products[] = $dto;
             }
@@ -201,36 +202,6 @@ class CatalogAssembler
         }
 
         return ['id' => $id, 'name' => $name, 'slug' => end($slugs), 'url' => '/danh-muc-san-pham/'.implode('/', $clean).'/'];
-    }
-
-    private function productDto(array $row, PricingPolicy $pricing): ?array
-    {
-        $id = (int) ($row['id'] ?? 0);
-        $name = LegacyText::plain($row['namevi'] ?? '');
-        $slug = LegacyText::slug($row['slugvi'] ?? '');
-        if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || $slug === '') {
-            return null;
-        }
-        $media = array_values(array_unique(array_filter([$this->urls->product($row['photo'] ?? ''), $this->urls->product($row['photo2'] ?? '')])));
-        $power = is_numeric($row['cong_suat'] ?? null) && (float) $row['cong_suat'] > 0 && is_finite((float) $row['cong_suat']) ? (float) $row['cong_suat'] : null;
-        $quick = $power !== null ? [(int) round($power).'W'] : [];
-        foreach (['waterproof_rating', 'lighting_time'] as $field) {
-            $value = LegacyText::plain($row[$field] ?? '');
-            if ($value !== '' && ! preg_match('/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)(?:\s|$)/iu', $value)) {
-                $quick[] = $value;
-            }
-        }
-
-        return [
-            'id' => $id,
-            'name' => $name,
-            'slug' => $slug,
-            'url' => '/san-pham/'.$slug,
-            'media' => $media,
-            'powerWatts' => $power,
-            'quickSpecs' => array_slice($quick, 0, 3),
-            'pricing' => $pricing->forProduct($row),
-        ];
     }
 
     /** FAQ lines and "cards" blocks of a list/cat content section. */

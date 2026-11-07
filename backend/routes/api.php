@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 // v1 mirrors the PHP endpoints Nuxt reads today (frontend/shared/contracts). Read-only.
 Route::prefix('v1')->group(function () {
     Route::get('about', AboutController::class);
+    Route::get('brand-detail', [PagesController::class, 'brandDetail']);
     Route::get('catalog', CatalogController::class);
     Route::get('contact', [PagesController::class, 'contact']);
     Route::get('dealer', [PagesController::class, 'dealer']);
