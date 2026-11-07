@@ -237,7 +237,8 @@ class ImportLegacyCommand extends Command
             }
         }
         $postIds = array_flip($this->new->table('posts')->pluck('id')->all());
-        foreach ($this->old->table('table_gallery')->where('com', 'news')->where('kind', 'man')->orderBy('id')->get() as $row) {
+        // Post galleries: pictures of the post's own type and video links. "thongtinphu" rows were never shown on the site.
+        foreach ($this->old->table('table_gallery')->where('com', 'news')->where('kind', 'man')->whereColumn('val', 'type')->orWhere(fn ($q) => $q->where('com', 'news')->where('kind', 'man')->where('val', 'video'))->orderBy('id')->get() as $row) {
             if (isset($postIds[$row->id_parent])) {
                 $video = $row->val === 'video';
                 $this->new->table('post_media')->insert(['id' => $row->id, 'post_id' => $row->id_parent, 'kind' => $video ? 'video' : 'image', 'path' => self::nullable($row->photo),

@@ -3,6 +3,7 @@
 namespace App\Domain\Solutions;
 
 use App\Domain\Pages\PageSupport;
+use App\Models\Post;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
@@ -27,18 +28,19 @@ class SolutionDetail extends PageSupport
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
             return $bad;
         }
-        $row = $this->row("select id,id_list,namevi,nameen,descvi,descen,contentvi,contenten,content1vi,content1en,photo,photo1,slugvi,slugen,status from table_news where slugvi = ? and type = 'giai-phap' and find_in_set('hienthi',status) limit 1", [$slug]);
+        $row = $this->row("select id, category_id as id_list, title as namevi, '' as nameen, coalesce(summary,'') as descvi, '' as descen, coalesce(body,'') as contentvi, '' as contenten, coalesce(extra_body,'') as content1vi, '' as content1en,"
+            ." coalesce(image,'') as photo, coalesce(cover_image,'') as photo1, slug as slugvi, '' as slugen, 'hienthi' as status from posts where slug = ? and kind = 'solution' and is_visible = 1 limit 1", [$slug]);
         if (! $row) {
             return [404, ['error' => ['code' => 'SOLUTION_NOT_FOUND']]];
         }
         $id = (int) $row['id'];
-        $category = ! empty($row['id_list']) ? $this->row("select namevi from table_news_list where id = ? and type = 'giai-phap' and find_in_set('hienthi',status) limit 1", [(int) $row['id_list']]) : [];
-        $seoRow = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent = ? and com = 'news' and act = 'man' and type = 'giai-phap' limit 1", [$id]);
-        $solutions = $this->rows("select id,namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,photo1,slugvi,slugen,status from table_news where type='giai-phap' order by numb,id desc");
-        $products = $this->rows("select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from table_product_list where type='san-pham' order by numb,id desc");
-        $ctaRows = $this->rows("select namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,status from table_news where type='solution-cta' order by numb,id desc");
+        $category = ! empty($row['id_list']) ? $this->row("select name as namevi from post_categories where id = ? and kind = 'solution' and is_visible = 1 limit 1", [(int) $row['id_list']]) : [];
+        $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Post::class, $id]);
+        $solutions = $this->rows("select id, title as namevi, '' as nameen, coalesce(nav_title,'') as title_indexvi, '' as title_indexen, coalesce(summary,'') as descvi, '' as descen, coalesce(image,'') as photo, coalesce(cover_image,'') as photo1, slug as slugvi, '' as slugen, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'solutionhub',null)) as status from posts where kind='solution' order by sort_order,id desc");
+        $products = $this->rows("select id, name as namevi, '' as nameen, coalesce(summary,'') as descvi, '' as descen, coalesce(image,'') as photo, slug as slugvi, '' as slugen, concat_ws(',', if(is_visible,'hienthi',null), if(in_solution_hub,'solutionhub',null)) as status from categories where depth=1 order by sort_order,id desc");
+        $ctaRows = $this->items('solutions.cta');
         $gallery = [];
-        foreach ($this->rows("select photo from table_gallery where id_parent = ? and com='news' and type = 'giai-phap' and kind='man' and val = 'giai-phap' and find_in_set('hienthi',status) order by numb,id desc", [$id]) as $item) {
+        foreach ($this->rows("select coalesce(path,'') as photo from post_media where post_id = ? and kind='image' and is_visible=1 order by sort_order,id desc", [$id]) as $item) {
             if (($image = $this->strictImage($item['photo'], 'upload/news/')) !== '') {
                 $gallery[] = $image;
             }

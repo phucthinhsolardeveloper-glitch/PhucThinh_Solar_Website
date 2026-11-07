@@ -4,6 +4,7 @@ namespace App\Domain\Solutions;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
+use App\Models\PostCategory;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
@@ -49,20 +50,20 @@ class SolutionsListing extends PageSupport
         if (array_diff(array_keys($get), ['category']) || (isset($get['category']) && (! is_string($get['category']) || ! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $get['category'])))) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $solutions = $this->withImages($this->rows("select id,id_list,namevi,title_indexvi,descvi,photo,photo1,slugvi,status from table_news where type='giai-phap' order by numb,id desc"));
-        $introRows = $this->withImages($this->rows("select namevi,title_indexvi,descvi,contentvi,photo,status from table_news where type='solution-intro' order by numb,id desc"));
-        $ctaRows = $this->withImages($this->rows("select namevi,title_indexvi,descvi,photo,status from table_news where type='solution-cta' order by numb,id desc"));
+        $solutions = $this->withImages($this->rows("select id, category_id as id_list, title as namevi, coalesce(nav_title,'') as title_indexvi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, coalesce(cover_image,'') as photo1, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'solutionhub',null)) as status from posts where kind='solution' order by sort_order,id desc"));
+        $introRows = $this->withImages($this->items('solutions.intro'));
+        $ctaRows = $this->withImages($this->items('solutions.cta'));
         $products = array_map(fn ($row) => $row + ['_photo' => $this->image($row['photo'], 'upload/product/')],
-            $this->rows("select id,namevi,descvi,photo,slugvi,status from table_product_list where type='san-pham' order by numb,id desc"));
-        $groups = $this->rows("select nl.id,nl.namevi,nl.descvi,nl.slugvi,nl.photo,nl.status from table_news_list nl where nl.type='giai-phap' and find_in_set('hienthi',nl.status)"
-            ." and exists(select 1 from table_news n where n.id_list=nl.id and n.type='giai-phap' and find_in_set('hienthi',n.status) and n.slugvi<>'') order by nl.numb,nl.id desc");
+            $this->rows("select id, name as namevi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_solution_hub,'solutionhub',null)) as status from categories where depth=1 order by sort_order,id desc"));
+        $groups = $this->rows("select c.id, c.name as namevi, coalesce(c.summary,'') as descvi, c.slug as slugvi, coalesce(c.image,'') as photo, 'hienthi' as status from post_categories c where c.kind='solution' and c.is_visible=1"
+            ." and exists(select 1 from posts p where p.category_id=c.id and p.kind='solution' and p.is_visible=1 and p.slug<>'') order by c.sort_order,c.id desc");
 
         $data = $this->payload($solutions, $introRows, $ctaRows, $products);
         if (isset($get['category'])) {
             $group = array_values(array_filter($groups, fn ($g) => $g['slugvi'] === $get['category']))[0] ?? null;
             $category = null;
             if ($group) {
-                $seoRow = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent = ? and com = 'news' and act = 'man_list' and type = 'giai-phap' limit 1", [(int) $group['id']]);
+                $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $group['id']]);
                 $category = $this->category($group, $groups, $solutions, [
                     'title' => LegacyText::flat($seoRow['titlevi'] ?? ''),
                     'description' => LegacyText::flat($seoRow['descriptionvi'] ?? ''),
