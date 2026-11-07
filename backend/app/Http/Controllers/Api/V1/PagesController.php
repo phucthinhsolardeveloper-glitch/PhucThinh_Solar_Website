@@ -12,6 +12,7 @@ use App\Domain\Pages\ContactAssembler;
 use App\Domain\Pages\DealerAssembler;
 use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectListing;
+use App\Domain\Routing\PublicRouteResolver;
 use App\Domain\Solutions\SolutionDetail;
 use App\Domain\Solutions\SolutionsListing;
 use App\Http\Controllers\Controller;
@@ -94,6 +95,14 @@ class PagesController extends Controller
     public function productExtras(Request $request, ProductExtras $extras): JsonResponse
     {
         return self::result($extras->handle($request->query()));
+    }
+
+    public function publicRouteResolve(Request $request, PublicRouteResolver $resolver): JsonResponse
+    {
+        $response = self::result($resolver->handle($request->query()));
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+
+        return $response;
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */

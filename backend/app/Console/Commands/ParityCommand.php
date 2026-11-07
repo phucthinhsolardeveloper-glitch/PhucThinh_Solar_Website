@@ -47,6 +47,7 @@ class ParityCommand extends Command
                 [['keyword' => 'đèn', 'page' => '2'], ['keyword' => 'đèn', 'sort' => 'abc'], ['keyword' => 'đèn', 'sort' => 'price'], ['keyword' => 'đèn', 'brand' => '1,2,3'], ['keyword' => 'đèn', 'price' => '1'],
                     ['keyword' => ''], [], ['keyword' => '!!!'], ['keyword' => str_repeat('a', 101)], ['keyword' => 'a', 'sort' => 'x'], ['keyword' => 'a', 'x' => '1'], ['keyword' => 'a', 'page' => '0']]),
             'product-extras' => $this->extrasCases(),
+            'public-route-resolve' => $this->routeCases(),
             'news-detail' => $this->slugCases('tin-tuc'),
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
@@ -152,6 +153,21 @@ class ParityCommand extends Command
             ->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all();
 
         return array_merge($cases, [['slug' => 'khong-ton-tai'], ['slug' => 'Bad Slug'], ['slug' => ''], [], ['slug' => 'a', 'x' => '1'], ['slug' => '/a/']]);
+    }
+
+    /** Every slug of every routed table, reserved words and malformed input. */
+    private function routeCases(): array
+    {
+        $db = DB::connection('legacy');
+        $slugs = [];
+        foreach (['product_list', 'product_cat', 'product_item', 'product_sub', 'product_brand', 'product', 'news_list', 'news_cat', 'news_item', 'news_sub', 'news'] as $table) {
+            foreach ($db->table('table_'.$table)->where('slugvi', '<>', '')->pluck('slugvi') as $slug) {
+                $slugs[(string) $slug] = true;
+            }
+        }
+        $cases = array_map(fn ($slug) => ['slug' => (string) $slug], array_keys($slugs));
+
+        return array_merge($cases, [['slug' => 'lien-he'], ['slug' => 'san-pham'], ['slug' => 'khong-ton-tai-xyz'], ['slug' => 'Bad'], [], ['slug' => 'a', 'x' => '1']]);
     }
 
     /** @return list<array<string, string>> */
