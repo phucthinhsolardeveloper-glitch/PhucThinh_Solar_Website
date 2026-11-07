@@ -18,6 +18,7 @@ Route::prefix('v1')->group(function () {
     Route::get('news', [PagesController::class, 'news']);
     Route::get('news-detail', [PagesController::class, 'newsDetail']);
     Route::get('policy-detail', [PagesController::class, 'policyDetail']);
+    Route::get('projects', [PagesController::class, 'projects']);
     Route::get('product-detail', ProductDetailController::class);
     Route::get('site', SiteController::class);
 });

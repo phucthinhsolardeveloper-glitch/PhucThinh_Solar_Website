@@ -6,6 +6,7 @@ use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\ContactAssembler;
 use App\Domain\Pages\DealerAssembler;
+use App\Domain\Projects\ProjectListing;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +37,11 @@ class PagesController extends Controller
     public function policyDetail(Request $request, NewsDetail $detail): JsonResponse
     {
         return self::result($detail->policy($request->query()));
+    }
+
+    public function projects(Request $request, ProjectListing $listing): JsonResponse
+    {
+        return self::result($listing->handle($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */
