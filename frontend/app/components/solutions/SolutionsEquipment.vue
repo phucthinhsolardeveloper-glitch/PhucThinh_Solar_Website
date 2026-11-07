@@ -46,7 +46,7 @@ const oversized: Record<string, string> = {
 const failed = ref<Set<number>>(new Set())
 function thumb(src: string, size = 480): string {
   const source = oversized[src] || src
-  return source.startsWith('/upload/product/') ? phpThumb(source, size, size) : source
+  return source.startsWith('/upload/product/') ? thumbUrl(source, size, size) : source
 }
 function hideBroken(id: number) { failed.value = new Set(failed.value).add(id) }
 function visible(products: PublicCatalogProduct[]) { return products.filter((product) => !failed.value.has(product.id)) }

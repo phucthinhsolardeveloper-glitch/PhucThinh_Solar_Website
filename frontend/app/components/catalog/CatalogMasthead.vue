@@ -40,7 +40,7 @@ function catalogHeroCandidate(src: string, width: 960 | 1800): string {
   const resolved = heroVisualOverrides[src] || src
   if (heroThumbFailed.value || !phpResizableCatalogImage.test(resolved)) return resolved
   const height = Math.round(width / 3)
-  return phpThumb(resolved, width, height)
+  return thumbUrl(resolved, width, height)
 }
 
 function catalogHeroSrcSet(src: string): string | undefined {

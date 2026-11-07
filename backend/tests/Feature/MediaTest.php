@@ -12,8 +12,14 @@ beforeEach(function () {
     }
 });
 
-it('serves uploaded files with a long cache', function () {
-    $this->get('/upload/product/'.$this->file)->assertOk()->assertHeader('Cache-Control', 'max-age=2592000, public');
+it('serves uploads without cookies, revalidated by date, and answers 304 when unchanged', function () {
+    $first = $this->get('/upload/product/'.$this->file)->assertOk()->assertHeader('Cache-Control', 'no-cache, public');
+    expect($first->headers->getCookies())->toBe([]);
+    $this->get('/upload/product/'.$this->file, ['If-Modified-Since' => $first->headers->get('Last-Modified')])->assertStatus(304);
+});
+
+it('resizes the storefront site pictures', function () {
+    $this->get('/thumbs/320x320x1/assets/images/site-visuals/home-solar-storage.jpg.webp')->assertOk()->assertHeader('Content-Type', 'image/webp');
 });
 
 it('makes a fitted thumbnail that keeps the picture proportions, and a cropped WebP copy', function () {

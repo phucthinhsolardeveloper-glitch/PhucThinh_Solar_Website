@@ -18,7 +18,7 @@ test('solution detail CTA keeps the PHP campaign fallback and 1600x500 media con
   assert.match(template, /getThumbUrl\('1600x500x1',\s*\$solutionCtaImage\)/)
   assert.match(api, /ptsSolutionDetailPayload\([\s\S]*?\$ctaRows[\s\S]*?\$hotline/)
   assert.match(dto, /'campaignCta'\s*=>\s*ptsSolutionDetailCampaignCta\(\$ctaRows,\s*\$hotline\)/)
-  assert.match(component, /phpThumb\(src, 1600, 500\)/)
+  assert.match(component, /thumbUrl\(src, 1600, 500\)/)
   assert.match(component, /catalog-street-lighting\\\.jpg/)
   assert.match(component, /return \/\^\\\/assets\\\/images\\\/site-visuals\\\/catalog-street-lighting/)
   assert.match(readFrontend('app/components/PublicCtaBanner.vue'), /corporate: '\/assets\/images\/site-visuals\/cta-corporate-bg\.webp'/)

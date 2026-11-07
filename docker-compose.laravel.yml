@@ -1,7 +1,7 @@
-# Local Laravel 13 backend for the migration branch only. Runs beside the legacy stack and never replaces it.
+# Local Laravel 13 backend (API, media, Filament admin).
 # Up:   docker compose -f docker-compose.laravel.yml up -d --build
 # Down: docker compose -f docker-compose.laravel.yml down
-# It reaches MariaDB through the legacy local network and uses only the pts_laravel13_clone database.
+# It reaches the local MariaDB container on the shared Docker network (database pts_app).
 services:
   laravel13:
     build:
@@ -14,10 +14,10 @@ services:
       PHP_CLI_SERVER_WORKERS: "4"
     volumes:
       - ./backend:/app
-      # The legacy PHP container's upload volume, read-only, so image resolution sees the same files as PHP.
+      # Uploaded media volume, read-only locally.
       - legacy_upload:/srv/upload:ro
-      # Stock pictures and documents shipped with the PHP checkout.
-      - ./domains/phucthinhsolar.com/public_html/assets:/srv/assets:ro
+      # Site pictures shipped with the storefront (checked and resized by Laravel, served by Nuxt).
+      - ./frontend/public/assets:/srv/assets:ro
     ports:
       - "127.0.0.1:8090:8000"
     networks:

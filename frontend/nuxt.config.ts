@@ -99,20 +99,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Laravel API origin, override through NUXT_API_ORIGIN; never expose this in public runtimeConfig.
     apiOrigin: 'http://127.0.0.1:8090',
-    // Media thumbnails may use the PHP app directly while DTOs use a local API bridge.
-    // This stays server-only; previewMediaProxy is disabled for normal production runs.
-    previewMediaOrigin: 'http://127.0.0.1:8080',
     // Comma-separated exact host[:port] entries. Never use a wildcard: this
     // allowlist protects the server-side API bridge from SSRF.
-    apiOriginAllowlist: '127.0.0.1:8090,localhost:8090,pts-laravel13-local:8000,127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
-    // In dev, proxy allow-listed legacy image paths so CMS media and PHP-owned
-    // assets render on the Nuxt origin. Production stays off unless explicitly
-    // enabled for the isolated local SSR snapshot launcher.
-    previewMediaProxy: process.env.NUXT_PREVIEW_MEDIA_PROXY === 'true'
-      ? true
-      : process.env.NUXT_PREVIEW_MEDIA_PROXY === 'false'
-        ? false
-        : process.env.NODE_ENV !== 'production',
+    apiOriginAllowlist: '127.0.0.1:8090,localhost:8090,pts-laravel13-local:8000',
     public: {
       // Source of truth: config.php arrayDomainSSL and the production sitemap.
       // The shared SEO helper still validates this exact origin before output.

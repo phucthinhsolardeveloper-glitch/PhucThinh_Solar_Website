@@ -44,7 +44,6 @@ services:
       NITRO_PORT: "3000"
       NUXT_PHP_ORIGIN: http://web:80
       NUXT_PHP_ORIGIN_ALLOWLIST: web:80,127.0.0.1:8080,localhost:8080
-      NUXT_PREVIEW_MEDIA_PROXY: "false"
       NUXT_PUBLIC_CANONICAL_SITE_ORIGIN: https://phucthinhsolar.com
       TZ: ${TZ:-Asia/Ho_Chi_Minh}
     networks:

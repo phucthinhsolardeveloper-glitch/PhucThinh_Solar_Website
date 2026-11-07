@@ -18,7 +18,7 @@ const footerLogoUnavailable = ref(false)
 
 const footerLogoSrc = computed(() => {
   const src = footerLogo.value
-  if (CMS_UPLOAD_PHOTO.test(src) && !footerLogoThumbnailFailed.value) return phpThumb(src, 520, 426, 3)
+  if (CMS_UPLOAD_PHOTO.test(src) && !footerLogoThumbnailFailed.value) return thumbUrl(src, 520, 426, 3)
   return src
 })
 function onFooterLogoError() {
@@ -33,7 +33,7 @@ watch(footerLogo, () => {
   footerLogoUnavailable.value = false
 })
 function trustBadgeSrc(src: string): string {
-  return CMS_UPLOAD_PHOTO.test(src) ? phpThumb(src, 400, 152, 3) : src
+  return CMS_UPLOAD_PHOTO.test(src) ? thumbUrl(src, 400, 152, 3) : src
 }
 function socialKind(label: string, href: string): 'facebook' | 'youtube' | 'other' {
   const value = `${label} ${href}`.toLocaleLowerCase('en')

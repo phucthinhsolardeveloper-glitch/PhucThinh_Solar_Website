@@ -1,10 +1,3 @@
-import { fetchLegacyPreviewMedia } from '../../utils/legacy-preview-media'
+import { proxyBackendMedia } from '../../utils/media-proxy'
 
-export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig(event)
-  const media = await fetchLegacyPreviewMedia(`/upload/${getRouterParam(event, 'path') ?? ''}`, config)
-  if (!media) throw createError({ statusCode: 404, statusMessage: 'Preview media not found' })
-  setHeader(event, 'Content-Type', media.contentType)
-  setHeader(event, 'Cache-Control', 'private, no-cache, must-revalidate')
-  return new Uint8Array(media.body)
-})
+export default defineEventHandler((event) => proxyBackendMedia(event, `/upload/${getRouterParam(event, 'path') ?? ''}`))

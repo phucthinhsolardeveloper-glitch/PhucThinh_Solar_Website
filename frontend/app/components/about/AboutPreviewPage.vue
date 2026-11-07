@@ -144,7 +144,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 // Admin "Giới thiệu - Ảnh showroom" replaces the default showroom photo.
 const showroomImage = computed(() => {
   const src = props.about.showroomImage || ''
-  if (/^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src)) return phpThumb(src, 780, 600)
+  if (/^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src)) return thumbUrl(src, 780, 600)
   return src || '/assets/images/site-visuals/about-showroom-solar-equipment-20261104.webp'
 })
 </script>

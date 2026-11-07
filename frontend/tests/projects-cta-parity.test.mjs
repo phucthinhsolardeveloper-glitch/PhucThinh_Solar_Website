@@ -23,7 +23,7 @@ test('project listing CTA stays wired to the PHP visibility and image contract',
   assert.match(phpApi, /foreach\(\$ctaRows as &\$row\)[\s\S]*?is_file\(ROOT\.UPLOAD_NEWS_L\.'anh-quan-gl-4-9449\.jpg'\)/)
   assert.match(phpDto, /function ptsProjectsCtaDto[\s\S]*?foreach\(\$rows as \$row\)[\s\S]*?ptsProjectsPublished[\s\S]*?return null;/)
   assert.match(page, /<ProjectsCta v-if="projects\.cta"/)
-  assert.match(cta, /phpThumb\(src, 1600, 500\)/)
+  assert.match(cta, /thumbUrl\(src, 1600, 500\)/)
 })
 
 test('project listing CTA uses the shared editorial banner and keeps PHP image/trust data', () => {
@@ -37,7 +37,7 @@ test('project listing CTA uses the shared editorial banner and keeps PHP image/t
 
   // Owner decision 2026-11-04: the shared CTA band renders copy, trust and actions from props.
   assert.match(cta, /<PublicCtaBanner\s+variant="editorial"\s+:image="backgroundImage"/)
-  assert.match(cta, /const backgroundImage = computed\(\(\) =>[\s\S]*phpThumb\(src, 1600, 500\)/)
+  assert.match(cta, /const backgroundImage = computed\(\(\) =>[\s\S]*thumbUrl\(src, 1600, 500\)/)
   assert.match(cta, /:title="cta\.title"[\s\S]*:description="cta\.description"[\s\S]*:trust="trustItems"/)
   assert.match(cta, /:hotline="cta\.hotline\?\.text"[\s\S]*:button-label="cta\.buttonLabel \|\| label"/)
   assert.match(sharedCta, /\.cta-band__image \{[^}]*object-fit: cover/)

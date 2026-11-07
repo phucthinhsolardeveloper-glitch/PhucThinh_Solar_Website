@@ -31,7 +31,7 @@ const phpResizableEditorialImage = /^\/(?:upload\/news\/[A-Za-z0-9][A-Za-z0-9._-
 
 function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
   if (!phpResizableEditorialImage.test(src)) return src
-  return phpThumb(src, width, height)
+  return thumbUrl(src, width, height)
 }
 
 function editorialImageSrcSet(src: string): string | undefined {

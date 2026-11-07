@@ -14,7 +14,7 @@ let timer: ReturnType<typeof setTimeout> | undefined
 const label = computed(() => props.popup.title || 'Chương trình khuyến mãi')
 const href = computed(() => props.popup.href ? links.generic(props.popup.href) : '')
 const thumbFailed = ref(false)
-const imageSrc = computed(() => thumbFailed.value ? props.popup.image : /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(props.popup.image) ? phpThumb(props.popup.image, 800, 530) : props.popup.image)
+const imageSrc = computed(() => thumbFailed.value ? props.popup.image : /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(props.popup.image) ? thumbUrl(props.popup.image, 800, 530) : props.popup.image)
 const external = computed(() => /^https?:\/\//i.test(props.popup.href))
 
 function seen() {

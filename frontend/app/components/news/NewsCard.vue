@@ -17,7 +17,7 @@ const links = usePublicLinks()
 const phpResizableNewsImage = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i
 
 function cardImage(src: string, width: 600 | 900, height: 338 | 506): string {
-  return phpResizableNewsImage.test(src) ? phpThumb(src, width, height) : src
+  return phpResizableNewsImage.test(src) ? thumbUrl(src, width, height) : src
 }
 
 function cardImageSrcSet(src: string): string | undefined {

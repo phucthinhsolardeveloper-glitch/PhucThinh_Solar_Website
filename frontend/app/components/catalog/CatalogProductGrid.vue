@@ -17,13 +17,13 @@ function productImage(src: string): string {
 function productImageSrc(product: PublicCatalogProduct): string {
   const original = productImage(product.media[0] || '')
   if (!original.startsWith('/upload/product/') || failedThumbnailImages.value.has(product.id)) return original
-  return phpThumb(original, 640, 640)
+  return thumbUrl(original, 640, 640)
 }
 
 function productImageSrcSet(product: PublicCatalogProduct): string | undefined {
   const original = productImage(product.media[0] || '')
   if (!original.startsWith('/upload/product/') || failedThumbnailImages.value.has(product.id)) return undefined
-  return [320, 480, 640].map((width) => `${phpThumb(original, width, width)} ${width}w`).join(', ')
+  return [320, 480, 640].map((width) => `${thumbUrl(original, width, width)} ${width}w`).join(', ')
 }
 
 function scrollRail(direction: -1 | 1) {

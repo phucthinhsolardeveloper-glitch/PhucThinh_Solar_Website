@@ -7,8 +7,8 @@ use App\Domain\Media\Thumbnails;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
- * Uploaded files and thumbnails. In production Caddy may serve /upload straight from the volume;
- * these routes make the site work without the PHP app either way.
+ * Uploaded files and thumbnails. Caddy may serve /upload straight from the volume; these routes
+ * answer when it does not, and make every thumbnail size on first request.
  */
 class MediaController extends Controller
 {
@@ -18,10 +18,10 @@ class MediaController extends Controller
 
     public function file(string $path, ProductMediaUrls $urls): BinaryFileResponse
     {
-        $public = request()->is('upload/*') ? 'upload/'.$path : 'assets/'.$path;
+        $public = 'upload/'.$path;
         $type = self::TYPES[strtolower(pathinfo($path, PATHINFO_EXTENSION))] ?? null;
         abort_unless($type !== null && $urls->exists($public), 404);
-        $response = response()->file($urls->absolute($public), ['Content-Type' => $type, 'Cache-Control' => 'public, max-age=2592000', 'X-Content-Type-Options' => 'nosniff']);
+        $response = $this->cached($urls->absolute($public), $type);
         if (str_starts_with($type, 'image/svg')) {
             $response->headers->set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'");
         }
@@ -34,6 +34,19 @@ class MediaController extends Controller
         $thumb = $thumbnails->make($width, $height, $mode, $path);
         abort_if($thumb === null, 404);
 
-        return response()->file($thumb['path'], ['Content-Type' => $thumb['mime'], 'Cache-Control' => 'public, max-age=2592000, immutable', 'X-Content-Type-Options' => 'nosniff']);
+        return $this->cached($thumb['path'], $thumb['mime']);
+    }
+
+    /**
+     * Admins may replace a file under the same name, so browsers revalidate every time; an unchanged
+     * file answers 304 from its modification time and is not sent again.
+     */
+    private function cached(string $file, string $type): BinaryFileResponse
+    {
+        $response = response()->file($file, ['Content-Type' => $type, 'Cache-Control' => 'public, no-cache', 'X-Content-Type-Options' => 'nosniff']);
+        $response->setLastModified((new \DateTimeImmutable)->setTimestamp((int) filemtime($file)));
+        $response->isNotModified(request());
+
+        return $response;
     }
 }

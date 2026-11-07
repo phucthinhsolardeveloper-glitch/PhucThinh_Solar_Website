@@ -45,7 +45,7 @@ const brandLogo = computed(() => props.site.brand.logo || '')
 const dockShowsCart = computed(() => !/^\/san-pham\/[^/]+\/?$/.test(route.path) && !/^\/thanh-toan\/?$/.test(route.path))
 const brandLogoSrc = computed(() => {
   const src = brandLogo.value
-  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? phpThumb(src, 520, 112, 3) : src
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? thumbUrl(src, 520, 112, 3) : src
 })
 
 const searchOpen = ref(false)

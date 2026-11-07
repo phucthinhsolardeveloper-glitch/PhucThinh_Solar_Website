@@ -196,7 +196,7 @@ test('footer and breadcrumb route CMS links through the public link builders', (
 
 test('footer logo falls back from a missing thumbnail to its original and then the text brand', () => {
   assert.match(footer, /footerLogoThumbnailFailed = ref\(false\)/)
-  assert.match(footer, /if \(CMS_UPLOAD_PHOTO\.test\(src\) && !footerLogoThumbnailFailed\.value\) return phpThumb\(src, 520, 426, 3\)/)
+  assert.match(footer, /if \(CMS_UPLOAD_PHOTO\.test\(src\) && !footerLogoThumbnailFailed\.value\) return thumbUrl\(src, 520, 426, 3\)/)
   assert.match(footer, /function onFooterLogoError\(\)[\s\S]*footerLogoThumbnailFailed\.value = true[\s\S]*footerLogoUnavailable\.value = true/)
   assert.match(footer, /v-if="footerLogo && !footerLogoUnavailable"[\s\S]*@error="onFooterLogoError"[\s\S]*<span v-else class="text-lg font-black text-white">\{\{ brandName \}\}<\/span>/)
 })

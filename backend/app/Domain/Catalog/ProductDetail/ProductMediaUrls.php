@@ -2,12 +2,12 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
-/** Public URLs for product files, only when the file name is safe and the file exists (ptsPdpMediaUrl). */
+/** Public URLs for product files, only when the file name is safe and the file exists. */
 final class ProductMediaUrls
 {
     public function __construct(private readonly string $uploadRoot, private readonly string $assetsRoot = '') {}
 
-    /** Application card images: a stock use-case picture from assets/, or a product upload (ptsPdpApplicationImageUrl). */
+    /** Application card images: a stock use-case picture from assets/, or a product upload. */
     public function application(mixed $value): string
     {
         $value = is_scalar($value) ? ltrim(trim((string) $value), '/') : '';
@@ -18,7 +18,7 @@ final class ProductMediaUrls
         return $this->content($value);
     }
 
-    /** Downloadable documents: https links, or files under upload/ or assets/ that exist (ptsPdpDocumentUrl). */
+    /** Downloadable documents: https links, or files under upload/ that exist. */
     public function document(mixed $value): string
     {
         $value = is_scalar($value) ? trim((string) $value) : '';
@@ -36,14 +36,14 @@ final class ProductMediaUrls
                 && empty($parts['user']) && empty($parts['pass']) ? $value : '';
         }
         $local = ltrim($value, '/');
-        if (str_contains($local, '..') || ! preg_match('#^(?:upload|assets)/[A-Za-z0-9._/-]+$#', $local)) {
+        if (str_contains($local, '..') || ! preg_match('#^upload/[A-Za-z0-9._/-]+$#', $local)) {
             return '';
         }
 
         return $this->exists($local) ? '/'.$local : '';
     }
 
-    /** A bare file name inside one public folder, e.g. visual('x.png', 'upload/photo/') (ptsCatalogVisualMedia). */
+    /** A bare file name inside one public folder, e.g. visual('x.png', 'upload/photo/'). */
     public function visual(mixed $value, string $folder): string
     {
         $value = is_scalar($value) ? ltrim(trim((string) $value), '/') : '';
@@ -55,7 +55,7 @@ final class ProductMediaUrls
         return $this->exists($path) ? '/'.$path : '';
     }
 
-    /** upload/... lives in the shared upload volume, assets/... in the shipped assets folder. */
+    /** upload/... lives in the upload volume, assets/... in the storefront's public assets folder. */
     public function exists(string $publicPath): bool
     {
         $file = $this->absolute($publicPath);
@@ -87,7 +87,7 @@ final class ProductMediaUrls
         return is_file($this->uploadRoot.'/product/'.$value) ? '/upload/product/'.$value : '';
     }
 
-    /** Images inside content blocks: a bare file name or upload/product/<name> (ptsPdpContentImageUrl). */
+    /** Images inside content blocks: a bare file name or upload/product/<name>. */
     public function content(mixed $value): string
     {
         if (! is_scalar($value)) {

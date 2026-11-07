@@ -22,7 +22,7 @@ const phpResizableHeroImage = /^\/(?:upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.
 function heroImageCandidate(src: string, width: 960 | 1600): string {
   if (!phpResizableHeroImage.test(src)) return src
   const height = Math.round(width * 720 / 1600)
-  return phpThumb(src, width, height)
+  return thumbUrl(src, width, height)
 }
 
 function heroImageSrcSet(src: string): string | undefined {

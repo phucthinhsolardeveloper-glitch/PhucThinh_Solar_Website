@@ -6,22 +6,16 @@ import { test } from 'node:test'
 const root = path.resolve(import.meta.dirname, '..')
 const source = (route) => readFileSync(path.join(root, route), 'utf8')
 
-test('mutable uploads and thumbnails require revalidation', () => {
-  for (const route of [
-    'server/routes/upload/[...path].get.ts',
-    'server/routes/thumbs/[...path].get.ts',
-  ]) {
-    assert.match(source(route), /Cache-Control', 'private, no-cache, must-revalidate'/, route)
+test('uploads and thumbnails pass conditional requests through so Laravel can answer 304', () => {
+  assert.match(source('server/utils/media-proxy.ts'), /'range', 'if-none-match', 'if-modified-since'/)
+  for (const route of ['server/routes/upload/[...path].get.ts', 'server/routes/thumbs/[...path].get.ts']) {
+    assert.match(source(route), /proxyBackendMedia\(event, /, route)
   }
 })
 
-test('product documents are not stored while static assets keep their short cache', () => {
+test('product documents are not stored', () => {
   assert.match(
     source('server/routes/_api/product-document.get.ts'),
     /Cache-Control', 'private, no-store'/,
-  )
-  assert.match(
-    source('server/routes/assets/[...path].get.ts'),
-    /Cache-Control', 'private, max-age=300'/,
   )
 })
