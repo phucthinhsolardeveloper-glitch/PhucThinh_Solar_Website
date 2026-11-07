@@ -26,6 +26,7 @@ class ParityCommand extends Command
             'catalog' => $this->catalogCases(),
             'site', 'home', 'about' => [[]],
             'contact', 'dealer' => [[], ['x' => '1']],
+            'news' => $this->newsCases(),
             default => null,
         };
         if ($cases === null) {
@@ -109,6 +110,26 @@ class ParityCommand extends Command
             ['page' => '10001'], ['brand' => '1,,2'], ['price' => '4'], ['sort' => 'ABC'], ['is_need' => 'du-an-cong-trinh,du-an-cong-trinh'],
             ['is_need' => 'khac'], ['keyword' => str_repeat('a', 101)], ['keyword' => ' '], ['other' => '1'],
         ] as $bad) {
+            $cases[] = $bad;
+        }
+
+        return $cases;
+    }
+
+    /** @return list<array<string, string>> */
+    private function newsCases(): array
+    {
+        $db = DB::connection('legacy');
+        $cases = [[], ['p' => '2'], ['p' => '999'], ['q' => 'năng lượng'], ['q' => 'pin'], ['q' => 'zzzz'], ['q' => '50%'], ['q' => ''], ['q' => 'đèn', 'p' => '2']];
+        foreach ($db->table('table_news_list')->where('type', 'tin-tuc')->pluck('slugvi', 'id') as $id => $list) {
+            $cases[] = ['category' => (string) $list];
+            $cases[] = ['category' => (string) $list, 'p' => '2'];
+            foreach ($db->table('table_news_cat')->where('type', 'tin-tuc')->where('id_list', $id)->pluck('slugvi') as $cat) {
+                $cases[] = ['category_type' => 'cat', 'category_path' => $list.'/'.$cat];
+            }
+        }
+        foreach ([['category' => 'khong-co'], ['category' => 'Bad'], ['p' => '0'], ['category_type' => 'cat'], ['category_type' => 'x', 'category' => 'a'],
+            ['category_path' => 'a/b'], ['category_type' => 'cat', 'category_path' => 'a//b'], ['category_type' => 'list', 'category_path' => 'a/b'], ['other' => '1']] as $bad) {
             $cases[] = $bad;
         }
 

@@ -13,7 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // The public API keeps query values exactly as sent, like the PHP endpoints it replaces:
+        // "?q=" stays an empty string and spaces are not trimmed before validation.
+        $isApi = fn (Request $request) => $request->is('api/*');
+        $middleware->convertEmptyStringsToNull(except: [$isApi]);
+        $middleware->trimStrings(except: [$isApi]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
