@@ -14,6 +14,7 @@ use App\Domain\Pages\ContactAssembler;
 use App\Domain\Pages\DealerAssembler;
 use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectListing;
+use App\Domain\Reviews\ReviewSubmission;
 use App\Domain\Routing\PublicRouteResolver;
 use App\Domain\Solutions\SolutionDetail;
 use App\Domain\Solutions\SolutionsListing;
@@ -115,6 +116,13 @@ class PagesController extends Controller
     public function submitLead(Request $request, LeadSubmission $leads): JsonResponse
     {
         [$status, $body] = $leads->handle(json_decode($request->getContent(), true), (string) $request->ip());
+
+        return response()->json($body, $status, ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    public function submitReview(Request $request, ReviewSubmission $reviews): JsonResponse
+    {
+        [$status, $body] = $reviews->handle($request);
 
         return response()->json($body, $status, ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }

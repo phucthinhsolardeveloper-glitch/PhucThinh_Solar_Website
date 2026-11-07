@@ -30,6 +30,13 @@ return [
 
     'disks' => [
 
+        // The PHP site's upload folder (shared volume). Read-only locally; writable where Laravel owns writes.
+        'legacy_upload' => [
+            'driver' => 'local',
+            'root' => env('LEGACY_UPLOAD_PATH', '/legacy/upload'),
+            'throw' => false,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
