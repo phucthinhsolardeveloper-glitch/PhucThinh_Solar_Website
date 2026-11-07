@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test",
-    "test:nuxt": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test --config playwright.nuxt.config.js",
-    "test:unit": "node --test tests/audit-nuxt-progress.test.cjs",
-    "test:headed": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test --headed",
+    "test": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test --config playwright.nuxt.config.js",
     "report": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright show-report"
   },
   "devDependencies": {

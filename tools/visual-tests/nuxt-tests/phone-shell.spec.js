@@ -25,7 +25,7 @@ test('filter drawer shows the count and returns to results', async ({ page }) =>
   await page.locator('button', { hasText: 'Bộ lọc' }).first().click();
   const drawer = page.locator('#catalog-filter-drawer');
   await expect(drawer).toBeVisible();
-  await drawer.getByRole('button', { name: 'Xem sản phẩm' }).click();
+  await drawer.getByRole('button', { name: /^Xem \d+ sản phẩm$/ }).click();
   await expect(drawer).toBeHidden();
 
   await page.goto('/san-pham/?brand=57', { waitUntil: 'load' });

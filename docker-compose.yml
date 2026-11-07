@@ -1,0 +1,31 @@
+# Local Laravel 13 backend (API, media, Filament admin).
+# Up:   docker compose up -d --build
+# Down: docker compose down
+# It reaches the local MariaDB container on the shared Docker network (database pts_app).
+services:
+  laravel13:
+    build:
+      context: ./backend/docker
+    container_name: pts-laravel13-local
+    restart: "no"
+    working_dir: /app
+    environment:
+      # artisan serve answers several requests at once (Nuxt SSR fans out API calls).
+      PHP_CLI_SERVER_WORKERS: "4"
+    volumes:
+      - ./backend:/app
+      # Uploaded media volume, read-only locally.
+      - legacy_upload:/srv/upload:ro
+      # Site pictures shipped with the storefront (checked and resized by Laravel, served by Nuxt).
+      - ./frontend/public/assets:/srv/assets:ro
+    ports:
+      - "127.0.0.1:8090:8000"
+    networks:
+      - web_pts_php_default
+networks:
+  web_pts_php_default:
+    external: true
+volumes:
+  legacy_upload:
+    external: true
+    name: web_pts_php_pts_web_upload

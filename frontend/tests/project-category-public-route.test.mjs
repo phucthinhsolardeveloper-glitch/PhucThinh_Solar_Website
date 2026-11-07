@@ -25,7 +25,6 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   const page = read('../app/components/projects/ProjectCategoryPage.vue')
   const routePage = read('../app/pages/danh-muc-du-an/[slug].vue')
   const projectsAdapter = read('../server/routes/_api/projects.get.ts')
-  const manifest = JSON.parse(read('../../tools/visual-tests/fixtures/migration-routes.json'))
   assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
   assert.match(middleware, /to\.path !== canonicalPath/)
   assert.match(page, /category: slug\.value, page: String\(page\.value\)/)
@@ -41,9 +40,4 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   assert.match(routePage, /ProjectCategoryPage/)
   assert.match(projectsAdapter, /passThroughStatuses:\s*\[400, 404\]/)
 
-  const categoryFixtures = manifest.routes.filter((route) => route.kind === 'project-category')
-  assert.deepEqual(categoryFixtures.map(({ legacyPath, expectedCanonicalPath }) => [legacyPath, expectedCanonicalPath]), [
-    ['/danh-muc-du-an/du-an-ca-nhan/', '/du-an-ca-nhan'],
-    ['/danh-muc-du-an/du-an-doanh-nghiep/', '/du-an-doanh-nghiep'],
-  ])
 })

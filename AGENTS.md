@@ -6,7 +6,11 @@
 INSPECT -> UNDERSTAND -> PLAN -> IMPLEMENT -> TEST -> DEBUG -> VERIFY -> DOCUMENT -> REPORT
 ```
 
-Project được kế thừa. Không mặc định hành vi hiện có là chủ ý. Trước thay đổi đáng kể phải đọc route/source/template/API, schema/config liên quan, xác định dữ liệu bị tác động, test và rollback.
+Hệ thống: website public Nuxt 4 (`frontend/`), API + Admin Filament + media trên Laravel 13
+(`backend/`), MariaDB. Site PHP cũ đã được thay hẳn; dữ liệu cũ chỉ còn là nguồn cho lệnh
+`php artisan pts:import-legacy`. Kiến trúc và cách chạy: `docs/16-laravel-migration/README.md`.
+
+Không mặc định hành vi hiện có là chủ ý. Trước thay đổi đáng kể phải đọc route/source/template/API, schema/config liên quan, xác định dữ liệu bị tác động, test và rollback.
 
 ## Quy tắc
 
@@ -23,7 +27,7 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 - SQL mới phải parameterized; form mutation phải kiểm tra session/quyền và CSRF.
 - Upload phải kiểm tra extension, MIME, size, filename và lưu ở nơi không thực thi PHP.
 - Giữ URL/slug public trừ khi có kế hoạch redirect/SEO.
-- Test file thay đổi bằng đúng PHP mục tiêu; commerce smoke test theo category -> product -> cart -> checkout -> confirmation.
+- Kiểm thử: backend `php artisan test` + `vendor/bin/pint --test` + `vendor/bin/phpstan`, mốc API `php artisan pts:snapshot`; frontend `npm test` + `npx nuxi typecheck`; commerce smoke theo category -> product -> cart -> checkout -> confirmation (`tools/visual-tests/audit/shop-flow.cjs`).
 - Địa chỉ nghiệp vụ mới chỉ dùng hai cấp `Tỉnh/TP -> Phường/Xã`. Không thêm lại Quận/Huyện vào checkout, bộ lọc đơn hàng hoặc form mới; `district` chỉ là dữ liệu legacy và đơn mới ghi `district = 0`. Backend phải xác thực Phường/Xã đang hiển thị và thuộc đúng Tỉnh/TP đã chọn.
 - Cập nhật docs nếu implementation chứng minh tài liệu sai.
 
@@ -110,8 +114,7 @@ tắc thẩm mỹ cũ trong đó đã được cập nhật theo ngôn ngữ thi
 - Chọn composition theo mục tiêu thật của từng trang. Các canvas, token, vật
   liệu và motion dùng chung của PTS lấy từ design language hiện hành; không áp
   một layout/card template cho mọi trang.
-- Full Visual Parity với PHP áp dụng cho task migration/parity được giao rõ.
-  Với redesign sáng tạo được giao hoặc đã duyệt, giữ đường đi nghiệp vụ, dữ liệu,
+- Với redesign sáng tạo được giao hoặc đã duyệt, giữ đường đi nghiệp vụ, dữ liệu,
   URL/SEO, semantics và accessibility; được phép thay đổi cách trình bày theo
   hướng thiết kế đã chọn và bằng chứng preview.
 - Trang chủ giữ các section nghiệp vụ và lối vào bán hàng đã duyệt. Bố cục/hero

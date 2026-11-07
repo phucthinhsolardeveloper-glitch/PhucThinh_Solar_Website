@@ -7,7 +7,6 @@ const checkoutPage = read('../app/pages/thanh-toan.vue')
 const cartPage = read('../app/components/cart/CartPage.vue')
 const routeGate = read('../shared/public-route-gate.ts')
 const siteHeader = read('../app/components/SiteHeader.vue')
-const caddy = read('../../Caddyfile.local-full-nuxt')
 const shop = read('../../backend/app/Domain/Commerce/Shop.php')
 const shopController = read('../../backend/app/Http/Controllers/Api/V1/ShopController.php')
 
@@ -23,7 +22,6 @@ test('the checkout form posts straight to the API checkout', () => {
 
 test('there is no Nuxt-side proxy for order, lead or review posts', () => {
   for (const name of ['checkout', 'lead-form', 'review']) assert.equal(existsSync(new URL(`../server/routes/_api/${name}.post.ts`, import.meta.url)), false, name)
-  assert.doesNotMatch(caddy, /php_form_post|path \/gio-hang/)
 })
 
 test('checkout problems come back once to the cart page without racing the header', () => {

@@ -9,7 +9,6 @@ For changes to PTS public frontend, before coding read:
 3. `docs/02-development/public-ui-ux-design-system.md` — durable product, data, URL/SEO, responsive, media and accessibility contracts. Its older visual prescriptions are superseded by document 12.
 4. `docs/15-design-delivery/03-VISUAL-ACCEPTANCE.md` — visual evidence and acceptance.
 
-MIGRATION PARITY issue: preserve the PHP visual baseline.
 CREATIVE REDESIGN issue: use the selected direction in the task or current approved design language. Keep functional/data/SEO/commerce invariants; visual deviation is expected when the brief calls for redesign and must be reviewed against before/after evidence. A noindex prototype is only required when the task is research/prototyping rather than implementing a scoped route.
 Homepage/header/footer content and business paths are protected from accidental removal. Redesign their presentation only when the task includes that scope.
 Use real CMS/approved media and avoid fabricated badges, reviews, projects or statistics.

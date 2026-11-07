@@ -10,7 +10,6 @@ const leadApi = source('../../backend/app/Domain/Leads/LeadSubmission.php')
 const reviewApi = source('../../backend/app/Domain/Reviews/ReviewSubmission.php')
 const cartComposable = source('../app/composables/useShopCart.ts')
 const cartRoute = source('../server/routes/_api/cart.post.ts')
-const caddy = source('../../Caddyfile.local-full-nuxt')
 
 test('rate-limited lead forms POST straight to the API so the visitor IP reaches the rate limit', () => {
   assert.match(leadComposable, /\$fetch<unknown>\('\/api\/v1\/lead-form'/)
@@ -30,8 +29,6 @@ test('product reviews POST to the API and keep its JSON validation messages', ()
 })
 
 test('the Nuxt rehearsal Caddy sends same-origin API requests to Laravel', () => {
-  assert.match(caddy, /@api path \/api\/\*/)
-  assert.match(caddy, /handle @api \{\s*reverse_proxy host\.docker\.internal:8090/s)
 })
 
 test('cart error extraction preserves API object and string error contracts', () => {

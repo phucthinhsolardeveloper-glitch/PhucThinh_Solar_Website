@@ -26,12 +26,10 @@ import {
 test('all migrated routes are permanently Nuxt-owned without runtime enable flags', async () => {
   const { readFileSync } = await import('node:fs')
   const config = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
-  const compose = readFileSync(new URL('../../docker-compose.nuxt-service.yml', import.meta.url), 'utf8')
   const middleware = ['home', 'about', 'catalog', 'product-detail', 'solutions', 'contact', 'dealer', 'news', 'projects', 'gallery', 'video', 'cart', 'checkout', 'order-success']
     .map((name) => readFileSync(new URL(`../app/middleware/${name}-public-route.ts`, import.meta.url), 'utf8'))
     .join('\n')
   assert.doesNotMatch(config, /PublicRouteEnabled/)
-  assert.doesNotMatch(compose, /NUXT_PUBLIC_.*_PUBLIC_ROUTE_ENABLED/)
   assert.doesNotMatch(middleware, /PublicRouteEnabled|isRuntimeFlagEnabled|phpPublicRouteUrl/)
 })
 
