@@ -4,6 +4,31 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-07 — logo đối tác, bộ lọc chọn nhiều, hotline kỹ thuật (9ad585a6)
+
+- Commit/image: `9ad585a6` / `phucthinhsolar-web:9ad585a6ece0`, `phucthinhsolar-nuxt:9ad585a6ece0`. SAFE.
+- Phạm vi: 20 logo đối tác (Giới thiệu và đầu trang Sản phẩm), drawer bộ lọc
+  giữ mở khi chọn nhiều, banner giải pháp trên điện thoại, migration 077 và 078.
+- Dữ liệu production, có backup DB ngay trước mỗi lần ghi:
+  - 077 thêm 9 thương hiệu (Sigenergy, Deye, Anker SOLIX, SOFAR, GoodWe, Growatt,
+    Huawei, Sharp, Sungrow); backup `backups/20261107T095551Z-db`.
+  - 078 đặt `options.hotline_technical = 0945 536 899` để footer hiện thẻ
+    "Hỗ trợ kỹ thuật"; backup `backups/20261107T100339Z-db`.
+- Sự cố: sau khi đổi container, Caddy không phân giải được `nuxt` trong lúc tạo
+  lại và trả 503 khoảng 1 phút (10:28–10:29 UTC) đến lượt health check kế tiếp.
+  Bước verify của script rơi đúng khoảng đó nên báo FAIL. Đã tự hồi phục, không
+  rollback.
+- Kiểm tra sau đó (chạy tay thay phần script chưa chạy): HTTP smoke 7 route 200;
+  Playwright production 18/18; log web/nuxt 3 phút không có error; logo và bộ lọc
+  đo trên site thật đúng.
+- Rollback point: `scripts/rollback-release.sh` trên VPS (release trước `a8632eed`).
+
+## 2026-11-07 — giao diện tổng (a8632eed)
+
+- Commit/image: `a8632eed` / `phucthinhsolar-web:a8632eed4d87`. SAFE, PASS toàn bộ:
+  predeploy, Playwright 248 pass, full backup, Playwright production 18/18, log
+  scan 0 lỗi.
+
 ## 2026-11-07 — deploy dừng ở predeploy, production không đổi
 
 - Lệnh: `scripts/deploy-production.sh --auto --confirm-production`, chế độ SAFE.

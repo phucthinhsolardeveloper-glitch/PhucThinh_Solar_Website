@@ -146,7 +146,16 @@ Chỉ deploy khi chủ website nói rõ. Lệnh và chế độ ở
    (`scripts/test-admin-crud-lifecycle.php`) gọi `http://pts-nuxt-service-rehearsal:3000`.
    Lệnh: `docker compose -f docker-compose.nuxt-service.yml up -d --build`. Lần deploy
    2026-11-07 dừng ở bước này vì container chưa chạy.
-3. Có thay đổi file PHP API, ví dụ `pts_v1_home.php` hay `pts_v1_about.php`, thì release
+   Docker trên máy này chạy bằng `docker.exe` nên không nhận biến môi trường của
+   WSL. Truyền cấu hình bằng `--env-file` trỏ Nuxt diễn tập vào `http://pts-php81-local:80`.
+   Đừng trỏ vào `pts-nuxt-api-bridge`: container đó có bộ nhớ đệm riêng, nên bài
+   kiểm tra sửa và xóa tin tức sẽ báo FAIL.
+3. Bất kỳ file nào trong `migrations/` cũng làm `--fast` từ chối, kể cả khi migration
+   đã chạy tay trên production. Khi đó dùng `--safe`.
+4. Có thay đổi file PHP API, ví dụ `pts_v1_home.php` hay `pts_v1_about.php`, thì release
    phải mang theo cả PHP.
-4. Sau deploy, ghi vào [deployment-log.md](../06-operations/deployment-log.md) và kiểm
+5. Ngay sau khi đổi container, Caddy có thể trả 503 khoảng 1 phút, đến lượt health
+   check kế tiếp. Nếu script dừng ở bước "Verify stack" với lỗi 503, kiểm lại site
+   sau 1 phút trước khi nghĩ tới rollback, rồi chạy tay phần kiểm tra còn lại.
+6. Sau deploy, ghi vào [deployment-log.md](../06-operations/deployment-log.md) và kiểm
    trên site thật bằng `AUDIT_BASE=https://phucthinhsolar.com node audit/site-audit.cjs`.
