@@ -12,6 +12,7 @@ UX contract (dữ liệu/IA/SEO) -> 02-development/public-ui-ux-design-system.md
 CSS implementation -> 02-development/frontend-guide.md -> assets/css/design-tokens.css
 Nội dung sửa ở Admin-> 07-features/admin-guide.md -> libraries/type/config-type-*.php
 Database / schema   -> 03-data/database.md -> migrations/
+Laravel migration   -> 12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md
 Sửa bug             -> 11-workflows/bug-fixing-playbook.md
 Làm tính năng       -> 11-workflows/feature-delivery-playbook.md
 Test / cổng deploy  -> 02-development/testing.md -> scripts/predeploy-local.sh, tools/visual-tests
