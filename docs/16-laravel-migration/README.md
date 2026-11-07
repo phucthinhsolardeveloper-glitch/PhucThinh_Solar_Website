@@ -23,7 +23,8 @@ có xung đột và không ép push.
 | 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
 | 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
 | 2 — Lớp tương thích | Xong phần trang sản phẩm cần | Mục "Phase 2" bên dưới |
-| 3 — API đọc v1 | `product-detail` 375/375 và `catalog` 152/152 khớp PHP, 2026-11-07 | Mục "Phase 3" bên dưới |
+| 3 — Toàn bộ API công khai trên Laravel | Xong, 2026-11-07: 27 API đọc khớp PHP 1.751/1.751 ca; ghi (form, đánh giá, giỏ hàng, đặt hàng, VNPay) có test | Mục "Phase 3" bên dưới |
+| 4 — Nuxt chỉ dùng Laravel | Xong, 2026-11-07: không còn đường gọi PHP, không còn lớp preview cũ | Mục "Phase 4" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 | Kiến trúc đích (dựng theo Nuxt, tùy biến sâu) | Có hiệu lực | [target-architecture.md](target-architecture.md), [phase-0/usage-map.md](phase-0/usage-map.md) |
 
@@ -110,9 +111,31 @@ Bẫy đã gặp:
   `ProductSpecs::lookup()` giữ cả hai, có test.
 - Khối mô tả bỏ phần "Ứng dụng" chỉ khi có thẻ ứng dụng, nên thẻ ứng dụng phải tính trước.
 
+## Phase 4: Nuxt chỉ dùng Laravel
+
+Nhánh này chuyển hẳn sang Laravel, không chạy song song với PHP và không có công tắc
+quay về. Production vẫn chạy `master` cho tới khi nhánh này hoàn thiện và được đổi hẳn.
+Chỉ commit ở local, chưa push.
+
+| Phần | Trạng thái |
+|---|---|
+| Cầu Nitro | `frontend/server/routes/_api/*` gọi `/api/v1/*` trên `NUXT_API_ORIGIN` |
+| Phiên | Cookie `pts_session` của Laravel; Nuxt chỉ chuyển tiếp cookie này |
+| Form tư vấn, đánh giá | Trình duyệt gửi thẳng `/api/v1/lead-form`, `/api/v1/review` để Laravel thấy IP thật |
+| Đặt hàng | Form `/thanh-toan/` gửi thẳng `/api/v1/checkout`, Laravel trả chuyển hướng |
+| Ảnh | Laravel phục vụ `/upload/*`, `/assets/images/site-visuals/*`, tạo `/thumbs/*` |
+| Đã xóa | 27 trang `migration-*-preview`, layout và shell preview, mọi nhánh `isMigrationPreview`, các cầu POST 405/410 |
+
+Kiểm trên Nuxt :3110 + Laravel :8090: `site-audit` 0 lỗi trên 19 trang × 4 độ rộng;
+`audit/shop-flow.cjs` thêm hàng vào giỏ, giỏ giữ qua cookie, form thanh toán trỏ đúng API.
+
+Mốc API: `php artisan pts:parity <api> --save` lưu câu trả lời hiện tại (đã khớp PHP) vào
+`backend/storage/app/snapshots/`. Sau khi đổi cấu trúc dữ liệu, `--against-snapshot` so
+với mốc này mà không cần PHP.
+
 ## Việc tiếp theo
 
-1. Section có kiểu trong Filament, bắt đầu từ logo đối tác và lịch sử hình thành
-   ([target-architecture.md](target-architecture.md) mục 3).
-2. Các API đọc còn lại (site, home, about, tin tức, dự án, giải pháp...), mỗi cái một lệnh `pts:parity`.
-3. Phần ghi theo từng domain.
+1. Cấu trúc dữ liệu mới thay các bảng `table_*` cũ, có lệnh nhập dữ liệu một lần; mọi API
+   phải khớp mốc snapshot.
+2. Admin Filament cho từng nhóm nội dung, thay Admin PHP.
+3. `robots.txt`, `sitemap.xml`, đổi định tuyến Caddy production, rồi gỡ code PHP khỏi repo.

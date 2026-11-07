@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Http;
  */
 class ParityCommand extends Command
 {
-    protected $signature = 'pts:parity {endpoint=product-detail} {--limit=0 : Stop after this many cases} {--show=3 : Example cases per path}';
+    protected $signature = 'pts:parity {endpoint=product-detail} {--limit=0 : Stop after this many cases} {--show=3 : Example cases per path}
+        {--save : Also store every Laravel answer as the reference snapshot}
+        {--against-snapshot : Compare with the stored snapshot instead of the PHP app}';
 
     protected $description = 'Compare a Laravel v1 endpoint with its PHP original, case by case.';
 
@@ -23,6 +25,65 @@ class ParityCommand extends Command
     public function handle(): int
     {
         $endpoint = (string) $this->argument('endpoint');
+        $snapshotFile = storage_path('app/snapshots/'.$endpoint.'.json');
+        $snapshot = null;
+        if ($this->option('against-snapshot')) {
+            $snapshot = is_file($snapshotFile) ? json_decode((string) file_get_contents($snapshotFile), true) : null;
+            if (! is_array($snapshot)) {
+                $this->error("No snapshot for {$endpoint}; run with --save first");
+
+                return self::INVALID;
+            }
+        }
+        $cases = $snapshot !== null ? array_column($snapshot, 'query') : $this->casesFor($endpoint);
+        if ($cases === null) {
+            $this->error("Unknown endpoint {$endpoint}");
+
+            return self::INVALID;
+        }
+        if ((int) $this->option('limit') > 0) {
+            $cases = array_slice($cases, 0, (int) $this->option('limit'));
+        }
+
+        $legacyBase = rtrim((string) config('legacy.api_base'), '/');
+        $paths = [];
+        $identical = 0;
+        $saved = [];
+        foreach ($cases as $index => $query) {
+            $laravel = app()->handle(Request::create('/api/v1/'.$endpoint, 'GET', $query));
+            $right = ['status' => $laravel->getStatusCode(), 'body' => json_decode((string) $laravel->getContent(), true)];
+            if ($snapshot !== null) {
+                $left = ['status' => $snapshot[$index]['status'], 'body' => $snapshot[$index]['body']];
+            } else {
+                $php = Http::timeout(20)->get($legacyBase.'/api/pts_v1_'.str_replace('-', '_', $endpoint).'.php', $query);
+                $left = ['status' => $php->status(), 'body' => $php->json()];
+            }
+            if ($this->option('save')) {
+                $saved[] = ['query' => $query] + $right;
+            }
+            foreach (self::VOLATILE[$endpoint] ?? [] as $key) {
+                unset($left['body'][$key], $right['body'][$key]);
+            }
+            $diffs = [];
+            $this->diff($left, $right, '', $diffs);
+            if (! $diffs) {
+                $identical++;
+            }
+            foreach (array_unique($diffs) as $path) {
+                $paths[$path][] = (string) json_encode($query, JSON_UNESCAPED_UNICODE);
+            }
+        }
+        if ($this->option('save')) {
+            @mkdir(dirname($snapshotFile), 0775, true);
+            file_put_contents($snapshotFile, json_encode($saved, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        }
+
+        return $this->report($endpoint, $identical, count($cases), $paths);
+    }
+
+    /** @return list<array<string, string>>|null */
+    private function casesFor(string $endpoint): ?array
+    {
         $cases = match ($endpoint) {
             'product-detail' => DB::connection('legacy')->table('table_product')->where('type', 'san-pham')
                 ->whereRaw("find_in_set('hienthi', status)")->orderBy('id')->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all(),
@@ -57,40 +118,17 @@ class ParityCommand extends Command
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
         };
-        if ($cases === null) {
-            $this->error("Unknown endpoint {$endpoint}");
-
-            return self::INVALID;
-        }
-        if ($endpoint === 'product-detail') {
+        if ($cases !== null && $endpoint === 'product-detail') {
             $cases = array_merge($cases, [['slug' => 'khong-ton-tai-xyz'], ['slug' => 'Bad Slug'], ['slug' => 'a', 'extra' => '1']]);
         }
-        if ((int) $this->option('limit') > 0) {
-            $cases = array_slice($cases, 0, (int) $this->option('limit'));
-        }
 
-        $legacyBase = rtrim((string) config('legacy.api_base'), '/');
-        $paths = [];
-        $identical = 0;
-        foreach ($cases as $query) {
-            $php = Http::timeout(20)->get($legacyBase.'/api/pts_v1_'.str_replace('-', '_', $endpoint).'.php', $query);
-            $laravel = app()->handle(Request::create('/api/v1/'.$endpoint, 'GET', $query));
-            $left = ['status' => $php->status(), 'body' => $php->json()];
-            $right = ['status' => $laravel->getStatusCode(), 'body' => json_decode((string) $laravel->getContent(), true)];
-            foreach (self::VOLATILE[$endpoint] ?? [] as $key) {
-                unset($left['body'][$key], $right['body'][$key]);
-            }
-            $diffs = [];
-            $this->diff($left, $right, '', $diffs);
-            if (! $diffs) {
-                $identical++;
-            }
-            foreach (array_unique($diffs) as $path) {
-                $paths[$path][] = (string) json_encode($query, JSON_UNESCAPED_UNICODE);
-            }
-        }
+        return $cases;
+    }
 
-        $this->info(sprintf('%s: %d/%d cases identical', $endpoint, $identical, count($cases)));
+    /** @param array<string, list<string>> $paths */
+    private function report(string $endpoint, int $identical, int $total, array $paths): int
+    {
+        $this->info(sprintf('%s: %d/%d cases identical', $endpoint, $identical, $total));
         arsort($paths);
         uasort($paths, fn ($a, $b) => count($b) <=> count($a));
         $rows = [];
@@ -101,7 +139,7 @@ class ParityCommand extends Command
             $this->table(['JSON path lệch', 'Số ca', 'Ví dụ'], $rows);
         }
 
-        return $identical === count($cases) ? self::SUCCESS : self::FAILURE;
+        return $identical === $total ? self::SUCCESS : self::FAILURE;
     }
 
     /**
