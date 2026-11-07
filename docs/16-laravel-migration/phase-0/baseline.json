@@ -1,0 +1,14 @@
+{
+  "generated": "2026-11-07T18:52:55+07:00",
+  "branch": "migration/laravel13-integration",
+  "head": "2d151211971a08df1ae69a452cb54b688f53d494",
+  "origin_master": "2d151211971a08df1ae69a452cb54b688f53d494",
+  "commits_behind_master": 0,
+  "dirty_paths": 1,
+  "worktrees": [
+    "/home/admin01/src/Web_PTS_PHP   2d151211 [master]",
+    "/home/admin01/src/pts-laravel13 2d151211 [migration/laravel13-integration]"
+  ],
+  "schema_fingerprint": "a7fffbc3fe50c3cd01179e415f8da144c41755ebe824e379ddadc57285c30cf2",
+  "tables": 59
+}

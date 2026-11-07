@@ -45,3 +45,4 @@ artifacts/
 # Local Stitch captures and scratch assets (do not commit screenshots/HTML)
 .stitch/
 frontend/C:*
+__pycache__/
