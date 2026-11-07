@@ -8,6 +8,7 @@ use App\Domain\Pages\ContactAssembler;
 use App\Domain\Pages\DealerAssembler;
 use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectListing;
+use App\Domain\Solutions\SolutionDetail;
 use App\Domain\Solutions\SolutionsListing;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -54,6 +55,11 @@ class PagesController extends Controller
     public function solutions(Request $request, SolutionsListing $listing): JsonResponse
     {
         return self::result($listing->handle($request->query()));
+    }
+
+    public function solutionDetail(Request $request, SolutionDetail $detail): JsonResponse
+    {
+        return self::result($detail->handle($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */

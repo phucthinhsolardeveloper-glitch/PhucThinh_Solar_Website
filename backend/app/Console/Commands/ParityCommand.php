@@ -32,6 +32,7 @@ class ParityCommand extends Command
             'project-detail' => $this->slugCases('du-an'),
             'solutions' => array_merge([[], ['category' => 'khong-co'], ['category' => 'Bad'], ['x' => '1']],
                 DB::connection('legacy')->table('table_news_list')->where('type', 'giai-phap')->pluck('slugvi')->map(fn ($s) => ['category' => (string) $s])->all()),
+            'solution-detail' => $this->slugCases('giai-phap'),
             'news-detail' => $this->slugCases('tin-tuc'),
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
