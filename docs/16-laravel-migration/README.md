@@ -22,6 +22,7 @@ có xung đột và không ép push.
 | 0 — Đóng băng và kiểm kê | Xong, 2026-11-07 (còn xác nhận bản đồ domain) | [phase-0/](phase-0/) |
 | 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
 | 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
+| 2 — Lớp tương thích | Đang làm: xong khối nội dung sản phẩm | Mục "Phase 2" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 
 ## Gate Phase 0
@@ -66,7 +67,22 @@ Chạy lại kiểm kê: `python3 tools/migration/phase0_inventory.py` từ gố
 - Quyền: `role = 3` toàn quyền; các vai trò khác đọc `table_permission` của nhóm đang bật, giống
   `adminPermissionGranted()`. Chưa áp quyền vào màn hình nào vì chưa có màn hình.
 
+## Phase 2
+
+Cách kiểm: golden master. Code PHP cũ chạy trên dữ liệu thật, in ra kết quả (chỉ hash, không chép
+nội dung), Laravel tính lại trên bản sao cùng dữ liệu và phải ra giống hệt.
+
+| Phần | Code Laravel | Golden master | Ghi chú |
+|---|---|---|---|
+| Chọn khối mô tả sản phẩm (riêng, kế thừa hãng/danh mục, ẩn, cộng dồn) | `App\Legacy\Catalog\ProductContentResolver` | 399/399 sản phẩm khớp | Dữ liệu thật chỉ dùng "riêng" (393) và "kế thừa danh mục" (6); 8 chế độ còn lại có test riêng |
+| Cột `status` dạng "hienthi,noibat" | `App\Legacy\Support\StatusFlags` | | |
+| Khối JSON lưu dạng HTML-escape | `App\Legacy\Support\ContentBlocks` | | |
+
+Chụp lại golden master khi dữ liệu local đổi: chạy `tools/migration/golden/capture_*.php` trong
+`pts-php81-local`, rồi tạo lại `pts_laravel13_clone` và `pts_laravel13_test` từ `phucthinhs_local`.
+Hai bên phải cùng dữ liệu thì so sánh mới có nghĩa.
+
 ## Việc tiếp theo
 
-Phase 2, lớp tương thích (giá trị trạng thái, chữ song ngữ, thời gian số
-nguyên, giá DOUBLE) và golden master cho các API đọc.
+Phần còn lại của Phase 2 theo thứ tự trang chi tiết sản phẩm cần: giá và chế độ ẩn giá, đường dẫn
+ảnh và ảnh dự phòng, thông số theo hồ sơ PDP, cây danh mục và URL. Mỗi phần có golden master như trên.
