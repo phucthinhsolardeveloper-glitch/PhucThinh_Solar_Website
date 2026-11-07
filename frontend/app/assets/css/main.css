@@ -1236,4 +1236,3 @@ p, li, figcaption, dd, blockquote { text-wrap: pretty; }
   :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) > :last-child[aria-hidden="true"] { transition: translate .15s ease; }
   :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):active:not(:disabled) > :last-child[aria-hidden="true"] { translate: 3px 0; }
 }
-
