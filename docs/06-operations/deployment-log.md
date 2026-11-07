@@ -4,6 +4,14 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-07 — bản vá giao diện điện thoại (2d151211)
+
+- Commit/image: `2d151211` / `phucthinhsolar-web:2d151211971a`, `phucthinhsolar-nuxt:2d151211971a`. AUTO chọn FAST.
+- Phạm vi: thẻ "Đã thêm vào giỏ" mở phía trên dock, "Xem thêm" không đè thanh mua,
+  thẻ Tầm nhìn – Sứ mệnh không bị ẩn, thẻ trang chủ không giãn chữ.
+- Backup DB trước deploy; HTTP smoke, Playwright production 18/18, log scan PASS.
+  Không có 503.
+
 ## 2026-11-07 — logo đối tác, bộ lọc chọn nhiều, hotline kỹ thuật (9ad585a6)
 
 - Commit/image: `9ad585a6` / `phucthinhsolar-web:9ad585a6ece0`, `phucthinhsolar-nuxt:9ad585a6ece0`. SAFE.
