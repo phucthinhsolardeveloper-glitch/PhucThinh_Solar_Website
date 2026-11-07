@@ -12,12 +12,20 @@ class LegacySettings
     /** @var array<string, mixed>|null */
     private ?array $options = null;
 
+    /** @var array<string, mixed>|null */
+    private ?array $row = null;
+
+    /** The table_setting row ($setting in the PHP site): name, address, email... */
+    public function row(): array
+    {
+        return $this->row ??= (array) (DB::connection('legacy')->table('table_setting')->orderBy('id')->first() ?? []);
+    }
+
     /** @return array<string, mixed> */
     public function options(): array
     {
         if ($this->options === null) {
-            $raw = DB::connection('legacy')->table('table_setting')->orderBy('id')->value('options');
-            $decoded = json_decode((string) $raw, true);
+            $decoded = json_decode((string) ($this->row()['options'] ?? ''), true);
             $this->options = is_array($decoded) ? $decoded : [];
         }
 
