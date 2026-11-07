@@ -23,6 +23,7 @@ class ParityCommand extends Command
         $cases = match ($endpoint) {
             'product-detail' => DB::connection('legacy')->table('table_product')->where('type', 'san-pham')
                 ->whereRaw("find_in_set('hienthi', status)")->orderBy('id')->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all(),
+            'catalog' => $this->catalogCases(),
             default => null,
         };
         if ($cases === null) {
@@ -30,7 +31,9 @@ class ParityCommand extends Command
 
             return self::INVALID;
         }
-        $cases = array_merge($cases, [['slug' => 'khong-ton-tai-xyz'], ['slug' => 'Bad Slug'], ['slug' => 'a', 'extra' => '1']]);
+        if ($endpoint === 'product-detail') {
+            $cases = array_merge($cases, [['slug' => 'khong-ton-tai-xyz'], ['slug' => 'Bad Slug'], ['slug' => 'a', 'extra' => '1']]);
+        }
         if ((int) $this->option('limit') > 0) {
             $cases = array_slice($cases, 0, (int) $this->option('limit'));
         }
@@ -65,6 +68,49 @@ class ParityCommand extends Command
         }
 
         return $identical === count($cases) ? self::SUCCESS : self::FAILURE;
+    }
+
+    /**
+     * Every category path, then filters, sorts, paging, keyword and malformed queries on a few of them.
+     *
+     * @return list<array<string, string>>
+     */
+    private function catalogCases(): array
+    {
+        $db = DB::connection('legacy');
+        $visible = "find_in_set('hienthi', %s.status)";
+        $paths = [''];
+        foreach ($db->table('table_product_list as l')->where('l.type', 'san-pham')->whereRaw(sprintf($visible, 'l'))->orderBy('l.id')->get(['l.id', 'l.slugvi']) as $list) {
+            $paths[] = $list->slugvi;
+            foreach ($db->table('table_product_cat as c')->where('c.id_list', $list->id)->where('c.type', 'san-pham')->whereRaw(sprintf($visible, 'c'))->orderBy('c.id')->pluck('slugvi') as $cat) {
+                $paths[] = $list->slugvi.'/'.$cat;
+            }
+        }
+        $cases = array_map(fn ($path) => $path === '' ? [] : ['category' => (string) $path], $paths);
+        $brands = $db->table('table_product_brand')->where('type', 'san-pham')->orderBy('id')->limit(3)->pluck('id')->implode(',');
+        $lists = array_slice(array_filter($paths, fn ($p) => $p !== '' && ! str_contains((string) $p, '/')), 0, 4);
+        $subcats = $db->table('table_product_cat')->where('type', 'san-pham')->orderBy('id')->limit(3)->pluck('id')->implode(',');
+        foreach (array_merge([''], $lists) as $path) {
+            $base = $path === '' ? [] : ['category' => (string) $path];
+            foreach ([
+                ['page' => '2'], ['per_page' => '7', 'page' => '3'], ['page' => '999'],
+                ['sort' => 'abc'], ['sort' => 'abc-desc'], ['sort' => 'price'], ['sort' => 'price-desc'], ['sort' => 'new'], ['sort' => 'new-desc'], ['sort' => 'other'],
+                ['brand' => $brands], ['price' => '1'], ['price' => '2,3'], ['subcategory' => $subcats],
+                ['is_need' => 'du-an-cong-trinh'], ['is_need' => 'chieu-sang-gia-dinh,san-vuon-canh-quan'],
+                ['keyword' => 'đèn'], ['keyword' => 'Blue Carbon'], ['keyword' => '100W'], ['keyword' => 'zzzz'],
+            ] as $extra) {
+                $cases[] = $base + $extra;
+            }
+        }
+        foreach ([
+            ['category' => 'khong-ton-tai'], ['category' => 'den-nlmt/khong-ton-tai'], ['category' => 'Bad Path'], ['page' => '0'], ['per_page' => '49'],
+            ['page' => '10001'], ['brand' => '1,,2'], ['price' => '4'], ['sort' => 'ABC'], ['is_need' => 'du-an-cong-trinh,du-an-cong-trinh'],
+            ['is_need' => 'khac'], ['keyword' => str_repeat('a', 101)], ['keyword' => ' '], ['other' => '1'],
+        ] as $bad) {
+            $cases[] = $bad;
+        }
+
+        return $cases;
     }
 
     /** @param list<string> $out */

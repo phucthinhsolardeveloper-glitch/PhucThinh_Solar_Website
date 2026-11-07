@@ -23,7 +23,7 @@ có xung đột và không ép push.
 | 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
 | 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
 | 2 — Lớp tương thích | Xong phần trang sản phẩm cần | Mục "Phase 2" bên dưới |
-| 3 — API đọc v1 | `/api/v1/product-detail` khớp PHP 375/375, 2026-11-07; catalog chưa làm | Mục "Phase 3" bên dưới |
+| 3 — API đọc v1 | `product-detail` 375/375 và `catalog` 152/152 khớp PHP, 2026-11-07 | Mục "Phase 3" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 | Kiến trúc đích (dựng theo Nuxt, tùy biến sâu) | Có hiệu lực | [target-architecture.md](target-architecture.md), [phase-0/usage-map.md](phase-0/usage-map.md) |
 
@@ -93,8 +93,16 @@ Hai bên phải cùng dữ liệu thì so sánh mới có nghĩa.
 `GET /api/v1/product-detail?slug=...` trên Laravel trả đúng hợp đồng
 `frontend/shared/contracts/public-product-detail.ts`, cùng dữ liệu với `api/pts_v1_product_detail.php`.
 
-So song song: `php artisan pts:parity product-detail` (trong `pts-laravel13-local`) gọi cả hai
-cho mọi sản phẩm đang hiện và liệt kê từng đường JSON lệch. Kết quả 2026-11-07: **375/375 giống hệt**.
+`GET /api/v1/catalog` trả đúng `frontend/shared/contracts/public-catalog.ts`: danh mục theo đường dẫn
+slug, lọc hãng/giá/loại/nhu cầu, sắp xếp, tìm từ khóa, phân trang, ảnh đầu trang, thẻ chọn theo nhu
+cầu, FAQ, banner hỗ trợ, SEO. Code ở `app/Domain/Catalog/Listing/`.
+
+So song song trong `pts-laravel13-local`:
+
+| Lệnh | Ca thử | Kết quả 2026-11-07 |
+|---|---|---|
+| `php artisan pts:parity product-detail` | Mọi sản phẩm đang hiện | 375/375 giống hệt |
+| `php artisan pts:parity catalog` | Mọi đường danh mục cấp 1–2, 20 kiểu lọc/sắp xếp/trang/từ khóa trên trang gốc và 4 danh mục, 14 truy vấn sai | 152/152 giống hệt |
 
 Bẫy đã gặp:
 - PHP có hai cách tra nhãn thông số. Bảng thông số thử từng từ khóa trên mọi dòng; chỉ số quyết định
@@ -104,7 +112,7 @@ Bẫy đã gặp:
 
 ## Việc tiếp theo
 
-1. Catalog v1 (danh mục, bộ lọc, sắp xếp), so song song như trên.
-2. Section có kiểu trong Filament, bắt đầu từ logo đối tác và lịch sử hình thành
+1. Section có kiểu trong Filament, bắt đầu từ logo đối tác và lịch sử hình thành
    ([target-architecture.md](target-architecture.md) mục 3).
-3. Các API đọc còn lại, rồi phần ghi theo từng domain.
+2. Các API đọc còn lại (site, home, about, tin tức, dự án, giải pháp...), mỗi cái một lệnh `pts:parity`.
+3. Phần ghi theo từng domain.

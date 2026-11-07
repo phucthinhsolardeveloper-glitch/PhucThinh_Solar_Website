@@ -21,7 +21,7 @@ final class ProductContentPresenter
     public function present(array $sections, bool $excludeApplications = false): array
     {
         $source = in_array($sections['source'], self::SOURCES, true) ? $sections['source'] : '';
-        [$faqBlocks, $rest] = $this->splitFaq($sections['blocks']);
+        [$faqBlocks, $rest] = self::splitFaq($sections['blocks']);
 
         $blocks = [];
         $skipping = false;
@@ -103,7 +103,7 @@ final class ProductContentPresenter
      * @param  list<array<string, mixed>>  $blocks
      * @return array{0: list<array<string, mixed>>, 1: list<array<string, mixed>>}
      */
-    private function splitFaq(array $blocks): array
+    public static function splitFaq(array $blocks): array
     {
         $faq = [];
         $rest = [];

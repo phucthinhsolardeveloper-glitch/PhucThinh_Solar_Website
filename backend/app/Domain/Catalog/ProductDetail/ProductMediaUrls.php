@@ -43,8 +43,20 @@ final class ProductMediaUrls
         return $this->exists($local) ? '/'.$local : '';
     }
 
+    /** A bare file name inside one public folder, e.g. visual('x.png', 'upload/photo/') (ptsCatalogVisualMedia). */
+    public function visual(mixed $value, string $folder): string
+    {
+        $value = is_scalar($value) ? ltrim(trim((string) $value), '/') : '';
+        if ($value === '' || basename($value) !== $value || ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i', $value)) {
+            return '';
+        }
+        $path = trim($folder, '/').'/'.$value;
+
+        return $this->exists($path) ? '/'.$path : '';
+    }
+
     /** upload/... lives in the shared upload volume, assets/... in the legacy checkout. */
-    private function exists(string $publicPath): bool
+    public function exists(string $publicPath): bool
     {
         if (str_starts_with($publicPath, 'upload/')) {
             return is_file($this->uploadRoot.'/'.substr($publicPath, 7));
