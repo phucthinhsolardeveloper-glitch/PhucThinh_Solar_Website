@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
     Route::get('news-detail', [PagesController::class, 'newsDetail']);
     Route::get('policy-detail', [PagesController::class, 'policyDetail']);
     Route::get('project-detail', [PagesController::class, 'projectDetail']);
+    Route::get('product-extras', [PagesController::class, 'productExtras']);
     Route::get('projects', [PagesController::class, 'projects']);
     Route::get('product-detail', ProductDetailController::class);
     Route::get('solution-detail', [PagesController::class, 'solutionDetail']);

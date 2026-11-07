@@ -128,11 +128,11 @@ class MediaLibrary extends PageSupport
     }
 
     /** The 11-character id of a YouTube watch, short, embed or shorts link. */
-    public static function youtubeId(mixed $value): string
+    public static function youtubeId(mixed $value, bool $requireScheme = true): string
     {
         $raw = is_scalar($value) ? trim(htmlspecialchars_decode((string) $value, ENT_QUOTES)) : '';
         $parts = $raw === '' ? false : parse_url($raw);
-        if (! is_array($parts) || empty($parts['host']) || empty($parts['scheme']) || ! in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)) {
+        if (! is_array($parts) || empty($parts['host']) || ($requireScheme && (empty($parts['scheme']) || ! in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)))) {
             return '';
         }
         $host = strtolower((string) $parts['host']);

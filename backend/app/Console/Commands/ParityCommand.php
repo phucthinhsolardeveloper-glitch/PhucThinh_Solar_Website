@@ -17,6 +17,9 @@ class ParityCommand extends Command
 
     protected $description = 'Compare a Laravel v1 endpoint with its PHP original, case by case.';
 
+    /** Fields that differ on every request by design (form tokens), left out of the comparison. */
+    private const VOLATILE = ['product-extras' => ['csrfToken']];
+
     public function handle(): int
     {
         $endpoint = (string) $this->argument('endpoint');
@@ -43,6 +46,7 @@ class ParityCommand extends Command
             'search' => array_merge(array_map(fn ($k) => ['keyword' => $k], ['đèn', 'Blue Carbon', 'BCT-WR10', 'bctwr10', 'inverter', 'pin lưu trữ', '100W', 'IP67', 'Đèn đường', '50%', 'a_b', 'zzzz', 'Deye', 'sun2000', '  đèn  ']),
                 [['keyword' => 'đèn', 'page' => '2'], ['keyword' => 'đèn', 'sort' => 'abc'], ['keyword' => 'đèn', 'sort' => 'price'], ['keyword' => 'đèn', 'brand' => '1,2,3'], ['keyword' => 'đèn', 'price' => '1'],
                     ['keyword' => ''], [], ['keyword' => '!!!'], ['keyword' => str_repeat('a', 101)], ['keyword' => 'a', 'sort' => 'x'], ['keyword' => 'a', 'x' => '1'], ['keyword' => 'a', 'page' => '0']]),
+            'product-extras' => $this->extrasCases(),
             'news-detail' => $this->slugCases('tin-tuc'),
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
@@ -67,6 +71,9 @@ class ParityCommand extends Command
             $laravel = app()->handle(Request::create('/api/v1/'.$endpoint, 'GET', $query));
             $left = ['status' => $php->status(), 'body' => $php->json()];
             $right = ['status' => $laravel->getStatusCode(), 'body' => json_decode((string) $laravel->getContent(), true)];
+            foreach (self::VOLATILE[$endpoint] ?? [] as $key) {
+                unset($left['body'][$key], $right['body'][$key]);
+            }
             $diffs = [];
             $this->diff($left, $right, '', $diffs);
             if (! $diffs) {
@@ -145,6 +152,19 @@ class ParityCommand extends Command
             ->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all();
 
         return array_merge($cases, [['slug' => 'khong-ton-tai'], ['slug' => 'Bad Slug'], ['slug' => ''], [], ['slug' => 'a', 'x' => '1'], ['slug' => '/a/']]);
+    }
+
+    /** @return list<array<string, string>> */
+    private function extrasCases(): array
+    {
+        $db = DB::connection('legacy');
+        $cases = $db->table('table_product')->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status)")->orderBy('id')->pluck('slugvi')->map(fn ($s) => ['slug' => (string) $s])->all();
+        foreach ($db->table('table_comment as c')->join('table_product as p', 'p.id', '=', 'c.id_variant')->where('c.id_parent', 0)->select('p.slugvi', 'c.id')->limit(5)->get() as $review) {
+            $cases[] = ['slug' => $review->slugvi, 'replyParent' => (string) $review->id, 'replyOffset' => '0'];
+            $cases[] = ['slug' => $review->slugvi, 'reviewOffset' => '10'];
+        }
+
+        return array_merge($cases, [['slug' => 'khong-co'], ['slug' => 'a', 'replyParent' => '1'], ['slug' => 'a', 'reviewOffset' => '-1'], ['slug' => 'a', 'x' => '1'], []]);
     }
 
     /** @return list<array<string, string>> */

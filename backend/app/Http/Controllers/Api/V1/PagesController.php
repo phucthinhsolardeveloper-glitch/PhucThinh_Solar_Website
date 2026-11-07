@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Domain\Brands\BrandDetail;
 use App\Domain\Catalog\Listing\ProductSearch;
+use App\Domain\Catalog\ProductDetail\ProductExtras;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
@@ -88,6 +89,11 @@ class PagesController extends Controller
     public function search(Request $request, ProductSearch $search): JsonResponse
     {
         return self::result($search->handle($request->query()));
+    }
+
+    public function productExtras(Request $request, ProductExtras $extras): JsonResponse
+    {
+        return self::result($extras->handle($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */
