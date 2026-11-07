@@ -1,0 +1,20 @@
+# Local Laravel 13 backend for the migration branch only. Runs beside the legacy stack and never replaces it.
+# Up:   docker compose -f docker-compose.laravel.yml up -d --build
+# Down: docker compose -f docker-compose.laravel.yml down
+# It reaches MariaDB through the legacy local network and uses only the pts_laravel13_clone database.
+services:
+  laravel13:
+    build:
+      context: ./backend/docker
+    container_name: pts-laravel13-local
+    restart: "no"
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "127.0.0.1:8090:8000"
+    networks:
+      - web_pts_php_default
+networks:
+  web_pts_php_default:
+    external: true

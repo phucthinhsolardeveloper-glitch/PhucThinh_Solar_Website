@@ -19,8 +19,9 @@ có xung đột và không ép push.
 
 | Phase | Trạng thái | Bằng chứng |
 |---|---|---|
-| 0 — Đóng băng và kiểm kê | Đang làm, 2026-11-07 | [phase-0/](phase-0/) |
-| 1 — Nền Laravel | Chưa bắt đầu | |
+| 0 — Đóng băng và kiểm kê | Xong, 2026-11-07 (còn xác nhận bản đồ domain) | [phase-0/](phase-0/) |
+| 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
+| Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 
 ## Gate Phase 0
 
@@ -36,3 +37,23 @@ có xung đột và không ép push.
 - Không có thay đổi production nào trong Phase 0. Không có secret hay dữ liệu cá nhân trong các file trên.
 
 Chạy lại kiểm kê: `python3 tools/migration/phase0_inventory.py` từ gốc worktree.
+
+## Phase 1 — nền Laravel
+
+- `backend/`: Laravel 13.40, PHP 8.4.27, Filament 5.11, Pest 4, Larastan 3 (mức 5), Pint.
+- Chạy: `docker compose -f docker-compose.laravel.yml up -d --build`, container `pts-laravel13-local`,
+  `http://localhost:8090/health`, Admin thử `http://localhost:8090/admin-next`.
+- Database: kết nối mặc định vào `pts_laravel13_clone`, tiền tố `lv_`; kết nối `legacy` cùng database,
+  không tiền tố, chỉ đọc. User `pts_laravel` chỉ có quyền trên database bản sao và database test.
+  Mật khẩu chỉ nằm trong `backend/.env`, không commit.
+- Test chạy trên `pts_laravel13_test`, bản sao riêng, được phép ghi.
+- Lệnh kiểm tra trong container: `php artisan test`, `vendor/bin/pint --test`, `vendor/bin/phpstan analyse`.
+- Tài khoản Admin thử chưa tạo. Tạo bằng `php artisan make:filament-user` khi cần; tài khoản nằm trong
+  `lv_users` của bản sao và sẽ bỏ khi Filament đọc `table_user`.
+- Site cũ không đổi: Nuxt 3100 và PHP 8088 vẫn chạy; database `phucthinhs_local` không có bảng `lv_`.
+
+## Việc tiếp theo
+
+Theo [spec-review.md](spec-review.md): đọc `table_user` qua verifier cũ làm trước Filament quản lý
+bất kỳ domain nào; sau đó Phase 2, lớp tương thích (giá trị trạng thái, chữ song ngữ, thời gian số
+nguyên, giá DOUBLE) và golden master cho các API đọc.
