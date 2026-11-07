@@ -377,7 +377,7 @@ function pageLink(nextPage: number) {
                 color="secondary"
                 variant="outline"
                 size="md"
-                class="min-h-11 w-full gap-2 rounded-btn px-3 text-sm font-bold text-navy-800 public-neutral-button m-lg max-tb:rounded-full min-[1002px]:hidden"
+                class="min-h-11 w-full gap-2 rounded-btn px-3 text-sm font-bold text-navy-800 public-neutral-button m-lg max-tb:rounded-full min-[769px]:w-auto min-[769px]:flex-none min-[1002px]:hidden"
                 type="button"
                 aria-haspopup="dialog"
                 aria-controls="catalog-filter-drawer"
@@ -389,14 +389,14 @@ function pageLink(nextPage: number) {
                 <span v-if="activeFilterCount" class="filter-count" :aria-label="`${activeFilterCount} bộ lọc đang chọn`">{{ activeFilterCount }}</span>
               </UButton>
               <div v-if="catalogData.selected" class="flex min-w-0 items-center gap-2 text-sm text-slate-500 max-[769px]:w-full">
-                <span class="hidden tb:inline">Sắp xếp</span>
+                <span class="hidden whitespace-nowrap tb:inline">Sắp xếp</span>
                 <USelect
                   :model-value="catalogData.selected.sort"
                   :items="sortOptions"
                   aria-label="Sắp xếp sản phẩm"
                   color="neutral"
                   variant="none"
-                  class="w-full min-w-0 min-[770px]:w-[150px]"
+                  class="w-full min-w-0 min-[769px]:w-[170px] min-[769px]:flex-none"
                   :ui="{ base: 'h-11 w-full min-w-0 rounded-btn border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25 m-lg max-tb:rounded-full' }"
                   @update:model-value="onSortChange"
                 />

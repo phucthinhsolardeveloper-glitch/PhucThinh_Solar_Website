@@ -48,7 +48,7 @@ test('mobile catalog filter and sort controls use matching full-width grid cells
   assert.match(catalog, /max-\[769px\]:grid max-\[769px\]:w-full/)
   assert.match(catalog, /hasSidebar \? 'max-\[769px\]:grid-cols-2' : 'max-\[769px\]:grid-cols-1'/)
   assert.match(catalog, /class="min-h-11 w-full gap-2[\s\S]*min-\[1002px\]:hidden"/)
-  assert.match(catalog, /class="w-full min-w-0 min-\[770px\]:w-\[150px\]"[\s\S]*:ui="\{ base: 'h-11 w-full/)
+  assert.match(catalog, /class="w-full min-w-0 min-\[769px\]:w-\[170px\] min-\[769px\]:flex-none"[\s\S]*:ui="\{ base: 'h-11 w-full/)
 })
 
 test('catalog matches PHP list-search visibility and keeps the lighting need filter', () => {

@@ -103,7 +103,7 @@ function price(product: PublicCatalogProduct) {
 .article-product-price { margin-top: auto; color: #d52525; font-size: 16px; font-weight: 900; }
 .article-product-price.is-quote { color: var(--color-gold-700); font-size: 14.5px; font-weight: 800; }
 .article-products-cta { margin-top: 18px; min-height: 50px; padding: 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
-.article-products-cta:hover { filter: brightness(1.06); }
+.article-products-cta:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .article-products-cta:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 860px) { .article-products ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .article-product { transition: none; } .article-product:hover { transform: none; } }

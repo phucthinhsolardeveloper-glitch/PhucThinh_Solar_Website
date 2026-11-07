@@ -105,7 +105,7 @@ usePublicSocialMeta({
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục dự án' : 'Tạm thời không thể tải danh mục dự án' }}</h1>
         <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
         <div class="flex flex-wrap gap-3">
-          <NuxtLink :to="PROJECTS_PUBLIC_PATH" class="inline-flex min-h-11 items-center rounded-btn bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Xem tất cả dự án</NuxtLink>
+          <NuxtLink :to="PROJECTS_PUBLIC_PATH" class="inline-flex min-h-11 items-center rounded-btn pts-gold-fill px-5 py-2.5 text-sm font-bold no-underline ">Xem tất cả dự án</NuxtLink>
           <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-btn bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn dự án điện mặt trời')">Nhận tư vấn công trình →</button>
         </div>
       </section>

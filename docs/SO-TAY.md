@@ -1,6 +1,6 @@
 # Sổ tay Phúc Thịnh Solar — đọc vào là làm được
 
-Cập nhật: 2026-09-22.
+Cập nhật: 2026-11-07.
 
 Tài liệu này là **cửa vào duy nhất** khi bắt đầu một phiên làm việc mới, cho
 người thật hoặc cho AI vừa mất hết context. Nó không giải thích chi tiết — nó
@@ -19,7 +19,10 @@ liệt kê theo **việc cần làm**.
    SAFE/FAST một lệnh, không còn upload FTP vào host cũ.
 2. **Host VNPT cũ không còn phục vụ website/database.** Chỉ còn tài nguyên mail
    trong giai đoạn chuyển tiếp; không xem FTP/phpMyAdmin cũ là production.
-3. **Không suy đoán.** Khi runtime, code, schema và docs mâu thuẫn, ghi rõ xung
+3. **Website public chạy bằng Nuxt** (`frontend/`) từ 2026-11-05. PHP giữ Admin,
+   dữ liệu và API. Việc giao diện public đọc
+   [02-development/nuxt-storefront-guide.md](02-development/nuxt-storefront-guide.md).
+4. **Không suy đoán.** Khi runtime, code, schema và docs mâu thuẫn, ghi rõ xung
    đột và tin bằng chứng có độ tin cậy cao hơn — runtime > code > schema > docs.
    Đây là quy tắc trong `CLAUDE.md`, không phải lời khuyên.
 
@@ -29,6 +32,9 @@ liệt kê theo **việc cần làm**.
 
 | Việc cần làm | Đọc |
 |---|---|
+| Sửa giao diện website public (Nuxt), quy tắc đã chốt, cạm bẫy | [02-development/nuxt-storefront-guide.md](02-development/nuxt-storefront-guide.md) |
+| Nhận phản hồi ảnh chụp của chủ website, sửa, kiểm, báo cáo, lưu kiến thức | [11-workflows/owner-feedback-loop.md](11-workflows/owner-feedback-loop.md) |
+| Script đo giao diện có sẵn | [tools/visual-tests/audit/README.md](../tools/visual-tests/audit/README.md) |
 | Dựng môi trường local để chạy thử | [02-development/local-setup.md](02-development/local-setup.md) |
 | Hiểu một URL chạy qua những file nào | [01-architecture/codebase-guide.md](01-architecture/codebase-guide.md) |
 | Tìm code của một trang cụ thể | [01-architecture/codebase-guide.md § Tra cứu nhanh](01-architecture/codebase-guide.md) |

@@ -46,23 +46,23 @@ watch(() => props.locations, (locations) => {
             type="button"
             class="group flex min-h-24 w-full min-w-0 items-start gap-3.5 rounded-chip border-l-[4px] px-4 py-4 text-left transition-colors cursor-pointer lg:h-full lg:items-center"
             :class="selected?.id === location.id
-              ? 'border-gold-500 bg-navy-950 text-white shadow-sm'
+              ? 'pts-gold-fill'
               : 'border-slate-200 bg-slate-50/80 text-navy-800 hover:border-gold-400 hover:bg-slate-100/80'"
             :aria-pressed="selected?.id === location.id"
             @click="selectedId = location.id"
           >
             <span
               class="mt-0.5 grid size-8 flex-none place-items-center rounded-chip lg:mt-0"
-              :class="selected?.id === location.id ? 'bg-gold-500 text-navy-950' : 'bg-white text-gold-700'"
+              :class="selected?.id === location.id ? 'bg-white/45 text-navy-950' : 'bg-white text-gold-700'"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-map-pin" class="size-4" />
             </span>
             <span class="min-w-0 flex-1">
               <strong class="block text-base font-extrabold leading-6">{{ location.name }}</strong>
-              <span class="mt-1 block text-sm leading-6" :class="selected?.id === location.id ? 'text-blue-100' : 'text-slate-600'">{{ location.address }}</span>
+              <span class="mt-1 block text-sm leading-6" :class="selected?.id === location.id ? 'text-navy-900' : 'text-slate-600'">{{ location.address }}</span>
             </span>
-            <UIcon name="i-lucide-chevron-right" class="mt-1 size-4 flex-none max-tb:hidden lg:mt-0" :class="selected?.id === location.id ? 'text-gold-400' : 'text-slate-400'" aria-hidden="true" />
+            <UIcon name="i-lucide-chevron-right" class="mt-1 size-4 flex-none max-tb:hidden lg:mt-0" :class="selected?.id === location.id ? 'text-navy-950' : 'text-slate-400'" aria-hidden="true" />
           </button>
         </li>
       </ul>

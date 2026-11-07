@@ -37,8 +37,24 @@ const cleanedContent = computed(() => {
       .replace(/<(\/?)h4\b/gi, '<$1h3')
   }
 
-  return { ...props.article.content, html: html.trim() }
+  // A pasted first line that only repeats the headline adds nothing under the real headline.
+  const plain = (value: string) => value.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().toLocaleLowerCase('vi')
+  html = html.replace(/^\s*<(p|h[1-6])\b[^>]*>([\s\S]*?)<\/\1>/i, (full, _tag: string, inner: string) => plain(inner) === plain(props.article.title) ? '' : full)
+
+  return { ...props.article.content, html: numberedPoints(html).trim() }
 })
+
+// Legacy articles type their lists as "1. Label: text" paragraphs. A real run of them reads better as numbered points.
+function numberedPoints(html: string): string {
+  const pattern = /<p\b[^>]*>\s*(\d{1,2})\.\s+([\s\S]*?)<\/p>/gi
+  const numbers = [...html.matchAll(pattern)].map((match) => Number(match[1]))
+  if (numbers.length < 3 || numbers.some((value, index) => value !== index + 1)) return html
+  return html.replace(pattern, (_full, number: string, body: string) => {
+    const labelled = /^([^<:]{2,60}):\s*/.exec(body)
+    const text = labelled ? `<strong>${labelled[1]}</strong> ${body.slice(labelled[0].length)}` : body
+    return `<p class="article-point"><span class="article-point__n" aria-hidden="true">${number}</span><span>${text}</span></p>`
+  })
+}
 
 const editorial = computed(() => buildEditorialToc(cleanedContent.value))
 
@@ -100,7 +116,7 @@ function formatDate(value: string): string {
       width="1000"
       height="560"
       sizes="(min-width: 1024px) 66vw, 100vw"
-      class="mb-8 block aspect-video w-full object-cover nav:mb-10"
+      class="mx-auto mb-8 block h-auto w-full max-w-[920px] rounded-btn nav:mb-10"
     >
 
     <div class="grid grid-cols-1 gap-8 nav:gap-12" :class="editorial.toc.length ? 'nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)]' : ''">
@@ -177,3 +193,11 @@ function formatDate(value: string): string {
     </div>
   </article>
 </template>
+
+<style scoped>
+#news-article-content :deep(p) { font-size: 17px; line-height: 1.75; }
+/* Numbered points: the number carries the gold, the label carries the weight. */
+#news-article-content :deep(.article-point) { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; margin: 0; padding: 14px 0; border-top: 1px solid rgb(10 34 81 / 10%); }
+#news-article-content :deep(.article-point__n) { color: var(--color-gold-600); font-size: 28px; font-weight: 900; line-height: 1.1; letter-spacing: -.03em; }
+#news-article-content :deep(.article-point strong) { display: block; margin-bottom: 2px; color: var(--color-navy-900); font-weight: 800; }
+</style>

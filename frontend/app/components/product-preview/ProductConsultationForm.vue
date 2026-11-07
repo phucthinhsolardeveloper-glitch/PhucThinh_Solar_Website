@@ -162,7 +162,7 @@ async function send() {
               type="button"
               class="min-h-11 rounded-btn border px-3.5 py-2 text-sm font-bold transition-colors cursor-pointer"
               :class="form.needCode === need.code
-                ? 'border-transparent bg-navy-900 text-gold-300'
+                ? 'pts-gold-fill'
                 : 'border-slate-300 bg-white text-navy-800 hover:border-gold-600'"
               :aria-pressed="form.needCode === need.code"
               @click="form.needCode = form.needCode === need.code ? '' : need.code"
@@ -174,14 +174,14 @@ async function send() {
 
         <div class="grid gap-4 tb:grid-cols-2 max-tb:grid-cols-[minmax(0,1fr)]">
           <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
-            <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" variant="none" class="w-full" :ui="inputUi" />
+            <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
-            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" variant="none" class="w-full" :ui="inputUi" />
+            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <button v-if="!detailsOpen" type="button" class="min-h-11 rounded-btn border border-dashed border-slate-300 text-sm font-bold text-navy-800 tb:hidden" @click="detailsOpen = true">+ Thêm chi tiết (không bắt buộc)</button>
+          <FormMoreToggle v-if="!detailsOpen" class="tb:hidden" @click="detailsOpen = true" />
           <UFormField label="Email" name="email" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
-            <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" variant="none" class="w-full" :ui="inputUi" />
+            <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="email@example.com" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Số lượng dự kiến" name="quantity" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <UInput v-model.trim="form.quantity" name="quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" variant="none" class="w-full" :ui="inputUi" />

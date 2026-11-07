@@ -4,6 +4,18 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-07 — deploy dừng ở predeploy, production không đổi
+
+- Lệnh: `scripts/deploy-production.sh --auto --confirm-production`, chế độ SAFE.
+- Lần 1 dừng ở `git diff --check`: lỗi khoảng trắng, và thư viện 3D vendored
+  cần thuộc tính `-whitespace` trong `.gitattributes`. Đã sửa và commit.
+- Lần 2 dừng ở predeploy: `scripts/test-admin-crud-lifecycle.php` báo FAIL phần
+  Nuxt search/news, vì container `pts-nuxt-service-rehearsal` chưa chạy.
+- Production giữ image `phucthinhsolar-web:04dde592c441`. Không có backup hay
+  migration nào được chạy.
+- Lần sau: bật container diễn tập trước, theo mục 6 của
+  `docs/02-development/nuxt-storefront-guide.md`.
+
 ## 2026-11-05 — đồng bộ production theo master sau khi gom nhánh
 
 - Release PHP/Nuxt: `c62ba98b1de8` (`master`, commit

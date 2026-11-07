@@ -121,7 +121,7 @@ const recommendedSolutions = ref<string[]>([])
 .solution-intro-links { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; margin-top: 24px; }
 .solution-primary-link, .solution-secondary-link { display: inline-flex; min-height: 44px; align-items: center; gap: 12px; font-weight: 750; text-decoration: none; }
 .solution-primary-link { padding: 10px 18px; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); transition: filter .2s ease; }
-.solution-primary-link:hover { filter: brightness(1.08); }
+.solution-primary-link:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .solution-secondary-link { color: #0a2251; }
 .solution-energy-intro-image { justify-self: end; width: 100%; max-width: 440px; aspect-ratio: 8 / 5; margin: 0; overflow: hidden; border-radius: var(--radius-chip); }
 .solution-energy-intro-image img { display: block; width: 100%; height: 100%; object-fit: cover; }

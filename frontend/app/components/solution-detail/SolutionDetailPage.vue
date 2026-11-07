@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
             v-for="(item, index) in data.navigation.items"
             :key="item.slug"
             class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
-            :class="currentSlug === item.slug ? 'text-white' : 'text-navy-800'"
+            :class="currentSlug === item.slug ? 'text-navy-950' : 'text-navy-800'"
             :aria-current="currentSlug === item.slug ? 'page' : undefined"
             :to="links.generic(item.url)"
             @pointerdown="warmSolution(item.slug)"
@@ -172,6 +172,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* One fixed hero height for every solution so switching never resizes the page. */
+/* Energy flows are written as code in the content. They read as a gold route, not as program text. */
+.solution-story :deep(code) { display: block; padding: 9px 13px; border-left: 3px solid var(--color-gold-500); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: rgb(201 150 46 / 10%); color: var(--color-navy-900); font-family: inherit; font-size: 15px; font-weight: 700; line-height: 1.5; white-space: normal; }
 .solution-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; height: clamp(560px, 72vh, 700px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
 .solution-hero__photo { display: contents; }
 .solution-hero__image { position: absolute; inset: -8% 0 0; z-index: -2; width: 100%; height: 108%; object-fit: cover; transform: translate3d(0, var(--shift, 0), 0) scale(1.04); animation: hero-in 1.1s var(--ease) both; }
@@ -185,7 +187,7 @@ onBeforeUnmount(() => {
 .solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
 .solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
-.solution-hero__primary:hover { filter: brightness(1.06); }
+.solution-hero__primary:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .solution-hero__primary:hover > span { transform: translateX(4px); }
 .solution-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
 .solution-hero__call small { display: block; color: #9fb0c8; font-size: 13px; font-weight: 600; }

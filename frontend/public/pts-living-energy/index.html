@@ -7,7 +7,7 @@
   <meta name="description" content="PTS Solar Energy Lab — trải nghiệm mô hình 3D hệ thống năng lượng mặt trời tương tác." />
   <title>Living Energy Architecture V0.5 — Phúc Thịnh Solar</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-  <link rel="stylesheet" href="./src/styles.css?v=20261107-3" />
+  <link rel="stylesheet" href="./src/styles.css?v=20261107-5" />
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
 <script>if(new URLSearchParams(location.search).get("embed")==="1"){document.documentElement.classList.add("pts-embed","notranslate");document.documentElement.setAttribute("translate","no");}</script>
 </head>
@@ -34,10 +34,10 @@
           <span class="journey-launch-copy"><strong>Trải nghiệm hành trình năng lượng</strong><small>4 chương · Mô hình 3D tương tác</small></span>
           <span class="journey-launch-arrow" aria-hidden="true">↗</span>
         </button>
-        <span class="hero-notice">Từ ánh nắng đến nguồn điện trong nhà — minh họa nguyên lý, không phải số liệu thực tế.</span>
+        <span class="hero-notice">Từ ánh nắng đến nguồn điện trong nhà.</span>
       </div>
     </div>
-    <div class="intro-stamp"><span>V05 — SOURCE-ALIGNED DIGITAL TWIN</span><strong>THIẾT KẾ THEO NGUỒN PTS</strong><small>Minh họa nguyên lý · Không phải dữ liệu vận hành</small></div>
+    
   </section>
 
   <section id="cycleStrip" class="cycle-strip" aria-label="Mô phỏng chu kỳ năng lượng 24 giờ">
@@ -75,7 +75,7 @@
   </div>
   <label class="v04-battery-option"><span><strong>Có pin lưu trữ</strong><small>Tắt để mô phỏng hệ không có pin</small></span><input type="checkbox" id="batteryToggle" checked aria-label="Có pin lưu trữ"/><span class="switch" aria-hidden="true"></span></label>
   <div class="flow-status" aria-live="polite"><span class="flow-signal"><span class="signal-core"></span></span><span><strong id="currentState">Tấm pin đang tạo điện</strong><small id="currentSubState">PV → Inverter → Phụ tải</small></span></div>
-  <p id="scenarioCopy" class="v04-scenario-copy">Điện mặt trời qua inverter cấp cho phụ tải. Đây là mô hình minh họa.</p>
+  <p id="scenarioCopy" class="v04-scenario-copy">Điện mặt trời qua inverter cấp cho phụ tải.</p>
 </div>
       <section class="grid-source-guide" aria-label="Đường điện lưới đi vào nhà">
          <div class="grid-source-heading">
@@ -156,7 +156,7 @@
       <div class="living-clock" id="livingClock" aria-label="Thời gian và ánh sáng">
         <div class="living-clock-info"><span id="livingClockState" class="living-live-indicator">LIVE SUN</span><strong id="livingClockTime">--:--</strong><small id="livingClockLocation">Pleiku · Gia Lai</small></div>
         <div class="living-clock-modes" role="group" aria-label="Chế độ thời gian"><button id="livingUseLive" aria-pressed="true" type="button">Giờ thực</button><button id="livingUseSimulation" aria-pressed="false" type="button">Tua giờ</button></div>
-        <div class="living-clock-scrubber" id="livingClockScrubber" hidden><label for="livingTimeSlider">Thời điểm mô phỏng</label><input type="range" id="livingTimeSlider" min="0" max="23.75" step=".25" value="12" aria-label="Tua thời gian mô phỏng trong ngày"/><small id="livingSunInfo">Góc nắng chỉ mang tính minh họa nếu chưa hiệu chuẩn hướng Bắc của mô hình</small></div>
+        <div class="living-clock-scrubber" id="livingClockScrubber" hidden><label for="livingTimeSlider">Thời điểm mô phỏng</label><input type="range" id="livingTimeSlider" min="0" max="23.75" step=".25" value="12" aria-label="Tua thời gian mô phỏng trong ngày"/><small id="livingSunInfo">Góc cao mặt trời</small></div>
       </div>
       <div class="living-stage-modes" id="livingStageModes" role="group" aria-label="Chọn kịch bản điện mô phỏng">
         <button type="button" data-living-mode="day">☀ <span>PV ban ngày</span></button>
@@ -166,7 +166,7 @@
         <button type="button" id="livingOpenControls" aria-expanded="false" aria-controls="controlPanel"><span aria-hidden="true">⚙</span> <span>Điều khiển</span></button>
       </div>
       <button id="embedExplore" class="embed-explore" type="button" aria-label="Mở điều khiển mô hình 3D" aria-controls="livingStageModes" aria-expanded="false"><span aria-hidden="true">✥</span></button>
-      <div id="livingSceneCaption" class="living-scene-caption" aria-live="polite"><strong>Năng lượng đang chuyển mình</strong><span>Các trạng thái điện là mô phỏng, không phải số liệu đo được.</span></div>
+      <div id="livingSceneCaption" class="living-scene-caption" aria-live="polite"><strong></strong><span></span></div>
       <img id="ptsPoster" class="v04-poster" src="./assets/pts-v05-day.webp" alt="Phối cảnh hệ thống điện mặt trời" /><div id="solarAtmosphere" class="v05-solar-atmosphere" aria-label="Nguồn ánh sáng mặt trời minh họa"><span class="v05-sun-icon">☀</span><div><strong>ÁNH NẮNG MẶT TRỜI</strong><small>Chiếu xuống bề mặt tấm pin PV</small></div><span class="v05-sun-guide">↘</span></div>
 <div id="gridFlowBanner" class="grid-flow-banner" role="status" hidden>
   <span class="grid-flow-signal" aria-hidden="true"></span>
@@ -176,11 +176,11 @@
 <div id="technicalLegend" class="v05-legend" hidden><span class="v05-legend-title">SƠ ĐỒ NGUYÊN LÝ MINH HỌA</span><div><b class="v05-legend-dot dc"></b> DC — điện một chiều <b class="v05-legend-dot ac"></b> AC — điện xoay chiều</div><small id="v05TopologyText">PV → inverter → phụ tải</small></div>
 <canvas id="energyCanvas" aria-label="Mô hình 3D tương tác có thể xoay và phóng to"></canvas>
       <div id="hotspotLayer" class="hotspot-layer" aria-label="Các điểm chú thích trên mô hình"></div>
-      <div id="xrayBadge" class="xray-badge" hidden><span class="xray-pulse" aria-hidden="true"></span><div><strong>Nhìn xuyên cấu trúc</strong><small>Lớp vỏ trong suốt · chỉ minh họa nguyên lý</small></div></div>
+      <div id="xrayBadge" class="xray-badge" hidden><span class="xray-pulse" aria-hidden="true"></span><div><strong>Nhìn xuyên cấu trúc</strong><small>Lớp vỏ trong suốt</small></div></div>
       <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><strong>Đang tải mô hình 3D</strong><small id="loadingMessage">Chuẩn bị trải nghiệm...</small></div>
       <div id="roofLayerBadge" class="roof-layer-badge" role="status" hidden>
         <span class="roof-layer-symbol" aria-hidden="true">▱</span>
-        <div><strong>Tách lớp tấm pin</strong><small><span>12 tấm pin nâng lên · ray và kẹp giữ nguyên</span><span class="roof-layer-caveat">Minh họa cấu tạo, không phải bản vẽ lắp đặt</span></small></div>
+        <div><strong>Tách lớp tấm pin</strong><small><span>12 tấm pin nâng lên · ray và kẹp giữ nguyên</span></small></div>
       </div>
       <div id="journeyOverlay" class="journey-overlay" role="region" aria-label="Hành trình năng lượng" hidden>
         <div class="journey-topline"><span id="journeyIndex">01 / 04</span><span class="journey-status"><i aria-hidden="true"></i> ENERGY STORY</span></div>
@@ -280,7 +280,7 @@
       </div>
     </div>
     <footer class="power-map-foot"><span><i class="power-key dc"></i> DC · điện một chiều <i class="power-key ac"></i> AC · điện xoay chiều <i class="power-key inactive"></i> Không mô phỏng cấp điện</span>
-      <p>Đây là sơ đồ nguyên lý trực quan, <strong>không phải bản vẽ đấu dây để thi công</strong>. Điểm đấu nối, chống phát ngược, nối đất, bảo vệ AC/DC, ATS và ngõ backup phải được đối chiếu thiết bị thật và bản vẽ kỹ thuật.</p>
+      <p>Điểm đấu nối, chống phát ngược, nối đất, bảo vệ AC/DC, ATS và ngõ backup phải được đối chiếu thiết bị thật và bản vẽ kỹ thuật.</p>
     </footer>
   </section>
 
@@ -289,11 +289,11 @@
     <div class="belt-item"><span class="belt-icon" aria-hidden="true">◈</span><div><strong>12</strong><small>Tấm pin mô phỏng</small></div></div>
     <div class="belt-item"><span class="belt-icon" aria-hidden="true">∿</span><div><strong>08</strong><small>Tuyến năng lượng</small></div></div>
     <div class="belt-item"><span class="belt-icon" aria-hidden="true">◐</span><div><strong>04</strong><small>Chế độ hệ thống</small></div></div>
-    <div class="belt-note">Thông số trên là cấu trúc mô hình, không phải năng lực phát điện thực tế.</div>
+    
   </section>
 
-  <footer class="footer"><span>© PHÚC THỊNH SOLAR — 3D EXPERIENCE PROTOTYPE</span><span>MÔ HÌNH MINH HỌA · KHÔNG PHẢI CÔNG TRÌNH THỰC TẾ</span></footer>
+  
 </div>
-<script type="module" src="./src/main.js?v=20261107-3"></script>
+<script type="module" src="./src/main.js?v=20261107-5"></script>
 </body>
 </html>

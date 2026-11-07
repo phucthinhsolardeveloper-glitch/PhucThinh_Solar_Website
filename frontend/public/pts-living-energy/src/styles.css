@@ -917,3 +917,11 @@ html.pts-embed .hotspot{font-size:11px}
 html.pts-embed .device-menu .device-item,html.pts-embed .control-panel .toggle-row strong,html.pts-embed .control-panel .v04-battery-option strong{font-size:12px}
 /* Phones: the page's Zalo bubble sits below the stage, so the dock can use the full width. */
 @media(max-width:820px){html.pts-embed .embed-dock{right:8px}}
+
+/* Homepage story: the model stands aside for the text, with its tools out of sight until someone reaches for it. */
+html.pts-embed #energyCanvas{transition:transform .7s cubic-bezier(.22,1,.36,1)}
+html.pts-embed body.embed-intro #energyCanvas{transform:translateX(15%)}
+html.pts-embed body.embed-intro .embed-dock,html.pts-embed body.embed-intro .embed-explore,html.pts-embed body.embed-intro #objectPopover,html.pts-embed body.embed-intro #gridFlowBanner{opacity:0;visibility:hidden;pointer-events:none}
+html.pts-embed .embed-dock{transition:opacity .35s ease,visibility .35s}
+@media(max-width:860px){html.pts-embed body.embed-intro #energyCanvas{transform:translateY(4%)}}
+@media(prefers-reduced-motion:reduce){html.pts-embed #energyCanvas,html.pts-embed .embed-dock{transition:none}}

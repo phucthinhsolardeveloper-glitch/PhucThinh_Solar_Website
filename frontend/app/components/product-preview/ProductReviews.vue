@@ -10,6 +10,7 @@ const writing = ref(false)
 const submitting = ref(false)
 const success = ref('')
 const error = ref('')
+const reviewDetailsOpen = ref(false)
 const form = reactive({ star: 5, title: '', content: '', fullname: '', phone: '', email: '', orderCode: '' })
 const photoFiles = ref<File[]>([])
 const videoFile = ref<File | null>(null)
@@ -363,15 +364,16 @@ async function sendReview() {
               <UTextarea v-model.trim="form.content" name="content" required maxlength="5000" :rows="5" variant="none" class="w-full" :ui="reviewTextareaUi" />
             </UFormField>
             <UFormField label="Họ tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
-              <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" variant="none" class="w-full" :ui="reviewInputUi" />
+              <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="reviewInputUi" />
             </UFormField>
             <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
-              <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" variant="none" class="w-full" :ui="reviewInputUi" />
+              <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="reviewInputUi" />
             </UFormField>
-            <UFormField label="Email" :hint="currentReviews.requireOrderCode ? 'Cần để đối chiếu đơn hàng' : 'Không bắt buộc'" name="email" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
-              <UInput v-model.trim="form.email" name="email" type="email" :required="currentReviews.requireOrderCode" maxlength="150" autocomplete="email" variant="none" class="w-full" :ui="reviewInputUi" />
+            <FormMoreToggle v-if="!currentReviews.requireOrderCode && !reviewDetailsOpen" label="Thêm email, mã đơn hàng" class="tb:col-span-2" @click="reviewDetailsOpen = true" />
+            <UFormField v-if="currentReviews.requireOrderCode || reviewDetailsOpen" label="Email" :hint="currentReviews.requireOrderCode ? 'Cần để đối chiếu đơn hàng' : undefined" name="email" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
+              <UInput v-model.trim="form.email" name="email" type="email" :required="currentReviews.requireOrderCode" maxlength="150" autocomplete="email" placeholder="email@example.com" variant="none" class="w-full" :ui="reviewInputUi" />
             </UFormField>
-            <UFormField label="Mã đơn hàng" :hint="currentReviews.requireOrderCode ? 'Mã đơn nằm trên trang cảm ơn hoặc email xác nhận.' : 'Không bắt buộc; mã khớp thông tin mua hàng sẽ nhận nhãn Đã mua hàng.'" name="orderCode" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
+            <UFormField v-if="currentReviews.requireOrderCode || reviewDetailsOpen" label="Mã đơn hàng" :hint="currentReviews.requireOrderCode ? 'Mã đơn nằm trên trang cảm ơn hoặc email xác nhận.' : 'Mã khớp thông tin mua hàng sẽ nhận nhãn Đã mua hàng.'" name="orderCode" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
               <UInput v-model.trim="form.orderCode" name="orderCode" :required="currentReviews.requireOrderCode" maxlength="40" variant="none" class="w-full" :ui="reviewInputUi" />
             </UFormField>
           </div>

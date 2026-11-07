@@ -169,8 +169,8 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKey); clearTimeo
 .cart-card__name { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--color-navy-950); font-size: 14px; font-weight: 700; line-height: 1.4; }
 .cart-card__qty { display: block; margin-top: 3px; color: #64748b; font-size: 13px; }
 .cart-card__actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 14px; }
-.cart-card__primary { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); background: var(--color-navy-950); color: #fff; font-size: 14.5px; font-weight: 800; text-decoration: none; transition: background-color 0.2s ease; }
-.cart-card__primary:hover { background: var(--color-navy-800); }
+.cart-card__primary { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); color: var(--color-navy-950); font-size: 14.5px; font-weight: 800; text-decoration: none; transition: background-color 0.2s ease; }
+.cart-card__primary:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .cart-card__secondary { min-height: 44px; padding: 0 14px; border: 1px solid rgb(10 34 81 / 14%); border-radius: var(--radius-md); background: #fff; color: var(--color-navy-900); font-size: 14px; font-weight: 700; cursor: pointer; }
 .cart-card__secondary:hover { border-color: var(--color-gold-500); }
 .cart-card a:focus-visible, .cart-card button:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }

@@ -7,6 +7,8 @@
 ## Sổ tay thao tác (đọc vào là làm được)
 
 - `SO-TAY.md`: cửa vào duy nhất — tra cứu theo việc, bản đồ hệ thống, cạm bẫy đã gặp thật.
+- `02-development/nuxt-storefront-guide.md`: website public Nuxt — code nằm đâu, chạy/kiểm tra, quy tắc giao diện đã chốt với chủ website, cạm bẫy, điều kiện trước deploy.
+- `11-workflows/owner-feedback-loop.md`: vòng nhận ảnh chụp → đo → sửa → kiểm → báo cáo → lưu kiến thức.
 - `01-architecture/codebase-guide.md`: URL → `$source` → `$template`; vai trò từng thư mục; hợp đồng `getImage()`.
 - `02-development/public-ui-ux-design-system.md`: nguồn chuẩn UI/UX public — định hướng, token, component, ảnh, responsive, accessibility và Definition of Done.
 - `02-development/frontend-guide.md`: thứ tự nạp CSS, hệ design token, 4 lỗi layout thật và cách sửa.

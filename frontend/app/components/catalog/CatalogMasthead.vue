@@ -225,7 +225,7 @@ function brandLogo(name: string): string {
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 .masthead-brands a img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
-.masthead-brands a:hover { background: #fff; transform: translateY(-2px); }
+.masthead-brands a:hover { background: #fff; }
 .masthead-brands a[data-active="true"] { border-color: var(--color-gold-500); background: #fff; box-shadow: 0 0 0 2px var(--color-gold-400); }
 .masthead-brands a:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 

@@ -57,15 +57,53 @@ if(embeddedMode){
   else if(!document.hidden)startAnimation();
  });
 }
+// Homepage story: the host page tells the story beside the model and steers it by chapter.
+const embedStory={intro:embeddedMode,flight:false};
+const EMBED_CHAPTERS={day:{device:'pv',orbit:-.16,height:1.14},night_storage:{device:'battery',orbit:.13,height:1},night_grid:{device:'grid',orbit:.27,height:.88},backup:{device:'priority',orbit:-.10,height:1.03}};
+function setEmbedIntro(on){
+ embedStory.intro=on;
+ document.body.classList.toggle('embed-intro',on);
+ document.body.classList.toggle('living-exploring',!on);
+ if(on)popup.hidden=true;
+ sceneDirty=true;startAnimation();
+}
+function showEmbedChapter(id){
+ const shot=EMBED_CHAPTERS[id];
+ if(!shot||!state.ready)return;
+ state.battery=true;
+ if(id==='backup')state.backupDaylight=false;
+ activeMode(id,true);
+ popup.hidden=true;
+ const portrait=stage.clientWidth<620;
+ desiredTarget.copy(targetBase).lerp(anchorOf(shot.device),portrait?.1:.3);
+ const offset=cameraBase.clone().sub(targetBase).applyAxisAngle(new THREE.Vector3(0,1,0),shot.orbit*(portrait?.45:1));
+ offset.y*=portrait?1+(shot.height-1)*.5:shot.height;
+ desiredCamera.copy(desiredTarget).add(offset.multiplyScalar(portrait?1.04:1.04));
+ if(reducedMotion.matches){camera.position.copy(desiredCamera);controls.target.copy(desiredTarget);tweenCamera=false;}
+ else{tweenCamera=true;embedStory.flight=true;}
+ sceneDirty=true;startAnimation();
+}
+if(embeddedMode&&window.parent!==window){
+ document.body.classList.add('embed-intro');
+ window.addEventListener('message',event=>{
+  if(event.source!==window.parent||event.origin!==window.location.origin)return;
+  if(event.data?.type==='pts-living-energy:chapter')showEmbedChapter(event.data.id);
+  else if(event.data?.type==='pts-living-energy:intro')setEmbedIntro(event.data.on===true);
+ });
+ // A tap or a real drag means the visitor is using the model. A scroll starting on it is neither.
+ const tellHost=()=>window.parent.postMessage({type:'pts-living-energy:interaction'},window.location.origin);
+ document.addEventListener('click',tellHost,{capture:true,passive:true});
+ document.addEventListener('pointermove',event=>{if(event.buttons)tellHost();},{passive:true});
+}
 let modelNorthOffsetDegrees=0;
 let livingChapterIndex=0;
 const labels={
  all:{index:'00',title:'Toàn bộ hệ thống',description:'Quan sát mối liên hệ giữa mặt trời, inverter, lưu trữ, điện lưới và tải trong nhà.'},
- pv:{index:'01',title:'Tấm pin năng lượng',description:'Mô hình minh họa 12 tấm PV. Kích thước, cấu tạo và công suất không đại diện cho sản phẩm PTS cụ thể.'},
+ pv:{index:'01',title:'Tấm pin năng lượng',description:'Tấm pin nhận ánh nắng và tạo điện một chiều (DC) đưa xuống inverter.'},
  inverter:{index:'02',title:'Inverter hybrid',description:'Thiết bị điều phối và biến đổi điện. Các chế độ lưu trữ/backup phụ thuộc thiết bị và thiết kế tương thích.'},
- battery:{index:'03',title:'Pin lưu trữ',description:'Nguồn điện lưu trữ có thể cấp cho inverter trong những cấu hình cho phép. Mô hình không thể hiện SOC hoặc công suất thực.'},
+ battery:{index:'03',title:'Pin lưu trữ',description:'Nguồn điện lưu trữ có thể cấp cho inverter trong những cấu hình cho phép.'},
  house:{index:'04',title:'Phụ tải trong nhà',description:'Trong trạng thái bình thường, tải được cấp điện theo nguồn đang hoạt động. Hệ thống dự phòng chỉ cấp các tải được thiết kế ưu tiên.'},
- grid:{index:'05',title:'Điểm đấu nối lưới',description:'Nguồn điện lực đi vào công tơ và bộ chuyển nguồn/gateway. Đây không phải cột điện và không phải thiết kế đấu nối thực tế.'},
+ grid:{index:'05',title:'Điểm đấu nối lưới',description:'Nguồn điện lực đi vào công tơ và bộ chuyển nguồn/gateway.'},
  priority:{index:'06',title:'Tải ưu tiên',description:'Chỉ những tải được đấu nối vào ngõ backup phù hợp mới tiếp tục được cấp điện khi mất lưới.'},
  meter:{index:'07',title:'Công tơ điện lực',description:'Công tơ đo điện năng tại điểm giao nhận với lưới. Vị trí và cấu hình thực tế theo đơn vị điện lực.'},
  gateway:{index:'08',title:'Bộ chuyển nguồn / ATS',description:'Thiết bị chuyển nguồn và cách ly khi mất lưới, chỉ có tác dụng nếu phù hợp với inverter và cấu hình bảo vệ.'},
@@ -73,11 +111,11 @@ const labels={
  prioritypanel:{index:'10',title:'Tủ tải ưu tiên',description:'Nhánh điện dành cho các tải được chọn. Chế độ backup chỉ cấp các tải thuộc nhánh này.'}
 };
 labels.grid.title='Cột điện · Nguồn điện lưới';
-labels.grid.description='Nguồn hạ áp bên ngoài được minh họa từ cột điện, qua cặp dây cấp có vỏ bọc, đầu nhận điện và công tơ. Sơ đồ thể hiện nguyên lý chứ không phải phương án kéo dây thực tế.';
+labels.grid.description='Nguồn hạ áp bên ngoài đi từ cột điện, qua cặp dây cấp có vỏ bọc, đầu nhận điện và công tơ.';
 const scenarioData={
- day:{title:'Ban ngày',headline:'Điện mặt trời cấp tải',flow:'PV → Inverter → Phụ tải',copy:'Trong minh họa, điện mặt trời đi qua inverter để cấp các phụ tải. Việc sạc pin dư không được giả định tự động.',chip:'DAYLIGHT / PV MODE',poster:'day',batteryRequired:false,night:false,backup:false,pathsKey:'day'},
+ day:{title:'Ban ngày',headline:'Điện mặt trời cấp tải',flow:'PV → Inverter → Phụ tải',copy:'Điện mặt trời đi qua inverter để cấp các phụ tải trong nhà.',chip:'DAYLIGHT / PV MODE',poster:'day',batteryRequired:false,night:false,backup:false,pathsKey:'day'},
  night_storage:{title:'Đêm dùng pin',headline:'Pin lưu trữ cấp tải',flow:'Pin lưu trữ → Inverter → Phụ tải',copy:'Ban đêm, nếu có pin và thiết bị phù hợp, pin lưu trữ cấp điện qua inverter cho các phụ tải.',chip:'NIGHT / STORAGE MODE',poster:'night_storage',batteryRequired:true,night:true,backup:false,pathsKey:'nightWithBattery'},
- night_grid:{title:'Đêm dùng lưới',headline:'Điện lưới cấp tải',flow:'Cột điện → công tơ → phân phối AC / inverter → tải',copy:'Trong tình huống này, nguồn điện lưới từ cột đi qua cáp cấp và công tơ vào hệ thống điện AC. Tủ phân phối và inverter liên kết theo thiết kế cụ thể; mô hình không thể hiện sơ đồ đấu dây thực tế.',chip:'NIGHT / GRID MODE',poster:'night_grid',batteryRequired:false,night:true,backup:false,pathsKey:'nightWithoutBattery'},
+ night_grid:{title:'Đêm dùng lưới',headline:'Điện lưới cấp tải',flow:'Cột điện → công tơ → phân phối AC / inverter → tải',copy:'Trong tình huống này, nguồn điện lưới từ cột đi qua cáp cấp và công tơ vào hệ thống điện AC. Tủ phân phối và inverter liên kết theo thiết kế cụ thể.',chip:'NIGHT / GRID MODE',poster:'night_grid',batteryRequired:false,night:true,backup:false,pathsKey:'nightWithoutBattery'},
  backup:{title:'Mất điện',headline:'Chỉ tải ưu tiên còn điện',flow:'Pin → Inverter backup → Tải ưu tiên',copy:'Mô phỏng thiết bị có ngõ backup tương thích: lưới bị cách ly, pin cấp điện qua inverter đến tải ưu tiên, không phải toàn bộ ngôi nhà.',chip:'BACKUP / ISOLATED GRID',poster:'backup',batteryRequired:true,night:true,backup:true,pathsKey:'backup'}
 };
 const state={scenario:'day',battery:true,flow:true,labels:true,eco:embeddedMode||reducedMotion.matches,technical:false,sun:true,backupDaylight:true,houseLights:true,xray:false,xrayPreviousTechnical:false,selected:'all',rotate:false,ready:false,contract:null};
@@ -131,7 +169,7 @@ function refreshSolar(force=false){
  $('#livingUseSimulation').setAttribute('aria-pressed',String(solarMode==='simulation'));
  $('#livingClockScrubber').hidden=solarMode==='live';
  $('#livingTimeSlider').value=String(timeMachine.hour);
- $('#livingSunInfo').textContent='Góc cao mặt trời: '+solarSample.altitude.toFixed(1)+'° · Hướng Bắc của mô hình chưa được hiệu chuẩn';
+ $('#livingSunInfo').textContent='Góc cao mặt trời: '+solarSample.altitude.toFixed(1)+'°';
  if(previousDay!==undefined && previousDay!==solarSample.daylight)lastSolarSync=-1;
  return solarSample;
 }
@@ -482,7 +520,7 @@ function selectDevice(device){
  if(journey.active && !journey.applying)stopJourney();
  if(!labels[device] || (device==='battery'&&!state.battery))return;
  state.selected=device;
- if(livingMode&&device!=='all')document.body.classList.add('living-exploring');
+ if(livingMode&&device!=='all'&&!embedStory.intro)document.body.classList.add('living-exploring');
  document.querySelectorAll('.device-menu [data-focus]').forEach(button=>{
   const selected=button.dataset.focus===device;
   button.classList.toggle('is-selected',selected);
@@ -578,7 +616,7 @@ const journeyChapters=[
  {scenario:'day',device:'pv',title:'Nắng chạm mái nhà',tag:'CHƯƠNG 01 · NGUỒN NĂNG LƯỢNG',
   copy:'Ánh sáng chiếu lên các tấm quang điện. Hệ PV tạo dòng một chiều (DC) khi đủ điều kiện hoạt động.'},
  {scenario:'day',device:'inverter',title:'Năng lượng được chuyển đổi',tag:'CHƯƠNG 02 · ĐIỀU PHỐI NĂNG LƯỢNG',
-  copy:'Inverter biến đổi điện phù hợp để cấp phụ tải. Đường sáng là minh họa nguyên lý, không phải sơ đồ đấu nối thực tế.'},
+  copy:'Inverter biến đổi điện phù hợp để cấp phụ tải.'},
  {scenario:'night_storage',device:'battery',title:'Ánh sáng tắt. Năng lượng còn lại.',tag:'CHƯƠNG 03 · LƯU TRỮ THÔNG MINH',
   copy:'Khi mặt trời lặn, hệ lưu trữ tương thích có thể cấp điện qua inverter. Thời gian sử dụng phụ thuộc pin, mức sạc và tải.'},
  {scenario:'backup',device:'priority',title:'Giữ sáng những điều thiết yếu.',tag:'CHƯƠNG 04 · DỰ PHÒNG',
@@ -795,7 +833,8 @@ function initializeLivingExperience(){
  if(!livingMode)return;
  if(embeddedMode){
   // One compact dock inside the stage. Existing controls move in, their behaviour stays untouched.
-  document.body.classList.add('pts-embed-active','living-exploring');
+  document.body.classList.add('pts-embed-active');
+  if(window.parent===window)document.body.classList.add('living-exploring');
   const dock=document.createElement('div');
   dock.className='embed-dock';
   dock.append($('#livingClock'),$('#livingStageModes'),document.querySelector('.stage-actions'));
@@ -1219,11 +1258,11 @@ function animate(){
   }
  }
  if(tweenCamera){
-  const cameraEase=1-Math.exp(-(journey.active?3.8:10)*dt);
+  const cameraEase=1-Math.exp(-(journey.active||embedStory.flight?2.6:10)*dt);
   camera.position.lerp(desiredCamera,cameraEase);controls.target.lerp(desiredTarget,cameraEase);
   // Also end when no longer closing in: OrbitControls can clamp a goal that is out of its range.
   const remaining=camera.position.distanceTo(desiredCamera)+controls.target.distanceTo(desiredTarget);
-  if(remaining<.08||Math.abs(tweenRemaining-remaining)<.002)tweenCamera=false;
+  if(remaining<.08||Math.abs(tweenRemaining-remaining)<.002){tweenCamera=false;embedStory.flight=false;}
   tweenRemaining=remaining;
  }
  if(focusBeacon.visible){
@@ -1406,7 +1445,7 @@ function finishLoading(gltf){
   const sample=refreshSolar(true);
   state.backupDaylight=sample.daylight;
   controls.enableZoom=embeddedMode;
-  document.body.classList.toggle('living-exploring',embeddedMode&&document.body.classList.contains('pts-embed-active'));
+  document.body.classList.toggle('living-exploring',embeddedMode&&document.body.classList.contains('pts-embed-active')&&!embedStory.intro);
  }
  if(journey.pending){journey.pending=false;window.setTimeout(startJourney,80);}
  updateXray();

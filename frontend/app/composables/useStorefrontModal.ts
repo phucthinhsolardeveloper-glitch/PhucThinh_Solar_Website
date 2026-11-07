@@ -4,9 +4,8 @@ export function useStorefrontModal() {
   const consultationSubject = useState<string>('storefront-consultation-subject', () => '')
 
   function openConsultation(subject?: string) {
-    if (typeof subject === 'string') {
-      consultationSubject.value = subject
-    }
+    // Every opening states its own subject, so an earlier page's topic cannot carry over.
+    consultationSubject.value = subject ?? ''
     isConsultationOpen.value = true
   }
 

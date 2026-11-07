@@ -39,6 +39,10 @@ const form = reactive({
   requirements: '',
   payment: 0,
 })
+
+// A restored draft with a requirement in it stays open.
+const requirementsOpen = ref(false)
+watch(() => form.requirements, (value) => { if (value) requirementsOpen.value = true })
 const wards = ref<PublicCheckoutOption[]>([])
 const wardsLoading = ref(false)
 const wardsError = ref('')
@@ -236,7 +240,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-3">
-            <NuxtLink to="/gio-hang/" class="inline-flex min-h-11 items-center justify-center rounded-md bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:bg-navy-800">
+            <NuxtLink to="/gio-hang/" class="inline-flex min-h-11 items-center justify-center rounded-md pts-gold-fill px-5 py-2.5 text-sm font-bold no-underline transition-colors ">
               Quay lại giỏ hàng
             </NuxtLink>
             <button
@@ -338,8 +342,9 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 </span>
                 <small v-if="stateOf('address') === 'is-invalid'" role="alert">{{ fieldHints.address }}</small>
               </label>
-              <div class="checkout-field tb:col-span-2">
-                <label for="checkout-requirements">Yêu cầu khác <em class="font-normal not-italic text-slate-400">(không bắt buộc)</em></label>
+              <FormMoreToggle v-if="!requirementsOpen" label="Thêm yêu cầu khác" class="tb:col-span-2" @click="requirementsOpen = true" />
+              <div v-show="requirementsOpen" class="checkout-field tb:col-span-2">
+                <label for="checkout-requirements">Yêu cầu khác</label>
                 <div class="checkout-tags">
                   <button
                     v-for="tag in quickRequirementTags"
@@ -453,14 +458,14 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .checkout-tags button { display: inline-flex; min-height: 34px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 12%); border-radius: 999px; background: #fff; color: var(--color-navy-800); font-size: 13px; font-weight: 600; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; }
 .checkout-tags button:hover { border-color: var(--color-gold-500); }
-.checkout-tags button.is-on { border-color: var(--color-gold-500); background: var(--color-gold-50); color: var(--color-navy-950); }
+.checkout-tags button.is-on { border-color: transparent; background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .checkout-pay { display: grid; gap: 10px; }
 .checkout-pay__option { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1.5px solid rgb(10 34 81 / 10%); border-radius: var(--radius-md); background: #fff; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
 .checkout-pay__option:hover { border-color: rgb(201 150 46 / 55%); }
 .checkout-pay__option:has(input:checked) { border-color: var(--color-gold-500); background: #fffbf2; box-shadow: 0 12px 28px -22px rgb(201 150 46 / 80%); }
 .checkout-pay__option:has(input:focus-visible) { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
 .checkout-pay__icon { display: grid; width: 48px; height: 48px; flex: none; place-items: center; border-radius: var(--radius-md); background: #f1f5f9; color: var(--color-navy-800); transition: background-color 0.2s ease, color 0.2s ease; }
-.checkout-pay__option:has(input:checked) .checkout-pay__icon { background: var(--color-navy-950); color: var(--color-gold-300); }
+.checkout-pay__option:has(input:checked) .checkout-pay__icon { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .checkout-pay__radio { position: relative; width: 22px; height: 22px; flex: none; border: 2px solid #cbd5e1; border-radius: 50%; transition: border-color 0.2s ease; }
 .checkout-pay__radio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--color-gold-500); transform: scale(0); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .checkout-pay__option:has(input:checked) .checkout-pay__radio { border-color: var(--color-gold-500); }
@@ -483,7 +488,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
 .checkout-summary__cta { display: flex; width: 100%; min-height: 60px; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 17px; font-weight: 850; cursor: pointer; transition: filter 0.25s ease; }
 .checkout-summary__cta > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: var(--radius-md); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-.checkout-summary__cta:hover:not(:disabled) { filter: brightness(1.06); }
+.checkout-summary__cta:hover:not(:disabled) { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .checkout-summary__cta:hover:not(:disabled) > span { transform: translateX(4px); }
 .checkout-summary__cta:disabled { justify-content: center; cursor: wait; opacity: 0.85; }
 .checkout-summary__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }

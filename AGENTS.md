@@ -93,6 +93,14 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 
 ## Quy tắc UX/UI đã duyệt
 
+Website public là Nuxt. Trước khi sửa giao diện, đọc
+`docs/02-development/nuxt-storefront-guide.md` (mục 4 là quy tắc đã chốt với chủ
+website, mục 5 là cạm bẫy) và làm theo `docs/11-workflows/owner-feedback-loop.md`.
+Tóm tắt các quy tắc dễ sai: trạng thái đang chọn dùng vàng gradient với chữ navy;
+không nhấc nút hay dùng `filter` khi hover; form chỉ hiện trường bắt buộc và không
+ghi "không bắt buộc"; không viết câu vô nghĩa hay câu tự phủ nhận; script đo để ở
+`tools/visual-tests/audit/` và không xóa.
+
 Trước mọi thay đổi public, đọc `docs/15-design-delivery/00-START-HERE.md` và
 `docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md` để biết ngôn ngữ thị
 giác hiện hành. `docs/02-development/public-ui-ux-design-system.md` tiếp tục là

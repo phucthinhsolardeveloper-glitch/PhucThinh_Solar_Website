@@ -45,25 +45,29 @@ onBeforeUnmount(() => {
         </p>
       </div>
 
-      <div v-if="visibleSpecifications.length" class="flex flex-wrap items-center gap-2.5 max-ph:w-full">
-        <div v-if="visibleSpecifications.length > 6" class="relative min-w-[220px] flex-1 ph:flex-initial">
+      <!-- One slim row: the search grows, copying is a single icon beside it. -->
+      <div v-if="visibleSpecifications.length" class="flex items-center gap-1.5 max-ph:w-full">
+        <div v-if="visibleSpecifications.length > 6" class="relative min-w-0 flex-1 ph:w-[220px] ph:flex-initial">
+          <UIcon name="i-lucide-search" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
           <input
             v-model="filterQuery"
             style="font-size: 16px"
             type="search"
-            placeholder="Tìm nhanh thông số…"
+            placeholder="Tìm thông số"
             aria-label="Tìm nhanh thông số kỹ thuật"
-            class="h-11 w-full rounded-btn border border-slate-300 bg-white px-3.5 text-sm text-navy-900 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/25"
+            class="h-10 w-full rounded-btn border border-slate-200 bg-slate-50 pl-9 pr-3 text-navy-900 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/30"
           >
         </div>
         <button
           type="button"
-          class="public-neutral-button public-navy-outline-button inline-flex min-h-11 items-center gap-2 rounded-btn px-3.5 text-sm font-bold text-navy-800 cursor-pointer"
+          class="inline-flex size-11 flex-none cursor-pointer items-center justify-center rounded-btn text-gold-700 transition-colors hover:bg-gold-500/15"
+          :aria-label="copied ? 'Đã sao chép thông số' : 'Sao chép thông số'"
+          :title="copied ? 'Đã sao chép thông số' : 'Sao chép thông số'"
           @click="copySpecs"
         >
-          <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-4 text-gold-700" aria-hidden="true" />
-          <span>{{ copied ? 'Đã sao chép thông số' : 'Sao chép thông số' }}</span>
+          <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-5" aria-hidden="true" />
         </button>
+        <span class="sr-only" role="status">{{ copied ? 'Đã sao chép thông số' : '' }}</span>
       </div>
     </div>
 

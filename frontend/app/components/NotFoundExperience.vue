@@ -79,7 +79,7 @@ function reload() { if (import.meta.client) window.location.reload() }
 .nf-search input::placeholder { color: #9fb0c8; }
 .nf-search input:focus-visible { outline: none; }
 .nf-search button { height: 46px; margin-right: 6px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
-.nf-search button:hover { filter: brightness(1.06); }
+.nf-search button:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .nf-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px; }
 .nf-chips button { min-height: 36px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; background: transparent; color: #dbe4f0; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
 .nf-chips button:hover { border-color: var(--color-gold-400); color: #fff; }

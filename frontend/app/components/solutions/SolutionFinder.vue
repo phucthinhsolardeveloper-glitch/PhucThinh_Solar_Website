@@ -146,7 +146,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 .finder-pick strong { font-size: 17px; font-weight: 900; }
 .finder-pick small { color: var(--color-gold-700); font-size: 13.5px; font-weight: 800; }
 .finder-cta { margin-top: 4px; min-height: 48px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
-.finder-cta:hover { filter: brightness(1.06); }
+.finder-cta:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 
 .finder-reveal-enter-active, .finder-reveal-leave-active { transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .finder-reveal-enter-from, .finder-reveal-leave-to { opacity: 0; transform: translateY(8px); }

@@ -115,7 +115,7 @@ test('About public and preview pages expose one main landmark without nesting it
     readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8'),
     readFile(new URL('../app/pages/migration-about-preview.vue', import.meta.url), 'utf8'),
   ])
-  assert.match(component, /<div class="overflow-x-clip text-navy-800">/)
+  assert.match(component, /<div ref="aboutRoot" class="overflow-x-clip text-navy-800">/)
   assert.equal((publicPage.match(/<main\b/g) ?? []).length, 1)
   assert.match(previewPage, /<main>[\s\S]*<AboutPreviewPage v-else/)
 })

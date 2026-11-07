@@ -251,7 +251,7 @@ usePublicSocialMeta({
                 :key="term"
                 type="button"
                 class="public-filter-chip flex min-h-10 flex-none cursor-pointer items-center whitespace-nowrap px-[13px] text-[14px] font-bold"
-                :class="keyword.toLowerCase() === term.toLowerCase() ? 'text-white' : 'text-navy-800'"
+                :class="keyword.toLowerCase() === term.toLowerCase() ? 'text-navy-950' : 'text-navy-800'"
                 :aria-current="keyword.toLowerCase() === term.toLowerCase() ? 'page' : undefined"
                 @click="submitKeyword(term)"
               >
@@ -298,15 +298,16 @@ usePublicSocialMeta({
             <div v-if="data.products.length" class="flex flex-wrap items-center gap-3 max-tb:w-full">
               <h2 class="m-h-panel m-0 text-[22px] font-extrabold text-navy-950">{{ data.pagination.total }} sản phẩm cho “{{ keyword }}”</h2>
             </div>
+            <div class="m-sticky-tools flex items-center gap-2 max-tb:w-full">
             <label v-if="data.products.length" class="flex items-center gap-2 text-sm text-slate-600 max-tb:order-2 max-tb:min-w-0 max-tb:flex-1">
-              <span class="max-tb:sr-only">Sắp xếp</span>
+              <span class="whitespace-nowrap max-tb:sr-only">Sắp xếp</span>
               <USelect
                 :model-value="selectedSort"
                 :items="sortOptions"
                 aria-label="Sắp xếp sản phẩm"
                 color="neutral"
                 variant="none"
-                class="w-full min-w-0 min-[770px]:w-[170px]"
+                class="w-full min-w-0 min-[769px]:w-[170px] min-[769px]:flex-none"
                 :ui="{ base: 'h-11 w-full min-w-0 rounded-btn border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25 m-lg max-tb:rounded-full' }"
                 @update:model-value="onSortChange"
               />
@@ -322,6 +323,7 @@ usePublicSocialMeta({
               <UIcon name="i-lucide-sliders-horizontal" class="size-4" aria-hidden="true" />
               Bộ lọc
             </button>
+            </div>
           </div>
           <!-- Phones have the filters in a drawer, so what is applied stays visible above the results. -->
           <div v-if="activeChips.length" class="search-applied mb-3 flex gap-2 overflow-x-auto min-[1002px]:hidden" aria-label="Bộ lọc đang áp dụng">

@@ -12,6 +12,9 @@ The same delivery rules work for apps, backend APIs, documentation and other pro
 ## Current design language (2026-11)
 For PTS public UI, [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md) is the current visual authority. It supersedes older prescriptions about surface flatness, radius, glass, shadow, breadcrumb treatment and motion. `docs/02-development/public-ui-ux-design-system.md` remains binding for business/IA, CMS data, URL/SEO, media provenance, responsive behavior, accessibility and technical interaction contracts; where its older visual wording conflicts with document 12, document 12 governs the visual decision.
 
+## Storefront rules already decided with the owner
+The concrete, dated rules for the Nuxt storefront (selected states, hover, forms, copy, line breaks, rails) and the traps already met are kept in [../02-development/nuxt-storefront-guide.md](../02-development/nuxt-storefront-guide.md). They refine document 12 and apply site-wide.
+
 ## Read order for every AI task
 A. Project-specific `AGENTS.md`, current owner direction and business/data/security contracts
 B. This index and `01-UNIVERSAL-DELIVERY.md`

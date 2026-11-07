@@ -182,7 +182,7 @@ usePublicSocialMeta({
                   <NuxtLink
                     :to="migrationHref(brandOption.url)"
                     class="flex items-center justify-between rounded-chip px-2.5 py-1.5 text-sm no-underline transition-colors"
-                    :class="brandOption.id === data.brand.id ? 'bg-navy-950 font-bold text-gold-300' : 'text-[#20344b] hover:bg-white hover:text-navy-950'"
+                    :class="brandOption.id === data.brand.id ? 'pts-gold-fill font-bold' : 'text-[#20344b] hover:bg-white hover:text-navy-950'"
                     :aria-current="brandOption.id === data.brand.id ? 'page' : undefined"
                   >
                     <span>{{ brandOption.name }}</span>

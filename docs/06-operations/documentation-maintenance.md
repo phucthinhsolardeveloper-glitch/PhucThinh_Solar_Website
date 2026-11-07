@@ -32,6 +32,20 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-11-07 — chuẩn hóa tài liệu storefront Nuxt và vòng làm việc với chủ website
+
+- Thêm `02-development/nuxt-storefront-guide.md`: kiến trúc, chỗ đặt code, lệnh
+  chạy và kiểm tra, quy tắc giao diện đã chốt (trạng thái chọn vàng gradient, hover
+  không nhấc nút, form chỉ trường bắt buộc, không câu tự phủ nhận, dữ kiện công
+  ty), cạm bẫy đã gặp và điều kiện trước deploy.
+- Thêm `11-workflows/owner-feedback-loop.md`: nhận ảnh → đo → sửa → kiểm → báo
+  cáo, kèm bảng kiến thức lưu ở đâu.
+- Cập nhật cửa vào: `AGENTS.md`, `frontend/AGENTS.md`, `SO-TAY.md`,
+  `12-ai/context-map.md`, `README.md`, `15-design-delivery/00-START-HERE.md`.
+  Viết lại danh mục `tools/visual-tests/audit/README.md`.
+- Ghi lần deploy dừng ở predeploy vào `deployment-log.md`.
+- Không đổi production.
+
 ### 2026-10-31 — Nuxt migration branch và resolver checkpoint
 
 - Đối chiếu refs sau `git fetch`: remote feature Nuxt đã nằm trong `master`, một

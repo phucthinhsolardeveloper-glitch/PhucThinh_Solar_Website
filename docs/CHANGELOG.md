@@ -1,5 +1,11 @@
 # Documentation changelog
 
+## 2026-11-07
+
+- Sổ tay storefront Nuxt (`02-development/nuxt-storefront-guide.md`) và vòng làm việc
+  với chủ website (`11-workflows/owner-feedback-loop.md`) thành cửa vào cho việc
+  giao diện public; các entrypoint đã trỏ tới. Danh mục script đo được chuẩn hóa.
+
 ## 2026-11-05
 
 - Audit backend/API/Admin cho staging Nuxt: gỡ 8 endpoint AJAX legacy và class

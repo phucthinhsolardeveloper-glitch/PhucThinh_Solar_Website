@@ -24,7 +24,7 @@ function categoryHref(category: PublicNewsCategory): string {
   <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto overscroll-x-contain px-0.5 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" ref="railRef" :aria-label="filtersLabel">
     <NuxtLink
       class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
-      :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :class="!selected ? 'text-navy-950' : 'text-navy-800'"
       :to="`${filtersPath}${queryString}`"
       :aria-current="!selected ? 'page' : undefined"
     >
@@ -34,7 +34,7 @@ function categoryHref(category: PublicNewsCategory): string {
       v-for="category in categories"
       :key="category.id"
       class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
-      :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :class="selected?.id === category.id ? 'text-navy-950' : 'text-navy-800'"
       :to="categoryHref(category)"
       :aria-current="selected?.id === category.id ? 'page' : undefined"
     >

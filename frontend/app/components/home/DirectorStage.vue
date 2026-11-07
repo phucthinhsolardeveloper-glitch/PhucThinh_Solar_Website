@@ -242,6 +242,6 @@ onBeforeUnmount(stop)
   .scene-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; border-top: 0; }
   .scene-list > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .scene-item, .scene-item.is-active { height: 100%; min-height: 52px; padding: 6px 12px; border: 1px solid rgb(10 34 81 / 14%); border-radius: var(--radius-sm); background: #fff; font-size: 14px; line-height: 1.25; letter-spacing: -0.01em; color: var(--color-navy-900); }
-  .scene-item.is-active { border-color: var(--color-navy-950); background: var(--color-navy-950); color: #fff; }
+  .scene-item.is-active { border-color: transparent; background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); color: var(--color-navy-950); }
 }
 </style>

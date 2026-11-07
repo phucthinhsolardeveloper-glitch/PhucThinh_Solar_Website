@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
         <p class="mt-5 max-w-[42ch] text-[clamp(15px,1.05vw,18px)] leading-[1.7] text-slate-600">
           Phúc Thịnh Solar tư vấn giải pháp phù hợp, thi công chuyên nghiệp và tận tâm hỗ trợ sau bàn giao, giúp khách hàng an tâm sử dụng lâu dài.
         </p>
-        <a href="#yeu-cau-tu-van" class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-btn bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950">
+        <a href="#yeu-cau-tu-van" class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-btn pts-gold-fill px-6 text-[15px] font-extrabold no-underline transition-colors hover:bg-gold-500 hover:text-navy-950">
           Bắt đầu với bước tư vấn <span aria-hidden="true">→</span>
         </a>
       </header>

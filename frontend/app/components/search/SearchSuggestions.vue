@@ -192,7 +192,7 @@ defineExpose({ handleKey, activeOptionId, listId, remember: history.remember })
 
       <div v-if="!pending && !failed && result && !total && !matchedCategories.length" class="sug-none">
         <p>Chưa thấy sản phẩm cho “{{ query }}”.</p>
-        <button type="button" class="sug-ask" @click="askEngineer">Nhờ kỹ sư tra cứu giúp</button>
+        <button type="button" class="sug-ask" @click="askEngineer">Cần tư vấn tìm sản phẩm</button>
       </div>
       <p v-if="failed" class="sug-note">Chưa tải được gợi ý. Bạn vẫn có thể bấm Tìm.</p>
     </div>

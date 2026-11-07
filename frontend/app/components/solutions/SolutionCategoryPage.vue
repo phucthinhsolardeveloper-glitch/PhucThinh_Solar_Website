@@ -67,7 +67,7 @@ usePublicSocialMeta({
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục giải pháp' : 'Tạm thời không thể tải danh mục giải pháp' }}</h1>
         <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
         <div class="flex flex-wrap gap-3">
-          <NuxtLink :to="links.generic('/giai-phap/')" class="inline-flex min-h-11 items-center rounded-btn bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Xem tất cả giải pháp</NuxtLink>
+          <NuxtLink :to="links.generic('/giai-phap/')" class="inline-flex min-h-11 items-center rounded-btn pts-gold-fill px-5 py-2.5 text-sm font-bold no-underline ">Xem tất cả giải pháp</NuxtLink>
           <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-btn bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn giải pháp năng lượng')">Nhận tư vấn kỹ thuật →</button>
         </div>
       </section>
@@ -101,7 +101,7 @@ usePublicSocialMeta({
             :key="item.id"
             class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
             :to="links.generic(item.url)"
-            :class="item.active ? 'text-white' : 'text-navy-800'"
+            :class="item.active ? 'text-navy-950' : 'text-navy-800'"
             :aria-current="item.active ? 'page' : undefined"
           >{{ item.name }}</NuxtLink>
         </nav>

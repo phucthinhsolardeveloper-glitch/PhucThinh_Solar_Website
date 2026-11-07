@@ -124,7 +124,7 @@ try
     $cta = $ctaRows ? reset($ctaRows) : array();
     $sections = array(
         'story' => array('eyebrow' => $labels['storyEyebrow'], 'title' => $labels['storyTitle'], 'intro' => $storyIntro, 'body' => $storyBody, 'image' => ptsAboutImage($story['photo'] ?? '', ROOT, UPLOAD_NEWS_L, 'upload/news/')),
-        'history' => array('title' => ptsAboutPlainText($historyRecord['title_indexvi'] ?? $historyRecord['namevi'] ?? ''), 'image' => ptsAboutImage($historyRecord['photo'] ?? '', ROOT, UPLOAD_NEWS_L, 'upload/news/'), 'items' => $timeline),
+        'history' => array('title' => ptsAboutPlainText($historyRecord['title_indexvi'] ?? $historyRecord['namevi'] ?? ''), 'image' => ptsAboutImage($historyRecord['photo'] ?? '', ROOT, UPLOAD_NEWS_L, 'upload/news/'), 'items' => array()), /* The history is written in the storefront (AboutHistory.vue); the old CMS timeline said 2019. */
         'people' => array('eyebrow' => ptsAboutPlainText($people['title_indexvi'] ?? '') ?: $labels['peopleEyebrow'], 'title' => ptsAboutPlainText($people['namevi'] ?? '') ?: $labels['peopleTitle'], 'intro' => ptsAboutPlainText($people['descvi'] ?? '') ?: $labels['peopleFallback'], 'body' => ptsAboutSentences($people['contentvi'] ?? '', 2), 'image' => $peopleImage, 'principles' => $principles),
         'trust' => array('title' => $labels['trustTitle'], 'items' => $trust),
         'compass' => array('title' => $labels['compassTitle'], 'items' => $compass),

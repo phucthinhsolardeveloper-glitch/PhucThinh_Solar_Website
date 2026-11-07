@@ -348,7 +348,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 .cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: var(--radius-md); background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
 .cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
 .cart-summary__cta > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-.cart-summary__cta:hover { filter: brightness(1.06); }
+.cart-summary__cta:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .cart-summary__cta:hover > span { transform: translateX(4px); }
 .cart-summary__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .cart-summary__trust { display: grid; gap: 10px; margin: 20px 0 0; padding: 18px 0 0; border-top: 1px solid rgb(255 255 255 / 12%); list-style: none; }
@@ -362,7 +362,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 @keyframes empty-spin { to { transform: rotate(360deg); } }
 .cart-btn { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 22px; border-radius: var(--radius-md); font-weight: 800; text-decoration: none; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
 .cart-btn--gold { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
-.cart-btn--gold:hover { filter: brightness(1.06); }
+.cart-btn--gold:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .cart-btn--ghost { border: 1px solid rgb(10 34 81 / 18%); background: #fff; color: var(--color-navy-900); }
 .cart-btn--ghost:hover { border-color: var(--color-navy-800); }
 

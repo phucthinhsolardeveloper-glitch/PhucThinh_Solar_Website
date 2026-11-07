@@ -6,9 +6,8 @@ const atmosphere = ref('day')
 
 <template>
   <section class="energy-showcase" :data-atmosphere="atmosphere" aria-labelledby="energy-showcase-title">
-    <h2 id="energy-showcase-title" class="sr-only">Khám phá mô hình 3D năng lượng mặt trời</h2>
-    <EnergyScene3DExperience @atmosphere="atmosphere = $event" />
-    <p class="sr-only">Mô hình minh họa nguyên lý, không thể hiện sản lượng hay cấu hình của một công trình thực tế. Chế độ dự phòng chỉ cấp các tải ưu tiên tương thích.</p>
+    <EnergyScene3DExperience :atmosphere="atmosphere" @atmosphere="atmosphere = $event" />
+    <p class="sr-only">Mô hình minh họa nguyên lý. Chế độ dự phòng chỉ cấp các tải ưu tiên tương thích.</p>
   </section>
 </template>
 

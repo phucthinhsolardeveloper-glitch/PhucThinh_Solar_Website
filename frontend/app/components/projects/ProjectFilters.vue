@@ -20,7 +20,7 @@ function categoryHref(category: PublicProjectCategory): string {
   <nav ref="railRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
     <NuxtLink
       class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
-      :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :class="!selected ? 'text-navy-950' : 'text-navy-800'"
       :to="filtersPath"
       :aria-current="!selected ? 'page' : undefined"
     >
@@ -30,7 +30,7 @@ function categoryHref(category: PublicProjectCategory): string {
       v-for="category in categories"
       :key="category.id"
       class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
-      :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :class="selected?.id === category.id ? 'text-navy-950' : 'text-navy-800'"
       :to="categoryHref(category)"
       :aria-current="selected?.id === category.id ? 'page' : undefined"
     >

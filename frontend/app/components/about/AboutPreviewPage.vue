@@ -56,7 +56,7 @@ const partnerBrandsWithProducts = computed(() => partnerBrands.map((brand) => {
 }))
 const aboutSectionNavItems = computed(() => [
   { id: 've-phuc-thinh', label: props.about.labels.story },
-  ...(props.about.history.items.length ? [{ id: 'lich-su-phat-trien', label: props.about.labels.history }] : []),
+  { id: 'lich-su-phat-trien', label: 'Lịch sử hình thành' },
   { id: 'con-nguoi', label: props.about.labels.people },
   ...(props.about.trust.items.length ? [{ id: 'vi-sao-chon-chung-toi', label: props.about.trust.title }] : []),
   { id: 'thuong-hieu-dong-hanh', label: 'Thương hiệu đồng hành' },
@@ -80,7 +80,30 @@ function syncAboutNavControls() {
   aboutNavCanScrollNext.value = Boolean(nav && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2)
 }
 
+// Blocks further down the page rise in as they arrive, a little staggered within each section.
+const aboutRoot = ref<HTMLElement | null>(null)
+let revealObserver: IntersectionObserver | undefined
+function prepareReveals() {
+  if (!aboutRoot.value || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
+  revealObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue
+      entry.target.classList.add('rv-in')
+      revealObserver?.unobserve(entry.target)
+    }
+  }, { rootMargin: '0px 0px -8% 0px' })
+  aboutRoot.value.querySelectorAll('section:not(#lich-su-phat-trien):not(#ve-phuc-thinh)').forEach((section) => {
+    section.querySelectorAll<HTMLElement>('h2, figure, li, article').forEach((block, index) => {
+      if (block.closest('dialog') || block.getBoundingClientRect().top < window.innerHeight) return
+      block.classList.add('rv')
+      block.style.setProperty('--rv-delay', `${Math.min(index, 6) * 70}ms`)
+      revealObserver?.observe(block)
+    })
+  })
+}
+
 onMounted(() => nextTick(() => {
+  prepareReveals()
   syncAboutNavControls()
   if (aboutNavRef.value && typeof ResizeObserver !== 'undefined') {
     aboutNavResizeObserver = new ResizeObserver(syncAboutNavControls)
@@ -93,6 +116,7 @@ watch(aboutSectionNavItems, () => nextTick(() => {
 }), { deep: true })
 onBeforeUnmount(() => {
   aboutNavResizeObserver?.disconnect()
+  revealObserver?.disconnect()
 })
 
 async function openCertificate(item: PublicAboutPayload['certificates']['items'][number], event: MouseEvent) {
@@ -143,7 +167,7 @@ const showroomImage = computed(() => {
 </script>
 
 <template>
-  <div class="overflow-x-clip text-navy-800">
+  <div ref="aboutRoot" class="overflow-x-clip text-navy-800">
     <!-- Chapter 1: Story / Bản sắc thương hiệu -->
     <section id="ve-phuc-thinh" class="about-story scroll-mt-[160px] pts-container pt-6 pb-14 max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
       <div class="about-story__card grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
@@ -186,7 +210,7 @@ const showroomImage = computed(() => {
           :key="item.id"
           :data-about-section="item.id"
           class="about-chapter-link inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip px-3.5 text-[15px] font-extrabold no-underline transition-colors hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
-          :class="activeAboutSection === item.id ? 'text-white' : 'text-navy-800'"
+          :class="activeAboutSection === item.id ? 'text-navy-950' : 'text-navy-800'"
           :href="`#${item.id}`"
           :aria-current="activeAboutSection === item.id ? 'location' : undefined"
           @click.prevent="navigateAboutSection(item.id)"
@@ -197,26 +221,7 @@ const showroomImage = computed(() => {
     </nav>
 
     <!-- Chapter 2: History Timeline / Dòng thời gian phát triển -->
-    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="about-chapter scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
-      <div class="about-history-grid pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
-        <div>
-          <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title || about.labels.history }}</h2>
-          <ol class="about-timeline mt-7 grid list-none gap-6 border-l-2 border-gold-500/45 pl-6 p-0" :aria-label="about.labels.timeline">
-            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="relative grid grid-cols-1 gap-x-4 border-t border-slate-200/80 pt-5 first:border-t-0 first:pt-0">
-              <span class=" absolute -left-[31px] top-1.5 first:top-1.5 size-3 rounded-full border-2 border-gold-500 bg-white" :class="index > 0 ? 'top-6' : 'top-1.5'" aria-hidden="true" />
-              <div>
-                <strong class="inline-flex items-center rounded-chip bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
-              </div>
-              <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]"><ChunkedText :text="item.description" /></p>
-            </li>
-          </ol>
-        </div>
-        <figure class="about-history-media m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-          <img class="block h-full w-full object-cover" :src="showroomImage" :alt="`${about.history.title || about.labels.history} — không gian trưng bày thiết bị năng lượng mặt trời`" width="780" height="600" loading="lazy">
-        </figure>
-      </div>
-    </section>
+    <AboutHistory :image="showroomImage" />
 
     <!-- Chapter 3: People & Core Principles / Con người & Nguyên tắc hành động -->
     <section id="con-nguoi" class="about-chapter scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
@@ -566,15 +571,10 @@ const showroomImage = computed(() => {
   /* Chapter bar: pills, so the current chapter reads at a glance. */
   .about-chapter-rail { gap: 4px; padding-block: 6px; scroll-padding-inline: 16px; }
   .about-chapter-link { padding-inline: 14px; border-bottom-width: 0; border-radius: 999px; font-size: 14px; font-weight: 700; }
-  .about-chapter-link[aria-current="location"] { background: var(--color-navy-950); color: #fff; }
+  .about-chapter-link[aria-current="location"] { color: var(--color-navy-950); }
   .about-chapter-link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: -3px; }
 
   /* History */
-  .about-history-grid { gap: 20px; }
-  .about-timeline { gap: 16px; margin-top: 16px; }
-  .about-timeline strong { font-size: 17px; }
-  .about-timeline p { font-size: 16px; line-height: 1.6; }
-  .about-history-media { min-height: 0; max-height: none; aspect-ratio: 16 / 10; }
 
   /* People: compact icon rows instead of a right-aligned icon floating above each paragraph. */
   .about-people-grid { gap: 18px; }

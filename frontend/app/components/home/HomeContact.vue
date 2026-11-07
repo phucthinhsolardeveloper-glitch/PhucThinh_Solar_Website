@@ -159,17 +159,17 @@ async function send() {
 
           <div class="hc-fields mt-6 grid gap-x-4 max-tb:mt-4 max-tb:grid-cols-2 tb:grid-cols-3">
             <UFormField label="Họ và tên" name="fullname" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
-              <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" required variant="none" class="w-full" :ui="inputUi" />
+              <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
             <UFormField label="Số điện thoại" name="phone" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
-              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" required variant="none" class="w-full" :ui="inputUi" />
+              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
             <UFormField label="Tỉnh/Thành phố" name="address" :class="detailsOpen ? '' : 'max-tb:hidden'" class="hc-province mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.address" name="address" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai" variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
           </div>
 
-          <button v-if="!detailsOpen" type="button" class="hc-more -mt-1 mb-1 min-h-11 text-sm font-bold text-navy-800 underline tb:hidden" @click="detailsOpen = true"><UIcon name="i-lucide-plus" class="size-4 flex-none" aria-hidden="true" />Thêm chi tiết (không bắt buộc)</button>
+          <FormMoreToggle v-if="!detailsOpen" class="mb-3 tb:hidden" @click="detailsOpen = true" />
           <UFormField label="Nội dung cần trao đổi" name="content" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
             <UTextarea ref="contentRef" v-model="form.content" name="content" :rows="4" maxlength="5000" placeholder="Mô tả ngắn nhu cầu của bạn..." variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>
@@ -214,8 +214,8 @@ async function send() {
 }
 .need :deep(svg) { color: var(--color-gold-700); }
 .need:hover { border-color: var(--color-gold-500); }
-.need.is-on { border-color: var(--color-navy-950); background: var(--color-navy-950); color: #fff; }
-.need.is-on :deep(svg) { color: var(--color-gold-400); }
+.need.is-on { border-color: transparent; background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); color: var(--color-navy-950); }
+.need.is-on :deep(svg) { color: var(--color-navy-950); }
 .need:has(input:focus-visible) { outline: 2px solid var(--color-gold-600); outline-offset: 2px; }
 
 .hint {
@@ -258,7 +258,6 @@ async function send() {
   .hc-fields { column-gap: 10px; margin-top: 14px; }
   .hc-fields > :deep(*) { margin-bottom: 14px; }
   .hc-fields > :deep(.hc-province) { grid-column: 1 / -1; }
-  .hc-more { display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; margin: 0; border: 1px dashed rgb(10 34 81 / 28%); border-radius: var(--radius-sm); text-decoration: none; }
   .hint { min-height: 44px; }
   .hc-submit { margin-top: 14px; row-gap: 8px; }
   .hc-submit > span { width: 100%; font-size: 13px; text-align: center; }

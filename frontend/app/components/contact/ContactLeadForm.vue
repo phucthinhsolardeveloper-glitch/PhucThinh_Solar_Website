@@ -165,12 +165,12 @@ async function send() {
             type="button"
             class="flex min-h-[60px] items-center gap-2.5 rounded-btn border px-3 py-2 text-left text-sm font-bold leading-snug transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
             :class="form.subject === option
-              ? 'border-navy-950 bg-navy-950 text-white'
+              ? 'pts-gold-fill'
               : 'border-slate-300 bg-white text-navy-900 hover:border-gold-500'"
             :aria-pressed="form.subject === option"
             @click="toggleSubject(option)"
           >
-            <UIcon :name="subjectIcons[option] || 'i-lucide-message-circle'" class="size-5 flex-none" :class="form.subject === option ? 'text-gold-400' : 'text-gold-700'" aria-hidden="true" />
+            <UIcon :name="subjectIcons[option] || 'i-lucide-message-circle'" class="size-5 flex-none" :class="form.subject === option ? 'text-navy-950' : 'text-gold-700'" aria-hidden="true" />
             {{ option }}
           </button>
         </div>
@@ -182,8 +182,8 @@ async function send() {
       <UFormField label="Số điện thoại" name="phone" required class="lead-half grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
         <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
       </UFormField>
-      <button v-if="!detailsOpen" type="button" class="lead-more min-h-11 text-left text-sm font-bold text-navy-800 underline tb:hidden" @click="detailsOpen = true"><UIcon name="i-lucide-plus" class="size-4 flex-none" aria-hidden="true" />Thêm chi tiết (không bắt buộc)</button>
-      <UFormField label="Email" hint="Không bắt buộc" name="email" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
+      <FormMoreToggle v-if="!detailsOpen" class="tb:hidden" @click="detailsOpen = true" />
+      <UFormField label="Email" name="email" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
         <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
       </UFormField>
       <UFormField label="Chi tiết nhu cầu tư vấn" name="content" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
@@ -236,7 +236,6 @@ async function send() {
   .lead-fields :deep(input), .lead-fields :deep(textarea) { border-radius: var(--radius-sm); }
   .lead-fields :deep(textarea) { min-height: 112px; }
 
-  .lead-more { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px dashed rgb(10 34 81 / 28%); border-radius: var(--radius-sm); text-decoration: none; }
   .lead-prompts > button { min-height: 44px; padding: 6px 14px; line-height: 1.3; text-align: left; }
 
   .lead-steps { min-width: 0; margin: 0 -16px; padding-block: 0; border-top: 0; }

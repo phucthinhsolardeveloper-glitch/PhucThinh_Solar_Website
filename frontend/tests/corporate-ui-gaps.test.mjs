@@ -50,7 +50,7 @@ test('dealer distribution products become an arrow-controlled touch rail on mobi
 test('about section navigation sticks below the header and tracks smooth section jumps', async () => {
   const about = await read('app/components/about/AboutPreviewPage.vue')
   assert.match(about, /sticky z-30[\s\S]*isHeaderHidden \? 'top-0 shadow-sm'/)
-  assert.match(about, /<div class="overflow-x-clip text-navy-800">/)
+  assert.match(about, /<div ref="aboutRoot" class="overflow-x-clip text-navy-800">/)
   assert.doesNotMatch(about, /<div class="overflow-hidden text-navy-800">/)
   assert.match(about, /useSectionSpy\(\(\) => aboutSectionNavItems\.value\.map/)
   assert.match(about, /target\.scrollIntoView\(\{ behavior: reducedMotion \? 'auto' : 'smooth'/)

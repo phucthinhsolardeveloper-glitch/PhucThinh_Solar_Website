@@ -221,7 +221,7 @@ const chapterSpy = useSectionSpy(() => chapters.value.flatMap((chapter) => chapt
 .story h2 { margin: 0; font-size: clamp(30px, 3.4vw, 52px); font-weight: 850; line-height: 1.08; letter-spacing: -0.035em; text-wrap: balance; }
 .story h3 { margin: 0; scroll-margin-top: 120px; }
 .story h2 { scroll-margin-top: 110px; }
-.chapter { position: relative; padding: clamp(64px, 8vw, 120px) 0; }
+.chapter { position: relative; padding: clamp(36px, 4.5vw, 72px) 0; }
 .chapter-lead :deep(p) { margin: 14px 0 0; max-width: 62ch; color: #4a5a72; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.72; }
 
 /* Chapter index */
@@ -236,9 +236,9 @@ const chapterSpy = useSectionSpy(() => chapters.value.flatMap((chapter) => chapt
 .story-index a:hover::after, .story-index a[aria-current]::after { transform: scaleX(1); }
 [data-pill-rail] > li + li > a { border-left: 0; }
 .story-index [data-pill-rail] { gap: 6px; padding-block: 8px; }
-.story-index [data-pill-rail] a { min-height: 48px; padding-block: 8px; border-radius: var(--radius-btn); }
+.story-index [data-pill-rail] a { min-height: 44px; padding-block: 0; border-radius: var(--radius-sm); }
 .story-index [data-pill-rail] a:hover:not([data-pill-on]) { background: #f1f4f9; }
-.story-index [data-pill-rail] a[data-pill-on] { background: none; color: #fff; }
+.story-index [data-pill-rail] a[data-pill-on] { background: none; color: var(--color-navy-950); }
 .story-index [data-pill-rail] a::after { display: none; }
 .story-index [data-pill-rail] a[aria-current]:not([data-pill-on]) { background: none; }
 .story-index a:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: -3px; }
@@ -408,7 +408,7 @@ const chapterSpy = useSectionSpy(() => chapters.value.flatMap((chapter) => chapt
   .chapter-lead :deep(p) { margin-top: 8px; font-size: 16px; line-height: 1.6; }
 
   /* Sticky chapter index: a glass capsule floating over the content it navigates. */
-  .story-index { position: sticky; top: 73px; z-index: 30; margin: 8px 8px 0; overflow: hidden; border-radius: 22px; transition: transform var(--pts-dur, 0.35s) var(--ease); }
+  .story-index { position: sticky; top: 73px; z-index: 30; margin: 48px 8px 0; overflow: hidden; border-radius: 22px; transition: transform var(--pts-dur, 0.35s) var(--ease); }
   .story-index[data-header-hidden] { transform: translateY(-65px); }
   .story-index .pts-container { max-width: none; padding: 0; }
   .story-index ul { display: flex; gap: 4px; padding: 5px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
@@ -417,7 +417,9 @@ const chapterSpy = useSectionSpy(() => chapters.value.flatMap((chapter) => chapt
   .story-index a, .story-index li + li a { display: block; min-height: 44px; max-width: 70vw; overflow: hidden; padding: 0 14px; border-left: 0; color: var(--color-navy-950); font-size: 13px; line-height: 44px; text-overflow: ellipsis; white-space: nowrap; }
   .story-index a::after { content: none; }
   .story-index a:hover { background: transparent; }
-  .story-index a[aria-current] { background: var(--color-navy-950); color: var(--color-gold-300); }
+  .story-index a[aria-current] { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
+  .story-index [data-pill-rail] { padding-block: 5px; }
+  .story-index [data-pill-rail] a { min-height: 40px; line-height: 40px; }
 
   /* Every swipeable set bleeds to the screen edge and starts on the page gutter. */
   .eco-grid, .options-grid, .process-route:not([data-many]) {

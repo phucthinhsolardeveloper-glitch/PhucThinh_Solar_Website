@@ -63,11 +63,12 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         color="primary"
         size="lg"
         :loading="loading && loadingAction === 'buy'"
-        class="min-h-12 w-full justify-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 transition-all duration-150 hover:bg-gold-600 hover:shadow-sm active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer shadow-xs"
+        class="buy-now min-h-12 w-full justify-center rounded-btn bg-gold-500 px-14 font-extrabold text-navy-950 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer shadow-xs"
         :disabled="loading"
         @click="add(true)"
       >
         {{ loadingAction === 'buy' ? 'Đang xử lý…' : 'Mua ngay' }}
+        <span v-if="loadingAction !== 'buy'" class="buy-now__arrow" aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-[18px]" /></span>
       </UButton>
       <UButton
         type="button"
@@ -75,13 +76,13 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         variant="outline"
         size="lg"
         :loading="loading && loadingAction === 'cart'"
-        class="public-neutral-button public-navy-outline-button min-h-12 w-full justify-center rounded-btn px-5 font-bold text-navy-800 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
+        class="buy-add public-neutral-button public-navy-outline-button min-h-12 w-full justify-center rounded-btn px-5 font-bold text-navy-800 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
         :disabled="loading"
         @click="add(false)"
       >
         <template v-if="loadingAction === 'cart'">Đang thêm…</template>
         <span v-else-if="justAdded" class="added-label"><UIcon name="i-lucide-check" class="size-5" aria-hidden="true" /> Đã thêm vào giỏ</span>
-        <template v-else>Thêm vào giỏ</template>
+        <template v-else><span class="buy-add__icon" aria-hidden="true"><UIcon name="i-lucide-shopping-cart" class="size-5" /><UIcon name="i-lucide-plus" class="buy-add__plus size-3" /></span>Thêm vào giỏ</template>
       </UButton>
     </div>
     <div ref="buySentinel" aria-hidden="true" />
@@ -164,7 +165,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
     <div class="buy-island m-glass print:hidden" :class="{ 'is-on': buttonsOffScreen }">
       <p v-if="error" class="buy-island__error" role="alert">{{ error }}</p>
       <strong v-if="productName" class="buy-island__name">{{ productName }}</strong>
-      <a v-if="mounted && phoneHref" :href="phoneHref" :aria-label="`Gọi hotline ${hotline}`" class="buy-island__icon">
+      <a v-if="mounted && phoneHref" :href="phoneHref" :aria-label="`Gọi hotline ${hotline}`" class="buy-island__icon" data-tip="Gọi tư vấn">
         <UIcon name="i-lucide-phone" class="size-[21px]" aria-hidden="true" />
       </a>
       <button
@@ -172,10 +173,15 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         type="button"
         :aria-label="justAdded ? 'Đã thêm vào giỏ' : 'Thêm vào giỏ'"
         class="buy-island__icon"
+        :data-tip="justAdded ? 'Đã thêm vào giỏ' : 'Thêm vào giỏ'"
         :disabled="loading"
         @click="add(false)"
       >
-        <UIcon :name="justAdded ? 'i-lucide-check' : 'i-lucide-shopping-cart'" class="size-[21px]" aria-hidden="true" />
+        <!-- A small plus tells "add to cart" apart from "go to cart". -->
+        <span class="buy-island__cart" aria-hidden="true">
+          <UIcon :name="justAdded ? 'i-lucide-check' : 'i-lucide-shopping-cart'" class="size-[21px]" />
+          <UIcon v-if="!justAdded" name="i-lucide-plus" class="buy-island__plus size-3" />
+        </span>
       </button>
       <button
         type="button"
@@ -194,6 +200,24 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
 </template>
 
 <style scoped>
+/* Buy now: a navy arrow like the site's other gold actions, with a band of light crossing now and then. */
+.buy-now { position: relative; overflow: hidden; isolation: isolate; }
+.buy-now::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 45%) 50%, transparent 62%); transform: translateX(-110%); animation: buy-sheen 5.5s cubic-bezier(.22, 1, .36, 1) 1.5s infinite; pointer-events: none; }
+.buy-now:hover:not(:disabled) { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%), 0 8px 20px -8px rgb(180 133 31 / 70%); }
+.buy-now__arrow { position: absolute; top: 50%; right: 6px; display: grid; width: 36px; height: 36px; place-items: center; border-radius: var(--radius-sm); background: var(--color-navy-950); color: var(--color-gold-300); transform: translateY(-50%); }
+.buy-now__arrow :deep(svg) { transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+.buy-now:hover:not(:disabled) .buy-now__arrow :deep(svg) { transform: translateX(3px); }
+@keyframes buy-sheen { 0% { transform: translateX(-110%); } 28%, 100% { transform: translateX(110%); } }
+/* Add to cart: the cart in gold with a small plus, which drops in as the pointer arrives. */
+.buy-add__icon { position: relative; display: inline-flex; margin-right: 8px; color: var(--color-gold-700); vertical-align: middle; transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+.buy-add__plus { position: absolute; top: -5px; right: -6px; border-radius: 50%; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+.buy-add:hover:not(:disabled) { border-color: var(--color-gold-500) !important; background: linear-gradient(180deg, #fffdf6, #fbf3dd) !important; }
+.buy-add:hover:not(:disabled) .buy-add__icon { transform: translateX(-3px) rotate(-6deg); }
+.buy-add:hover:not(:disabled) .buy-add__plus { transform: scale(1.3); }
+@media (prefers-reduced-motion: reduce) {
+  .buy-now::after { animation: none; display: none; }
+  .buy-now__arrow, .buy-add__icon, .buy-add__plus { transition: none; }
+}
 .buy-island { position: fixed; left: 12px; right: 72px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; display: flex; align-items: center; gap: 2px; height: 60px; padding: 6px; border-radius: 30px; }
 .buy-island__name { display: none; }
 @media (min-width: 821px) {
@@ -207,6 +231,21 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
 .buy-island__icon { display: grid; flex: none; width: 44px; height: 46px; place-items: center; color: #dbe4f0; text-decoration: none; }
 .buy-island__icon:disabled, .buy-island__main:disabled { opacity: .55; }
 .buy-island__main { display: flex; flex: 1; min-width: 0; height: 46px; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 14px; font-weight: 800; line-height: 1.15; }
+.buy-island__cart { position: relative; display: grid; place-items: center; }
+.buy-island__plus { position: absolute; top: -5px; right: -7px; border-radius: 50%; background: var(--color-gold-400); color: var(--color-navy-950); }
+.buy-island__main { position: relative; overflow: hidden; isolation: isolate; }
+/* With a mouse: icons light up gold and name themselves, and a band of light crosses the buy button now and then. */
+@media (hover: hover) and (min-width: 821px) {
+  .buy-island__icon { position: relative; border-radius: 22px; transition: background-color .2s ease, color .2s ease; }
+  .buy-island__icon:hover:not(:disabled) { background: rgb(255 255 255 / 12%); color: var(--color-gold-300); }
+  .buy-island__icon::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 10px); left: 50%; padding: 5px 10px; border-radius: var(--radius-sm); background: var(--color-navy-950); color: #fff; font-size: 12.5px; font-weight: 700; white-space: nowrap; opacity: 0; transform: translate(-50%, 4px); transition: opacity .18s ease, transform .18s ease; pointer-events: none; }
+  .buy-island__icon:hover::after, .buy-island__icon:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+  .buy-island__icon:hover .buy-island__plus { transform: scale(1.25); }
+  .buy-island__plus { transition: transform .2s ease; }
+  .buy-island__main::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 45%) 50%, transparent 62%); transform: translateX(-110%); animation: buy-sheen 5.5s cubic-bezier(.22, 1, .36, 1) 1s infinite; pointer-events: none; }
+  .buy-island__main:hover:not(:disabled) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), inset 0 0 0 999px rgb(255 255 255 / 10%); }
+}
+@media (prefers-reduced-motion: reduce) { .buy-island__main::after { display: none; } }
 .buy-island__main small { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .added-label { display: inline-flex; align-items: center; gap: 8px; color: #15803d; animation: added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes added-in { from { opacity: 0; transform: translateY(6px) scale(0.96); } }

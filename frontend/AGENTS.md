@@ -3,6 +3,7 @@
 This nested file supplements, and does not supersede, root AGENTS.md and the approved PTS business/data/security rules.
 
 For changes to PTS public frontend, before coding read:
+0. `docs/02-development/nuxt-storefront-guide.md` — where code lives, checks, owner-approved UI rules (section 4) and known traps (section 5); and `docs/11-workflows/owner-feedback-loop.md` for the working loop.
 1. `docs/15-design-delivery/00-START-HERE.md` — authority and delivery flow.
 2. `docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md` — current visual language, tokens, compositions and motion.
 3. `docs/02-development/public-ui-ux-design-system.md` — durable product, data, URL/SEO, responsive, media and accessibility contracts. Its older visual prescriptions are superseded by document 12.

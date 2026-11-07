@@ -107,7 +107,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
 .dealer-support__head h2 { margin: 0; font-size: clamp(30px, 3vw, 48px); font-weight: 850; line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
 .dealer-support__desc { margin-top: 18px; color: #c3cfdf; font-size: 17px; line-height: 1.75; }
 .dealer-support__cta { display: inline-flex; min-height: 54px; align-items: center; gap: 12px; margin-top: 28px; padding: 0 22px; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
-.dealer-support__cta:hover { filter: brightness(1.06); }
+.dealer-support__cta:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .dealer-support__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .dealer-support__cards[data-count="1"], .dealer-support__cards[data-count="3"] .dealer-benefit:last-child { grid-column: 1 / -1; }
 .dealer-benefit { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-md); background: linear-gradient(160deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease; }

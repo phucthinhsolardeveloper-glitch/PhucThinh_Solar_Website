@@ -912,7 +912,7 @@ onBeforeUnmount(() => {
       <div
         v-if="catalogOpen"
         ref="catalogOverlay"
-        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden glass-overlay"
+        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden catalog-overlay"
         aria-hidden="false"
       >
         <button
@@ -925,7 +925,7 @@ onBeforeUnmount(() => {
           id="ptsCatalogMenu"
           ref="catalogPanel"
           class="relative z-[1] mx-auto my-3 max-h-[calc(100dvh-88px)] w-[calc(100vw-24px)]
-                 overflow-auto [scrollbar-gutter:stable] rounded-btn border border-[#e5e7eb] bg-white px-[18px] pt-5 text-navy-800
+                 catalog-menu overflow-auto rounded-btn border border-[#e5e7eb] bg-white px-[18px] pt-5 text-navy-800
                  shadow-[0_18px_48px_rgba(6,21,55,.22)]
                  min-[1200px]:my-5 min-[1200px]:max-h-[calc(100dvh-64px)] min-[1200px]:w-[min(1220px,calc(100vw-64px))] min-[1200px]:px-8 min-[1200px]:pt-7"
           role="dialog"
@@ -1321,8 +1321,8 @@ onBeforeUnmount(() => {
 .pts-header-call__icon { border-radius: var(--radius-btn); background: var(--pts-gold-gradient); box-shadow: 0 2px 6px rgb(6 21 55 / 18%), inset 0 1px 0 rgb(255 255 255 / 35%); color: var(--color-navy-950); transition: filter .18s ease; }
 .pts-header-call__number { color: var(--color-navy-950); font-variant-numeric: tabular-nums; }
 .pts-header-call__label { color: var(--color-slate-600, #475569); }
-.pts-header-call:hover { transform: translateY(-1px); }
-.pts-header-call:hover .pts-header-call__icon { filter: brightness(1.05); }
+/* No lift on hover: a moving button slides out from under the pointer and flickers. */
+.pts-header-call:hover .pts-header-call__icon { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .pts-header-call:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; border-radius: var(--radius-md); }
 @media (min-width: 1681px) {
   .pts-header-call { padding: 3px 14px 3px 3px; border: 1px solid rgb(10 34 81 / 12%); border-radius: var(--radius-md); background: rgb(255 255 255 / 88%); box-shadow: 0 1px 2px rgb(6 21 55 / 8%), inset 0 1px 0 #fff; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }

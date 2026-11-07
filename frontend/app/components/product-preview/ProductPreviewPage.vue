@@ -168,7 +168,7 @@ function toggleDescription() {
           :href="'#' + item.id"
           :aria-current="activeSection === item.id ? 'location' : undefined"
           class="inline-flex min-h-11 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
-          :class="activeSection === item.id ? 'text-white' : 'text-navy-800 hover:text-gold-700'"
+          :class="activeSection === item.id ? 'text-navy-950' : 'text-navy-800 hover:text-gold-700'"
           @click="sectionSpy.lockTo(item.id)"
         >{{ item.label }}</a>
       </div>
@@ -178,7 +178,7 @@ function toggleDescription() {
     <div ref="descriptionRef" class="pdp-description" :class="{ 'is-open': descriptionOpen }">
       <ProductPreviewContent :content="content" />
     </div>
-    <button type="button" class="mb-2 min-h-11 w-full rounded-btn border border-slate-300 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription">{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</button>
+    <button type="button" class="m-more-button mb-1 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription"><span>{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</span></button>
     <ProductPreviewApplications v-if="applications?.items.length" :applications="applications" />
     <ProductPreviewBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
     <ProductPreviewSpecs :specifications="product.specifications" />

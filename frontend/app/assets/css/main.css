@@ -678,13 +678,9 @@
   }
 
   .public-filter-chip[aria-current="page"] {
-    background: linear-gradient(180deg, #123a7a 0%, #0a2251 100%);
-    box-shadow: 0 2px 5px rgba(6, 21, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* CMS icons are dark line art, so the selected chip turns them white. */
-  .public-filter-chip[aria-current="page"] img {
-    filter: brightness(0) invert(1);
+    background: var(--pts-gold-gradient);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 6px rgba(6, 21, 55, 0.16);
+    color: var(--color-navy-950);
   }
 
   .public-filter-chip:active,
@@ -780,11 +776,15 @@
   [data-fold]:not(.m-fold-open) { position: relative; max-height: 420px; overflow: hidden; }
   [data-fold="300"]:not(.m-fold-open) { max-height: 300px; }
   [data-fold="560"]:not(.m-fold-open) { max-height: 560px; }
-  .m-fold-more { position: absolute; inset: auto 0 0; z-index: 5; display: flex; justify-content: center; padding: 72px 16px 14px; background: linear-gradient(180deg, transparent, #fff 62%); cursor: pointer; }
-  .m-fold-more span { min-height: 44px; padding: 11px 20px; border: 1px solid rgb(10 34 81 / 22%); border-radius: 999px; background: #fff; color: var(--color-navy-950); font-size: 14px; font-weight: 800; line-height: 20px; }
+  .m-fold-more { position: absolute; inset: auto 0 0; z-index: 5; display: flex; justify-content: center; padding: 40px 16px 8px; background: linear-gradient(180deg, transparent, #fff 62%); cursor: pointer; }
+  /* A small label with a chevron. The whole strip stays tappable, so the pill itself can be slim. */
+  .m-fold-more span, .m-more-button span { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 18%); border-radius: var(--radius-sm); background: #fff; color: var(--color-navy-900); font-size: 13px; font-weight: 700; line-height: 1; }
+  .m-fold-more span::after, .m-more-button span::after { content: ""; width: 6px; height: 6px; margin-top: -3px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); }
+  .m-fold-more[aria-expanded="true"] span::after, .m-more-button[aria-expanded="true"] span::after { margin-top: 3px; transform: rotate(225deg); }
+  .m-more-button { display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; background: none; cursor: pointer; }
   [data-fold-dark] > .m-fold-more { background: linear-gradient(180deg, transparent, var(--color-navy-950) 62%); }
   /* Once open the button sits after the content and reads "Thu gọn". */
-  [data-fold].m-fold-open > .m-fold-more { position: static; padding: 12px 16px 16px; background: none; }
+  [data-fold].m-fold-open > .m-fold-more { position: static; padding: 6px 16px 8px; background: none; }
   /* Items of equal rank swipe sideways instead of stacking into a long column. */
   .m-rail { display: flex !important; gap: 12px !important; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
   .m-rail > * { flex: 0 0 80%; min-width: 0; scroll-snap-align: center; }
@@ -1055,7 +1055,7 @@
   nav[aria-label^="Phân trang"] > :is([aria-current], :has(+ [aria-current]), [aria-current] + *, [aria-label="Trang đầu"], [aria-label="Trang trước"], [aria-label="Trang sau"], [aria-label="Trang cuối"]):not(.catalog-pagination__ellipsis) { display: inline-flex !important; min-width: 40px; }
 
   /* Filter and sort stay in reach down a long list. */
-  .catalog-toolbar:has(.m-sticky-tools) { display: contents; }
+  .catalog-toolbar:has(.m-sticky-tools), .catalog-toolbar-host:has(.m-sticky-tools) { display: contents; }
   .m-sticky-tools { position: sticky; top: 8px; z-index: 20; margin-block: 10px 20px; }
   .filter-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding-inline: 5px; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); font-size: 11.5px; font-weight: 800; }
 }
@@ -1125,8 +1125,8 @@
   left: 0;
   z-index: 0;
   border-radius: var(--radius-sm);
-  background: linear-gradient(180deg, #123a7a 0%, #0a2251 100%);
-  box-shadow: 0 2px 5px rgb(6 21 55 / 20%), inset 0 1px 0 rgb(255 255 255 / 10%);
+  background: var(--pts-gold-gradient);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%);
   opacity: 0;
   pointer-events: none;
   transform-origin: left center;
@@ -1139,22 +1139,9 @@
   color: var(--color-navy-800);
   transition: color .28s ease, transform 180ms ease;
 }
-[data-pill-rail] .public-filter-chip::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(241 243 246 / 94%) 100%);
-  box-shadow: 0 1px 2px rgb(6 21 55 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%);
-  transition: opacity .2s ease;
-}
-[data-pill-rail] .public-filter-chip:not([data-pill-on]):hover { background: none; box-shadow: none; }
-[data-pill-rail] .public-filter-chip[data-pill-on] { color: #fff; }
-[data-pill-rail] .public-filter-chip[data-pill-on]::before { opacity: 0; }
-[data-pill-rail] .public-filter-chip img { transition: filter .28s ease; }
-[data-pill-rail] .public-filter-chip:not([data-pill-on]) img { filter: none; }
-[data-pill-rail] .public-filter-chip[data-pill-on] img { filter: brightness(0) invert(1); }
+/* The chosen chip is the only filled one: gold under navy text. The others are plain text until hovered. */
+[data-pill-rail] .public-filter-chip:not([data-pill-on]):hover { background: none; box-shadow: none; color: var(--color-gold-700); }
+[data-pill-rail] .public-filter-chip[data-pill-on] { color: var(--color-navy-950); }
 
 /* Product category rail: the same glide in the page's gold, with each chip keeping its outline. */
 .rail-pill[data-tone="gold"] { background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); }
@@ -1183,8 +1170,8 @@
 
 /* Section rails on product, about and solution pages: text chips with the same gliding pill. */
 [data-pill-rail] > a, [data-pill-rail] > div > a, [data-pill-rail] > li > a { position: relative; }
-[data-pill-rail] a[data-pill-on] { color: #fff; }
-[data-pill-rail] a[data-pill-on]:hover { background: none; color: #fff; }
+[data-pill-rail] a[data-pill-on] { color: var(--color-navy-950); }
+[data-pill-rail] a[data-pill-on]:hover { background: none; color: var(--color-navy-950); }
 
 /* Search fields carry their own clear button, and the panel above the page stays fully readable. */
 form[role="search"] input[type="search"]::-webkit-search-cancel-button { display: none; }
@@ -1201,3 +1188,52 @@ p, li, figcaption, dd, blockquote { text-wrap: pretty; }
 /* Long text: straight edges on both sides, with the last line left as it falls. */
 .text-justified { text-align: justify; text-align-last: left; text-justify: inter-word; text-wrap: wrap; }
 .text-justified .m-chunk { text-align: inherit; text-align-last: left; }
+
+/* Gold text is a gradient, like the gold buttons. One tone for dark surfaces, a deeper one to stay readable on light. */
+.pts-gold-text, .pts-gold-text-light { -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.pts-gold-text { background-image: linear-gradient(105deg, #f6dc8e 0%, #e0b654 48%, #c9962e 100%); }
+.pts-gold-text-light { background-image: linear-gradient(105deg, #c9962e 0%, #a97c1f 55%, #8a6518 100%); }
+
+/* About page: blocks rise into place once, as they come into view. Only added by script, so content never depends on it. */
+.rv { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.22, 1, .36, 1) var(--rv-delay, 0ms), transform .7s cubic-bezier(.22, 1, .36, 1) var(--rv-delay, 0ms); }
+.rv.rv-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
+/* Anything chosen wears gold: a gold gradient under navy text. */
+.pts-gold-fill { border-color: transparent !important; background: var(--pts-gold-gradient) !important; color: var(--color-navy-950) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); }
+.pts-gold-fill svg, .pts-gold-fill [class*="i-lucide"] { color: var(--color-navy-950) !important; }
+
+/* Catalog menu. It opens on hover, so the page behind only dims: blurring a whole screen on every opening is what lagged. */
+.catalog-overlay { background: rgb(240 245 252 / 72%); }
+/* On a screen tall enough the menu sizes to its content. Scrolling is only for short screens, because hidden and open
+   sub-menus count towards a scrolling box's height and left a blank band and a scrollbar. */
+@media (min-width: 1200px) and (min-height: 700px) {
+  .catalog-menu { max-height: none !important; overflow: visible !important; }
+}
+.catalog-menu > * { min-width: 0; }
+
+/* Gold actions on a desktop pointer: a band of light crosses, the glow deepens and the arrow leans forward.
+   Nothing moves the button itself, so it cannot slip from under the pointer and flicker. Phones skip this. */
+@media (hover: hover) and (min-width: 821px) and (prefers-reduced-motion: no-preference) {
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta)::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 42%) 50%, transparent 68%); transform: translateX(-120%); transition: transform .75s cubic-bezier(.22, 1, .36, 1); pointer-events: none; }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):hover:not(:disabled)::after { transform: translateX(120%); }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):hover:not(:disabled) { box-shadow: 0 12px 26px -12px rgb(180 133 31 / 80%), inset 0 0 0 999px rgb(255 255 255 / 7%) !important; }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) > :last-child[aria-hidden="true"] { transition: translate .3s cubic-bezier(.22, 1, .36, 1); }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):hover:not(:disabled) > :last-child[aria-hidden="true"] { translate: 4px 0; }
+}
+/* Lowest priority on purpose: any button already placed absolute, fixed or sticky keeps its own position. */
+@layer base {
+  @media (hover: hover) and (min-width: 821px) and (prefers-reduced-motion: no-preference) {
+    :where(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) { position: relative; overflow: hidden; isolation: isolate; }
+  }
+}
+
+/* Touch screens have no hover, so a press must answer at once: the gold button shades and sinks slightly
+   (the shrink comes from the shared :active rule) and its arrow leans forward. */
+@media (hover: none) {
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) { -webkit-tap-highlight-color: transparent; transition: box-shadow .12s ease; }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):active:not(:disabled) { box-shadow: inset 0 0 0 999px rgb(6 21 55 / 10%), 0 2px 8px -2px rgb(180 133 31 / 60%) !important; }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) > :last-child[aria-hidden="true"] { transition: translate .15s ease; }
+  :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):active:not(:disabled) > :last-child[aria-hidden="true"] { translate: 3px 0; }
+}
+

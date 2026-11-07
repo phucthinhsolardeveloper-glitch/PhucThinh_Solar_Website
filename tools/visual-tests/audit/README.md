@@ -29,3 +29,23 @@ Toàn bộ script đo đã viết trong đợt nâng cấp tháng 11/2026, giữ
 ## Thêm kiểm tra mới
 
 Lỗi nào quét tự động được thì thêm vào `site-audit.cjs`. Lỗi cần giữ lâu dài thì thêm vào `nuxt-tests/`.
+
+## Script theo vấn đề (đợt 2026-11-07)
+
+Chạy từ `tools/visual-tests` với `PLAYWRIGHT_BROWSERS_PATH=$PWD/.browsers`. Mọi script chặn widget dịch `cdn.gtranslate.net`, vì widget đó tự đổi trang sang tiếng Anh trong trình duyệt tự động.
+
+| Script | Kiểm tra gì |
+|---|---|
+| `stage-story.cjs [thư mục]` | Mô hình 3D trang chủ: từng cảnh, tự xoay, quay lại, trên máy tính và điện thoại (`AUDIT_ONLY=phone`). Chậm vì dùng đồ họa giả lập |
+| `sort-toolbar.cjs [route]` | Thanh Bộ lọc/Sắp xếp từ 412 đến 1280px: ô bị cắt, tràn ngang |
+| `form-fit.cjs [thư mục]` | Form tư vấn và đại lý có vừa một màn không, còn chữ "không bắt buộc" không. Không gửi form |
+| `gold-selected.cjs [thư mục]` | Bấm một lựa chọn trong từng form, báo màu ô đang chọn. Không gửi form |
+| `section-rail-clicks.cjs` | Bấm chuột thật từng mục và nhảy cóc trên thanh mục: có tới nơi, ô sáng có đúng không. Khoảng 5 phút |
+| `chip-rails.cjs [thư mục]` | Màu viên trượt và chữ ô đang chọn trên 6 loại trang |
+| `phone-rail-overlap.cjs [thư mục]` | Trên điện thoại: ô đang chọn có bị che, viên trượt có khớp và nằm trong thanh |
+| `about-history.cjs [thư mục]` | Lịch sử hình thành khi cuộn ở 3 cỡ màn, và thanh tìm kiếm có dính trên điện thoại |
+| `header-menu.cjs [thư mục]` | Header và menu danh mục từ 1024 đến 2560px: tràn, cuộn, menu con ra ngoài màn |
+| `button-hover.cjs` | Rê chuột qua mọi nút vàng trên 9 trang: nút nào xê dịch hoặc bật `filter` thì sẽ giật |
+| `page-speed.cjs` | Tác vụ dài khi tải trang, mở menu, cuộn, với CPU chậm 4 lần |
+| `word-scan.cjs "từ" ...` | Tìm chữ trên tối đa 80 trang, kể cả chữ ẩn trong dữ liệu trang, dùng khi gỡ một dữ kiện cũ |
+

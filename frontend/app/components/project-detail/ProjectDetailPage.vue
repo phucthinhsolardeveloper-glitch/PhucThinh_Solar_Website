@@ -97,7 +97,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </div>
         <a
           :href="links.generic('/lien-he/#yeu-cau-tu-van')"
-          class="hidden min-h-10 items-center gap-1.5 rounded-btn bg-navy-900 px-3.5 py-1.5 text-xs font-extrabold text-gold-300 no-underline transition-colors hover:bg-navy-800 tb:inline-flex cursor-pointer"
+          class="hidden min-h-10 items-center gap-1.5 text-sm font-extrabold text-gold-700 no-underline transition-colors hover:text-navy-900 tb:inline-flex cursor-pointer"
           @click.prevent="openConsultation('Dự án: ' + project.title)"
         >
           <span>Nhận báo giá cấu hình này</span>
@@ -163,7 +163,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 .project-story__hero {
   position: relative;
   isolation: isolate;
-  min-height: clamp(560px, 82vh, 860px);
+  min-height: clamp(460px, 66vh, 700px);
   overflow: clip;
   grid-template-columns: minmax(0, 1fr);
 }
@@ -218,7 +218,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 .project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
 .project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-.project-story__primary:hover { filter: brightness(1.06); }
+.project-story__primary:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .project-story__primary:hover > span { transform: translateX(4px); }
 .project-story__more { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: #d3dcea; font-size: 15.5px; font-weight: 700; text-decoration: none; }
 .project-story__more:hover { color: var(--color-gold-300); }

@@ -5,6 +5,7 @@ import { useLeadForm } from '~/composables/useLeadForm'
 const { isDealerOpen, closeDealer } = useStorefrontModal()
 const { security, ensureSecurity, refreshSecurity, submit } = useLeadForm()
 
+const detailsOpen = ref(false)
 const form = reactive({
   fullname: '',
   phone: '',
@@ -34,10 +35,10 @@ function appendDealerNote(chip: string) {
   form.notes = current ? `${current}; ${chip}` : chip
 }
 const inputUi = {
-  base: 'h-14 w-full rounded-btn border border-slate-300 bg-white px-4 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+  base: 'h-12 sm:h-14 w-full rounded-btn border border-slate-300 bg-white px-3 sm:px-4 max-sm:placeholder:text-[14px] text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
 const selectUi = {
-  base: 'h-14 w-full rounded-btn border border-slate-300 bg-white px-4 text-base font-normal text-navy-950 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+  base: 'h-12 sm:h-14 w-full rounded-btn border border-slate-300 bg-white px-3 sm:px-4 max-sm:placeholder:text-[14px] text-base font-normal text-navy-950 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
 const textareaUi = {
   base: 'min-h-[144px] w-full rounded-btn border border-slate-300 bg-white px-4 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
@@ -106,6 +107,7 @@ async function send() {
     form.cityId = ''
     form.company = ''
     form.notes = ''
+    detailsOpen.value = false
   } catch (reason: any) {
     error.value = reason?.data?.statusMessage || reason?.statusMessage || reason?.message || 'Không thể gửi đăng ký đối tác & đại lý. Vui lòng thử lại.'
   } finally {
@@ -122,10 +124,10 @@ async function send() {
     :ui="{
       overlay: 'glass-overlay',
       content: 'shadow-[0_28px_70px_-24px_rgb(6_21_55/45%)] w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
-      header: 'px-6 pt-7 pb-3 border-b-0 relative sm:px-10 sm:pt-10',
-      title: 'text-[clamp(24px,3vw,32px)] font-black tracking-tight text-navy-950',
-      description: 'mt-2 max-w-3xl text-[16px] leading-7 text-slate-600',
-      body: 'px-6 pt-3 pb-7 sm:px-10 sm:pb-10',
+      header: 'px-5 pt-5 pb-1 border-b-0 relative sm:px-10 sm:pt-10 sm:pb-3',
+      title: 'pr-8 text-[clamp(21px,3vw,32px)] leading-tight font-black tracking-tight text-navy-950',
+      description: 'mt-1.5 max-w-3xl text-[14.5px] leading-6 text-slate-600 sm:mt-2 sm:text-[16px] sm:leading-7',
+      body: 'px-5 pt-2 pb-5 sm:px-10 sm:pt-3 sm:pb-10',
       close: 'text-slate-400 hover:text-slate-700 top-5 right-5',
     }"
   >
@@ -151,8 +153,8 @@ async function send() {
         </div>
       </div>
 
-      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-4" @submit.prevent="send">
-        <div class="grid grid-cols-2 gap-2 rounded-btn bg-navy-950 p-3.5 text-xs text-white sm:grid-cols-4">
+      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-3" @submit.prevent="send">
+        <div class="grid grid-cols-4 gap-2 rounded-btn bg-navy-950 p-3.5 text-xs text-white max-sm:hidden">
           <div class="border-l-2 border-gold-500 pl-2.5">
             <strong class="block text-gold-300">Chiết khấu gốc</strong>
             <span class="text-white/75">Nhập khẩu trực tiếp</span>
@@ -171,26 +173,27 @@ async function send() {
           </div>
         </div>
 
-        <div class="grid min-w-0 gap-x-6 gap-y-5 sm:grid-cols-2">
+        <div class="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3 sm:gap-x-6 sm:gap-y-5">
           <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
-            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
+            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Email" name="email" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
-            <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" variant="none" class="w-full" :ui="inputUi" />
+            <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="ten@congty.vn" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Tỉnh/Thành phố" name="cityId" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
-            <USelect v-model="form.cityId" name="cityId" required :disabled="securityLoading || !cityOptions.length" :items="cityOptions" :placeholder="securityLoading ? 'Đang tải tỉnh/thành…' : '-- Chọn tỉnh/thành --'" color="neutral" variant="none" class="w-full" :ui="selectUi" />
+            <USelect v-model="form.cityId" name="cityId" required :disabled="securityLoading || !cityOptions.length" :items="cityOptions" :placeholder="securityLoading ? 'Đang tải tỉnh/thành…' : 'Tỉnh/thành'" color="neutral" variant="none" class="w-full" :ui="selectUi" />
           </UFormField>
         </div>
 
         <UFormField label="Khu vực kinh doanh / Tên cửa hàng" name="company" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
-          <UInput v-model.trim="form.company" name="company" required maxlength="180" autocomplete="organization" placeholder="Tên doanh nghiệp, cửa hàng hoặc khu vực dự kiến kinh doanh" variant="none" class="w-full" :ui="inputUi" />
+          <UInput v-model.trim="form.company" name="company" required maxlength="180" autocomplete="organization" placeholder="Tên cửa hàng hoặc khu vực" variant="none" class="w-full" :ui="inputUi" />
         </UFormField>
 
-        <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
+        <FormMoreToggle v-if="!detailsOpen" @click="detailsOpen = true" />
+        <UFormField v-if="detailsOpen" label="Ghi chú thêm" name="notes" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
           <div class="mb-1.5 flex flex-wrap gap-1.5" aria-label="Mô hình đối tác gợi ý">
             <button
               v-for="chip in partnerProfiles"
