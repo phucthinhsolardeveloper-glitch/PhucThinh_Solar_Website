@@ -3,7 +3,9 @@ import type { RouteLocationRaw } from 'vue-router'
 import type { PublicCatalogHero } from '#shared/contracts/public-catalog'
 import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 
-export interface CatalogMastheadBrand { id: number; name: string; to: RouteLocationRaw; active: boolean }
+const NuxtLinkComponent = resolveComponent('NuxtLink')
+
+export interface CatalogMastheadBrand { id: number; name: string; to?: RouteLocationRaw; active: boolean }
 
 const props = withDefaults(defineProps<{
   heading: string
@@ -56,33 +58,7 @@ watch(() => props.hero?.image, () => { heroFailed.value = false; heroThumbFailed
 const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
 const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
-const brandLogoByName: Record<string, string> = {
-  aesolar: '/assets/images/brand-logos/aesolar.webp',
-  ankersolix: '/assets/images/brand-logos/ankersolix.webp',
-  astronergy: '/assets/images/brand-logos/astronergy.webp',
-  deye: '/assets/images/brand-logos/deye.webp',
-  goodwe: '/assets/images/brand-logos/goodwe.webp',
-  growatt: '/assets/images/brand-logos/growatt.webp',
-  sigenergy: '/assets/images/brand-logos/sigenergy.webp',
-  sofar: '/assets/images/brand-logos/sofar.webp',
-  tclsolar: '/assets/images/brand-logos/tclsolar.webp',
-  bluecarbon: '/assets/images/brand-logos/bluecarbon.webp',
-  canadiansolar: '/assets/images/brand-logos/canadiansolar.webp',
-  epsivo: '/assets/images/brand-logos/epsivo.webp',
-  hober: '/assets/images/brand-logos/hober.webp',
-  huawei: '/assets/images/brand-logos/huawei.webp',
-  jdjindian: '/assets/images/brand-logos/jdjindian.webp',
-  jindian: '/assets/images/brand-logos/jdjindian.webp',
-  longi: '/assets/images/brand-logos/longi.webp',
-  oriana: '/assets/images/brand-logos/oriana.webp',
-  sharp: '/assets/images/brand-logos/sharp.webp',
-  solax: '/assets/images/brand-logos/solax.webp',
-  sungrow: '/assets/images/brand-logos/sungrow.webp',
-}
-
-function brandLogo(name: string): string {
-  return brandLogoByName[name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')] || ''
-}
+const brandLogo = partnerBrandLogo
 </script>
 
 <template>
@@ -121,17 +97,19 @@ function brandLogo(name: string): string {
           <p>{{ description }}</p>
 
           <nav v-if="brands.length" class="masthead-brands" aria-label="Lọc nhanh theo thương hiệu">
-            <NuxtLink
+            <component
+              :is="brand.to ? NuxtLinkComponent : 'span'"
               v-for="brand in brands"
               :key="brand.id"
               :to="brand.to"
-              :aria-label="`Xem thương hiệu ${brand.name}`"
+              :aria-label="brand.to ? `Xem thương hiệu ${brand.name}` : undefined"
               :aria-current="brand.active ? 'true' : undefined"
               :data-active="brand.active"
+              class="masthead-brand"
             >
               <img v-if="brandLogo(brand.name)" :src="brandLogo(brand.name)" :alt="brand.name" width="120" height="40" loading="lazy" decoding="async">
               <span v-else>{{ brand.name }}</span>
-            </NuxtLink>
+            </component>
           </nav>
         </div>
       </div>
@@ -212,7 +190,7 @@ function brandLogo(name: string): string {
 .masthead-copy > p { max-width: 54ch; margin: 14px 0 0; color: rgb(226 232 240 / 92%); font-size: 17px; line-height: 1.6; }
 
 .masthead-brands { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-.masthead-brands a {
+.masthead-brands .masthead-brand {
   display: inline-flex;
   min-width: 104px;
   min-height: 40px;
@@ -232,10 +210,10 @@ function brandLogo(name: string): string {
   text-decoration: none;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
-.masthead-brands a img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
-.masthead-brands a:hover { background: #fff; }
-.masthead-brands a[data-active="true"] { border-color: var(--color-gold-500); background: #fff; box-shadow: 0 0 0 2px var(--color-gold-400); }
-.masthead-brands a:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
+.masthead-brands .masthead-brand img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
+.masthead-brands a.masthead-brand:hover { background: #fff; }
+.masthead-brands .masthead-brand[data-active="true"] { border-color: var(--color-gold-500); background: #fff; box-shadow: 0 0 0 2px var(--color-gold-400); }
+.masthead-brands a.masthead-brand:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 
 @keyframes photo-settle { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
 @keyframes sun-rise { from { opacity: 0; transform: translateY(18%); } to { opacity: 1; transform: translateY(0); } }
@@ -251,7 +229,7 @@ function brandLogo(name: string): string {
   .masthead-copy > p { margin-top: 8px; font-size: 16px; }
   .masthead-brands { flex-wrap: nowrap; margin-top: 16px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
   .masthead-brands::-webkit-scrollbar { display: none; }
-  .masthead-brands a { flex: 0 0 auto; min-height: 44px; }
+  .masthead-brands .masthead-brand { flex: 0 0 auto; min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .masthead-sun, .masthead-photo { animation: none; }
@@ -265,9 +243,9 @@ function brandLogo(name: string): string {
   /* Logos are dark or blue, so they sit on a near-white plate. Solid on purpose: a dozen blurred chips would cost GPU for no visible gain. */
   .masthead-brands { flex-wrap: nowrap; gap: 8px; margin-top: 12px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-padding-inline: 16px; scrollbar-width: none; }
   .masthead-brands::-webkit-scrollbar { display: none; }
-  .masthead-brands a { flex: 0 0 auto; min-width: 92px; min-height: 44px; padding: 0 12px; border-color: rgb(255 255 255 / 70%); border-radius: var(--radius-md); background: rgb(255 255 255 / 88%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 75%), 0 4px 12px rgb(3 12 31 / 18%); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); font-size: 13px; }
-  .masthead-brands a:hover { background: #fff; transform: none; }
-  .masthead-brands a img { max-width: 84px; height: 24px; }
+  .masthead-brands .masthead-brand { flex: 0 0 auto; min-width: 92px; min-height: 44px; padding: 0 12px; border-color: rgb(255 255 255 / 70%); border-radius: var(--radius-md); background: rgb(255 255 255 / 88%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 75%), 0 4px 12px rgb(3 12 31 / 18%); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); font-size: 13px; }
+  .masthead-brands a.masthead-brand:hover { background: #fff; transform: none; }
+  .masthead-brands .masthead-brand img { max-width: 84px; height: 24px; }
 }
 @media (max-width: 769px) {
   .catalog-benefits { row-gap: 2px; padding-block: 6px; }

@@ -31,35 +31,9 @@ const certificateTrigger = ref<HTMLElement | null>(null)
 const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
-const partnerBrands = [
-  { name: 'AESOLAR', logo: 'aesolar.webp' },
-  { name: 'Anker SOLIX', logo: 'ankersolix.webp' },
-  { name: 'Astronergy', logo: 'astronergy.webp' },
-  { name: 'Blue Carbon', logo: 'bluecarbon.webp' },
-  { name: 'Canadian Solar', logo: 'canadiansolar.webp' },
-  { name: 'Deye', logo: 'deye.webp' },
-  { name: 'EPSIVO', logo: 'epsivo.webp' },
-  { name: 'GoodWe', logo: 'goodwe.webp' },
-  { name: 'Growatt', logo: 'growatt.webp' },
-  { name: 'Hober', logo: 'hober.webp' },
-  { name: 'Huawei', logo: 'huawei.webp' },
-  { name: 'Jindian', logo: 'jdjindian.webp' },
-  { name: 'LONGi', logo: 'longi.webp' },
-  { name: 'Oriana', logo: 'oriana.webp' },
-  { name: 'Sharp', logo: 'sharp.webp' },
-  { name: 'Sigenergy', logo: 'sigenergy.webp' },
-  { name: 'SOFAR', logo: 'sofar.webp' },
-  { name: 'SolaX', logo: 'solax.webp' },
-  { name: 'Sungrow', logo: 'sungrow.webp' },
-  { name: 'TCL Solar', logo: 'tclsolar.webp' },
-]
-function normalizeBrandName(value: string): string {
-  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
-}
+const partnerBrands = PARTNER_BRANDS
 const partnerBrandsWithProducts = computed(() => partnerBrands.map((brand) => {
-  const name = normalizeBrandName(brand.name)
-  const aliases = brand.name === 'Jindian' ? [name, 'jdjindian'] : [name]
-  const match = (brandCatalogData.value?.filters?.brands ?? []).find((option) => aliases.includes(normalizeBrandName(option.name)))
+  const match = (brandCatalogData.value?.filters?.brands ?? []).find((option) => brandKey(option.name) === brandKey(brand.name))
   return { ...brand, href: match ? `/san-pham/?brand=${match.id}` : null }
 }))
 const aboutSectionNavItems = computed(() => [

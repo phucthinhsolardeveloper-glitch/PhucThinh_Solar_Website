@@ -65,10 +65,16 @@ function filterLink(overrides: { subcategory?: string; brand?: string; price?: s
 // Masthead brand shortcuts toggle the same `brand` filter as the sidebar.
 const mastheadBrands = computed(() => {
   const selectedIds = catalogData.value?.selected?.brandIds ?? []
-  return (catalogData.value?.filters?.brands ?? []).map((item) => {
+  const withProducts = (catalogData.value?.filters?.brands ?? []).map((item) => {
     const active = selectedIds.includes(item.id)
     return { id: item.id, name: item.name, active, to: filterLink({ brand: active ? '' : String(item.id) }) }
   })
+  if (category.value) return withProducts
+  // The product landing page shows every partner logo; brands without products yet are shown, not linked.
+  const known = new Set(withProducts.map((item) => brandKey(item.name)))
+  const others = PARTNER_BRANDS.filter((brand) => !known.has(brandKey(brand.name)))
+    .map((brand, index) => ({ id: -1 - index, name: brand.name, active: false }))
+  return [...withProducts, ...others]
 })
 function onSortChange(value: string) {
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
@@ -80,8 +86,12 @@ function openFilterDrawer() {
 function closeFilterDrawer() {
   filterDrawerOpen.value = false
 }
+// Ticking a brand, price or need only changes the query, so the drawer stays open for the next choice.
+// Moving to another category page is a real navigation and closes it.
 function closeFilterDrawerAfterNavigation(event: MouseEvent) {
-  if (event.target instanceof Element && event.target.closest('a[href]')) closeFilterDrawer()
+  const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null
+  if (!link) return
+  if (new URL(link.href, window.location.href).pathname !== window.location.pathname) closeFilterDrawer()
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
   const payload = await $fetch<unknown>('/_migration/site')
@@ -537,8 +547,8 @@ function pageLink(nextPage: number) {
             />
           </div>
           <!-- Filters apply as soon as they are tapped, so this only returns to the results. -->
-          <div class="flex-none border-t border-slate-200 p-3 tb:hidden">
-            <button type="button" class="m-gold-cta min-h-12 w-full rounded-full bg-[image:var(--pts-gold-gradient)] text-[15px] font-extrabold text-navy-950" @click="closeFilterDrawer">Xem sản phẩm</button>
+          <div class="flex-none border-t border-slate-200 p-3">
+            <button type="button" class="m-gold-cta min-h-12 w-full rounded-full bg-[image:var(--pts-gold-gradient)] text-[15px] font-extrabold text-navy-950" @click="closeFilterDrawer">{{ catalogData ? `Xem ${catalogData.pagination.total} sản phẩm` : 'Xem sản phẩm' }}</button>
           </div>
         </div>
       </template>
