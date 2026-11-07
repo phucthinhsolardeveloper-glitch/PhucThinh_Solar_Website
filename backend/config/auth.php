@@ -42,6 +42,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // Filament: admins from the PHP-era table_user, read-only while both admins run.
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'legacy_admins',
+        ],
     ],
 
     /*
@@ -62,6 +68,10 @@ return [
     */
 
     'providers' => [
+        'legacy_admins' => [
+            'driver' => 'legacy-admin',
+        ],
+
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),

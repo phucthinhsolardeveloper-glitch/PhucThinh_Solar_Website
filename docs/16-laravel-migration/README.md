@@ -21,6 +21,7 @@ có xung đột và không ép push.
 |---|---|---|
 | 0 — Đóng băng và kiểm kê | Xong, 2026-11-07 (còn xác nhận bản đồ domain) | [phase-0/](phase-0/) |
 | 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
+| 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 
 ## Gate Phase 0
@@ -52,8 +53,20 @@ Chạy lại kiểm kê: `python3 tools/migration/phase0_inventory.py` từ gố
   `lv_users` của bản sao và sẽ bỏ khi Filament đọc `table_user`.
 - Site cũ không đổi: Nuxt 3100 và PHP 8088 vẫn chạy; database `phucthinhs_local` không có bảng `lv_`.
 
+## Đăng nhập
+
+- Filament `/admin-next` dùng guard `admin`, đọc `table_user` qua `App\Legacy\Auth\LegacyAdminUserProvider`.
+- Mật khẩu kiểm như PHP cũ (`LegacyPasswordVerifier`): hash hiện đại qua `password_verify`, hash cũ
+  `md5(secret . mật khẩu . salt)`. `LEGACY_ADMIN_SECRET` và `LEGACY_ADMIN_SALT` lấy từ `libraries/config.php`,
+  chỉ nằm trong `backend/.env`.
+- Chỉ tài khoản có `hienthi` trong `status` được vào. Đăng nhập bằng tên đăng nhập, không phải e-mail.
+- Không ghi gì vào `table_user`: không băm lại mật khẩu, không đổi `user_token`, `login_session`, `lastlogin`.
+  Mô hình `AdminUser` chặn mọi lệnh lưu. Lý do: PHP cũ kiểm tra token để chặn đăng nhập song song;
+  nếu Laravel đổi token thì người đang dùng Admin cũ bị đẩy ra.
+- Quyền: `role = 3` toàn quyền; các vai trò khác đọc `table_permission` của nhóm đang bật, giống
+  `adminPermissionGranted()`. Chưa áp quyền vào màn hình nào vì chưa có màn hình.
+
 ## Việc tiếp theo
 
-Theo [spec-review.md](spec-review.md): đọc `table_user` qua verifier cũ làm trước Filament quản lý
-bất kỳ domain nào; sau đó Phase 2, lớp tương thích (giá trị trạng thái, chữ song ngữ, thời gian số
+Phase 2, lớp tương thích (giá trị trạng thái, chữ song ngữ, thời gian số
 nguyên, giá DOUBLE) và golden master cho các API đọc.
