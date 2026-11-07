@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * Liveness plus one read on each connection: the Laravel tables (lv_*) and the PHP-era tables (table_*).
- * It never writes, so it is safe to call from any monitor.
+ * Liveness plus one database read. It never writes, so it is safe to call from any monitor.
  */
 class HealthController extends Controller
 {
@@ -22,11 +21,11 @@ class HealthController extends Controller
             $checks['database'] = 'unavailable';
         }
         try {
-            $checks['legacy_products'] = DB::connection('legacy')->table('table_product')->count();
+            $checks['products'] = DB::table('products')->count();
         } catch (Throwable) {
-            $checks['legacy_products'] = 'unavailable';
+            $checks['products'] = 'unavailable';
         }
-        $healthy = $checks['database'] === 'ok' && is_int($checks['legacy_products']);
+        $healthy = $checks['database'] === 'ok' && is_int($checks['products']);
 
         return response()->json([
             'status' => $healthy ? 'ok' : 'degraded',

@@ -17,9 +17,8 @@ class Shipping
         if ($cityId <= 0 || $wardId <= 0) {
             return ['ok' => false, 'error' => 'Vui lòng chọn tỉnh/thành phố và phường/xã.', 'quotes' => [], 'providers' => $carriers];
         }
-        $place = (array) (DB::connection('legacy')->selectOne("select c.id as city_id, c.name as city_name, w.id as ward_id, w.name as ward_name, w.code as ward_code, w.ship_price
-            from table_ward w inner join table_city c on c.id = w.id_city where w.id = ? and w.id_city = ? and w.id_district = 0
-            and find_in_set('hienthi', w.status) and find_in_set('hienthi', c.status) limit 0,1", [$wardId, $cityId]) ?? []);
+        $place = (array) (DB::selectOne('select p.id as city_id, p.name as city_name, w.id as ward_id, w.name as ward_name, w.code as ward_code, w.shipping_fee as ship_price
+            from wards w inner join provinces p on p.id = w.province_id where w.id = ? and w.province_id = ? and w.is_visible = 1 and p.is_visible = 1 limit 0,1', [$wardId, $cityId]) ?? []);
         if (! $place) {
             return ['ok' => false, 'error' => 'Phường/xã không thuộc tỉnh/thành phố đã chọn.', 'quotes' => [], 'providers' => $carriers];
         }

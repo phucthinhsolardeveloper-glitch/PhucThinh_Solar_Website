@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Storage::fake('thumbs');
-    $files = glob(rtrim((string) config('legacy.upload_path'), '/').'/product/*.{png,jpg}', GLOB_BRACE) ?: [];
+    $files = glob(rtrim((string) config('site.upload_path'), '/').'/product/*.{png,jpg}', GLOB_BRACE) ?: [];
     $this->file = $files ? basename($files[0]) : null;
     if ($this->file === null) {
         $this->markTestSkipped('No product picture in the upload volume.');

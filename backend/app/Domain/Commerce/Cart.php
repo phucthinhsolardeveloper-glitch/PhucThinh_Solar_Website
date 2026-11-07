@@ -2,6 +2,8 @@
 
 namespace App\Domain\Commerce;
 
+use App\Domain\Catalog\CategoryTree;
+use App\Domain\Catalog\ProductDetail\ProductRecord;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
 use Illuminate\Contracts\Session\Session;
@@ -75,17 +77,18 @@ class Cart
         $this->session->forget('cart');
     }
 
-    /** @return array<string, mixed>|null the whole product row, like Cart::getProductInfo() */
+    /** @return array<string, mixed>|null the product in the shape the price and cart rules read */
     public function product(int $id): ?array
     {
-        $row = $id > 0 ? DB::connection('legacy')->table('table_product')->where('id', $id)->first() : null;
+        $row = $id > 0 ? DB::table('products')->where('id', $id)->first() : null;
 
-        return $row ? (array) $row : null;
+        return $row ? ProductRecord::from((array) $row, app(CategoryTree::class)) : null;
     }
 
-    public function optionLabel(string $table, int $id): string
+    /** Name of a colour or size option chosen for a cart line. */
+    public function optionLabel(string $kind, int $id): string
     {
-        return $id > 0 ? (string) (DB::connection('legacy')->table($table)->where('id', $id)->value('namevi') ?? '') : '';
+        return $id > 0 ? (string) (DB::table('product_options')->where('kind', $kind)->where('id', $id)->value('name') ?? '') : '';
     }
 
     /** Sale price when set, else list price, times quantity (Cart::getOrderTotal()). */

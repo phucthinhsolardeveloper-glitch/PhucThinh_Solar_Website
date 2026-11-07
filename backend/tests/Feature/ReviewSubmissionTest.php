@@ -7,12 +7,10 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    DB::connection('legacy')->beginTransaction();
-    Storage::fake('legacy_upload');
+    Storage::fake('uploads');
     RateLimiter::clear('form:review|127.0.0.1');
-    $this->productId = DB::connection('legacy')->table('table_product')->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status)")->value('id');
+    $this->productId = DB::table('products')->where('is_visible', true)->value('id');
 });
-afterEach(fn () => DB::connection('legacy')->rollBack());
 
 function review(array $fields): array
 {
@@ -21,8 +19,8 @@ function review(array $fields): array
 
 it('queues a text review for approval', function () {
     $this->postJson('/api/v1/review', review([]))->assertOk()->assertJsonPath('ok', true);
-    $row = DB::connection('legacy')->table('table_comment')->orderByDesc('id')->first();
-    expect($row->status)->toBe('new-admin')->and((int) $row->id_variant)->toBe((int) $this->productId);
+    $row = DB::table('reviews')->orderByDesc('id')->first();
+    expect($row->status)->toBe('pending')->and((int) $row->product_id)->toBe((int) $this->productId);
 });
 
 it('refuses bad stars, phones and tokens', function () {
@@ -34,10 +32,10 @@ it('refuses bad stars, phones and tokens', function () {
 it('stores up to three real photos and rejects a renamed non-image', function () {
     $photos = [UploadedFile::fake()->image('a.jpg'), UploadedFile::fake()->image('b.png')];
     $this->post('/api/v1/review', review(['review-file-photo' => $photos]), ['Content-Type' => 'multipart/form-data'])->assertOk();
-    $id = DB::connection('legacy')->table('table_comment')->max('id');
-    $files = DB::connection('legacy')->table('table_comment_photo')->where('id_parent', $id)->pluck('photo');
+    $id = DB::table('reviews')->max('id');
+    $files = DB::table('review_media')->where('review_id', $id)->where('kind', 'photo')->pluck('path');
     expect($files)->toHaveCount(2);
-    Storage::disk('legacy_upload')->assertExists('photo/'.$files[0]);
+    Storage::disk('uploads')->assertExists('photo/'.$files[0]);
 
     $fake = UploadedFile::fake()->createWithContent('c.jpg', 'not an image');
     $this->post('/api/v1/review', review(['review-file-photo' => [$fake]]), ['Content-Type' => 'multipart/form-data'])->assertStatus(422);

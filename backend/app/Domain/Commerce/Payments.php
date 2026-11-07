@@ -4,7 +4,7 @@ namespace App\Domain\Commerce;
 
 use Illuminate\Support\Facades\DB;
 
-/** Payment methods (Admin "hinh-thuc-thanh-toan" rows, plus VNPay when configured) and VNPay signing. */
+/** Payment methods set in Admin, plus VNPay when configured, and VNPay signing. */
 class Payments
 {
     public const VNPAY_ID = -1;
@@ -12,7 +12,7 @@ class Payments
     /** @return list<array{id: int, namevi: string, descvi: string, slugvi?: string}> */
     public function visible(): array
     {
-        $methods = array_map(fn ($row) => (array) $row, DB::connection('legacy')->select("select namevi, descvi, id from table_news where type = 'hinh-thuc-thanh-toan' and find_in_set('hienthi',status) order by numb,id desc"));
+        $methods = array_map(fn ($row) => (array) $row, DB::select("select name as namevi, coalesce(description,'') as descvi, id from payment_methods where is_visible = 1 order by sort_order,id desc"));
         if (self::vnpayConfigured()) {
             $methods[] = ['namevi' => 'Thanh toán online qua VNPay', 'descvi' => 'Thanh toán qua ứng dụng ngân hàng, thẻ hoặc ví được VNPay hỗ trợ.', 'id' => self::VNPAY_ID, 'slugvi' => 'vnpay'];
         }
@@ -27,7 +27,7 @@ class Payments
             return self::vnpayConfigured() ? ['id' => self::VNPAY_ID, 'namevi' => 'Thanh toán online qua VNPay', 'slugvi' => 'vnpay'] : [];
         }
 
-        return $id > 0 ? (array) (DB::connection('legacy')->selectOne("select id, namevi, slugvi from table_news where id = ? and type = 'hinh-thuc-thanh-toan' and find_in_set('hienthi',status) limit 0,1", [$id]) ?? []) : [];
+        return $id > 0 ? (array) (DB::selectOne("select id, name as namevi, coalesce(slug,'') as slugvi from payment_methods where id = ? and is_visible = 1 limit 0,1", [$id]) ?? []) : [];
     }
 
     public static function vnpayConfigured(): bool

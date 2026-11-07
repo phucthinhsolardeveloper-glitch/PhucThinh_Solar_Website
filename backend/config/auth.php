@@ -43,10 +43,10 @@ return [
             'provider' => 'users',
         ],
 
-        // Filament: admins from the PHP-era table_user, read-only while both admins run.
+        // Filament admin: users table, signed in by username.
         'admin' => [
             'driver' => 'session',
-            'provider' => 'legacy_admins',
+            'provider' => 'admins',
         ],
     ],
 
@@ -68,8 +68,8 @@ return [
     */
 
     'providers' => [
-        'legacy_admins' => [
-            'driver' => 'legacy-admin',
+        'admins' => [
+            'driver' => 'admin-users',
         ],
 
         'users' => [

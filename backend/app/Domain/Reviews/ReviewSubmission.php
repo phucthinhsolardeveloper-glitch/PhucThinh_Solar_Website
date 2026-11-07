@@ -16,7 +16,7 @@ use Throwable;
 
 /**
  * Product review from the product page (api/pts_v1_review.php + Comments::add): stars, text, up to
- * three photos and one video with poster. Reviews wait for Admin approval ("new-admin"); a matching
+ * three photos and one video with poster. Reviews wait for Admin approval (status "pending"); a matching
  * order code (same product, phone and email) adds the "verified-purchase" badge.
  */
 class ReviewSubmission
@@ -48,8 +48,8 @@ class ReviewSubmission
 
         $input = $multipart && is_array($body['dataReview'] ?? null) ? $body['dataReview'] : $body;
         $productId = (int) (is_scalar($input['productId'] ?? $input['id_variant'] ?? null) ? ($input['productId'] ?? $input['id_variant']) : 0);
-        $db = DB::connection('legacy');
-        if ($productId <= 0 || ! $db->table('table_product')->where('id', $productId)->where('type', 'san-pham')->whereRaw("find_in_set('hienthi',status)")->exists()) {
+        $db = DB::connection();
+        if ($productId <= 0 || ! $db->table('products')->where('id', $productId)->where('is_visible', true)->exists()) {
             return [404, ['errors' => ['Sản phẩm không tồn tại.']]];
         }
         $text = fn (string $key, int $max) => is_scalar($input[$key] ?? null) ? mb_substr(trim((string) $input[$key]), 0, $max) : '';
@@ -91,10 +91,10 @@ class ReviewSubmission
                 $errors[] = 'Chưa nhập mã đơn hàng';
             }
         } else {
-            $order = $db->selectOne('select o.phone, o.email from table_order o inner join table_order_detail od on od.id_order = o.id where o.code = ? and od.id_product = ? limit 0,1', [$orderCode, $productId]);
+            $order = $db->selectOne('select o.phone, o.email from orders o inner join order_items i on i.order_id = o.id where o.code = ? and i.product_id = ? limit 0,1', [$orderCode, $productId]);
             $digits = fn ($v) => (string) preg_replace('/[^0-9]/', '', (string) $v);
-            $verified = $order && $digits($data['phone']) !== '' && $digits($data['phone']) === $digits(htmlspecialchars_decode((string) $order->phone))
-                && $data['email'] !== '' && strtolower($data['email']) === strtolower(trim(htmlspecialchars_decode((string) $order->email)));
+            $verified = $order && $digits($data['phone']) !== '' && $digits($data['phone']) === $digits((string) $order->phone)
+                && $data['email'] !== '' && strtolower($data['email']) === strtolower(trim((string) $order->email));
             if (! $verified && $requireOrder) {
                 $errors[] = 'Không tìm thấy đơn hàng phù hợp với sản phẩm và thông tin liên hệ';
             }
@@ -129,20 +129,19 @@ class ReviewSubmission
             return [422, ['errors' => $errors]];
         }
 
-        $row = array_map(fn ($v) => htmlspecialchars(strip_tags($v)), $data) + [
-            'id_variant' => $productId, 'type' => 'san-pham', 'star' => $star,
-            'status' => $verified ? 'new-admin,verified-purchase' : 'new-admin', 'date_posted' => time(),
-        ];
+        // Waits for Admin approval before it shows on the product page.
+        $row = ['product_id' => $productId, 'stars' => $star, 'title' => strip_tags($data['title']), 'content' => strip_tags($data['content']), 'name' => strip_tags($data['fullname']),
+            'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'verified_purchase' => $verified, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()];
         try {
             $db->transaction(function () use ($db, $row, $photos, $hasVideo, $video, $poster) {
-                $id = (int) $db->table('table_comment')->insertGetId($row);
+                $id = (int) $db->table('reviews')->insertGetId($row);
                 foreach ($photos as $photo) {
                     if (($name = self::store($photo, 'photo')) !== null) {
-                        $db->table('table_comment_photo')->insert(['id_parent' => $id, 'photo' => $name]);
+                        $db->table('review_media')->insert(['review_id' => $id, 'kind' => 'photo', 'path' => $name, 'created_at' => now(), 'updated_at' => now()]);
                     }
                 }
                 if ($hasVideo) {
-                    $db->table('table_comment_video')->insert(['id_parent' => $id, 'photo' => self::store($poster, 'photo') ?? '', 'video' => self::store($video, 'video') ?? '']);
+                    $db->table('review_media')->insert(['review_id' => $id, 'kind' => 'video', 'path' => self::store($video, 'video') ?? '', 'poster' => self::store($poster, 'photo'), 'created_at' => now(), 'updated_at' => now()]);
                 }
             });
         } catch (Throwable $e) {
@@ -168,6 +167,6 @@ class ReviewSubmission
         $name = LegacyText::changeTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
         $name .= '-'.random_int(1000, 9999).'.'.strtolower($file->getClientOriginalExtension());
 
-        return Storage::disk('legacy_upload')->putFileAs($folder, $file, $name) ? $name : null;
+        return Storage::disk('uploads')->putFileAs($folder, $file, $name) ? $name : null;
     }
 }

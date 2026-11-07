@@ -28,10 +28,10 @@ class FormMetadata extends PageSupport
         if ($get) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $active = (bool) config('legacy.recaptcha.active');
+        $active = (bool) config('site.recaptcha.active');
 
         return [200, ['schemaVersion' => 1, 'csrfToken' => FormToken::issue(), 'cities' => $this->cities(),
-            'recaptcha' => ['active' => $active, 'siteKey' => $active ? (string) config('legacy.recaptcha.site_key') : '']]];
+            'recaptcha' => ['active' => $active, 'siteKey' => $active ? (string) config('site.recaptcha.site_key') : '']]];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} GET /checkout-wards?city= (wards of one visible province) */

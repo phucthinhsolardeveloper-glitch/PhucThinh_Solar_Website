@@ -2,6 +2,7 @@
 
 namespace App\Domain\Leads;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductSpecs;
 use App\Mail\AdminNotification;
 use App\Mail\MailTemplates;
@@ -16,7 +17,7 @@ use Throwable;
 /**
  * POST /api/v1/lead-form (api/pts_v1_lead_form.php POST branch): contact requests, product
  * consultations and dealer sign-ups. Rows go to the same tables the PHP Admin lists
- * (table_contact, table_newsletter), stored HTML-escaped as the Admin expects.
+ * Every request is one row in leads (kind contact / consultation / dealer) for the Admin to follow up.
  */
 class LeadSubmission
 {
@@ -78,7 +79,8 @@ class LeadSubmission
             return self::invalid($errors);
         }
         $data['subject'] = $data['subject'] ?: 'Yêu cầu tư vấn từ website';
-        $saved = $this->insert('table_contact', self::escaped($data) + ['date_created' => time(), 'numb' => 1]);
+        $saved = $this->insert(['kind' => 'contact', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'address' => $data['address'] ?: null,
+            'subject' => $data['subject'], 'message' => $data['content']]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Gửi liên hệ thất bại. Vui lòng thử lại sau.']]];
         }
@@ -95,11 +97,16 @@ class LeadSubmission
         $productId = (int) $data['product_id'];
         $cityId = (int) $data['city_id'];
         $wardId = (int) $data['ward_id'];
-        $db = DB::connection('legacy');
-        $product = $productId > 0 ? (array) ($db->selectOne("select p.id,p.namevi,p.pdp_profile,pl.slugvi list_slugvi,pl.pdp_profile list_pdp_profile from table_product p left join table_product_list pl on pl.id=p.id_list where p.id=? and find_in_set('hienthi',p.status) and p.type='san-pham' limit 1", [$productId]) ?? []) : [];
+        $db = DB::connection();
+        $product = $productId > 0 ? (array) ($db->selectOne("select id, name as namevi, coalesce(pdp_profile,'') as pdp_profile, category_id from products where id=? and is_visible=1 limit 1", [$productId]) ?? []) : [];
+        if ($product) {
+            $root = $product['category_id'] ? app(CategoryTree::class)->atDepth((int) $product['category_id'], 1) : null;
+            $product['list_slugvi'] = $root['slug'] ?? '';
+            $product['list_pdp_profile'] = $root['pdp_profile'] ?? '';
+        }
         $profileKey = $product ? $this->specs->profileKey(['pdp_profile' => $product['pdp_profile']], ['pdp_profile' => $product['list_pdp_profile'], 'slugvi' => $product['list_slugvi']]) : 'general';
         $needs = (array) ($this->specs->profile($profileKey)['needs'] ?? []);
-        $place = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne("select c.name city_name,w.name ward_name from table_ward w inner join table_city c on c.id=w.id_city where w.id=? and w.id_city=? and w.id_district=0 and find_in_set('hienthi',w.status) and find_in_set('hienthi',c.status) limit 1", [$wardId, $cityId]) ?? []) : [];
+        $place = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne('select p.name city_name, w.name ward_name from wards w inner join provinces p on p.id=w.province_id where w.id=? and w.province_id=? and w.is_visible=1 and p.is_visible=1 limit 1', [$wardId, $cityId]) ?? []) : [];
 
         $errors = [];
         if ($data['fullname'] === '') {
@@ -128,9 +135,9 @@ class LeadSubmission
         }
         $address = $place ? $place['ward_name'].', '.$place['city_name'] : '';
         $needLabel = $data['need_code'] !== '' ? (string) $needs[$data['need_code']] : '';
-        $saved = $this->insert('table_newsletter', self::escaped(['fullname' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'], 'loaihinh' => $data['loaihinh'],
-            'congsuat' => $data['congsuat'], 'address' => $address]) + ['product_id' => (int) $product['id'], 'profile_key' => $profileKey, 'need_code' => $data['need_code'],
-                'details' => htmlspecialchars($data['details']), 'city_id' => $cityId, 'ward_id' => $wardId, 'date_created' => time(), 'type' => 'dangkynhantin']);
+        $saved = $this->insert(['kind' => 'consultation', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'audience' => $data['loaihinh'] ?: null,
+            'quantity' => $data['congsuat'] ?: null, 'address' => $address ?: null, 'product_id' => (int) $product['id'], 'profile_key' => $profileKey, 'need_code' => $data['need_code'] ?: null,
+            'message' => $data['details'] ?: null, 'province_id' => $cityId ?: null, 'ward_id' => $wardId ?: null]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Đăng ký tư vấn thất bại. Vui lòng thử lại sau.']]];
         }
@@ -145,13 +152,13 @@ class LeadSubmission
     private function dealer(array $input): array
     {
         $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'city_id' => 12, 'address' => 180, 'company' => 180]);
-        $db = DB::connection('legacy');
+        $db = DB::connection();
         $city = [];
         if ((int) $data['city_id'] > 0) {
-            $city = (array) ($db->selectOne("select id,name from table_city where id=? and find_in_set('hienthi',status) limit 1", [(int) $data['city_id']]) ?? []);
+            $city = (array) ($db->selectOne('select id,name from provinces where id=? and is_visible=1 limit 1', [(int) $data['city_id']]) ?? []);
         } elseif ($data['address'] !== '') {
             // Older forms send the province name instead of its id.
-            $city = (array) ($db->selectOne("select id,name from table_city where name=? and find_in_set('hienthi',status) limit 1", [$data['address']]) ?? []);
+            $city = (array) ($db->selectOne('select id,name from provinces where name=? and is_visible=1 limit 1', [$data['address']]) ?? []);
         }
         $errors = [];
         if ($data['fullname'] === '') {
@@ -173,8 +180,8 @@ class LeadSubmission
             return self::invalid($errors);
         }
         $cityName = trim(strip_tags((string) $city['name']));
-        $saved = $this->insert('table_newsletter', self::escaped(['fullname' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'], 'address' => $cityName, 'company' => $data['company']])
-            + ['date_created' => time(), 'type' => 'dangkynhantin2']);
+        $saved = $this->insert(['kind' => 'dealer', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'], 'address' => $cityName,
+            'province_id' => (int) $city['id'], 'company' => $data['company']]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Đăng ký đại lý thất bại. Vui lòng thử lại sau.']]];
         }
@@ -188,14 +195,14 @@ class LeadSubmission
     /** Google reCAPTCHA v3 when switched on (score 0.5, matching action); always passes when off, as in PHP. */
     private function captchaPassed(mixed $token, string $action): bool
     {
-        if (! config('legacy.recaptcha.active')) {
+        if (! config('site.recaptcha.active')) {
             return true;
         }
         if (! is_scalar($token) || (string) $token === '') {
             return false;
         }
         try {
-            $result = Http::asForm()->timeout(8)->post((string) config('legacy.recaptcha.verify_url'), ['secret' => config('legacy.recaptcha.secret'), 'response' => (string) $token])->json();
+            $result = Http::asForm()->timeout(8)->post((string) config('site.recaptcha.verify_url'), ['secret' => config('site.recaptcha.secret'), 'response' => (string) $token])->json();
         } catch (Throwable) {
             return false;
         }
@@ -217,12 +224,12 @@ class LeadSubmission
         }
     }
 
-    private function insert(string $table, array $row): bool
+    private function insert(array $row): bool
     {
         try {
-            return DB::connection('legacy')->table($table)->insert($row);
+            return DB::table('leads')->insert($row + ['status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
         } catch (Throwable $e) {
-            Log::error('Lead insert failed', ['table' => $table, 'error' => $e->getMessage()]);
+            Log::error('Lead insert failed', ['error' => $e->getMessage()]);
 
             return false;
         }
@@ -237,11 +244,6 @@ class LeadSubmission
         }
 
         return $out;
-    }
-
-    private static function escaped(array $values): array
-    {
-        return array_map(fn ($value) => htmlspecialchars((string) $value), $values);
     }
 
     /** Vietnamese mobile number, 10 digits (Functions::isPhone). */

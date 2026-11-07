@@ -6,15 +6,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
-// The whole shop journey on the test database copy, rolled back after each test. Mail is faked.
+// The whole shop journey, rolled back after each test. Mail is faked.
 beforeEach(function () {
     config(['session.driver' => 'file']);
-    DB::connection('legacy')->beginTransaction();
     Mail::fake();
     RateLimiter::clear('form:checkout|127.0.0.1');
     $GLOBALS['shopCookies'] = [];
 });
-afterEach(fn () => DB::connection('legacy')->rollBack());
 
 /** Sends a request carrying the session cookie of the previous one, like a browser. */
 function shop(string $method, string $uri, array $body = [])
@@ -31,7 +29,7 @@ function shop(string $method, string $uri, array $body = [])
 
 function buyableProduct(): object
 {
-    return DB::connection('legacy')->table('table_product')->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status) and not find_in_set('baogia', status)")
+    return DB::table('products')->where('is_visible', true)->where('quote_only', false)
         ->where(fn ($q) => $q->where('regular_price', '>', 0)->orWhere('sale_price', '>', 0))->orderBy('id')->first();
 }
 
@@ -53,9 +51,9 @@ it('adds, merges, updates and removes cart lines', function () {
 
 it('places an order once, mails shop and customer, and shows the thank-you page once', function () {
     $product = buyableProduct();
-    $ward = DB::connection('legacy')->table('table_ward as w')->join('table_city as c', 'c.id', '=', 'w.id_city')
-        ->where('w.id_district', 0)->whereRaw("find_in_set('hienthi', w.status) and find_in_set('hienthi', c.status)")->select('w.id', 'w.id_city')->first();
-    $payment = DB::connection('legacy')->table('table_news')->where('type', 'hinh-thuc-thanh-toan')->whereRaw("find_in_set('hienthi', status)")->value('id');
+    $ward = DB::table('wards as w')->join('provinces as p', 'p.id', '=', 'w.province_id')
+        ->where('w.is_visible', true)->where('p.is_visible', true)->select('w.id', 'w.province_id as id_city')->first();
+    $payment = DB::table('payment_methods')->where('is_visible', true)->value('id');
     shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 2]);
     $checkout = shop('GET', '/api/v1/checkout')->assertOk()->assertJsonPath('cartReady', true);
     $body = ['csrfToken' => $checkout->json('csrfToken'), 'checkoutToken' => $checkout->json('checkoutToken'), 'data' => [
@@ -63,14 +61,15 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
 
     shop('POST', '/api/v1/checkout', ['data' => ['phone' => '1']] + $body)->assertStatus(422)->assertJsonPath('error.code', 'VALIDATION_FAILED');
     $placed = shop('POST', '/api/v1/checkout', $body)->assertOk()->assertJsonPath('ok', true);
-    $order = DB::connection('legacy')->table('table_order')->where('code', $placed->json('orderCode'))->first();
+    $order = DB::table('orders')->where('code', $placed->json('orderCode'))->first();
     expect($order->checkout_token)->toBe($checkout->json('checkoutToken'))
-        ->and(DB::connection('legacy')->table('table_order_detail')->where('id_order', $order->id)->value('quantity'))->toBe(2);
+        ->and($order->status)->toBe('new')
+        ->and((int) DB::table('order_items')->where('order_id', $order->id)->value('quantity'))->toBe(2);
     Mail::assertSent(OrderNotification::class, 2);
 
     // A second submit of the same form lands on the same order.
     shop('POST', '/api/v1/checkout', $body)->assertOk()->assertJsonPath('orderCode', $order->code);
-    expect(DB::connection('legacy')->table('table_order')->where('checkout_token', $order->checkout_token)->count())->toBe(1);
+    expect(DB::table('orders')->where('checkout_token', $order->checkout_token)->count())->toBe(1);
 
     $thanks = '/api/v1/order-thanks?token='.$placed->json('thanksToken');
     shop('GET', $thanks)->assertOk()->assertJsonPath('order.code', $order->code)->assertJsonPath('conversionPending', true);
@@ -79,7 +78,7 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
 });
 
 it('quotes the ward delivery fee and rejects a ward from another province', function () {
-    $ward = DB::connection('legacy')->table('table_ward')->where('id_district', 0)->first();
+    $ward = DB::table('wards')->where('is_visible', true)->select('id', 'province_id as id_city')->first();
     shop('POST', '/api/v1/shipping-quote', ['city' => $ward->id_city, 'ward' => $ward->id])->assertOk()->assertJsonPath('selected.provider', 'local');
     shop('POST', '/api/v1/shipping-quote', ['city' => $ward->id_city + 1000, 'ward' => $ward->id])->assertStatus(422);
 });
@@ -91,8 +90,8 @@ it('answers VNPay IPN with its own codes and never trusts an unsigned call', fun
 
 it('marks an order paid only for a correctly signed VNPay IPN with the right amount, once', function () {
     config(['commerce.vnpay.hash_secret' => 'test-secret']);
-    $id = DB::connection('legacy')->table('table_order')->insertGetId(['code' => 'VNTEST', 'total_price' => 150000, 'payment_status' => 0, 'date_created' => time(), 'order_status' => 1, 'numb' => 1,
-        'fullname' => 'Khách thử', 'phone' => '0912345678', 'email' => 'k@example.test', 'address' => 'x', 'requirements' => '', 'notes' => '', 'checkout_token' => str_repeat('b', 64)]);
+    $id = DB::table('orders')->insertGetId(['code' => 'VNTEST', 'total' => 150000, 'subtotal' => 150000, 'payment_status' => 'unpaid', 'customer_name' => 'Khách thử',
+        'phone' => '0912345678', 'email' => 'k@example.test', 'address' => 'x', 'checkout_token' => str_repeat('b', 64), 'created_at' => now(), 'updated_at' => now()]);
     $signed = function (array $params) {
         ksort($params);
         $query = implode('&', array_map(fn ($k, $v) => urlencode($k).'='.urlencode($v), array_keys($params), $params));
@@ -101,7 +100,8 @@ it('marks an order paid only for a correctly signed VNPay IPN with the right amo
     };
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '100', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '04');
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '00');
-    expect((int) DB::connection('legacy')->table('table_order')->where('id', $id)->value('payment_status'))->toBe(1);
+    expect(DB::table('orders')->where('id', $id)->value('payment_status'))->toBe('paid')
+        ->and(DB::table('payment_transactions')->where('order_id', $id)->value('status'))->toBe('paid');
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '02');
 });
 

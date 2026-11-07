@@ -23,7 +23,7 @@ use Throwable;
 /**
  * Cart, checkout and thank-you page for Nuxt (pts_v1_cart*, pts_v1_checkout*, pts_v1_order_thanks,
  * sources/order.php, payment_vnpay.php). State lives in the Laravel session; orders are written to
- * table_order / table_order_detail so the PHP Admin keeps managing them.
+ * orders / order_items for the Admin.
  */
 class Shop
 {
@@ -63,7 +63,7 @@ class Shop
             $unit = $price['mode'] === 'price' ? (($price['salePrice'] ?? 0) > 0 ? $price['salePrice'] : $price['regularPrice']) : null;
             $items[] = ['code' => (string) $line['code'], 'productId' => $id, 'name' => $name, 'slug' => $slug, 'url' => '/san-pham/'.$slug,
                 'image' => $this->urls->product($product['photo'] ?? ''), 'quantity' => $quantity,
-                'color' => LegacyText::plain($this->cart->optionLabel('table_color', (int) $line['color'])), 'size' => LegacyText::plain($this->cart->optionLabel('table_size', (int) $line['size'])),
+                'color' => LegacyText::plain($this->cart->optionLabel('color', (int) $line['color'])), 'size' => LegacyText::plain($this->cart->optionLabel('size', (int) $line['size'])),
                 'pricing' => $price, 'unitPrice' => $unit, 'lineTotal' => $unit !== null ? $unit * $quantity : null];
             if (count($items) >= 100) {
                 break;
@@ -154,7 +154,7 @@ class Shop
         }
 
         return ['schemaVersion' => 1, 'locale' => 'vi', 'csrfToken' => FormToken::issue(), 'checkoutToken' => $this->checkoutToken(),
-            'shippingEnabled' => (bool) config('legacy.order_shipping'), 'cartReady' => $ready, 'cities' => array_map(fn ($c) => ['id' => $c['id'], 'name' => LegacyText::plain($c['name'])], $this->forms->cities()),
+            'shippingEnabled' => (bool) config('site.order_shipping'), 'cartReady' => $ready, 'cities' => array_map(fn ($c) => ['id' => $c['id'], 'name' => LegacyText::plain($c['name'])], $this->forms->cities()),
             'payments' => $payments];
     }
 
@@ -212,9 +212,9 @@ class Shop
         $cityId = (int) $value('city');
         $wardId = (int) $value('ward');
         $payment = $this->payments->find((int) $value('payments'));
-        $db = DB::connection('legacy');
-        $city = $cityId > 0 ? (array) ($db->selectOne("select id, name from table_city where id = ? and find_in_set('hienthi', status) limit 0,1", [$cityId]) ?? []) : [];
-        $ward = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne("select id, name, ship_price from table_ward where id = ? and id_city = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", [$wardId, $cityId]) ?? []) : [];
+        $db = DB::connection();
+        $city = $cityId > 0 ? (array) ($db->selectOne('select id, name from provinces where id = ? and is_visible = 1 limit 0,1', [$cityId]) ?? []) : [];
+        $ward = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne('select id, name, shipping_fee as ship_price from wards where id = ? and province_id = ? and is_visible = 1 limit 0,1', [$wardId, $cityId]) ?? []) : [];
 
         $errors = [];
         if (empty($payment['id'])) {
@@ -259,8 +259,8 @@ class Shop
 
         $subtotal = $this->cart->total();
         $shipPrice = 0.0;
-        $requirements = htmlspecialchars($value('requirements'));
-        if (config('legacy.order_shipping')) {
+        $requirements = $value('requirements');
+        if (config('site.order_shipping')) {
             $quote = $this->shipping->quote($cityId, $wardId, $subtotal);
             $shipPrice = ! empty($quote['priced']) ? (float) $quote['selected']['amount'] : 0.0;
             if (empty($quote['priced'])) {
@@ -268,34 +268,32 @@ class Shop
                 $requirements = $requirements !== '' ? $requirements.' | '.$notice : $notice;
             }
         }
-        $address = implode(', ', array_filter([htmlspecialchars($value('address')), (string) ($ward['name'] ?? ''), (string) ($city['name'] ?? '')]));
+        $address = implode(', ', array_filter([$value('address'), (string) ($ward['name'] ?? ''), (string) ($city['name'] ?? '')]));
         $total = $subtotal + $shipPrice;
         $order = [
-            'id_user' => 0,
             'code' => $this->newOrderCode(),
             'checkout_token' => $token,
-            'fullname' => htmlspecialchars($value('fullname')),
-            'phone' => htmlspecialchars($value('phone')),
+            'customer_name' => $value('fullname'),
+            'phone' => $value('phone'),
+            'email' => $value('email'),
             'address' => $address,
-            'email' => htmlspecialchars($value('email')),
-            'order_payment' => (int) $payment['id'],
-            'payment_method_code' => (string) ($payment['slugvi'] ?? '') ?: 'legacy',
-            'payment_status' => 0,
-            'ship_price' => $shipPrice,
-            'temp_price' => $subtotal,
-            'total_price' => $total,
+            'province_id' => $cityId,
+            'ward_id' => $wardId,
+            'payment_method_id' => (int) $payment['id'] > 0 ? (int) $payment['id'] : null,
+            'payment_code' => (int) $payment['id'] === Payments::VNPAY_ID ? 'vnpay' : 'manual',
+            'payment_status' => 'unpaid',
+            'subtotal' => $subtotal,
+            'shipping_fee' => $shipPrice,
+            'total' => $total,
             'requirements' => $requirements,
-            'date_created' => time(),
-            'order_status' => 1,
-            'city' => $cityId,
-            'district' => 0,
-            'ward' => $wardId,
-            'numb' => 1,
+            'status' => 'new',
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
 
         try {
             [$orderId, $items] = $db->transaction(function () use ($db, $order, $lines) {
-                $orderId = (int) $db->table('table_order')->insertGetId($order);
+                $orderId = (int) $db->table('orders')->insertGetId($order);
                 $items = [];
                 foreach ($lines as $line) {
                     $product = $this->cart->product((int) $line['productid']);
@@ -303,10 +301,11 @@ class Shop
                     if (! $product || $quantity <= 0) {
                         throw new \RuntimeException('Cart product missing');
                     }
-                    $color = $this->cart->optionLabel('table_color', (int) $line['color']);
-                    $size = $this->cart->optionLabel('table_size', (int) $line['size']);
-                    $db->table('table_order_detail')->insert(['id_product' => (int) $product['id'], 'id_order' => $orderId, 'photo' => $product['photo'], 'name' => $product['namevi'],
-                        'code' => $order['code'], 'color' => $color, 'size' => $size, 'regular_price' => $product['regular_price'], 'sale_price' => $product['sale_price'], 'quantity' => $quantity]);
+                    $color = $this->cart->optionLabel('color', (int) $line['color']);
+                    $size = $this->cart->optionLabel('size', (int) $line['size']);
+                    $db->table('order_items')->insert(['order_id' => $orderId, 'product_id' => (int) $product['id'], 'name' => $product['namevi'], 'image' => $product['photo'] ?: null,
+                        'color' => $color ?: null, 'size' => $size ?: null, 'regular_price' => $product['regular_price'] ?: null, 'sale_price' => $product['sale_price'] ?: null, 'quantity' => $quantity,
+                        'created_at' => now(), 'updated_at' => now()]);
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
                     $items[] = ['name' => (string) $product['namevi'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
                 }
@@ -327,8 +326,7 @@ class Shop
             if ($url === null) {
                 return [503, ['error' => ['code' => 'PAYMENT_UNAVAILABLE', 'message' => 'Cổng thanh toán đang tạm thời chưa sẵn sàng. Vui lòng chọn chuyển khoản hoặc COD.']]];
             }
-            $now = time();
-            $db->table('table_payment_transaction')->insert(['id_order' => $orderId, 'provider' => 'vnpay', 'transaction_ref' => $order['code'], 'amount' => $total, 'status' => 'pending', 'created_at' => $now, 'updated_at' => $now]);
+            $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
 
             return [200, $this->finish($orderId, $order['code'], $url)];
         }
@@ -354,7 +352,7 @@ class Shop
 
             return $notFound;
         }
-        $order = DB::connection('legacy')->selectOne('select code,fullname,total_price from table_order where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
+        $order = DB::selectOne('select code, customer_name as fullname, total as total_price from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
         if (! $order || empty($order->code)) {
             unset($all[$token]);
             $this->session->put('order_thanks', $all);
@@ -416,8 +414,8 @@ class Shop
             return $ipn ? $ipnReply('97', 'Invalid signature') : [400, 'Invalid signature'];
         }
         $code = trim((string) ($input['vnp_TxnRef'] ?? ''));
-        $db = DB::connection('legacy');
-        $order = $code !== '' ? $db->selectOne('select id,total_price,payment_status from table_order where code = ? limit 1', [$code]) : null;
+        $db = DB::connection();
+        $order = $code !== '' ? $db->selectOne("select id, total as total_price, if(payment_status='paid',1,0) as payment_status from orders where code = ? limit 1", [$code]) : null;
         if (! $order) {
             return $ipn ? $ipnReply('01', 'Order not found') : [400, 'Invalid order or amount'];
         }
@@ -431,17 +429,16 @@ class Shop
         $status = ($input['vnp_ResponseCode'] ?? '') === '00' ? 'paid' : 'failed';
         $transaction = trim((string) ($input['vnp_TransactionNo'] ?? ''));
         $payload = (string) json_encode($input, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $now = time();
-        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount, $now) {
-            $existing = $db->table('table_payment_transaction')->where('provider', 'vnpay')->where('transaction_ref', $code)->first();
-            $row = ['provider_transaction_ref' => $transaction, 'status' => $status, 'payload_hash' => hash('sha256', $payload), 'payload' => $payload, 'updated_at' => $now];
+        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount) {
+            $existing = $db->table('payment_transactions')->where('provider', 'vnpay')->where('reference', $code)->first();
+            $row = ['provider_reference' => $transaction, 'status' => $status, 'payload' => $payload, 'updated_at' => now()];
             if ($existing) {
-                $db->table('table_payment_transaction')->where('id', $existing->id)->update($row);
+                $db->table('payment_transactions')->where('id', $existing->id)->update($row);
             } else {
-                $db->table('table_payment_transaction')->insert($row + ['id_order' => (int) $order->id, 'provider' => 'vnpay', 'transaction_ref' => $code, 'amount' => $amount, 'created_at' => $now]);
+                $db->table('payment_transactions')->insert($row + ['order_id' => (int) $order->id, 'provider' => 'vnpay', 'reference' => $code, 'amount' => $amount, 'created_at' => now()]);
             }
             if ($status === 'paid') {
-                $db->table('table_order')->where('id', $order->id)->update(['payment_status' => 1, 'payment_method_code' => 'vnpay', 'payment_transaction_ref' => $transaction]);
+                $db->table('orders')->where('id', $order->id)->update(['payment_status' => 'paid', 'payment_code' => 'vnpay', 'payment_reference' => $transaction, 'updated_at' => now()]);
             }
         });
         if ($ipn) {
@@ -461,7 +458,7 @@ class Shop
     {
         do {
             $code = strtoupper(Str::random(6));
-        } while (DB::connection('legacy')->table('table_order')->where('code', $code)->exists());
+        } while (DB::table('orders')->where('code', $code)->exists());
 
         return $code;
     }
@@ -481,7 +478,7 @@ class Shop
     /** @return array{id: int, code: string}|null */
     private function persistedOrder(string $token): ?array
     {
-        $row = DB::connection('legacy')->selectOne('select o.id, o.code, count(od.id) as detail_count from table_order o left join table_order_detail od on od.id_order = o.id where o.checkout_token = ? group by o.id, o.code limit 0,1', [$token]);
+        $row = DB::selectOne('select o.id, o.code, count(i.id) as detail_count from orders o left join order_items i on i.order_id = o.id where o.checkout_token = ? group by o.id, o.code limit 0,1', [$token]);
 
         return $row && (int) $row->detail_count > 0 ? ['id' => (int) $row->id, 'code' => (string) $row->code] : null;
     }
@@ -501,12 +498,11 @@ class Shop
 
     private function sendOrderMails(array $order, array $items, string $paymentName): void
     {
-        $values = ['order_code' => $order['code'], 'customer_name' => htmlspecialchars_decode($order['fullname']), 'customer_phone' => htmlspecialchars_decode($order['phone'])];
-        $fields = ['Mã đơn hàng' => $order['code'], 'Họ tên' => htmlspecialchars_decode($order['fullname']), 'Điện thoại' => htmlspecialchars_decode($order['phone']),
-            'Email' => htmlspecialchars_decode($order['email']), 'Địa chỉ' => htmlspecialchars_decode($order['address']), 'Thanh toán' => $paymentName,
-            'Yêu cầu thêm' => htmlspecialchars_decode($order['requirements'])];
-        $totals = ['subtotal' => (float) $order['temp_price'], 'shipping' => (float) $order['ship_price'], 'total' => (float) $order['total_price']];
-        $email = htmlspecialchars_decode($order['email']);
+        $values = ['order_code' => $order['code'], 'customer_name' => $order['customer_name'], 'customer_phone' => $order['phone']];
+        $fields = ['Mã đơn hàng' => $order['code'], 'Họ tên' => $order['customer_name'], 'Điện thoại' => $order['phone'], 'Email' => $order['email'], 'Địa chỉ' => $order['address'],
+            'Thanh toán' => $paymentName, 'Yêu cầu thêm' => $order['requirements']];
+        $totals = ['subtotal' => (float) $order['subtotal'], 'shipping' => (float) $order['shipping_fee'], 'total' => (float) $order['total']];
+        $email = (string) $order['email'];
         try {
             if (($admin = (string) config('mail.admin_to')) !== '') {
                 Mail::to($admin)->send(new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name']));

@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductSpecs;
 use App\Mail\AdminNotification;
 use App\Support\FormToken;
@@ -7,14 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
-// Runs on the pts_laravel13_test copy only; every insert is rolled back.
+// Every insert is rolled back after the test.
 beforeEach(function () {
-    DB::connection('legacy')->beginTransaction();
     Mail::fake();
     RateLimiter::clear('form:contact|127.0.0.1');
     RateLimiter::clear('form:newsletter-dealer|127.0.0.1');
 });
-afterEach(fn () => DB::connection('legacy')->rollBack());
 
 function lead(array $body)
 {
@@ -36,13 +35,15 @@ it('lists every validation problem in Vietnamese', function () {
         ->assertStatus(422)->assertJsonPath('error.message', 'Họ tên không được trống. Số điện thoại không hợp lệ. Email không hợp lệ. Nội dung không được trống.');
 });
 
-it('saves a contact request where the PHP Admin lists it and mails the admin', function () {
-    $before = DB::connection('legacy')->table('table_contact')->count();
+it('saves a contact request as a lead and mails the admin', function () {
+    $before = DB::table('leads')->count();
     lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => ['fullname' => 'Khách <Thử>', 'phone' => '0912345678', 'content' => 'Cần tư vấn']])
         ->assertOk()->assertJsonPath('ok', true);
-    $row = DB::connection('legacy')->table('table_contact')->orderByDesc('id')->first();
-    expect(DB::connection('legacy')->table('table_contact')->count())->toBe($before + 1)
-        ->and($row->fullname)->toBe('Khách &lt;Thử&gt;')
+    $row = DB::table('leads')->orderByDesc('id')->first();
+    expect(DB::table('leads')->count())->toBe($before + 1)
+        ->and($row->kind)->toBe('contact')
+        ->and($row->name)->toBe('Khách <Thử>')
+        ->and($row->status)->toBe('new')
         ->and($row->subject)->toBe('Yêu cầu tư vấn từ website');
     Mail::assertSent(AdminNotification::class, fn ($mail) => $mail->copy['subject'] === '[Liên hệ mới] Yêu cầu tư vấn từ website');
 });
@@ -70,13 +71,13 @@ it('expires form tokens after two hours', function () {
 
 it('saves a product consultation with the profile the product page sent', function () {
     RateLimiter::clear('form:newsletter-consulting|127.0.0.1');
-    $product = DB::connection('legacy')->table('table_product')->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status)")->first();
-    $profile = app(ProductSpecs::class)->profileKey((array) $product,
-        (array) DB::connection('legacy')->table('table_product_list')->where('id', $product->id_list)->first(['slugvi', 'pdp_profile']));
+    $product = DB::table('products')->where('is_visible', true)->whereNotNull('category_id')->first();
+    $root = app(CategoryTree::class)->atDepth((int) $product->category_id, 1);
+    $profile = app(ProductSpecs::class)->profileKey(['pdp_profile' => $product->pdp_profile], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slugvi' => $root['slug'] ?? '']);
     $data = ['fullname' => 'Khách thử', 'phone' => '0912345678', 'product_id' => (string) $product->id, 'profile_key' => $profile];
 
     lead(['kind' => 'product', 'csrfToken' => FormToken::issue(), 'data' => ['profile_key' => 'sai'] + $data])->assertStatus(422);
     lead(['kind' => 'product', 'csrfToken' => FormToken::issue(), 'data' => $data])->assertOk();
-    $row = DB::connection('legacy')->table('table_newsletter')->orderByDesc('id')->first();
-    expect($row->type)->toBe('dangkynhantin')->and((int) $row->product_id)->toBe((int) $product->id)->and($row->profile_key)->toBe($profile);
+    $row = DB::table('leads')->orderByDesc('id')->first();
+    expect($row->kind)->toBe('consultation')->and((int) $row->product_id)->toBe((int) $product->id)->and($row->profile_key)->toBe($profile);
 });

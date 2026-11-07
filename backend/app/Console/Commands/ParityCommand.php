@@ -67,7 +67,7 @@ class ParityCommand extends Command
             $cases = array_slice($cases, 0, (int) $this->option('limit'));
         }
 
-        $legacyBase = rtrim((string) config('legacy.api_base'), '/');
+        $legacyBase = rtrim((string) config('site.parity_source'), '/');
         $paths = [];
         $identical = 0;
         $saved = [];

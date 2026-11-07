@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Legacy\Auth;
+namespace App\Auth;
 
 /**
- * The PHP admin's password check (libraries/login_security.php): modern hashes through
- * password_verify(), older ones as md5(secret . password . salt) compared in constant time.
- * It only verifies. Upgrading the stored hash belongs to whichever side owns table_user.
+ * Checks admin passwords. Bcrypt/argon hashes go through password_verify(); accounts carried over
+ * from the old admin may still hold md5(secret . password . salt), compared in constant time.
  */
-class LegacyPasswordVerifier
+class PasswordVerifier
 {
     public function __construct(
         private readonly string $secret,

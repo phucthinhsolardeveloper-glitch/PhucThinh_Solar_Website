@@ -2,9 +2,9 @@
 
 namespace App\Domain\Catalog\Health;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductContentResolver;
-use App\Legacy\Catalog\ProductImageResolver;
-use App\Legacy\Support\StatusFlags;
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -21,15 +21,19 @@ class CatalogHealth
         'quote_with_price' => ['info', 'Đánh dấu báo giá nhưng vẫn nhập giá'],
         'no_price' => ['warning', 'Đang hiện nhưng không có giá, sẽ thành "Liên hệ báo giá"'],
         'no_description' => ['warning', 'Đang hiện nhưng không có khối mô tả nào'],
-        'missing_category' => ['error', 'Trỏ tới danh mục không tồn tại'],
+        'missing_category' => ['error', 'Chưa gắn danh mục'],
         'hidden_category' => ['warning', 'Nằm trong danh mục đang ẩn'],
         'missing_brand' => ['error', 'Trỏ tới thương hiệu không tồn tại'],
         'duplicate_slug' => ['error', 'Đường dẫn trùng với bản ghi khác'],
     ];
 
+    /** Tables whose slug is a top-level address on the site. */
+    private const SLUG_TABLES = ['products', 'brands', 'posts', 'albums'];
+
     public function __construct(
-        private readonly ProductImageResolver $images,
+        private readonly ProductMediaUrls $media,
         private readonly ProductContentResolver $content,
+        private readonly CategoryTree $tree,
     ) {}
 
     /**
@@ -38,27 +42,19 @@ class CatalogHealth
     public function run(): array
     {
         $issues = array_fill_keys(array_keys(self::CHECKS), []);
-        $legacy = DB::connection('legacy');
-        $lists = $legacy->table('table_product_list')->pluck('status', 'id');
-        $cats = $legacy->table('table_product_cat')->pluck('status', 'id');
-        $brands = $legacy->table('table_product_brand')->pluck('id', 'id');
+        $brands = DB::table('brands')->pluck('id', 'id');
+        $gallery = DB::table('product_images')->where('is_visible', true)->orderBy('sort_order')->orderBy('id')
+            ->get(['product_id', 'path'])->groupBy('product_id');
 
-        $products = $legacy->table('table_product')->where('type', 'san-pham')->orderBy('id')
-            ->get(['id', 'type', 'namevi', 'photo', 'status', 'regular_price', 'sale_price', 'id_list', 'id_cat', 'id_brand']);
+        $products = DB::table('products')->where('is_visible', true)->orderBy('id')
+            ->get(['id', 'name', 'image', 'quote_only', 'regular_price', 'sale_price', 'category_id', 'brand_id']);
 
         foreach ($products as $product) {
-            $row = (array) $product;
-            $flags = new StatusFlags($product->status);
-            if (! $flags->visible()) {
-                continue;
-            }
-            $ref = ['id' => (int) $product->id, 'name' => (string) $product->namevi];
+            $ref = ['id' => (int) $product->id, 'name' => (string) $product->name];
 
-            $image = $this->images->resolve($row);
-            if (! $image['has_image']) {
-                $issues['no_image'][] = $ref;
-            } elseif ($image['source'] === 'gallery') {
-                $issues['image_from_gallery'][] = $ref;
+            if ($this->media->product($product->image) === '') {
+                $fromGallery = collect($gallery->get($product->id, []))->contains(fn ($image) => $this->media->product($image->path) !== '');
+                $issues[$fromGallery ? 'image_from_gallery' : 'no_image'][] = $ref;
             }
 
             $regular = (float) $product->regular_price;
@@ -66,30 +62,30 @@ class CatalogHealth
             if ($regular > 0 && $sale > $regular) {
                 $issues['sale_above_regular'][] = $ref;
             }
-            if ($flags->has('baogia') && ($regular > 0 || $sale > 0)) {
+            if ($product->quote_only && ($regular > 0 || $sale > 0)) {
                 $issues['quote_with_price'][] = $ref;
             }
-            if (! $flags->has('baogia') && $regular <= 0 && $sale <= 0) {
+            if (! $product->quote_only && $regular <= 0 && $sale <= 0) {
                 $issues['no_price'][] = $ref;
             }
 
-            $resolved = $this->content->resolve($row);
+            $chain = $product->category_id ? $this->tree->chain((int) $product->category_id) : [];
+            $resolved = $this->content->resolve([
+                'id' => (int) $product->id,
+                'id_brand' => (int) $product->brand_id,
+                'id_list' => (int) ($chain[0]['id'] ?? 0),
+                'id_cat' => (int) ($chain[1]['id'] ?? 0),
+            ]);
             if ($resolved['blocks'] === [] && $resolved['source'] !== 'hide') {
                 $issues['no_description'][] = $ref;
             }
 
-            foreach ([['id_list', $lists], ['id_cat', $cats]] as [$column, $known]) {
-                $id = (int) $product->{$column};
-                if ($id <= 0) {
-                    continue;
-                }
-                if (! $known->has($id)) {
-                    $issues['missing_category'][] = $ref;
-                } elseif (! (new StatusFlags($known[$id]))->visible()) {
-                    $issues['hidden_category'][] = $ref;
-                }
+            if ($chain === []) {
+                $issues['missing_category'][] = $ref;
+            } elseif (collect($chain)->contains(fn ($node) => ! $node['is_visible'])) {
+                $issues['hidden_category'][] = $ref;
             }
-            if ((int) $product->id_brand > 0 && ! $brands->has((int) $product->id_brand)) {
+            if ((int) $product->brand_id > 0 && ! $brands->has((int) $product->brand_id)) {
                 $issues['missing_brand'][] = $ref;
             }
         }
@@ -100,20 +96,20 @@ class CatalogHealth
     }
 
     /**
-     * Every table with a slugvi column shares one URL space, as the PHP router resolves them.
+     * Top categories, products, brands, posts and albums share one address space.
      *
      * @return list<array{id: int, name: string}>
      */
     private function duplicateSlugs(): array
     {
-        $legacy = DB::connection('legacy');
-        $tables = $legacy->table('information_schema.columns')
-            ->whereRaw('table_schema = database()')->where('column_name', 'slugvi')->where('table_name', 'like', 'table\_%')
-            ->pluck('table_name');
         $seen = [];
-        foreach ($tables as $table) {
-            foreach ($legacy->table($table)->where('slugvi', '!=', '')->get(['id', 'slugvi']) as $row) {
-                $seen[(string) $row->slugvi][] = ['id' => (int) $row->id, 'name' => $table.': '.$row->slugvi];
+        $sources = [['categories', DB::table('categories')->whereNull('parent_id')]];
+        foreach (self::SLUG_TABLES as $table) {
+            $sources[] = [$table, DB::table($table)];
+        }
+        foreach ($sources as [$table, $query]) {
+            foreach ($query->where('slug', '!=', '')->get(['id', 'slug']) as $row) {
+                $seen[(string) $row->slug][] = ['id' => (int) $row->id, 'name' => $table.': '.$row->slug];
             }
         }
         $out = [];

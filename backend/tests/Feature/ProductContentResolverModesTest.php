@@ -1,21 +1,25 @@
 <?php
 
 use App\Domain\Catalog\ProductDetail\ProductContentResolver;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 // The modes real data does not use yet (hide, both, stack, brand, list, missing and hidden sources).
-// Rows are written to the test database only, with ids far outside the real ones.
+// Rows use ids far outside the real ones and are rolled back after each test.
 
 const P = 990001;
 const BRAND = 990002;
 const CAT = 990003;
 const LIST_ID = 990004;
 
-function section(string $scope, int $id, array $blocks, string $mode = '', string $source = '', string $status = 'hienthi'): void
+function section(string $scope, int $id, array $blocks, string $mode = 'own', ?string $source = null, bool $visible = true): void
 {
-    DB::connection('legacy')->table('table_content_section')->insert([
-        'scope' => $scope, 'scope_id' => $id, 'mode' => $mode, 'inherit_source' => $source, 'status' => $status,
-        'blocksvi' => htmlspecialchars(json_encode($blocks, JSON_UNESCAPED_UNICODE), ENT_QUOTES), 'blocksen' => '', 'date_updated' => 0,
+    $owner = ['product' => Product::class, 'brand' => Brand::class, 'cat' => Category::class, 'list' => Category::class][$scope];
+    DB::table('content_sections')->insert([
+        'owner_type' => $owner, 'owner_id' => $id, 'mode' => $mode, 'inherit_source' => $source, 'is_visible' => $visible,
+        'blocks' => json_encode($blocks, JSON_UNESCAPED_UNICODE), 'created_at' => now(), 'updated_at' => now(),
     ]);
 }
 
@@ -33,10 +37,6 @@ function texts(array $resolved): array
 {
     return array_column($resolved['blocks'], 'text');
 }
-
-afterEach(function () {
-    DB::connection('legacy')->table('table_content_section')->whereIn('scope_id', [P, BRAND, CAT, LIST_ID])->delete();
-});
 
 it('returns nothing when no section exists', function () {
     expect(resolveTest())->toBe(['blocks' => [], 'source' => '']);
@@ -84,7 +84,7 @@ it('does not fall back from brand-only when the brand is empty', function () {
 });
 
 it('ignores hidden sources and malformed blocks', function () {
-    section('brand', BRAND, [block('brand')], status: '');
+    section('brand', BRAND, [block('brand')], visible: false);
     section('cat', CAT, [['text' => 'no type'], block('cat')]);
     expect(texts(resolveTest()))->toBe(['cat']);
 });

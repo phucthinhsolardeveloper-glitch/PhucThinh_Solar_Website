@@ -15,7 +15,7 @@ it('answers 404 for an unknown product', function () {
 });
 
 it('returns the v1 shape for a visible product', function () {
-    $slug = DB::connection('legacy')->table('table_product')->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status)")->value('slugvi');
+    $slug = DB::table('products')->where('is_visible', true)->value('slug');
 
     $this->getJson('/api/v1/product-detail?slug='.$slug)->assertOk()
         ->assertJsonPath('schemaVersion', 1)

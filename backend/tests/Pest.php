@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-pest()->extend(TestCase::class)->in('Feature', 'Golden');
+// Every feature test runs inside a transaction on the app database and leaves nothing behind.
+pest()->extend(TestCase::class)->use(DatabaseTransactions::class)->in('Feature');

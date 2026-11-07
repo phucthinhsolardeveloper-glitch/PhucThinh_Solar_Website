@@ -37,10 +37,10 @@ return [
             'throw' => false,
         ],
 
-        // The PHP site's upload folder (shared volume). Read-only locally; writable where Laravel owns writes.
-        'legacy_upload' => [
+        // Uploaded media (product, news, review photos…). Mounted read-only in the local container.
+        'uploads' => [
             'driver' => 'local',
-            'root' => env('LEGACY_UPLOAD_PATH', '/legacy/upload'),
+            'root' => env('UPLOAD_PATH', '/srv/upload'),
             'throw' => false,
         ],
 

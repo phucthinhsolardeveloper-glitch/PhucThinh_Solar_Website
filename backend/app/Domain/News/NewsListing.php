@@ -153,7 +153,7 @@ class NewsListing extends PageSupport
         ]];
     }
 
-    /** @return array{0: array<string, mixed>, 1: string}|null the category row and the article column it filters */
+    /** @return array{0: array<string, mixed>, 1: list<int>}|null the category row and the ids of it and every category below */
     private function resolve(string $type, array $segments): ?array
     {
         $depth = ['list' => 1, 'cat' => 2, 'item' => 3, 'sub' => 4][$type];
