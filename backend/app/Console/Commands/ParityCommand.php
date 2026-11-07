@@ -24,7 +24,7 @@ class ParityCommand extends Command
             'product-detail' => DB::connection('legacy')->table('table_product')->where('type', 'san-pham')
                 ->whereRaw("find_in_set('hienthi', status)")->orderBy('id')->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all(),
             'catalog' => $this->catalogCases(),
-            'site' => [[]],
+            'site', 'home' => [[]],
             default => null,
         };
         if ($cases === null) {
