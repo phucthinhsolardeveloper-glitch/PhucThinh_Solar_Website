@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+
+class Post extends Model
+{
+    protected $table = 'posts';
+
+    protected $guarded = ['id'];
+
+    protected function casts(): array
+    {
+        return [
+            'is_visible' => 'boolean',
+            'is_featured' => 'boolean',
+            'in_hub' => 'boolean',
+            'started_on' => 'date',
+            'finished_on' => 'date',
+        ];
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(PostCategory::class, 'category_id');
+    }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(PostMedia::class)->orderBy('sort_order')->orderByDesc('id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'post_products')->withPivot(['is_visible', 'sort_order']);
+    }
+
+    public function seo(): MorphOne
+    {
+        return $this->morphOne(SeoMeta::class, 'owner');
+    }
+}

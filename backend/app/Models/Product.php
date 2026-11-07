@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+
+class Product extends Model
+{
+    protected $table = 'products';
+
+    protected $guarded = ['id'];
+
+    protected function casts(): array
+    {
+        return [
+            'additional_specs' => 'array',
+            'quote_only' => 'boolean',
+            'is_visible' => 'boolean',
+            'is_bestseller' => 'boolean',
+            'regular_price' => 'decimal:0',
+            'sale_price' => 'decimal:0',
+            'power_watts' => 'decimal:2',
+        ];
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order')->orderByDesc('id');
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ProductDocument::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function contentSection(): MorphOne
+    {
+        return $this->morphOne(ContentSection::class, 'owner');
+    }
+
+    public function seo(): MorphOne
+    {
+        return $this->morphOne(SeoMeta::class, 'owner');
+    }
+}
