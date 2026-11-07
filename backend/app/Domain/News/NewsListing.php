@@ -4,8 +4,8 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /**
  * Knowledge hub (api/pts_v1_news.php): six articles a page, newest first, optional search and category
@@ -20,7 +20,7 @@ class NewsListing extends PageSupport
 
     private const FIELDS = 'id,id_list,namevi,slugvi,photo,descvi,contentvi,date_created,status';
 
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }

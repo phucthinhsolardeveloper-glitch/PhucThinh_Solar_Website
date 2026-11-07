@@ -2,9 +2,10 @@
 
 namespace App\Domain\Home;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -48,22 +49,24 @@ class HomeAssembler
 
     private Connection $db;
 
-    public function __construct(private readonly ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(private readonly ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly CategoryTree $categories)
     {
-        $this->db = DB::connection('legacy');
+        $this->db = DB::connection();
     }
 
     /** @return array<string, mixed> */
     public function build(): array
     {
-        $categories = $this->rows("select id,namevi,slugvi,status,photo from table_product_list where type='san-pham' and find_in_set('noibat',status) and find_in_set('hienthi',status)"
-            ." and exists (select 1 from table_product p where p.id_list=table_product_list.id and p.type='san-pham' and find_in_set('hienthi',p.status)) order by numb,id desc");
+        $categories = array_values(array_filter(
+            $this->rows("select id, name as namevi, slug as slugvi, concat_ws(',', 'hienthi', 'noibat', if(is_major,'major',null)) as status, image as photo from categories"
+                .' where depth=1 and is_featured=1 and is_visible=1 order by sort_order,id desc'),
+            fn ($row) => $this->categories->hasVisibleProducts((int) $row['id'])));
         $isMajor = fn ($row) => str_contains(','.$row['status'].',', ',major,');
         $categories = array_merge(array_values(array_filter($categories, $isMajor)), array_values(array_filter($categories, fn ($row) => ! $isMajor($row))));
 
         $hero = $this->hero();
         $categoryOut = $this->categories($categories);
-        $campaignRows = $this->rows("select namevi,descvi,photo,link,status from table_photo where type='home-campaign' order by numb,id desc");
+        $campaignRows = $this->rows("select title as namevi, summary as descvi, image as photo, link, if(is_visible,'hienthi','') as status from banners where placement='home-campaign' order by sort_order,id desc");
         $campaigns = [];
         foreach ($campaignRows as $row) {
             $image = self::visible($row) && ! empty($row['photo']) ? $this->path($row['photo'], 'upload/photo/') : '';
@@ -79,9 +82,9 @@ class HomeAssembler
         $process = $this->process();
         $productGroups = $this->productGroups($categories);
         $options = $this->settings->options();
-        $seoRow = (array) ($this->db->selectOne("select titlevi,descriptionvi,keywordsvi from table_seo where com='setting' and act='update' and type='setting' limit 1") ?? []);
-        $logo = $this->db->selectOne("select photo from table_photo where type='logo' and act='photo_static' limit 0,1");
-        $popup = (array) ($this->db->selectOne("select id,date_updated,namevi,photo,link from table_photo where type='popup' and act='photo_static' and find_in_set('hienthi',status) limit 0,1") ?? []);
+        $seoRow = (array) ($this->db->selectOne("select title as titlevi, description as descriptionvi, keywords as keywordsvi from seo_metas where page='home' limit 1") ?? []);
+        $logo = $this->db->selectOne("select image as photo from banners where placement='logo' order by sort_order,id desc limit 0,1");
+        $popup = (array) ($this->db->selectOne("select id, updated_at, title as namevi, image as photo, link from banners where placement='popup' and is_visible=1 order by sort_order,id desc limit 0,1") ?? []);
 
         return [
             'schemaVersion' => 1,
@@ -119,7 +122,7 @@ class HomeAssembler
     /** Admin slides replace the stock ones position by position; once Admin has any slide, stock ones are not mixed in. */
     private function hero(): array
     {
-        $rows = $this->rows("select namevi,descvi,photo,link,status,options from table_photo where type='hero-carousel' order by numb,id desc");
+        $rows = $this->rows("select title as namevi, summary as descvi, image as photo, link, if(is_visible,'hienthi','') as status, options from banners where placement='hero-carousel' order by sort_order,id desc");
         $enabled = array_values(array_filter($rows, fn ($row) => self::visible($row) && ! empty($row['photo'])));
         $hero = [];
         foreach (self::HERO_DEFAULTS as $i => [$key, $name, $description, $photo]) {
@@ -172,7 +175,7 @@ class HomeAssembler
     /** Four fixed solution slots, each filled by the first featured solution whose name matches the slot. */
     private function solutions(): array
     {
-        $rows = $this->rows("select namevi,title_indexvi,slugvi,descvi,photo1,status from table_news where type='giai-phap' and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc");
+        $rows = $this->rows("select title as namevi, nav_title as title_indexvi, slug as slugvi, summary as descvi, cover_image as photo1 from posts where kind='solution' and is_featured=1 and is_visible=1 order by sort_order,id desc");
         $solutions = [];
         foreach (self::SOLUTION_SLOTS as $i => $slot) {
             $row = [];
@@ -199,7 +202,7 @@ class HomeAssembler
 
     private function process(): array
     {
-        $rows = $this->rows("select namevi,solieu,descvi from table_news where type='quy-trinh' and find_in_set('hienthi',status) order by numb,id desc limit 0,5");
+        $rows = $this->rows("select title as namevi, figure as solieu, summary as descvi from page_items where section='home.process' and is_visible=1 order by sort_order,id desc limit 0,5");
         $out = [];
         foreach (self::PROCESS_DEFAULTS as $i => [$number, $name, $description]) {
             $row = $rows[$i] ?? [];
@@ -211,7 +214,7 @@ class HomeAssembler
 
     private function about(): array
     {
-        $rows = $this->rows("select namevi,descvi,content1vi,status from table_news where type='home-about' order by numb,id desc");
+        $rows = $this->rows("select title as namevi, summary as descvi, extra as content1vi, if(is_visible,'hienthi','') as status from page_items where section='home.about' order by sort_order,id desc");
         $row = [];
         foreach ($rows as $candidate) {
             if (self::visible($candidate)) {
@@ -220,7 +223,7 @@ class HomeAssembler
             }
         }
         $points = [];
-        foreach ($this->rows("select namevi,descvi,photo,status from table_news where type='home-about-point' order by numb,id desc") as $point) {
+        foreach ($this->rows("select title as namevi, summary as descvi, image as photo, if(is_visible,'hienthi','') as status from page_items where section='home.about_points' order by sort_order,id desc") as $point) {
             if (! self::visible($point) || count($points) >= 4) {
                 continue;
             }
@@ -245,15 +248,15 @@ class HomeAssembler
     /** Up to ten pictured products for each of the first three featured categories that have any. */
     private function productGroups(array $categories): array
     {
-        $hasPhoto = "(table_product.photo is not null and trim(table_product.photo) <> '') or exists (select 1 from table_gallery g where g.id_parent = table_product.id and g.com = 'product' and g.kind = 'man' and g.val = table_product.type and find_in_set('hienthi', g.status))";
         $groups = [];
         foreach ($categories as $category) {
             if (count($groups) >= 3) {
                 break;
             }
             $products = [];
-            foreach ($this->db->select("select id,namevi,slugvi,photo from table_product where type='san-pham' and id_list=? and photo<>'' and find_in_set('hienthi',status)"
-                ." order by case when {$hasPhoto} then 0 else 1 end, table_product.numb,table_product.id desc limit 0,10", [(int) $category['id']]) as $row) {
+            $ids = $this->categories->descendantIds((int) $category['id']);
+            foreach ($this->db->select('select id, name as namevi, slug as slugvi, image as photo from products where is_visible=1 and image is not null and image<>\'\' and category_id in ('
+                .implode(',', array_fill(0, count($ids), '?')).') order by sort_order,id desc limit 0,10', $ids) as $row) {
                 $image = $this->path($row->photo, 'upload/product/');
                 if ($image !== '') {
                     $products[] = ['id' => (int) $row->id, 'name' => self::text($row->namevi), 'slug' => self::text($row->slugvi), 'href' => self::url('san-pham/'.$row->slugvi.'/', '/san-pham/'), 'image' => $image];
@@ -276,7 +279,7 @@ class HomeAssembler
         }
 
         return [
-            'key' => substr(hash('sha256', ($row['id'] ?? '').'|'.($row['date_updated'] ?? '').'|'.($row['photo'] ?? '')), 0, 20),
+            'key' => substr(hash('sha256', ($row['id'] ?? '').'|'.(isset($row['updated_at']) ? strtotime((string) $row['updated_at']) : '').'|'.($row['photo'] ?? '')), 0, 20),
             'image' => $image,
             'title' => self::text($row['namevi'] ?? ''),
             'href' => self::url($row['link'] ?? ''),
@@ -287,7 +290,7 @@ class HomeAssembler
     private function energyChain(): array
     {
         $chain = [];
-        foreach ($this->rows("select namevi,title_indexvi,descvi,solieu,photo from table_news where type='home-energy-chain' and find_in_set('hienthi',status) order by numb,id desc limit 0,5") as $row) {
+        foreach ($this->rows("select title as namevi, subtitle as title_indexvi, summary as descvi, figure as solieu, image as photo from page_items where section='home.energy_chain' and is_visible=1 order by sort_order,id desc limit 0,5") as $row) {
             $chain[] = [
                 'name' => self::cut(self::text($row['namevi']), 80),
                 'stage' => self::cut(self::text($row['title_indexvi']), 28),

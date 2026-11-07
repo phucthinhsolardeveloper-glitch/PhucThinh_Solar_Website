@@ -265,7 +265,7 @@ class ImportLegacyCommand extends Command
     {
         $owners = ['product/man' => 'App\\Models\\Product', 'product/man_brand' => 'App\\Models\\Brand', 'product/man_list' => 'App\\Models\\Category', 'product/man_cat' => 'App\\Models\\Category',
             'news/man' => 'App\\Models\\Post', 'news/man_list' => 'App\\Models\\PostCategory'];
-        $exists = ['App\\Models\\Product' => 'products', 'App\\Models\\Brand' => 'brands', 'App\\Models\\Category' => 'categories', 'App\\Models\\Post' => 'posts', 'App\\Models\\PostCategory' => 'post_categories'];
+        $exists = ['App\\Models\\Album' => 'albums', 'App\\Models\\Product' => 'products', 'App\\Models\\Brand' => 'brands', 'App\\Models\\Category' => 'categories', 'App\\Models\\Post' => 'posts', 'App\\Models\\PostCategory' => 'post_categories'];
         foreach ($this->old->table('table_seo')->orderBy('id')->get() as $row) {
             $values = ['title' => self::nullable(self::text($row->titlevi)), 'description' => self::nullable(self::text($row->descriptionvi)), 'keywords' => self::nullable(self::text($row->keywordsvi)), 'created_at' => now(), 'updated_at' => now()];
             if ($row->com === 'setting') {
@@ -273,8 +273,8 @@ class ImportLegacyCommand extends Command
 
                 continue;
             }
-            $type = $owners[$row->com.'/'.$row->act] ?? null;
-            if ($type === null || ! in_array($row->type, ['san-pham', 'tin-tuc', 'giai-phap', 'du-an', 'chinh-sach'], true)) {
+            $type = $row->com.'/'.$row->act === 'product/man' && $row->type === 'thu-vien-anh' ? 'App\\Models\\Album' : ($owners[$row->com.'/'.$row->act] ?? null);
+            if ($type === null || ! in_array($row->type, ['san-pham', 'tin-tuc', 'giai-phap', 'du-an', 'chinh-sach', 'thu-vien-anh'], true)) {
                 continue;
             }
             $id = match ($row->com.'/'.$row->act) {

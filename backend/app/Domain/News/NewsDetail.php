@@ -5,8 +5,8 @@ namespace App\Domain\News;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
 use App\Legacy\Content\RichText;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /**
  * Article pages: knowledge articles (api/pts_v1_news_detail.php) and support/policy pages
@@ -16,7 +16,7 @@ class NewsDetail extends PageSupport
 {
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }

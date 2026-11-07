@@ -4,13 +4,13 @@ namespace App\Domain\Pages;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Content\RichText;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /** Dealer page (api/pts_v1_dealer.php): pitch, products, benefits, testimonials, figures, sign-up form. */
 class DealerAssembler extends PageSupport
 {
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }
@@ -21,12 +21,12 @@ class DealerAssembler extends PageSupport
         $text = fn ($v) => LegacyText::cms($v);
         $rich = fn ($v) => RichText::dto(RichText::sanitize($v));
         $static = [];
-        foreach ($this->rows("select type,namevi,descvi,status from table_static where type in ('dai-ly-1','dai-ly-2','dai-ly-3') order by id desc") as $row) {
+        foreach ($this->rows("select case section when 'dealer.intro' then 'dai-ly-1' when 'dealer.overview' then 'dai-ly-2' else 'dai-ly-3' end as type, coalesce(title,'') as namevi, coalesce(summary,'') as descvi, if(is_visible,'hienthi','') as status from page_items where section in ('dealer.intro','dealer.overview','dealer.support') order by id desc") as $row) {
             if (self::visible($row)) {
                 $static[$row['type']] = $row;
             }
         }
-        $heroRows = $this->rows("select namevi,photo,status from table_photo where type='dealer-hero' order by numb,id desc");
+        $heroRows = $this->rows("select coalesce(title,'') as namevi, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from banners where placement='dealer-hero' order by sort_order,id desc");
         $hero = null;
         foreach ($heroRows as $row) {
             if (self::visible($row) && ($image = $this->strictImage($row['photo'], 'upload/photo/')) !== '') {
@@ -38,7 +38,7 @@ class DealerAssembler extends PageSupport
             $hero = ['title' => 'Thiết bị năng lượng mặt trời phân phối chính hãng', 'image' => '/assets/images/site-visuals/catalog-equipment-system.jpg'];
         }
         $products = [];
-        foreach ($this->rows("select namevi,link,photo,status from table_photo where type='hinh-anh-dai-ly' order by numb,id desc") as $row) {
+        foreach ($this->rows("select coalesce(title,'') as namevi, coalesce(link,'') as link, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from banners where placement='hinh-anh-dai-ly' order by sort_order,id desc") as $row) {
             if (! self::visible($row)) {
                 continue;
             }
@@ -56,15 +56,15 @@ class DealerAssembler extends PageSupport
                 ? ['title' => $title, 'description' => $text($row['descvi']), 'descriptionContent' => $rich($row['descvi']), 'image' => $this->strictImage($row['photo'], 'upload/news/')]
                 : null;
         };
-        $support = array_values(array_filter(array_map($item, $this->rows("select namevi,descvi,photo,status from table_news where type='cam-ket-dai-ly' order by numb,id desc limit 0,4"))));
+        $support = array_values(array_filter(array_map($item, $this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from page_items where section='dealer.benefits' order by sort_order,id desc limit 0,4"))));
         $testimonials = [];
-        foreach ($this->rows("select namevi,descvi,contentvi,photo,status from table_news where type='phan-hoi-dai-ly' order by numb,id desc limit 0,3") as $row) {
+        foreach ($this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from page_items where section='dealer.testimonials' order by sort_order,id desc limit 0,3") as $row) {
             if ($entry = $item($row)) {
                 $testimonials[] = $entry + ['quote' => $text($row['contentvi'])];
             }
         }
         $stats = [];
-        foreach ($this->rows("select namevi,solieu,status from table_news where type='so-lieu-thong-ke-dai-ly' and find_in_set('hienthi',status) order by numb,id desc limit 0,3") as $row) {
+        foreach ($this->rows("select coalesce(title,'') as namevi, coalesce(figure,'') as solieu, 'hienthi' as status from page_items where section='dealer.stats' and is_visible=1 order by sort_order,id desc limit 0,3") as $row) {
             $label = $text($row['namevi']);
             $value = $text($row['solieu']);
             if (self::visible($row) && $label !== '' && preg_match('/^[0-9][0-9.,]*$/', $value)) {

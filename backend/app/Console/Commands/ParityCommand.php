@@ -35,6 +35,9 @@ class ParityCommand extends Command
                 return self::INVALID;
             }
         }
+        if ($snapshot !== null) {
+            $snapshot = $this->remapCategoryIds($endpoint, $snapshot);
+        }
         $cases = $snapshot !== null ? array_column($snapshot, 'query') : $this->casesFor($endpoint);
         if ($cases === null) {
             $this->error("Unknown endpoint {$endpoint}");
@@ -79,6 +82,47 @@ class ParityCommand extends Command
         }
 
         return $this->report($endpoint, $identical, count($cases), $paths);
+    }
+
+    /**
+     * Sub-categories got new ids in the new schema (they shared numbers with top categories). Rewrites
+     * the old ids in stored snapshots with the import map so the comparison stays exact.
+     */
+    private function remapCategoryIds(string $endpoint, array $snapshot): array
+    {
+        $file = storage_path('app/import-map.json');
+        $map = is_file($file) ? (json_decode((string) file_get_contents($file), true)['categories'] ?? []) : [];
+        if (! $map || ! in_array($endpoint, ['catalog', 'site'], true)) {
+            return $snapshot;
+        }
+        $cat = fn ($id) => $map['cat:'.$id] ?? $id;
+        foreach ($snapshot as &$case) {
+            if (isset($case['query']['subcategory'])) {
+                $case['query']['subcategory'] = implode(',', array_map(fn ($id) => (string) $cat((int) $id), explode(',', $case['query']['subcategory'])));
+            }
+            $body = &$case['body'];
+            if ($endpoint === 'catalog' && is_array($body)) {
+                if (! empty($body['category']['url']) && substr_count(trim($body['category']['url'], '/'), '/') === 2) {
+                    $body['category']['id'] = $cat($body['category']['id']);
+                }
+                foreach ($body['filters']['subcategories'] ?? [] as $i => $sub) {
+                    $body['filters']['subcategories'][$i]['id'] = $cat($sub['id']);
+                }
+                if (isset($body['selected']['subcategoryIds'])) {
+                    $body['selected']['subcategoryIds'] = array_map($cat, $body['selected']['subcategoryIds']);
+                }
+            }
+            if ($endpoint === 'site' && is_array($body)) {
+                foreach ($body['productCategoryTree'] ?? [] as $i => $list) {
+                    foreach ($list['children'] as $j => $child) {
+                        $body['productCategoryTree'][$i]['children'][$j]['id'] = $cat($child['id']);
+                    }
+                }
+            }
+            unset($body);
+        }
+
+        return $snapshot;
     }
 
     /** @return list<array<string, string>>|null */

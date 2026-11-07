@@ -3,13 +3,13 @@
 namespace App\Domain\Pages;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /** Contact page (api/pts_v1_contact.php): intro, picture, company contacts, branches with Google Maps links. */
 class ContactAssembler extends PageSupport
 {
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }
@@ -18,7 +18,7 @@ class ContactAssembler extends PageSupport
     public function build(): array
     {
         $text = fn ($v) => LegacyText::flat($v);
-        $visualRows = $this->rows("select namevi,descvi,link,photo,status from table_photo where type='contact-visual' order by numb,id desc");
+        $visualRows = $this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, if(is_visible,'hienthi','') as status from banners where placement='contact-visual' order by sort_order,id desc");
         $visual = null;
         foreach ($visualRows as $row) {
             if (empty($row['photo']) || ! str_contains(','.$row['status'].',', ',hienthi,') || ($image = $this->looseImage($row['photo'], 'upload/photo/')) === '') {
@@ -31,8 +31,8 @@ class ContactAssembler extends PageSupport
             $visual = ['name' => 'Tư vấn đúng thiết bị, đúng nhu cầu sử dụng', 'description' => 'Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.', 'href' => '#yeu-cau-tu-van', 'image' => $fallback];
         }
         $locations = [];
-        foreach ($this->rows("select namevi,address,id,map_iframe from table_news where type='he-thong-cua-hang' and find_in_set('hienthi',status)"
-            ." order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end,numb,id desc") as $row) {
+        foreach ($this->rows("select name as namevi, address, id, coalesce(map_embed,'') as map_iframe from store_locations where is_visible=1"
+            ." order by case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end,sort_order,id desc") as $row) {
             $name = $text($row['namevi']);
             $address = $text($row['address']);
             if ((int) $row['id'] > 0 && $name !== '' && $address !== '') {
@@ -40,7 +40,7 @@ class ContactAssembler extends PageSupport
             }
         }
         $options = $this->settings->options();
-        $intro = $this->row("select contentvi from table_static where type='lienhe' limit 0,1");
+        $intro = $this->row("select body as contentvi from page_items where section='contact.intro' limit 0,1");
         $seo = $this->pageSeo('lien-he', $text);
 
         return [
@@ -52,7 +52,7 @@ class ContactAssembler extends PageSupport
             'intro' => $text($intro['contentvi'] ?? ''),
             'visual' => $visual,
             'contact' => [
-                'company' => $text($this->settings->row()['namevi'] ?? ''),
+                'company' => $text($this->settings->siteName()),
                 'hotline' => $text($options['hotline'] ?? ''),
                 'email' => $text($options['email'] ?? ''),
                 'address' => $text($options['address'] ?? ''),

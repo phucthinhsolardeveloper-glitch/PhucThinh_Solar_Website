@@ -6,8 +6,8 @@ use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /**
  * Solutions hub (api/pts_v1_solutions.php): intro, solution cards ticked "solutionhub", equipment
@@ -38,7 +38,7 @@ class SolutionsListing extends PageSupport
 
     private const CTA_FALLBACK_IMAGE = 'assets/images/site-visuals/catalog-street-lighting.jpg';
 
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }

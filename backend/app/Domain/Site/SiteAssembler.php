@@ -2,10 +2,11 @@
 
 namespace App\Domain\Site;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Content\RichText;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -44,20 +45,23 @@ class SiteAssembler
     /** @var array<string, array<int, array<string, mixed>>> */
     private array $index = [];
 
-    public function __construct(private readonly ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(private readonly ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly CategoryTree $categories)
     {
-        $this->db = DB::connection('legacy');
+        $this->db = DB::connection();
     }
 
     /** @return array<string, mixed> */
     public function build(): array
     {
-        $exists = fn (string $level) => "exists (select 1 from table_product p where p.id_{$level}=t.id and p.type='san-pham' and find_in_set('hienthi',p.status))";
-        $visible = "t.type='san-pham' and find_in_set('hienthi',t.status)";
-        $lists = $this->rows("select t.id,t.namevi,t.slugvi from table_product_list t where {$visible} and {$exists('list')} order by t.numb,t.id desc");
-        $cats = $this->rows("select t.namevi,t.slugvi,t.id,t.id_list from table_product_cat t where {$visible} and {$exists('cat')} order by t.numb,t.id desc");
-        $items = $this->rows("select t.namevi,t.slugvi,t.id,t.id_cat from table_product_item t where {$visible} and {$exists('item')} order by t.numb,t.id desc");
-        $subs = $this->rows("select t.namevi,t.slugvi,t.id,t.id_item from table_product_sub t where {$visible} and {$exists('sub')} order by t.numb,t.id desc");
+        // Visible categories that hold visible products, per depth, in Admin order.
+        $level = fn (int $depth, string $parentKey) => array_values(array_map(
+            fn ($row) => ['id' => (int) $row->id, 'namevi' => $row->name, 'slugvi' => $row->slug, $parentKey => (int) $row->parent_id],
+            array_filter(DB::table('categories')->where('depth', $depth)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get()->all(),
+                fn ($row) => $this->categories->hasVisibleProducts((int) $row->id))));
+        $lists = $level(1, 'parent');
+        $cats = $level(2, 'id_list');
+        $items = $level(3, 'id_cat');
+        $subs = $level(4, 'id_item');
         foreach (['list' => $lists, 'cat' => $cats, 'item' => $items, 'sub' => $subs] as $level => $rows) {
             foreach ($rows as $row) {
                 if ((int) $row['id'] > 0) {
@@ -66,14 +70,13 @@ class SiteAssembler
             }
         }
 
-        $setting = $this->settings->row();
         $options = $this->settings->options();
-        $photo = fn (string $type, bool $published, string $columns = 'photo') => (array) ($this->db->selectOne(
-            "select {$columns} from table_photo where type=? and act='photo_static'".($published ? " and find_in_set('hienthi',status)" : '').' limit 1', [$type]) ?? []);
-        $badge = $photo('bct', true, 'photo,link');
+        $photo = fn (string $placement, bool $published) => (array) ($this->db->selectOne(
+            'select image as photo, link from banners where placement=?'.($published ? ' and is_visible=1' : '').' order by sort_order, id desc limit 1', [$placement]) ?? []);
+        $badge = $photo('bct', true);
 
         $brand = [
-            'name' => LegacyText::flat($setting['namevi'] ?? '') ?: 'Phúc Thịnh Solar',
+            'name' => LegacyText::flat($this->settings->siteName()) ?: 'Phúc Thịnh Solar',
             'hotline' => LegacyText::flat($options['hotline'] ?? ''),
             'logo' => $this->asset($photo('logo', false)['photo'] ?? ''),
             'logoFooter' => $this->asset($photo('logo-footer', false)['photo'] ?? ''),
@@ -111,9 +114,9 @@ class SiteAssembler
             'productCategoryTree' => $this->tree($lists, $cats, $items, $subs),
             'footer' => $this->footer($options, $badge),
             'catalogBenefits' => array_map(fn ($row) => ['title' => LegacyText::excerpt($row['namevi'], 60), 'description' => LegacyText::excerpt($row['descvi'], 90)],
-                $this->rows("select namevi,descvi from table_news where type='catalog-benefit' and find_in_set('hienthi',status) order by numb,id desc limit 0,4")),
+                $this->rows("select title as namevi, summary as descvi from page_items where section='catalog.benefits' and is_visible=1 order by sort_order,id desc limit 0,4")),
             'quickSearches' => array_values(array_filter(array_map(fn ($row) => LegacyText::excerpt($row['namevi'], 48),
-                $this->rows("select namevi from table_news where type='quick-search' and find_in_set('hienthi',status) order by numb,id desc limit 0,7")))),
+                $this->rows("select title as namevi from page_items where section='search.suggestions' and is_visible=1 order by sort_order,id desc limit 0,7")))),
         ];
     }
 
@@ -134,7 +137,7 @@ class SiteAssembler
         ];
 
         // Solutions: those ticked for the hub menu, or all published ones when none is ticked.
-        $solutions = $this->rows("select id,namevi,title_indexvi,slugvi,status from table_news where type='giai-phap' order by numb,id desc");
+        $solutions = $this->rows("select id, title as namevi, nav_title as title_indexvi, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'solutionhub',null)) as status from posts where kind='solution' order by sort_order,id desc");
         $flags = fn ($row) => explode(',', is_scalar($row['status']) ? trim((string) $row['status']) : '');
         $hubOnly = (bool) array_filter($solutions, fn ($row) => in_array('solutionhub', $flags($row), true));
         $links = [self::link('Tất cả giải pháp', '/giai-phap/')];
@@ -147,12 +150,12 @@ class SiteAssembler
         }
         $nav[2]['children'] = array_values(array_filter($links));
 
-        $newsLists = $this->rows("select nl.namevi,nl.slugvi,nl.id from table_news_list nl where nl.type='tin-tuc' and find_in_set('hienthi',nl.status)"
-            ." and exists (select 1 from table_news n where n.id_list=nl.id and n.type='tin-tuc' and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc");
-        $level = fn (string $table, string $parent) => $this->rows("select namevi,slugvi,id,{$parent} from {$table} where type in ('giai-phap','tin-tuc') and find_in_set('hienthi',status) order by numb,id desc");
-        $newsCats = $level('table_news_cat', 'id_list');
-        $newsItems = $level('table_news_item', 'id_cat');
-        $newsSubs = $level('table_news_sub', 'id_item');
+        $newsLists = $this->rows("select c.name as namevi, c.slug as slugvi, c.id from post_categories c where c.kind='article' and c.depth=1 and c.is_visible=1"
+            ." and exists (select 1 from posts p where p.category_id=c.id and p.kind='article' and p.is_visible=1) order by c.sort_order,c.id desc");
+        $level = fn (int $depth, string $parent) => $this->rows("select name as namevi, slug as slugvi, id, parent_id as {$parent} from post_categories where kind in ('article','solution') and depth={$depth} and is_visible=1 order by sort_order,id desc");
+        $newsCats = $level(2, 'id_list');
+        $newsItems = $level(3, 'id_cat');
+        $newsSubs = $level(4, 'id_item');
         $children = [self::link('Tất cả bài viết', '/tin-tuc/')];
         foreach ($newsLists as $list) {
             $listLink = self::link($list['namevi'], 'category/'.self::slug($list).'/');
@@ -281,16 +284,16 @@ class SiteAssembler
 
     private function footer(array $options, array $badge): array
     {
-        $footer = (array) ($this->db->selectOne("select namevi,contentvi from table_static where type='footer' and find_in_set('hienthi',status) limit 0,1") ?? []);
+        $footer = (array) ($this->db->selectOne("select title as namevi, body as contentvi from page_items where section='site.footer' and is_visible=1 limit 0,1") ?? []);
         $policies = [];
-        foreach ($this->rows("select namevi,slugvi,id from table_news where type='chinh-sach' and find_in_set('hienthi',status) order by numb,id desc") as $row) {
+        foreach ($this->rows("select title as namevi, slug as slugvi, id from posts where kind='policy' and is_visible=1 order by sort_order,id desc") as $row) {
             if ($link = self::link($row['namevi'], 'ho-tro/'.self::slug($row).'/')) {
                 $policies[] = $link;
             }
         }
         $locations = [];
-        foreach ($this->rows("select namevi,address,id,ggmap from table_news where type='he-thong-cua-hang' and find_in_set('hienthi',status)"
-            ." order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end,numb,id desc") as $row) {
+        foreach ($this->rows("select name as namevi, address, id, map_url as ggmap from store_locations where is_visible=1"
+            ." order by case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end,sort_order,id desc") as $row) {
             $name = LegacyText::flat($row['namevi']);
             $address = LegacyText::flat($row['address']);
             if ($name !== '' && $address !== '') {

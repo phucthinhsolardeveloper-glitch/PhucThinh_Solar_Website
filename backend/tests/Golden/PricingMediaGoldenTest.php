@@ -2,7 +2,7 @@
 
 use App\Domain\Catalog\PricingPolicy;
 use App\Legacy\Catalog\ProductImageResolver;
-use App\Legacy\Settings\LegacySettings;
+use App\Support\SiteSettings;
 use Illuminate\Support\Facades\DB;
 
 // One pricing rule must reproduce the three PHP ones, and the image pick must choose the same file.
@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 it('reads the price switch as the PHP site does', function () {
-    expect(app(LegacySettings::class)->productPricesVisible())->toBe($this->golden['pricesVisible']);
+    expect(app(SiteSettings::class)->productPricesVisible())->toBe($this->golden['pricesVisible']);
 });
 
 it('prices every product like the product page, the catalog and public_pricing.php', function () {

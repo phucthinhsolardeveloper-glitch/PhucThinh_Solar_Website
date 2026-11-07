@@ -5,10 +5,10 @@ namespace App\Domain\Catalog\Listing;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductContentPresenter;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\ContentBlocks;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
+use App\Support\SiteSettings;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +28,7 @@ class CatalogAssembler
 
     public function __construct(
         private readonly ProductMediaUrls $urls,
-        private readonly LegacySettings $settings,
+        private readonly SiteSettings $settings,
         private readonly ProductCard $cards,
     ) {}
 

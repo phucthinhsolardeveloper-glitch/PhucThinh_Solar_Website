@@ -3,9 +3,9 @@
 namespace App\Domain\Reviews;
 
 use App\Domain\Leads\LeadSubmission;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
 use App\Support\FormToken;
+use App\Support\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +27,7 @@ class ReviewSubmission
 
     private const VIDEO_MAX_BYTES = 100 * 1024 * 1024;
 
-    public function __construct(private readonly LegacySettings $settings) {}
+    public function __construct(private readonly SiteSettings $settings) {}
 
     /** @return array{0: int, 1: array<string, mixed>} */
     public function handle(Request $request): array

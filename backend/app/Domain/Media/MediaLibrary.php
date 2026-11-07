@@ -3,11 +3,12 @@
 namespace App\Domain\Media;
 
 use App\Domain\Pages\PageSupport;
+use App\Models\Album;
 use App\Legacy\Support\LegacyText;
 
 /**
  * Photo albums and videos (api/pts_v1_gallery.php, pts_v1_gallery_detail.php, pts_v1_video.php).
- * Albums are table_product rows of type "thu-vien-anh"; videos are YouTube links only.
+ * Albums with their pictures; videos are YouTube links only.
  */
 class MediaLibrary extends PageSupport
 {
@@ -20,15 +21,15 @@ class MediaLibrary extends PageSupport
         if ($page === null) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $where = "type='thu-vien-anh' and find_in_set('hienthi',status) and slugvi<>''";
-        $total = max(0, (int) ($this->row("select count(*) as num from table_product where {$where}")['num'] ?? 0));
+        $where = "is_visible=1 and slug<>''";
+        $total = max(0, (int) ($this->row("select count(*) as num from albums where {$where}")['num'] ?? 0));
         $albums = [];
-        foreach ($this->rows("select id,namevi,slugvi,photo,descvi,status from table_product where {$where} order by numb,id desc limit ".(($page - 1) * 20).',20') as $row) {
+        foreach ($this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, 'hienthi' as status from albums where {$where} order by sort_order,id desc limit ".(($page - 1) * 20).',20') as $row) {
             if ($dto = $this->albumDto($row)) {
                 $albums[] = $dto;
             }
         }
-        $seo = $this->row("select titlevi,descriptionvi,keywordsvi,photo from table_seopage where type='thu-vien-anh' limit 1");
+        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='thu-vien-anh' limit 1");
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'path' => '/thu-vien-anh/', 'title' => 'Thư viện ảnh',
             'seo' => self::seo($seo, 'Thư viện ảnh', 'Thư viện ảnh', '/thu-vien-anh/', $this->urls->visual($seo['photo'] ?? '', 'upload/seopage/')),
@@ -41,13 +42,13 @@ class MediaLibrary extends PageSupport
         if (count($get) !== 1 || ! isset($get['slug']) || ! is_string($get['slug']) || ! preg_match(self::SLUG, $slug = trim($get['slug'], '/'))) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $row = $this->row("select id,namevi,slugvi,photo,descvi,status from table_product where slugvi=? and type='thu-vien-anh' and find_in_set('hienthi',status) limit 1", [$slug]);
+        $row = $this->row("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, 'hienthi' as status from albums where slug=? and is_visible=1 limit 1", [$slug]);
         $album = $row ? $this->albumDto($row) : null;
         if ($album === null) {
             return [404, ['error' => ['code' => 'GALLERY_NOT_FOUND']]];
         }
         $images = [];
-        foreach ($this->rows("select id,photo,namevi,status from table_gallery where id_parent=? and com='product' and type='thu-vien-anh' and kind='man' and val='thu-vien-anh' and find_in_set('hienthi',status) order by numb,id desc", [(int) $row['id']]) as $image) {
+        foreach ($this->rows("select id, path as photo, coalesce(caption,'') as namevi, 'hienthi' as status from album_images where album_id=? and is_visible=1 order by sort_order,id desc", [(int) $row['id']]) as $image) {
             $url = $this->productImage($image['photo']);
             if (self::visible($image) && $url !== '') {
                 $images[] = ['id' => max(0, (int) $image['id']), 'image' => $url, 'caption' => LegacyText::cms($image['namevi'])];
@@ -56,7 +57,7 @@ class MediaLibrary extends PageSupport
                 break;
             }
         }
-        $seo = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent=? and com='product' and act='man' and type='thu-vien-anh' limit 1", [(int) $row['id']]);
+        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Album::class, (int) $row['id']]);
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'album' => $album, 'images' => $images,
             'seo' => self::seo($seo, $album['title'], $album['description'], '/'.$album['slug'].'/')]];
@@ -70,14 +71,14 @@ class MediaLibrary extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $videos = [];
-        foreach ($this->rows("select id,namevi,link_video,status from table_photo where type='video' and act<>'photo_static' and find_in_set('hienthi',status) order by numb,id desc") as $row) {
+        foreach ($this->rows("select id, title as namevi, url as link_video, 'hienthi' as status from videos where is_visible=1 order by sort_order,id desc") as $row) {
             $title = LegacyText::cms($row['namevi']);
             $youtube = self::youtubeId($row['link_video']);
             if (self::visible($row) && (int) $row['id'] > 0 && $title !== '' && $youtube !== '') {
                 $videos[] = ['id' => (int) $row['id'], 'title' => $title, 'youtubeId' => $youtube, 'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$youtube, 'thumbnail' => 'https://img.youtube.com/vi/'.$youtube.'/0.jpg'];
             }
         }
-        $seo = $this->row("select titlevi,descriptionvi,keywordsvi,photo from table_seopage where type='video' limit 1");
+        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='video' limit 1");
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'path' => '/video/', 'title' => 'Video',
             'seo' => self::seo($seo, 'Video', 'Video', '/video/', $this->urls->visual($seo['photo'] ?? '', 'upload/seopage/')),

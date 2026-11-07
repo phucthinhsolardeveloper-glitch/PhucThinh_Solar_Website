@@ -14,7 +14,7 @@ abstract class PageSupport
 
     public function __construct(protected readonly ProductMediaUrls $urls)
     {
-        $this->db = DB::connection('legacy');
+        $this->db = DB::connection();
     }
 
     /** @return list<array<string, mixed>> */
@@ -32,7 +32,7 @@ abstract class PageSupport
     /** SEO of a fixed page from table_seopage (ptsPublicSeoDto with the seopage folder). */
     protected function pageSeo(string $type, callable $text): array
     {
-        $row = $this->row('select titlevi,descriptionvi,keywordsvi,photo from table_seopage where type=? limit 0,1', [$type]);
+        $row = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page=? limit 0,1", [$type]);
 
         return [
             'title' => $text(LegacyText::flat($row['titlevi'] ?? '')),

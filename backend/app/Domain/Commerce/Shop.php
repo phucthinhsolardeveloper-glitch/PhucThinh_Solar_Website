@@ -6,12 +6,12 @@ use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
+use App\Support\SiteSettings;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -34,7 +34,7 @@ class Shop
     public function __construct(
         private readonly Session $session,
         private readonly Cart $cart,
-        private readonly LegacySettings $settings,
+        private readonly SiteSettings $settings,
         private readonly ProductMediaUrls $urls,
         private readonly Payments $payments,
         private readonly Shipping $shipping,

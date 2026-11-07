@@ -6,7 +6,7 @@ use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Auth\LegacyAdminUserProvider;
 use App\Legacy\Auth\LegacyPasswordVerifier;
 use App\Legacy\Catalog\ProductImageResolver;
-use App\Legacy\Settings\LegacySettings;
+use App\Support\SiteSettings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,11 +17,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // One copy per request: the tree is read once and shared by every API part.
+        $this->app->scoped(\App\Domain\Catalog\CategoryTree::class);
+        $this->app->scoped(\App\Support\SiteSettings::class);
         $this->app->singleton(LegacyPasswordVerifier::class, fn () => new LegacyPasswordVerifier(
             (string) config('legacy.admin_password.secret'),
             (string) config('legacy.admin_password.salt'),
         ));
-        $this->app->singleton(LegacySettings::class);
+        $this->app->singleton(SiteSettings::class);
         $this->app->bind(ProductMediaUrls::class, fn () => new ProductMediaUrls(
             rtrim((string) config('legacy.upload_path'), '/'),
             rtrim((string) config('legacy.assets_path'), '/'),

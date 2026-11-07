@@ -7,9 +7,9 @@ use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
 use App\Support\FormToken;
+use App\Support\SiteSettings;
 
 /**
  * Product page extras (api/pts_v1_product_extras.php): related products, warranty links, reviews with
@@ -21,7 +21,7 @@ class ProductExtras extends PageSupport
 
     private const VIDEO_EXTENSIONS = ['mp4', 'mkv'];
 
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings, private readonly ProductSpecs $specs, private readonly ProductCard $cards)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly ProductSpecs $specs, private readonly ProductCard $cards)
     {
         parent::__construct($urls);
     }

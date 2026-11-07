@@ -3,8 +3,8 @@
 namespace App\Domain\About;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
@@ -46,9 +46,9 @@ class AboutAssembler
 
     private Connection $db;
 
-    public function __construct(private readonly ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(private readonly ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
-        $this->db = DB::connection('legacy');
+        $this->db = DB::connection();
     }
 
     /** @return array<string, mixed> */
@@ -81,7 +81,7 @@ class AboutAssembler
         $people = $team[0] ?? [];
         $peopleImage = $this->image($people['photo'] ?? '', 'upload/news/');
         if ($peopleImage === '') {
-            foreach ($this->rows("select namevi,descvi,link,photo from table_photo where type='adv' order by numb,id desc") as $adv) {
+            foreach ($this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo from banners where placement='adv' order by sort_order,id desc") as $adv) {
                 if (($adv['link'] ?? '') === '#ptsContactModal' && ($peopleImage = $this->image($adv['photo'], 'upload/photo/')) !== '') {
                     break;
                 }
@@ -124,14 +124,14 @@ class AboutAssembler
         }
         $compass = array_map(fn ($row) => $card($row, self::sentences($row['contentvi'] ?? '', 1)), array_slice($compassRows, 0, 3));
 
-        $cta = $this->rows("select namevi,descvi,link,photo,status from table_photo where type='about-cta' and find_in_set('hienthi',status) order by numb,id desc limit 0,1")[0] ?? [];
-        $seoRow = (array) ($this->db->selectOne("select titlevi,descriptionvi,keywordsvi,photo from table_seopage where type='gioi-thieu' limit 0,1") ?? []);
+        $cta = $this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, 'hienthi' as status from banners where placement='about-cta' and is_visible=1 order by sort_order,id desc limit 0,1")[0] ?? [];
+        $seoRow = (array) ($this->db->selectOne("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='gioi-thieu' limit 0,1") ?? []);
         $options = $this->settings->options();
         $hotline = is_scalar($options['hotline'] ?? null) ? trim((string) $options['hotline']) : '';
         $zaloValue = is_scalar($options['zalo'] ?? null) ? (string) $options['zalo'] : '';
         $zalo = ! empty($zaloValue) ? (string) preg_replace('/[^0-9]/', '', $zaloValue) : '';
         $zalo = trim($zalo);
-        $showroom = $this->db->selectOne("select photo from table_photo where type='about-showroom' and act='photo_static' and find_in_set('hienthi',status) limit 0,1");
+        $showroom = $this->db->selectOne("select image as photo from banners where placement='about-showroom' and is_visible=1 order by sort_order,id desc limit 0,1");
 
         return [
             'schemaVersion' => 2,
@@ -184,7 +184,7 @@ class AboutAssembler
     /** Featured certificates first (up to three), then the rest in Admin order. */
     private function certificates(): array
     {
-        $rows = $this->rows("select id,namevi,descvi,link,photo,status from table_photo where type='chungnhan' and find_in_set('hienthi',status) order by numb,id desc");
+        $rows = $this->rows("select id, coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, concat_ws(',', 'hienthi', if(is_featured,'noibat',null)) as status from banners where placement='chungnhan' and is_visible=1 order by sort_order,id desc");
         $flags = fn ($row) => array_filter(array_map('trim', explode(',', (string) ($row['status'] ?? ''))));
         $featured = array_values(array_filter($rows, fn ($row) => in_array('noibat', $flags($row), true)));
         $cards = array_slice($featured ?: $rows, 0, 3);
@@ -202,17 +202,21 @@ class AboutAssembler
         return $items;
     }
 
-    /** @return list<array<string, mixed>> */
+    private const SECTIONS = ['lich-su' => 'about.history', 'su-menh' => 'about.compass', 'ly-do-chon-chung-toi' => 'about.reasons', 'about-team' => 'about.team', 'about-principle' => 'about.principles'];
+
+    /** @return list<array<string, mixed>> visible items of an About section, flags folded back into "status" */
     private function news(string $type, int $limit = 0): array
     {
-        return $this->rows("select namevi,title_indexvi,descvi,contentvi,solieu,id,photo,status from table_news where type='{$type}' and find_in_set('hienthi',status) order by numb,id desc"
-            .($limit > 0 ? ' limit 0,'.$limit : ''));
+        $rows = $this->rows("select coalesce(title,'') as namevi, coalesce(subtitle,'') as title_indexvi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi,"
+            ." coalesce(figure,'') as solieu, id, coalesce(image,'') as photo, flags from page_items where section=? and is_visible=1 order by sort_order,id desc".($limit > 0 ? ' limit 0,'.$limit : ''), [self::SECTIONS[$type]]);
+
+        return array_map(fn ($row) => ['status' => implode(',', array_merge(['hienthi'], (array) json_decode((string) $row['flags'], true)))] + $row, $rows);
     }
 
     /** @return list<array<string, mixed>> */
-    private function rows(string $sql): array
+    private function rows(string $sql, array $bindings = []): array
     {
-        return array_map(fn ($row) => (array) $row, $this->db->select($sql));
+        return array_map(fn ($row) => (array) $row, $this->db->select($sql, $bindings));
     }
 
     private function image(mixed $value, string $folder): string

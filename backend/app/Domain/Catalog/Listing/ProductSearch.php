@@ -3,8 +3,8 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\PricingPolicy;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,7 +23,7 @@ class ProductSearch
     private const COMPACT_FIELDS = ['p.code', 'p.slugvi', 'p.slugen', 'p.pdp_profile', 'p.options', 'p.additional_specs', 'p.thongsokythuatvi', 'p.thongsokythuaten',
         'p.contentvi', 'p.contenten', 'p.descvi', 'p.descen'];
 
-    public function __construct(private readonly LegacySettings $settings, private readonly ProductCard $cards) {}
+    public function __construct(private readonly SiteSettings $settings, private readonly ProductCard $cards) {}
 
     /** @return array{0: int, 1: array<string, mixed>} */
     public function handle(array $get): array

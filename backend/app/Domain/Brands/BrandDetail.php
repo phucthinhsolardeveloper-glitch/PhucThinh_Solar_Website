@@ -7,13 +7,13 @@ use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /** Products of one brand (api/pts_v1_brand_detail.php, /thuong-hieu/<slug>/), with sort, price filter and paging. */
 class BrandDetail extends PageSupport
 {
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings, private readonly ProductCard $cards)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly ProductCard $cards)
     {
         parent::__construct($urls);
     }

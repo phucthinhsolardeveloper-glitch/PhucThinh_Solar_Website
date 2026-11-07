@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Legacy\Settings\LegacySettings;
+use App\Support\SiteSettings;
 
 /**
  * Wording of transactional emails (libraries/mail_templates.php). Layout stays in code; Admin may
@@ -45,7 +45,7 @@ class MailTemplates
         ],
     ];
 
-    public function __construct(private readonly LegacySettings $settings) {}
+    public function __construct(private readonly SiteSettings $settings) {}
 
     /** @return array{subject: string, heading: string, intro: string, closing: string} */
     public function copy(string $key, array $values): array

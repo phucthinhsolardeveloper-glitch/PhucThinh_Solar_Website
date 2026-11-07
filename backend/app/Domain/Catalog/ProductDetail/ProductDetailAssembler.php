@@ -4,9 +4,9 @@ namespace App\Domain\Catalog\ProductDetail;
 
 use App\Domain\Catalog\PricingPolicy;
 use App\Legacy\Catalog\ProductContentResolver;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
+use App\Support\SiteSettings;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,7 +23,7 @@ class ProductDetailAssembler
         private readonly ProductContentResolver $contentResolver,
         private readonly ProductContentPresenter $contentPresenter,
         private readonly ProductMediaUrls $urls,
-        private readonly LegacySettings $settings,
+        private readonly SiteSettings $settings,
         private readonly ProductSpecs $specs,
         private readonly ProductApplications $applications,
     ) {}

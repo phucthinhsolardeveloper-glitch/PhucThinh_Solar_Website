@@ -5,8 +5,8 @@ namespace App\Domain\Projects;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\PageSupport;
-use App\Legacy\Settings\LegacySettings;
 use App\Legacy\Support\LegacyText;
+use App\Support\SiteSettings;
 
 /**
  * Completed projects (api/pts_v1_projects.php). The first page without a category lifts one project
@@ -16,7 +16,7 @@ class ProjectListing extends PageSupport
 {
     private const FALLBACK_CTA_PHOTO = 'anh-quan-gl-4-9449.jpg';
 
-    public function __construct(ProductMediaUrls $urls, private readonly LegacySettings $settings)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
         parent::__construct($urls);
     }
