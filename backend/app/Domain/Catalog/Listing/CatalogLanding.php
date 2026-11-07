@@ -5,7 +5,9 @@ namespace App\Domain\Catalog\Listing;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
+use App\Models\Category;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Category landing extras of the catalog payload (ptsCatalogPageExtrasDto): hero picture, "choose by
@@ -81,16 +83,16 @@ final class CatalogLanding
     public function __construct(private readonly Connection $db, private readonly ProductMediaUrls $urls) {}
 
     /**
-     * @param  array<string, int>  $resolved
+     * @param  int|null  $selectedId  the category shown, null on /san-pham/
      * @param  array<string, mixed>  $categoryRow
      * @param  array<string, mixed>  $category
      * @return array<string, mixed>
      */
-    public function extras(string $categoryPath, array $resolved, array $categoryRow, array $category): array
+    public function extras(string $categoryPath, ?int $selectedId, array $categoryRow, array $category): array
     {
         $currentPath = $categoryPath === '' ? 'san-pham' : 'danh-muc-san-pham/'.$categoryPath;
 
-        [$faq, $cards] = $this->sections($resolved, $categoryRow);
+        [$faq, $cards] = $this->sections($categoryRow);
         $applications = [];
         $title = '';
         foreach ($cards as $block) {
@@ -125,26 +127,26 @@ final class CatalogLanding
             'categoryHero' => $this->hero($currentPath, $categoryPath, $categoryRow),
             'categoryContent' => ['title' => $title, 'applications' => $applications, 'faq' => $faqs],
             'support' => $this->support(),
-            'seo' => $this->seo($resolved, $categoryRow),
+            'seo' => $this->seo($selectedId, $categoryRow),
             'canonical' => ['url' => $canonical],
         ];
     }
 
     /** @return array{0: list<array<string, mixed>>, 1: list<array<string, mixed>>} FAQ and cards, a level-2 page borrowing from its parent */
-    private function sections(array $resolved, array $categoryRow): array
+    private function sections(array $categoryRow): array
     {
-        $scope = isset($resolved['idl']) ? 'list' : (isset($resolved['idc']) ? 'cat' : '');
-        if ($scope === '') {
+        $depth = (int) ($categoryRow['depth'] ?? 0);
+        if ($depth < 1 || $depth > 2) {
             return [[], []];
         }
-        $parts = CatalogAssembler::sectionParts($this->db, $scope, $resolved[$scope === 'list' ? 'idl' : 'idc']);
+        $parts = CatalogAssembler::sectionParts($this->db, (int) $categoryRow['id']);
         [$faq, $cards] = [$parts['faq'], $parts['cards']];
-        if ($scope === 'cat' && (! $faq || ! $cards) && ! empty($categoryRow['id_list'])) {
-            $parent = CatalogAssembler::sectionParts($this->db, 'list', (int) $categoryRow['id_list']);
+        if ($depth === 2 && (! $faq || ! $cards) && ! empty($categoryRow['id_list'])) {
+            $parent = CatalogAssembler::sectionParts($this->db, (int) $categoryRow['id_list']);
             $faq = $faq ?: $parent['faq'];
             $cards = $cards ?: $parent['cards'];
         }
-        if ($scope === 'list' && ($categoryRow['slugvi'] ?? '') === 'den-nlmt' && (! $faq || ! $cards)) {
+        if ($depth === 1 && ($categoryRow['slugvi'] ?? '') === 'den-nlmt' && (! $faq || ! $cards)) {
             $faq = $faq ?: self::LIGHTING_FALLBACK['faq'];
             $cards = $cards ?: self::LIGHTING_FALLBACK['cards'];
         }
@@ -157,7 +159,8 @@ final class CatalogLanding
     {
         $hero = null;
         $configured = false;
-        foreach ($this->db->table('table_photo')->where('type', 'product-category-hero')->orderBy('numb')->orderByDesc('id')->get(['namevi', 'link', 'photo', 'status']) as $row) {
+        foreach ($this->db->table('banners')->where('placement', 'product-category-hero')->orderBy('sort_order')->orderByDesc('id')
+            ->get(['title as namevi', 'link', 'image as photo', DB::raw("if(is_visible,'hienthi','') as status")]) as $row) {
             if (trim((string) parse_url((string) ($row->link ?? ''), PHP_URL_PATH), '/') !== $currentPath) {
                 continue;
             }
@@ -192,7 +195,8 @@ final class CatalogLanding
     /** First published "catalog-campaign" banner; a built-in invitation only when Admin has none at all. */
     private function support(): ?array
     {
-        $rows = $this->db->table('table_photo')->where('type', 'catalog-campaign')->orderBy('numb')->orderByDesc('id')->get(['namevi', 'descvi', 'photo', 'link', 'status']);
+        $rows = $this->db->table('banners')->where('placement', 'catalog-campaign')->orderBy('sort_order')->orderByDesc('id')
+            ->get(['title as namevi', 'summary as descvi', 'image as photo', 'link', DB::raw("if(is_visible,'hienthi','') as status")]);
         $banner = null;
         foreach ($rows as $row) {
             if (! empty($row->photo) && (new StatusFlags($row->status ?? ''))->visible()) {
@@ -217,19 +221,18 @@ final class CatalogLanding
     }
 
     /** SEO of the category level shown, or of the /san-pham/ page. */
-    private function seo(array $resolved, array $categoryRow): array
+    private function seo(?int $selectedId, array $categoryRow): array
     {
         $row = [];
         $image = '';
-        if ($resolved) {
-            $action = ['idl' => 'man_list', 'idc' => 'man_cat', 'idi' => 'man_item', 'ids' => 'man_sub'][array_key_last($resolved)];
+        if ($selectedId !== null) {
             if (! empty($categoryRow['id'])) {
-                $row = (array) ($this->db->table('table_seo')->where('id_parent', (int) $categoryRow['id'])->where('com', 'product')->where('act', $action)
-                    ->where('type', 'san-pham')->first(['titlevi', 'descriptionvi', 'keywordsvi']) ?? []);
+                $row = (array) ($this->db->table('seo_metas')->where('owner_type', Category::class)->where('owner_id', (int) $categoryRow['id'])
+                    ->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi']) ?? []);
                 $image = $this->urls->visual($categoryRow['photo'] ?? '', 'upload/product/');
             }
         } else {
-            $row = (array) ($this->db->table('table_seopage')->where('type', 'san-pham')->first(['titlevi', 'descriptionvi', 'keywordsvi', 'photo']) ?? []);
+            $row = (array) ($this->db->table('seo_metas')->where('page', 'san-pham')->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi', 'image as photo']) ?? []);
             $image = $this->urls->visual($row['photo'] ?? '', 'upload/seopage/');
         }
         $title = ! empty($row['titlevi']) ? LegacyText::seo($row['titlevi']) : LegacyText::seo(($categoryRow['namevi'] ?? '') ?: 'Sản phẩm');

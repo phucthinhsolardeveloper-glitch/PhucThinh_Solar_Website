@@ -25,6 +25,11 @@ class ParityCommand extends Command
      */
     private const ACCEPTED = [
         'news-detail' => ['.body.article.showCover' => 'PHP looked for the cover picture in HTML-escaped text and never found it; the cover is now hidden when the article repeats it'],
+        'catalog' => [
+            '.body.categoryContent.faq[*].question' => 'PHP always showed the parent category FAQ on sub-category pages; the FAQ Admin wrote for the sub-category now shows',
+            '.body.categoryContent.faq[*].answer' => 'same as above',
+            '.body.categoryContent.faq.length' => 'same as above',
+        ],
     ];
 
     /** Fields that differ on every request by design (form tokens), left out of the comparison. */
