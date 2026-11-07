@@ -33,6 +33,17 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     public const ROLE_EDITOR = 'editor';
 
+    /** Permission areas an editor can be given; owners have all of them. */
+    public const PERMISSIONS = [
+        'catalog' => 'Sản phẩm, danh mục, thương hiệu',
+        'content' => 'Bài viết, giải pháp, dự án, nội dung trang',
+        'media' => 'Ảnh vị trí, thư viện ảnh, video',
+        'orders' => 'Đơn hàng, phí giao hàng, thanh toán',
+        'leads' => 'Liên hệ, tư vấn, đăng ký đại lý',
+        'reviews' => 'Đánh giá sản phẩm',
+        'settings' => 'Thông tin website, SEO trang',
+    ];
+
     /**
      * @return array<string, string>
      */

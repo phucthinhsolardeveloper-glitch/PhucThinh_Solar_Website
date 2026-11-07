@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\UnicodeJson;
 use Illuminate\Database\Eloquent\Model;
 
 class Banner extends Model
@@ -13,7 +14,7 @@ class Banner extends Model
     protected function casts(): array
     {
         return [
-            'options' => 'array',
+            'options' => UnicodeJson::class,
             'is_visible' => 'boolean',
             'is_featured' => 'boolean',
         ];

@@ -43,7 +43,7 @@ npx nuxi build
 NITRO_PORT=3110 NUXT_API_ORIGIN=http://127.0.0.1:8090 node .output/server/index.mjs
 ```
 
-Mở http://127.0.0.1:3110/. Admin Filament: http://127.0.0.1:8090/admin-next/.
+Mở http://127.0.0.1:3110/. Admin Filament: http://127.0.0.1:8090/admin/.
 
 ## Kiểm tra trước khi commit
 

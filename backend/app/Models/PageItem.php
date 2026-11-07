@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\UnicodeJson;
 use Illuminate\Database\Eloquent\Model;
 
 class PageItem extends Model
@@ -13,8 +14,8 @@ class PageItem extends Model
     protected function casts(): array
     {
         return [
-            'flags' => 'array',
-            'data' => 'array',
+            'flags' => UnicodeJson::class,
+            'data' => UnicodeJson::class,
             'is_visible' => 'boolean',
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Album extends Model
 {
@@ -21,5 +22,10 @@ class Album extends Model
     public function images(): HasMany
     {
         return $this->hasMany(AlbumImage::class)->orderBy('sort_order')->orderByDesc('id');
+    }
+
+    public function seo(): MorphOne
+    {
+        return $this->morphOne(SeoMeta::class, 'owner');
     }
 }

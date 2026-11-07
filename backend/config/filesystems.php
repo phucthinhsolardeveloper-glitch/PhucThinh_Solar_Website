@@ -41,8 +41,19 @@ return [
         'uploads' => [
             'driver' => 'local',
             'root' => env('UPLOAD_PATH', '/srv/upload'),
+            'url' => '/upload',
+            'visibility' => 'public',
             'throw' => false,
         ],
+
+        // One disk per upload folder, so Admin stores bare file names the way the site reads them.
+        ...collect(['product', 'news', 'photo', 'seopage', 'video', 'file'])->mapWithKeys(fn ($folder) => ['upload_'.$folder => [
+            'driver' => 'local',
+            'root' => rtrim((string) env('UPLOAD_PATH', '/srv/upload'), '/').'/'.$folder,
+            'url' => '/upload/'.$folder,
+            'visibility' => 'public',
+            'throw' => false,
+        ]])->all(),
 
         'local' => [
             'driver' => 'local',

@@ -17,6 +17,6 @@ it('keeps app tables without a prefix', function () {
     expect(DB::connection()->getTablePrefix())->toBe('');
 });
 
-it('serves the Filament login at /admin-next', function () {
-    $this->get('/admin-next/login')->assertOk();
+it('serves the Filament login at /admin', function () {
+    $this->get('/admin/login')->assertOk();
 });

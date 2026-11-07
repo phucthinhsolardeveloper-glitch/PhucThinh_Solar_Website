@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\UnicodeJson;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,7 +17,10 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'additional_specs' => 'array',
+            'additional_specs' => UnicodeJson::class,
+            'highlights' => UnicodeJson::class,
+            'applications' => UnicodeJson::class,
+            'installation' => UnicodeJson::class,
             'quote_only' => 'boolean',
             'is_visible' => 'boolean',
             'is_bestseller' => 'boolean',

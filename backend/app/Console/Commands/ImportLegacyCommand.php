@@ -42,14 +42,14 @@ class ImportLegacyCommand extends Command
         'about-principle' => 'about.principles', 'home-about' => 'home.about', 'home-about-point' => 'home.about_points', 'home-energy-chain' => 'home.energy_chain',
         'catalog-benefit' => 'catalog.benefits', 'quick-search' => 'search.suggestions', 'news-intro' => 'news.intro', 'news-cta' => 'news.cta', 'project-cta' => 'projects.cta',
         'project-trust' => 'projects.trust', 'project-intro' => 'projects.intro', 'project-benefit' => 'projects.benefits', 'solution-intro' => 'solutions.intro', 'solution-cta' => 'solutions.cta',
-        'loi-ich' => 'legacy.benefits', 'so-lieu-thong-ke' => 'legacy.stats', 'tieu-chi' => 'legacy.criteria',
+        'loi-ich' => 'archive.benefits', 'so-lieu-thong-ke' => 'archive.stats', 'tieu-chi' => 'archive.criteria',
     ];
 
     private const POST_KINDS = ['tin-tuc' => 'article', 'giai-phap' => 'solution', 'du-an' => 'project', 'chinh-sach' => 'policy'];
 
     /** Fixed page texts in table_static => page section key. */
     private const STATIC_SECTIONS = ['footer' => 'site.footer', 'lienhe' => 'contact.intro', 'dai-ly-1' => 'dealer.intro', 'dai-ly-2' => 'dealer.overview', 'dai-ly-3' => 'dealer.support',
-        'tom-tat-gioi-thieu' => 'legacy.about_summary', 'su-menh' => 'legacy.mission', 'loi-ich' => 'legacy.benefits_text'];
+        'tom-tat-gioi-thieu' => 'archive.about_summary', 'su-menh' => 'archive.mission', 'loi-ich' => 'archive.benefits_text'];
 
     public function handle(): int
     {
@@ -95,7 +95,7 @@ class ImportLegacyCommand extends Command
         foreach ($this->old->table('table_user')->orderBy('id')->get() as $row) {
             $this->new->table('users')->updateOrInsert(['id' => $row->id], ['name' => self::text($row->fullname) ?: $row->username, 'username' => $row->username,
                 'email' => self::nullable($row->email), 'phone' => self::nullable($row->phone), 'password' => $row->password, 'role' => (int) $row->role === 3 ? 'owner' : 'editor',
-                'permissions' => json_encode($permissions[(int) $row->id_permission] ?? []), 'is_active' => self::visible($row->status), 'created_at' => now(), 'updated_at' => now()]);
+                'permissions' => json_encode(self::permissionAreas($permissions[(int) $row->id_permission] ?? [])), 'is_active' => self::visible($row->status), 'created_at' => now(), 'updated_at' => now()]);
         }
     }
 
@@ -408,5 +408,34 @@ class ImportLegacyCommand extends Command
         $updated = (int) ($row['date_updated'] ?? 0) ?: $created;
 
         return ['created_at' => date('Y-m-d H:i:s', $created), 'updated_at' => date('Y-m-d H:i:s', $updated)];
+    }
+
+    /**
+     * Old per-screen permission keys ("product_edit_list_san-pham", "news_man_tin-tuc"…) become the
+     * new areas. Gallery and video screens lived under product/news keys with their own types.
+     *
+     * @param  list<string>  $keys
+     * @return list<string>
+     */
+    private static function permissionAreas(array $keys): array
+    {
+        $areas = [];
+        foreach ($keys as $key) {
+            $area = match (true) {
+                str_contains($key, 'thu-vien-anh') || str_contains($key, '_video') || str_starts_with($key, 'photo_') => 'media',
+                str_starts_with($key, 'product_') || str_starts_with($key, 'content_section_') => 'catalog',
+                str_starts_with($key, 'comment_') => 'reviews',
+                str_starts_with($key, 'contact_') || str_starts_with($key, 'newsletter_') => 'leads',
+                str_starts_with($key, 'order_') || str_starts_with($key, 'places_') || str_contains($key, 'hinh-thuc-thanh-toan') => 'orders',
+                str_starts_with($key, 'setting_') || str_starts_with($key, 'seopage_') || str_starts_with($key, 'static_') => 'settings',
+                str_starts_with($key, 'news_') => 'content',
+                default => null,
+            };
+            if ($area !== null) {
+                $areas[$area] = true;
+            }
+        }
+
+        return array_keys($areas);
     }
 }

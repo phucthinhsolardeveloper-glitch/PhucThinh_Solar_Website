@@ -64,7 +64,7 @@ it('grants owners everything and editors only their list', function () {
 });
 
 it('serves the username login page', function () {
-    $this->get('/admin-next/login')->assertOk()->assertSee('Tên đăng nhập');
+    $this->get('/admin/login')->assertOk()->assertSee('Tên đăng nhập');
 });
 
 it('signs in through the Filament login form', function () {

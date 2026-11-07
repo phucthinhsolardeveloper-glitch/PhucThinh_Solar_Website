@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\ContentBlocks;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -14,7 +15,7 @@ class ContentSection extends Model
     protected function casts(): array
     {
         return [
-            'blocks' => 'array',
+            'blocks' => ContentBlocks::class,
             'is_visible' => 'boolean',
         ];
     }
