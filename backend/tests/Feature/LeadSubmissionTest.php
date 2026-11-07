@@ -23,7 +23,7 @@ function lead(array $body)
 
 it('refuses a missing or forged form token with 419', function () {
     lead(['kind' => 'contact', 'csrfToken' => 'x', 'data' => []])->assertStatus(419)->assertJsonPath('error.code', 'INVALID_SESSION');
-    lead(['kind' => 'contact', 'csrfToken' => time().'.'.str_repeat('a', 64), 'data' => []])->assertStatus(419);
+    lead(['kind' => 'contact', 'csrfToken' => str_pad(dechex(time()), 8, '0', STR_PAD_LEFT).str_repeat('a', 56), 'data' => []])->assertStatus(419);
 });
 
 it('refuses unknown kinds and broken bodies', function () {
@@ -57,6 +57,10 @@ it('stops the sixth submission in ten minutes from one address', function () {
 it('requires a real province for dealer sign-ups', function () {
     lead(['kind' => 'dealer', 'csrfToken' => FormToken::issue(), 'data' => ['fullname' => 'A', 'phone' => '0912345678', 'email' => 'a@b.vn', 'company' => 'C', 'city_id' => '999999']])
         ->assertStatus(422)->assertJsonPath('error.message', 'Vui lòng chọn tỉnh/thành phố hợp lệ.');
+});
+
+it('issues tokens in the 64-hex shape the Nuxt contracts accept', function () {
+    expect(FormToken::issue())->toMatch('/^[a-f0-9]{64}$/');
 });
 
 it('expires form tokens after two hours', function () {
