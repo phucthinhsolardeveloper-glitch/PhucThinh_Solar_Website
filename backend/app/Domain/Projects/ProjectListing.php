@@ -5,6 +5,7 @@ namespace App\Domain\Projects;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\PageSupport;
+use App\Models\PostCategory;
 use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
 
@@ -41,7 +42,7 @@ class ProjectListing extends PageSupport
             return $bad;
         }
 
-        $categoryRows = $this->rows("select id,namevi,descvi,photo,slugvi,status from table_news_list where type='du-an' and find_in_set('hienthi',status) order by numb,id desc");
+        $categoryRows = $this->rows("select id, name as namevi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, slug as slugvi, 'hienthi' as status from post_categories where kind='project' and depth=1 and is_visible=1 order by sort_order,id desc");
         $selected = null;
         foreach ($categoryRows as $row) {
             if ($slug !== '' && (string) $row['slugvi'] === $slug) {
@@ -53,7 +54,7 @@ class ProjectListing extends PageSupport
         }
         $category = null;
         if ($selected !== null) {
-            $seoRow = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent = ? and com = 'news' and act = 'man_list' and type = 'du-an' limit 1", [(int) $selected['id']]);
+            $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
             // As in PHP, the selected category carries no picture of its own (its row is taken before pictures are checked).
             $category = $this->categoryDto($selected + ['_photo' => ''], [
                 'title' => LegacyText::cms(LegacyText::flat($seoRow['titlevi'] ?? '')),
@@ -63,10 +64,10 @@ class ProjectListing extends PageSupport
             ]);
         }
 
-        $where = "type='du-an' and find_in_set('hienthi',status)".($selected !== null ? ' and id_list=?' : '');
+        $where = "kind='project' and is_visible=1".($selected !== null ? ' and category_id=?' : '');
         $params = $selected !== null ? [(int) $selected['id']] : [];
-        $total = (int) ($this->row("select count(*) as total from table_news where {$where}", $params)['total'] ?? 0);
-        $rows = $this->rows("select id,id_list,namevi,slugvi,photo,descvi,address,status from table_news where {$where} order by numb,id desc limit ".(($page - 1) * $perPage).', '.$perPage, $params);
+        $total = (int) ($this->row("select count(*) as total from posts where {$where}", $params)['total'] ?? 0);
+        $rows = $this->rows("select id, category_id as id_list, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(address,'') as address, concat_ws(',', 'hienthi', if(in_hub,'projecthub',null)) as status from posts where {$where} order by sort_order,id desc limit ".(($page - 1) * $perPage).', '.$perPage, $params);
         $featuredRow = [];
         if ($page === 1 && $selected === null && $rows) {
             foreach ($rows as $index => $row) {
@@ -91,7 +92,7 @@ class ProjectListing extends PageSupport
             }
         }
         $project = fn (array $row, bool $featured) => $this->projectDto($row, $categoryMap, $featured);
-        $introRows = $this->rows("select namevi,descvi,status from table_news where type='project-intro' order by numb,id desc");
+        $introRows = $this->items('projects.intro');
 
         return [200, [
             'schemaVersion' => 1,
@@ -163,7 +164,7 @@ class ProjectListing extends PageSupport
     private function benefits(): array
     {
         $items = [];
-        foreach ($this->rows("select namevi,photo,status from table_news where type='project-benefit' and find_in_set('hienthi',status) order by numb,id desc limit 0,3") as $row) {
+        foreach ($this->items('projects.benefits', 3, true) as $row) {
             $label = LegacyText::cms($row['namevi']);
             if (self::visible($row) && $label !== '') {
                 $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo']))];
@@ -180,7 +181,7 @@ class ProjectListing extends PageSupport
     private function cta(): ?array
     {
         $fallbackPhoto = $this->photo(self::FALLBACK_CTA_PHOTO);
-        $rows = $this->rows("select title_indexvi,namevi,descvi,content1vi,photo,status from table_news where type='project-cta' order by numb,id desc") ?: [[
+        $rows = $this->items('projects.cta') ?: [[
             'title_indexvi' => '', 'namevi' => 'Bạn có công trình cần tư vấn?', 'descvi' => 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
             'content1vi' => 'Nhận tư vấn miễn phí', 'status' => 'hienthi', 'photo' => '',
         ]];
@@ -208,7 +209,7 @@ class ProjectListing extends PageSupport
     {
         $icons = ['headset', 'cogs', 'shield'];
         $items = [];
-        foreach ($this->rows("select namevi,photo,status from table_news where type='project-trust' and find_in_set('hienthi',status) order by numb,id desc limit 0,3") as $index => $row) {
+        foreach ($this->items('projects.trust', 3, true) as $index => $row) {
             $label = LegacyText::cms($row['namevi']);
             if (self::visible($row) && $label !== '') {
                 $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo'])), 'icon' => $icons[min($index, 2)]];

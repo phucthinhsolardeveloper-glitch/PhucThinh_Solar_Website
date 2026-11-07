@@ -3,6 +3,7 @@
 namespace App\Domain\Projects;
 
 use App\Domain\Pages\PageSupport;
+use App\Models\Post;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
@@ -21,22 +22,25 @@ class ProjectDetail extends PageSupport
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
             return $bad;
         }
-        $row = $this->row("select id,id_list,namevi,slugvi,descvi,contentvi,photo,address,tenkhachhang,project_start_date,project_end_date,status,type from table_news where slugvi = ? and type = 'du-an' and find_in_set('hienthi',status) limit 1", [$slug]);
+        $row = $this->row("select id, category_id as id_list, title as namevi, slug as slugvi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, coalesce(image,'') as photo, coalesce(address,'') as address,"
+            ." coalesce(client_name,'') as tenkhachhang, coalesce(started_on,'') as project_start_date, coalesce(finished_on,'') as project_end_date, 'hienthi' as status, 'du-an' as type"
+            ." from posts where slug = ? and kind = 'project' and is_visible = 1 limit 1", [$slug]);
         if (! $row) {
             return [404, ['error' => ['code' => 'PROJECT_NOT_FOUND']]];
         }
         $id = (int) $row['id'];
         $projectSlug = LegacyText::slug($row['slugvi']);
         $title = LegacyText::cms($row['namevi']);
-        $seoRow = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent = ? and com = 'news' and act = 'man' and type = 'du-an' limit 0,1", [$id]);
-        $categoryRow = $this->row("select id,namevi,slugvi,status from table_news_list where id = ? and type = 'du-an' and find_in_set('hienthi',status) limit 1", [(int) $row['id_list']]);
+        $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 0,1", [Post::class, $id]);
+        $categoryRow = $this->row("select id, name as namevi, slug as slugvi, 'hienthi' as status from post_categories where id = ? and kind = 'project' and is_visible = 1 limit 1", [(int) $row['id_list']]);
         $categoryName = LegacyText::cms($categoryRow['namevi'] ?? '');
         $categorySlug = LegacyText::slug($categoryRow['slugvi'] ?? '');
         $category = (int) ($categoryRow['id'] ?? 0) > 0 && $categoryName !== '' && $categorySlug !== ''
             ? ['id' => (int) $categoryRow['id'], 'name' => $categoryName, 'slug' => $categorySlug, 'url' => '/danh-muc-du-an/'.$categorySlug.'/'] : null;
 
         $gallery = [];
-        foreach ($this->rows("select photo,namevi,link_video,kind,val,status from table_gallery where id_parent = ? and com = 'news' and type = 'du-an' and kind = 'man' and val in ('du-an','video') and find_in_set('hienthi',status) order by numb,id desc", [$id]) as $item) {
+        foreach ($this->rows("select coalesce(path,'') as photo, coalesce(caption,'') as namevi, coalesce(video_url,'') as link_video, 'man' as kind, if(kind='video','video','du-an') as val, 'hienthi' as status"
+            ." from post_media where post_id = ? and is_visible = 1 order by sort_order,id desc", [$id]) as $item) {
             if (! self::visible($item) || $item['kind'] !== 'man') {
                 continue;
             }
@@ -49,7 +53,8 @@ class ProjectDetail extends PageSupport
             }
         }
         $equipment = [];
-        foreach ($this->rows("select p.id,p.namevi,p.slugvi,p.photo,p.code,p.status from table_product_project pp inner join table_product p on p.id = pp.id_product where pp.id_project = ? and find_in_set('hienthi',pp.status) and p.type = 'san-pham' and find_in_set('hienthi',p.status) order by pp.numb,pp.id", [$id]) as $product) {
+        foreach ($this->rows("select p.id, p.name as namevi, p.slug as slugvi, coalesce(p.image,'') as photo, coalesce(p.code,'') as code, 'hienthi' as status from post_products pp inner join products p on p.id = pp.product_id"
+            ." where pp.post_id = ? and pp.is_visible = 1 and p.is_visible = 1 order by pp.sort_order,pp.id", [$id]) as $product) {
             $name = LegacyText::cms($product['namevi']);
             $productSlug = LegacyText::slug($product['slugvi']);
             if (self::visible($product) && (int) $product['id'] > 0 && $name !== '' && $productSlug !== '') {
@@ -57,7 +62,7 @@ class ProjectDetail extends PageSupport
             }
         }
         $nearby = [];
-        foreach ($this->rows("select id,namevi,slugvi,photo,address,status from table_news where id<>? and id_list=? and type='du-an' and find_in_set('hienthi',status) order by numb,id desc limit 0,3", [$id, (int) $row['id_list']]) as $other) {
+        foreach ($this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(address,'') as address, 'hienthi' as status from posts where id<>? and category_id <=> ? and kind='project' and is_visible=1 order by sort_order,id desc limit 0,3", [$id, $row['id_list']]) as $other) {
             $otherSlug = LegacyText::slug($other['slugvi']);
             $otherTitle = LegacyText::cms($other['namevi']);
             if (self::visible($other) && (int) $other['id'] > 0 && $otherSlug !== '' && $otherTitle !== '') {
@@ -110,7 +115,7 @@ class ProjectDetail extends PageSupport
      */
     private function cta(): ?array
     {
-        $rows = $this->rows("select namevi,title_indexvi,descvi,content1vi,photo,status from table_news where type='project-cta' order by numb,id desc");
+        $rows = $this->items('projects.cta');
         $visible = SolutionHub::select($rows, '', 1);
         if ($rows && ! $visible) {
             return null;
@@ -121,7 +126,7 @@ class ProjectDetail extends PageSupport
             $image = '/upload/news/anh-quan-gl-4-9449.jpg';
         }
         $trust = [];
-        foreach ($this->rows("select namevi,photo,status from table_news where type='project-trust' and find_in_set('hienthi',status) order by numb,id desc limit 0,3") as $item) {
+        foreach ($this->items('projects.trust', 3, true) as $item) {
             $label = LegacyText::cms($item['namevi']);
             if (self::visible($item) && $label !== '') {
                 $trust[] = ['label' => $label, 'icon' => $this->strictImage($item['photo'], 'upload/news/'), 'faIcon' => 'fa-check'];
