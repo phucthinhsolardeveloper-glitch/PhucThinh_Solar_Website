@@ -5,7 +5,11 @@ use App\Http\Controllers\Api\V1\CatalogController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\PagesController;
 use App\Http\Controllers\Api\V1\ProductDetailController;
+use App\Http\Controllers\Api\V1\ShopController;
 use App\Http\Controllers\Api\V1\SiteController;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 // v1 mirrors the PHP endpoints Nuxt reads today (frontend/shared/contracts). Read-only.
@@ -34,4 +38,16 @@ Route::prefix('v1')->group(function () {
     Route::get('public-route-resolve', [PagesController::class, 'publicRouteResolve']);
     Route::get('search', [PagesController::class, 'search']);
     Route::get('site', SiteController::class);
+
+    // Cart and checkout keep state in the visitor's session (cookie), like the PHP session did.
+    Route::middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class])->group(function () {
+        Route::get('cart', [ShopController::class, 'cart']);
+        Route::post('cart', [ShopController::class, 'mutateCart']);
+        Route::get('checkout', [ShopController::class, 'checkout']);
+        Route::post('checkout', [ShopController::class, 'placeOrder']);
+        Route::post('shipping-quote', [ShopController::class, 'shippingQuote']);
+        Route::get('checkout-notice', [ShopController::class, 'notice']);
+        Route::get('order-thanks', [ShopController::class, 'thanks']);
+        Route::get('payment/vnpay', [ShopController::class, 'vnpay']);
+    });
 });
