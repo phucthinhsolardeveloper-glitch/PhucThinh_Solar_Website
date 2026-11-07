@@ -76,8 +76,8 @@ nội dung), Laravel tính lại trên bản sao cùng dữ liệu và phải ra
 | Phần | Code Laravel | Golden master | Ghi chú |
 |---|---|---|---|
 | Chọn khối mô tả sản phẩm (riêng, kế thừa hãng/danh mục, ẩn, cộng dồn) | `App\Legacy\Catalog\ProductContentResolver` | 399/399 sản phẩm khớp | Dữ liệu thật chỉ dùng "riêng" (393) và "kế thừa danh mục" (6); 8 chế độ còn lại có test riêng |
-| Giá và chế độ báo giá (gộp 3 cách tính của PHP làm một) | `App\\Domain\\Catalog\\PricingPolicy`, `Money` | 399/399 khớp cả trang sản phẩm, danh mục và `public_pricing.php` | 394 có giá, 5 báo giá |
-| Chọn ảnh sản phẩm (ảnh chính, rồi thư viện ảnh) | `App\\Legacy\\Catalog\\ProductImageResolver` | 399/399 khớp | Đọc volume ảnh của PHP ở chế độ chỉ đọc; 76 sản phẩm local không có ảnh nào |
+| Giá và chế độ báo giá (gộp 3 cách tính của PHP làm một) | `App\Domain\Catalog\PricingPolicy`, `Money` | 399/399 khớp cả trang sản phẩm, danh mục và `public_pricing.php` | 394 có giá, 5 báo giá |
+| Chọn ảnh sản phẩm (ảnh chính, rồi thư viện ảnh) | `App\Legacy\Catalog\ProductImageResolver` | 399/399 khớp | Đọc volume ảnh của PHP ở chế độ chỉ đọc; 76 sản phẩm local không có ảnh nào |
 | Cột `status` dạng "hienthi,noibat" | `App\Legacy\Support\StatusFlags` | | |
 | Khối JSON lưu dạng HTML-escape | `App\Legacy\Support\ContentBlocks` | | |
 
