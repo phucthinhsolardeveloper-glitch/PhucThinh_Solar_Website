@@ -25,6 +25,7 @@ class ParityCommand extends Command
                 ->whereRaw("find_in_set('hienthi', status)")->orderBy('id')->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all(),
             'catalog' => $this->catalogCases(),
             'site', 'home', 'about' => [[]],
+            'contact', 'dealer' => [[], ['x' => '1']],
             default => null,
         };
         if ($cases === null) {

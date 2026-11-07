@@ -44,6 +44,17 @@ final class LegacyText
         return trim((string) preg_replace('/[\x00-\x1F\x7F]+/u', ' ', strip_tags($value)));
     }
 
+    /** CMS text to one line: entities decoded, <br>, </p>, </li> become spaces (ptsHomeText, ptsAboutPlainText, ptsDealerText). */
+    public static function cms(mixed $value): string
+    {
+        if (! is_scalar($value)) {
+            return '';
+        }
+        $value = (string) preg_replace('~<(?:br\s*/?|/p|/li)>~i', ' ', html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8'));
+
+        return trim((string) preg_replace('/\s+/u', ' ', strip_tags($value)));
+    }
+
     /** Plain text cut at a word boundary with an ellipsis, as the PHP site API does for short labels. */
     public static function excerpt(mixed $value, int $limit): string
     {
