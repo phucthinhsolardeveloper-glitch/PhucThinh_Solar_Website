@@ -13,11 +13,13 @@ Route::prefix('v1')->group(function () {
     Route::get('about', AboutController::class);
     Route::get('brand-detail', [PagesController::class, 'brandDetail']);
     Route::get('catalog', CatalogController::class);
+    Route::get('checkout-wards', [PagesController::class, 'checkoutWards']);
     Route::get('contact', [PagesController::class, 'contact']);
     Route::get('dealer', [PagesController::class, 'dealer']);
     Route::get('gallery', [PagesController::class, 'gallery']);
     Route::get('gallery-detail', [PagesController::class, 'galleryDetail']);
     Route::get('home', HomeController::class);
+    Route::get('lead-form', [PagesController::class, 'leadForm']);
     Route::get('news', [PagesController::class, 'news']);
     Route::get('news-detail', [PagesController::class, 'newsDetail']);
     Route::get('policy-detail', [PagesController::class, 'policyDetail']);

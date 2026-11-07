@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Domain\Brands\BrandDetail;
 use App\Domain\Catalog\Listing\ProductSearch;
 use App\Domain\Catalog\ProductDetail\ProductExtras;
+use App\Domain\Forms\FormMetadata;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
@@ -103,6 +104,16 @@ class PagesController extends Controller
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
 
         return $response;
+    }
+
+    public function leadForm(Request $request, FormMetadata $forms): JsonResponse
+    {
+        return self::result($forms->leadForm($request->query()));
+    }
+
+    public function checkoutWards(Request $request, FormMetadata $forms): JsonResponse
+    {
+        return self::result($forms->wards($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */
