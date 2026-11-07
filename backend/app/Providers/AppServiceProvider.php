@@ -22,7 +22,10 @@ class AppServiceProvider extends ServiceProvider
             (string) config('legacy.admin_password.salt'),
         ));
         $this->app->singleton(LegacySettings::class);
-        $this->app->bind(ProductMediaUrls::class, fn () => new ProductMediaUrls(rtrim((string) config('legacy.upload_path'), '/')));
+        $this->app->bind(ProductMediaUrls::class, fn () => new ProductMediaUrls(
+            rtrim((string) config('legacy.upload_path'), '/'),
+            rtrim((string) config('legacy.assets_path'), '/'),
+        ));
         $this->app->bind(ProductImageResolver::class, fn () => new ProductImageResolver(
             rtrim((string) config('legacy.upload_path'), '/').'/product',
         ));

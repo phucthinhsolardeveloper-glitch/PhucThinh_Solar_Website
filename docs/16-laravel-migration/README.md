@@ -22,7 +22,8 @@ có xung đột và không ép push.
 | 0 — Đóng băng và kiểm kê | Xong, 2026-11-07 (còn xác nhận bản đồ domain) | [phase-0/](phase-0/) |
 | 1 — Nền Laravel | Xong, 2026-11-07 | Mục "Phase 1" bên dưới |
 | 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
-| 2 — Lớp tương thích | Đang làm: xong khối nội dung sản phẩm | Mục "Phase 2" bên dưới |
+| 2 — Lớp tương thích | Xong phần trang sản phẩm cần | Mục "Phase 2" bên dưới |
+| 3 — API đọc v1 | `/api/v1/product-detail` khớp PHP 375/375, 2026-11-07; catalog chưa làm | Mục "Phase 3" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 | Kiến trúc đích (dựng theo Nuxt, tùy biến sâu) | Có hiệu lực | [target-architecture.md](target-architecture.md), [phase-0/usage-map.md](phase-0/usage-map.md) |
 
@@ -80,12 +81,30 @@ nội dung), Laravel tính lại trên bản sao cùng dữ liệu và phải ra
 | Chọn ảnh sản phẩm (ảnh chính, rồi thư viện ảnh) | `App\Legacy\Catalog\ProductImageResolver` | 399/399 khớp | Đọc volume ảnh của PHP ở chế độ chỉ đọc; 76 sản phẩm local không có ảnh nào |
 | Cột `status` dạng "hienthi,noibat" | `App\Legacy\Support\StatusFlags` | | |
 | Khối JSON lưu dạng HTML-escape | `App\Legacy\Support\ContentBlocks` | | |
+| Hồ sơ PDP, thông số, gói sản phẩm, chip nổi bật, chỉ số quyết định | `App\Domain\Catalog\ProductDetail\ProductSpecs`, `config/pdp.php`, `config/pdp_metrics.php` | Qua `pts:parity` | `config/pdp.php` xuất tự động từ PHP bằng `tools/migration/export_pdp_config.php`, không sửa tay |
+| Thẻ ứng dụng, gợi ý chọn mua, tài liệu | `App\Domain\Catalog\ProductDetail\ProductApplications` | Qua `pts:parity` | Ảnh minh họa đọc thư mục `assets/` của bản PHP, gắn chỉ đọc vào `/legacy/assets` |
 
 Chụp lại golden master khi dữ liệu local đổi: chạy `tools/migration/golden/capture_*.php` trong
 `pts-php81-local`, rồi tạo lại `pts_laravel13_clone` và `pts_laravel13_test` từ `phucthinhs_local`.
 Hai bên phải cùng dữ liệu thì so sánh mới có nghĩa.
 
+## Phase 3
+
+`GET /api/v1/product-detail?slug=...` trên Laravel trả đúng hợp đồng
+`frontend/shared/contracts/public-product-detail.ts`, cùng dữ liệu với `api/pts_v1_product_detail.php`.
+
+So song song: `php artisan pts:parity product-detail` (trong `pts-laravel13-local`) gọi cả hai
+cho mọi sản phẩm đang hiện và liệt kê từng đường JSON lệch. Kết quả 2026-11-07: **375/375 giống hệt**.
+
+Bẫy đã gặp:
+- PHP có hai cách tra nhãn thông số. Bảng thông số thử từng từ khóa trên mọi dòng; chỉ số quyết định
+  duyệt từng dòng với mọi từ khóa. Khi có cả "Lumen" và "Quang thông", hai cách cho hai giá trị.
+  `ProductSpecs::lookup()` giữ cả hai, có test.
+- Khối mô tả bỏ phần "Ứng dụng" chỉ khi có thẻ ứng dụng, nên thẻ ứng dụng phải tính trước.
+
 ## Việc tiếp theo
 
-Phần còn lại của Phase 2 theo thứ tự trang chi tiết sản phẩm cần: giá và chế độ ẩn giá, đường dẫn
-ảnh và ảnh dự phòng, thông số theo hồ sơ PDP, cây danh mục và URL. Mỗi phần có golden master như trên.
+1. Catalog v1 (danh mục, bộ lọc, sắp xếp), so song song như trên.
+2. Section có kiểu trong Filament, bắt đầu từ logo đối tác và lịch sử hình thành
+   ([target-architecture.md](target-architecture.md) mục 3).
+3. Các API đọc còn lại, rồi phần ghi theo từng domain.

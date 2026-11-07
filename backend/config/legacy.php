@@ -9,6 +9,8 @@ return [
     ],
     // Folder holding upload/product etc. Images are checked on disk, as productImageResolve() does.
     'upload_path' => env('LEGACY_UPLOAD_PATH', '/legacy/upload'),
+    // The PHP checkout's assets/ folder (stock use-case pictures, documents), mounted read-only.
+    'assets_path' => env('LEGACY_ASSETS_PATH', '/legacy/assets'),
 
     // The PHP app inside the local Docker network, used only by the parity report.
     'api_base' => env('LEGACY_API_BASE', 'http://pts-php81-local'),

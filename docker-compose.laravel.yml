@@ -13,6 +13,8 @@ services:
       - ./backend:/app
       # The legacy PHP container's upload volume, read-only, so image resolution sees the same files as PHP.
       - legacy_upload:/legacy/upload:ro
+      # Stock pictures and documents shipped with the PHP checkout.
+      - ./domains/phucthinhsolar.com/public_html/assets:/legacy/assets:ro
     ports:
       - "127.0.0.1:8090:8000"
     networks:

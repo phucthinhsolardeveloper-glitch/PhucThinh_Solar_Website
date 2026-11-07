@@ -17,13 +17,15 @@ use Illuminate\Support\Facades\DB;
 class ProductDetailAssembler
 {
     /** Sections not ported yet; they return empty values until they are. */
-    public const NOT_PORTED = ['product.specifications', 'product.packageContents', 'product.decisionMetrics', 'content.highlights', 'applications', 'buyingGuides', 'documents'];
+    public const NOT_PORTED = [];
 
     public function __construct(
         private readonly ProductContentResolver $contentResolver,
         private readonly ProductContentPresenter $contentPresenter,
         private readonly ProductMediaUrls $urls,
         private readonly LegacySettings $settings,
+        private readonly ProductSpecs $specs,
+        private readonly ProductApplications $applications,
     ) {}
 
     /** @return array<string, mixed>|null null when no visible product has this slug */
@@ -50,8 +52,11 @@ class ProductDetailAssembler
         $seo = (array) ($db->table('table_seo')->where('id_parent', $id)->where('com', 'product')->where('act', 'man')
             ->where('type', $row['type'])->first(['titlevi', 'descriptionvi', 'keywordsvi']) ?? []);
 
-        $content = $this->contentPresenter->present($this->contentResolver->resolve($row));
-        $content['highlights'] = [];
+        $profile = $this->specs->profileKey($row, $list);
+        $sections = $this->contentResolver->resolve($row);
+        $applications = $this->applications->cards($sections['blocks'], $row, $list, $profile);
+        $content = $this->contentPresenter->present($sections, ! empty($applications));
+        $content['highlights'] = $this->specs->highlights($row, $profile);
 
         return [
             'schemaVersion' => 1,
@@ -64,18 +69,20 @@ class ProductDetailAssembler
                 'code' => LegacyText::plain($row['code'] ?? ''),
                 'summary' => LegacyText::plain($row['descvi'] ?? ''),
                 'brand' => LegacyText::plain($brand),
-                'profile' => $this->profileKey($row, $list),
+                'profile' => $profile,
                 'media' => $this->media($row),
-                'specifications' => [],
-                'packageContents' => '',
-                'decisionMetrics' => [],
+                'specifications' => $this->specs->table($row, $profile),
+                'packageContents' => LegacyText::plain($this->specs->packageContents($row['package_contents'] ?? '')),
+                'decisionMetrics' => $this->specs->decisionMetrics($row, $profile),
             ],
             'breadcrumbs' => $this->breadcrumbs($row),
             'pricing' => (new PricingPolicy($this->settings->productPricesVisible()))->forProduct($row),
             'content' => $content,
-            'applications' => null,
-            'buyingGuides' => [],
-            'documents' => [],
+            'applications' => $applications,
+            'buyingGuides' => $this->applications->buyingGuides($row, $profile),
+            'documents' => $this->applications->documents($db->table('table_product_document')->where('id_product', $id)
+                ->whereRaw("find_in_set('hienthi', status)")->where('file_path', '<>', '')->orderBy('numb')->orderBy('id')
+                ->get(['document_type', 'titlevi as title', 'file_path'])->map(fn ($r) => (array) $r)),
             'canonical' => ['url' => '/san-pham/'.$slug, 'sources' => [
                 'product' => 'publicProductEntityPath(product)',
                 'routeResolver' => 'public_route_resolver.php',
@@ -89,19 +96,6 @@ class ProductDetailAssembler
                 'jsonLd' => ['included' => false, 'reason' => 'php_structured_data_authority_not_delegated'],
             ],
         ];
-    }
-
-    /** Placeholder until product_pdp_profiles.php is ported: the stored key when valid. */
-    private function profileKey(array $row, array $list): string
-    {
-        foreach ([$row['pdp_profile'] ?? '', $list['pdp_profile'] ?? ''] as $value) {
-            $value = trim((string) $value);
-            if (preg_match('/^[a-z0-9_]+$/', $value)) {
-                return $value;
-            }
-        }
-
-        return 'general';
     }
 
     /** @return list<string> main photo, second photo, then gallery (numb, newest first), files that exist */
