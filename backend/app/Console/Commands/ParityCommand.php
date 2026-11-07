@@ -18,7 +18,7 @@ class ParityCommand extends Command
     protected $description = 'Compare a Laravel v1 endpoint with its PHP original, case by case.';
 
     /** Fields that differ on every request by design (form tokens), left out of the comparison. */
-    private const VOLATILE = ['product-extras' => ['csrfToken'], 'lead-form' => ['csrfToken']];
+    private const VOLATILE = ['product-extras' => ['csrfToken'], 'lead-form' => ['csrfToken'], 'cart' => ['csrfToken'], 'checkout' => ['csrfToken', 'checkoutToken']];
 
     public function handle(): int
     {
@@ -51,6 +51,8 @@ class ParityCommand extends Command
             'lead-form' => [[], ['x' => '1']],
             'checkout-wards' => array_merge(DB::connection('legacy')->table('table_city')->orderBy('id')->pluck('id')->map(fn ($id) => ['city' => (string) $id])->all(),
                 [['city' => '0'], ['city' => '999999'], ['city' => 'x'], [], ['city' => '1', 'x' => '1']]),
+            'cart', 'checkout', 'checkout-notice' => [[]],
+            'order-thanks' => [[], ['token' => 'x'], ['token' => str_repeat('a', 48)], ['token' => str_repeat('a', 48), 'x' => '1']],
             'news-detail' => $this->slugCases('tin-tuc'),
             'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
