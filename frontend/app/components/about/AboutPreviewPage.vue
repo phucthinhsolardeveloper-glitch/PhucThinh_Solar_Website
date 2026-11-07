@@ -33,17 +33,25 @@ const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
 const partnerBrands = [
   { name: 'AESOLAR', logo: 'aesolar.webp' },
+  { name: 'Anker SOLIX', logo: 'ankersolix.webp' },
+  { name: 'Astronergy', logo: 'astronergy.webp' },
   { name: 'Blue Carbon', logo: 'bluecarbon.webp' },
   { name: 'Canadian Solar', logo: 'canadiansolar.webp' },
+  { name: 'Deye', logo: 'deye.webp' },
   { name: 'EPSIVO', logo: 'epsivo.webp' },
+  { name: 'GoodWe', logo: 'goodwe.webp' },
+  { name: 'Growatt', logo: 'growatt.webp' },
   { name: 'Hober', logo: 'hober.webp' },
   { name: 'Huawei', logo: 'huawei.webp' },
   { name: 'Jindian', logo: 'jdjindian.webp' },
   { name: 'LONGi', logo: 'longi.webp' },
   { name: 'Oriana', logo: 'oriana.webp' },
   { name: 'Sharp', logo: 'sharp.webp' },
+  { name: 'Sigenergy', logo: 'sigenergy.webp' },
+  { name: 'SOFAR', logo: 'sofar.webp' },
   { name: 'SolaX', logo: 'solax.webp' },
   { name: 'Sungrow', logo: 'sungrow.webp' },
+  { name: 'TCL Solar', logo: 'tclsolar.webp' },
 ]
 function normalizeBrandName(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -474,7 +482,7 @@ const showroomImage = computed(() => {
 }
 .about-brand-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1px;
   overflow: hidden;
   margin: 0;
@@ -487,7 +495,7 @@ const showroomImage = computed(() => {
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: clamp(76px, 8.2vw, 118px);
+  min-height: clamp(68px, 6.4vw, 100px);
   place-items: center;
   overflow: hidden;
   padding: 16px clamp(10px, 1.5vw, 24px);
@@ -630,10 +638,10 @@ const showroomImage = computed(() => {
   .about-certificate-modal-image img { max-width: 100%; }
 }
 @media (max-width: 520px) {
-  /* Three logos per row keeps all twelve brands on one screen. */
-  .about-brand-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .about-brand-cell { min-height: 70px; padding: 8px; }
-  .about-brand-cell img { width: min(100%, 96px); max-height: 34px; }
+  /* Four logos per row keeps all twenty brands in five even rows. */
+  .about-brand-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .about-brand-cell { min-height: 62px; padding: 6px; }
+  .about-brand-cell img { width: min(100%, 80px); max-height: 30px; }
 }
 @media (hover: none) {
   .about-brand-board:hover { transform: none; }
