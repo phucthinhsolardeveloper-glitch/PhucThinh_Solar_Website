@@ -1,19 +1,19 @@
 # Sổ tay storefront Nuxt
 
-Cập nhật: 2026-11-07. Website public đã chạy bằng Nuxt từ 2026-11-05; PHP vẫn giữ
-Admin, dữ liệu và API. Tài liệu này là điểm vào cho mọi việc giao diện public. Quy
+Cập nhật runtime: 2026-11-08. Website public dùng Nuxt; nhánh chuyển đổi hiện dùng
+Laravel 13 cho Admin, dữ liệu và API. Production vẫn ở PHP cho đến khi cutover. Tài liệu này là điểm vào cho mọi việc giao diện public. Quy
 trình làm việc với chủ website nằm ở
 [owner-feedback-loop.md](../11-workflows/owner-feedback-loop.md).
 
 ## 1. Hệ thống trong một hình
 
 ```text
-Trình duyệt → Caddy (VPS) → Nuxt (frontend/, SSR)
-                               └─ Nitro /_migration/* → PHP API api/pts_v1_*.php → MariaDB
-Admin, upload, đơn hàng, form → PHP (domains/phucthinhsolar.com/public_html)
+Trình duyệt → Caddy candidate → Nuxt (frontend/, SSR)
+                                └─ Nitro /_api/* → Laravel API → MariaDB
+Admin, upload, đơn hàng, form → Laravel 13 trên nhánh migration
 ```
 
-- Nitro chỉ là cầu GET gọi DTO PHP, không đọc database.
+- Nitro chỉ là cầu GET gọi DTO Laravel, không đọc database; mutation trình duyệt đi thẳng `/api/v1/*`.
 - Nội dung marketing lấy từ Admin qua API. Ngoại lệ có chủ đích: nội dung phần
   Lịch sử hình thành viết trong `components/about/AboutHistory.vue`. API giới thiệu
   trả danh sách mốc rỗng, vì dòng CMS cũ ghi năm 2019 không còn đúng.
@@ -25,7 +25,7 @@ Admin, upload, đơn hàng, form → PHP (domains/phucthinhsolar.com/public_html
 | Trang và route | `frontend/app/pages/`, component trang trong `frontend/app/components/<khu-vực>/` |
 | Header, menu danh mục, menu điện thoại | `components/SiteHeader.vue` |
 | Token, màu, kính, lớp dùng chung | `frontend/app/assets/css/main.css` |
-| Hợp đồng dữ liệu với PHP | `frontend/shared/contracts/*.ts` và `api/pts_v1_*.php` |
+| Hợp đồng dữ liệu với Laravel | `frontend/shared/contracts/*.ts` và `backend/app/Domain/` |
 | Thanh chip có viên trượt | `composables/useSlidingPill.ts` |
 | Thanh mục theo vị trí cuộn | `composables/useSectionSpy.ts` |
 | Ngắt dòng tiếng Việt, căn đều | `plugins/vi-line-breaks.client.ts`, `shared/vi-word-pairs.ts` |
@@ -99,6 +99,9 @@ Có hiệu lực từ 2026-11-07 và áp dụng cho toàn site. Có ngoại lệ
 - Ô "Nội dung đang quan tâm" chỉ hiện khi chủ đề là sản phẩm hoặc nhu cầu thật.
   Khi khách đến từ bài viết, trang Giới thiệu hay trang chính sách, trang nguồn chỉ
   được gửi kèm cho nhân viên.
+- Form lead gửi trang nguồn public cho Admin; chỉ giữ mã `utm_source`,
+  `utm_medium`, `utm_campaign` trong tab. Không chép các tham số email, điện thoại
+  hoặc query tùy ý vào URL nguồn; URL ngoài site bị backend bỏ qua.
 
 **Nội dung**
 

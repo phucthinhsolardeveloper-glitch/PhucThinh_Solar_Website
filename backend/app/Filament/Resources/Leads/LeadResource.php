@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Leads;
 
 use App\Domain\Commerce\LeadTriage;
+use App\Domain\Leads\LeadSource;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
 use App\Models\Lead;
@@ -76,6 +77,8 @@ class LeadResource extends Resource
                 $show('address', 'Địa chỉ / khu vực'), $show('subject', 'Chủ đề'),
                 TextInput::make('product_name')->label('Sản phẩm quan tâm')->disabled()->dehydrated(false)
                     ->formatStateUsing(fn (?Lead $record) => $record?->product?->name),
+                TextInput::make('source_url')->label('Trang gửi yêu cầu')->disabled()->dehydrated(false)
+                    ->formatStateUsing(fn (?Lead $record) => LeadSource::normalize($record?->source_url)),
                 $show('audience', 'Loại hình'), $show('quantity', 'Công suất / số lượng'),
                 Textarea::make('message')->label('Nội dung')->disabled()->dehydrated(false)->columnSpanFull(),
             ]),
@@ -95,6 +98,11 @@ class LeadResource extends Resource
                 TextColumn::make('created_at')->label('Gửi lúc')->dateTime('H:i d/m/Y')->sortable(),
                 TextColumn::make('kind')->label('Loại')->badge()->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state),
                 TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])->description(fn (Lead $record) => $record->phone),
+                TextColumn::make('product.name')->label('Sản phẩm')->placeholder('—')->toggleable()
+                    ->url(fn (Lead $record) => $record->product?->is_visible ? url('/san-pham/'.$record->product->slug) : null, true),
+                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(45)->toggleable()->searchable()
+                    ->formatStateUsing(fn ($state) => LeadSource::normalize($state) ?? '—')
+                    ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
                 TextColumn::make('message')->label('Nội dung')->limit(60)->placeholder('—')->toggleable(),
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray')),

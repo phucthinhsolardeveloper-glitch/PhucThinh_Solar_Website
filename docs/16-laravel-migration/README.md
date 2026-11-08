@@ -87,6 +87,13 @@ Admin **Liên hệ & tư vấn** có thể phân công người có quyền Lead
 dõi, lọc lead quá hạn và xem lịch sử đổi trạng thái/phân công/hạn. Ghi chú chỉ
 lưu ở lead hiện tại; lịch sử ghi việc đổi ghi chú, không sao chép nội dung khách.
 Lead đã xong hoặc bị đánh dấu rác sẽ xóa lịch hẹn theo dõi.
+Form Nuxt gửi đường dẫn trang nguồn cho cả liên hệ, tư vấn sản phẩm và đăng ký
+đại lý. Backend chỉ lưu đường dẫn public cùng `utm_source`, `utm_medium`,
+`utm_campaign` dạng mã ngắn; query khác bị bỏ. Campaign gần nhất trong tab được
+giữ bằng sessionStorage khi khách chuyển trang. Nếu liên hệ chung xuất phát từ
+URL sản phẩm đang hiển thị, Laravel tự gắn `product_id`; Admin Leads hiển thị
+sản phẩm, liên kết mở lại trang nguồn và cho tìm theo đường dẫn/mã chiến dịch.
+Nguồn do trình duyệt gửi chỉ dùng làm ngữ cảnh xử lý, không dùng để xác thực.
 
 Admin **Đánh giá sản phẩm** cho xem ảnh/video trước khi duyệt, duyệt hoặc ẩn
 từng đánh giá hay theo lô, sửa nội dung và trả lời đánh giá đã duyệt. Các thao

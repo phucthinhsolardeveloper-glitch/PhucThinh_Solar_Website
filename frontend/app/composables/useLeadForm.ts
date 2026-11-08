@@ -1,5 +1,6 @@
 import type { PublicLeadFormSecurity, PublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { isPublicLeadFormSecurity, isPublicLeadFormResult } from '#shared/contracts/public-lead-form'
+import { LEAD_CAMPAIGN_KEY, leadSourceFromUrl } from '#shared/lead-source'
 
 type LeadKind = 'contact' | 'dealer' | 'product'
 
@@ -64,6 +65,12 @@ export function useLeadForm() {
     const meta = await ensureSecurity()
     const action = kind === 'contact' ? 'contact' : kind === 'product' ? 'Newsletter' : 'Newsletter2'
     const token = await recaptchaToken(meta, action)
+    let source = ''
+    if (import.meta.client) {
+      let campaign = ''
+      try { campaign = sessionStorage.getItem(LEAD_CAMPAIGN_KEY) || '' } catch { /* Storage can be unavailable. */ }
+      source = leadSourceFromUrl(window.location.href, campaign)
+    }
     let payload: unknown
     try {
       // Keep this rate-limited mutation on the browser-to-Caddy path so Apache
@@ -72,7 +79,7 @@ export function useLeadForm() {
       payload = await $fetch<unknown>('/api/v1/lead-form', {
         method: 'POST',
         credentials: 'same-origin',
-        body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data },
+        body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data: { ...data, source_url: source } },
       })
     } catch (reason) {
       const responseData = (reason as { data?: unknown } | null)?.data

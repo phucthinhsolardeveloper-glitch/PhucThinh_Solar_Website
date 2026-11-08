@@ -2,7 +2,9 @@
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductSpecs;
+use App\Domain\Leads\LeadSource;
 use App\Mail\AdminNotification;
+use App\Models\User;
 use App\Support\FormToken;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -48,6 +50,30 @@ it('saves a contact request as a lead and mails the admin', function () {
     Mail::assertSent(AdminNotification::class, fn ($mail) => $mail->copy['subject'] === '[Liên hệ mới] Yêu cầu tư vấn từ website');
 });
 
+it('keeps safe page attribution and connects product-page leads to the product', function () {
+    $product = DB::table('products')->where('is_visible', true)->first();
+    $source = '/san-pham/'.$product->slug.'/?utm_source=google&utm_campaign=solar-2026&email=private%40example.vn';
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách thử', 'phone' => '0912345678', 'content' => 'Cần tư vấn', 'source_url' => $source,
+    ]])->assertOk();
+    $saved = DB::table('leads')->orderByDesc('id')->first();
+    expect($saved->source_url)->toBe('/san-pham/'.$product->slug.'/?utm_source=google&utm_campaign=solar-2026')
+        ->and((int) $saved->product_id)->toBe((int) $product->id);
+
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách thử', 'phone' => '0912345678', 'content' => 'Cần tư vấn', 'source_url' => 'https://other.example/san-pham/'.$product->slug,
+    ]])->assertOk();
+    $external = DB::table('leads')->orderByDesc('id')->first();
+    expect($external->source_url)->toBeNull()->and($external->product_id)->toBeNull();
+    expect(LeadSource::normalize('/admin/users'))->toBeNull()
+        ->and(LeadSource::normalize('/san-pham/%2E%2E/'))->toBeNull();
+
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'lead-source-owner', 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin')->get('/admin/leads')->assertOk()
+        ->assertSee('Trang nguồn')->assertSee('/san-pham/'.$product->slug);
+});
+
 it('stops the sixth submission in ten minutes from one address', function () {
     foreach (range(1, 5) as $i) {
         lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => []])->assertStatus(422);
@@ -74,10 +100,12 @@ it('saves a product consultation with the profile the product page sent', functi
     $product = DB::table('products')->where('is_visible', true)->whereNotNull('category_id')->first();
     $root = app(CategoryTree::class)->atDepth((int) $product->category_id, 1);
     $profile = app(ProductSpecs::class)->profileKey(['pdp_profile' => $product->pdp_profile], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slugvi' => $root['slug'] ?? '']);
-    $data = ['fullname' => 'Khách thử', 'phone' => '0912345678', 'product_id' => (string) $product->id, 'profile_key' => $profile];
+    $data = ['fullname' => 'Khách thử', 'phone' => '0912345678', 'product_id' => (string) $product->id, 'profile_key' => $profile,
+        'source_url' => '/san-pham/'.$product->slug];
 
     lead(['kind' => 'product', 'csrfToken' => FormToken::issue(), 'data' => ['profile_key' => 'sai'] + $data])->assertStatus(422);
     lead(['kind' => 'product', 'csrfToken' => FormToken::issue(), 'data' => $data])->assertOk();
     $row = DB::table('leads')->orderByDesc('id')->first();
-    expect($row->kind)->toBe('consultation')->and((int) $row->product_id)->toBe((int) $product->id)->and($row->profile_key)->toBe($profile);
+    expect($row->kind)->toBe('consultation')->and((int) $row->product_id)->toBe((int) $product->id)->and($row->profile_key)->toBe($profile)
+        ->and($row->source_url)->toBe('/san-pham/'.$product->slug);
 });

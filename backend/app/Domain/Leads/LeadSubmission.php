@@ -62,6 +62,7 @@ class LeadSubmission
     private function contact(array $input): array
     {
         $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'address' => 255, 'subject' => 180, 'content' => 5000]);
+        $source = LeadSource::normalize($input['source_url'] ?? null);
         $errors = [];
         if ($data['fullname'] === '') {
             $errors[] = 'Họ tên không được trống';
@@ -80,12 +81,12 @@ class LeadSubmission
         }
         $data['subject'] = $data['subject'] ?: 'Yêu cầu tư vấn từ website';
         $saved = $this->insert(['kind' => 'contact', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'address' => $data['address'] ?: null,
-            'subject' => $data['subject'], 'message' => $data['content']]);
+            'subject' => $data['subject'], 'message' => $data['content'], 'source_url' => $source, 'product_id' => LeadSource::productId($source)]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Gửi liên hệ thất bại. Vui lòng thử lại sau.']]];
         }
         $this->notify('contact_admin', ['customer_name' => $data['fullname'], 'customer_phone' => $data['phone'], 'contact_subject' => $data['subject']],
-            ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Địa chỉ' => $data['address'], 'Nhu cầu' => $data['subject'], 'Nội dung' => $data['content']],
+            ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Địa chỉ' => $data['address'], 'Nhu cầu' => $data['subject'], 'Nội dung' => $data['content'], 'Trang nguồn' => $source ?? ''],
             $data['email'], $data['fullname']);
 
         return [200, ['ok' => true, 'message' => 'Gửi yêu cầu tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.']];
@@ -94,6 +95,7 @@ class LeadSubmission
     private function consultation(array $input): array
     {
         $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'loaihinh' => 180, 'congsuat' => 255, 'product_id' => 12, 'profile_key' => 32, 'need_code' => 64, 'details' => 1000, 'city_id' => 12, 'ward_id' => 12]);
+        $source = LeadSource::normalize($input['source_url'] ?? null);
         $productId = (int) $data['product_id'];
         $cityId = (int) $data['city_id'];
         $wardId = (int) $data['ward_id'];
@@ -137,13 +139,13 @@ class LeadSubmission
         $needLabel = $data['need_code'] !== '' ? (string) $needs[$data['need_code']] : '';
         $saved = $this->insert(['kind' => 'consultation', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'audience' => $data['loaihinh'] ?: null,
             'quantity' => $data['congsuat'] ?: null, 'address' => $address ?: null, 'product_id' => (int) $product['id'], 'profile_key' => $profileKey, 'need_code' => $data['need_code'] ?: null,
-            'message' => $data['details'] ?: null, 'province_id' => $cityId ?: null, 'ward_id' => $wardId ?: null]);
+            'message' => $data['details'] ?: null, 'province_id' => $cityId ?: null, 'ward_id' => $wardId ?: null, 'source_url' => $source]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Đăng ký tư vấn thất bại. Vui lòng thử lại sau.']]];
         }
         $this->notify('consult_admin', ['customer_name' => $data['fullname'], 'customer_phone' => $data['phone']], [
             'Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Đối tượng tư vấn' => $data['loaihinh'], 'Sản phẩm' => (string) $product['namevi'],
-            'Nhu cầu' => $needLabel, 'Số lượng dự kiến' => $data['congsuat'], 'Thông tin thêm' => $data['details'], 'Địa chỉ' => $address,
+            'Nhu cầu' => $needLabel, 'Số lượng dự kiến' => $data['congsuat'], 'Thông tin thêm' => $data['details'], 'Địa chỉ' => $address, 'Trang nguồn' => $source ?? '',
         ], $data['email'], $data['fullname']);
 
         return [200, ['ok' => true, 'message' => 'Đăng ký tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.']];
@@ -152,6 +154,7 @@ class LeadSubmission
     private function dealer(array $input): array
     {
         $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'city_id' => 12, 'address' => 180, 'company' => 180]);
+        $source = LeadSource::normalize($input['source_url'] ?? null);
         $db = DB::connection();
         $city = [];
         if ((int) $data['city_id'] > 0) {
@@ -181,12 +184,12 @@ class LeadSubmission
         }
         $cityName = trim(strip_tags((string) $city['name']));
         $saved = $this->insert(['kind' => 'dealer', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'], 'address' => $cityName,
-            'province_id' => (int) $city['id'], 'company' => $data['company']]);
+            'province_id' => (int) $city['id'], 'company' => $data['company'], 'source_url' => $source]);
         if (! $saved) {
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Đăng ký đại lý thất bại. Vui lòng thử lại sau.']]];
         }
         $this->notify('dealer_admin', ['customer_name' => $data['fullname'], 'customer_phone' => $data['phone'], 'company' => $data['company']],
-            ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Tỉnh/Thành phố' => $cityName, 'Doanh nghiệp/Cửa hàng' => $data['company']],
+            ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Tỉnh/Thành phố' => $cityName, 'Doanh nghiệp/Cửa hàng' => $data['company'], 'Trang nguồn' => $source ?? ''],
             $data['email'], $data['fullname']);
 
         return [200, ['ok' => true, 'message' => 'Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.']];
