@@ -10,6 +10,14 @@ use App\Support\SiteSettings;
  */
 class MailTemplates
 {
+    public const LABELS = [
+        'consult_admin' => 'Yêu cầu tư vấn',
+        'dealer_admin' => 'Đăng ký đại lý',
+        'contact_admin' => 'Liên hệ mới',
+        'order_admin' => 'Đơn hàng gửi quản trị',
+        'order_customer' => 'Xác nhận gửi khách hàng',
+    ];
+
     private const FIELDS = ['subject' => 180, 'heading' => 180, 'intro' => 700, 'closing' => 500];
 
     private const DEFAULTS = [
@@ -48,9 +56,14 @@ class MailTemplates
     public function __construct(private readonly SiteSettings $settings) {}
 
     /** @return array{subject: string, heading: string, intro: string, closing: string} */
-    public function copy(string $key, array $values): array
+    public static function defaults(string $key): array
     {
-        $stored = $this->settings->options()['mail_templates'][$key] ?? [];
+        return self::DEFAULTS[$key];
+    }
+
+    public function copy(string $key, array $values, ?array $draft = null): array
+    {
+        $stored = $draft ?? ($this->settings->options()['mail_templates'][$key] ?? []);
         $copy = [];
         $replace = [];
         foreach ($values as $token => $value) {

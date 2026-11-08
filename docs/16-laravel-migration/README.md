@@ -20,6 +20,16 @@ chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đ�
 và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
 Ảnh và tạo mới qua CSV chưa có.
 
+Trong form sửa sản phẩm có **Tạo bản sao**: tạo sản phẩm ẩn, slug mới và mã
+sản phẩm trống; giữ thông số, ảnh, tài liệu, khối nội dung và SEO để biên tập
+trước khi công bố. Ảnh/tài liệu ở bản sao cùng tham chiếu file vật lý với bản gốc;
+xóa bản ghi hoặc đổi media không tự xóa file gốc.
+
+Admin **Mẫu email** tại `/admin/mau-email` cho người có quyền settings sửa lời
+văn của 5 email giao dịch, xem trước bằng dữ liệu giả và gửi bản thử tới địa chỉ
+nhập trong form (tối đa 5 lần/giờ cho mỗi người). SMTP vẫn cấu hình qua env;
+việc gửi qua SMTP thật cần thử ở staging mailbox.
+
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
 bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt
 bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đổi trang public;

@@ -16,7 +16,7 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 |---|---|---|---|
 | Product list/search/filter và form nhiều trường | `ProductResource`, 7 tab: chung, giá, media, specs, mô tả, tài liệu, SEO | Screen desktop/mobile; save unchanged với JSON, ảnh, khối nội dung | PASS cho đọc/sửa giữ dữ liệu |
 | Product create/delete | Create/Edit pages; delete có guard reviews/orders | Livewire create/delete, kiểm không sót content/SEO | PASS |
-| Product copy | Chưa có action tương đương | Không thấy copy flow trong Filament | GAP |
+| Product copy | `EditProduct` có action tạo bản sao ẩn, mã SKU trống, sao chép nội dung/SEO/ảnh/tài liệu | `ProductDuplicateTest`: bản sao độc lập với sản phẩm gốc và không mang review/order | PASS cho bản sao; ảnh/tài liệu dùng lại đường dẫn file gốc |
 | Product bulk status | Bulk hiện/ẩn trong `ProductResource` | Có code, chưa thử action và quyền trên record | GAP |
 | Product bulk price, CSV feed/template, import/export | `ListProducts` xuất CSV, xem trước, tải báo cáo từng dòng và áp dụng giá/trạng thái trong transaction | `ProductPriceCsvTest`: round-trip 0 thay đổi, chỉ sửa trường đã chọn, lỗi/ID trùng chặn toàn bộ, Filament action chạy thật | PASS cho giá/trạng thái; ảnh và create qua CSV còn GAP |
 | Category/Brand CRUD, thứ tự, SEO, khối kế thừa | `CategoryResource`, `BrandResource`, `contentSection`, `seo` | Screen; save unchanged; create/delete; sort field | PASS cho CRUD; kéo sắp xếp chưa có |
@@ -28,7 +28,7 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 | Rich editor media | `Fields::rich` lưu `filemanager/editor` trên disk uploads | Code path đúng; chưa upload và đọc lại file qua public route | GAP |
 | SEO page và SEO từng entity | `SeoPageResource`, SEO relation trên resource | Screen, save unchanged một số entity, snapshot 1.754/1.754 | PASS cho read/save unchanged; sửa nội dung SEO cần test |
 | Settings/site info | `SiteSettingsPage`, credentials trong env | Save unchanged test, screen | PASS cho các field hiện có |
-| Mail template preview/test send | Chưa có Filament equivalent; SMTP config trong env | Không thấy template editor/preview/send test | GAP |
+| Mail template preview/test send | `MailTemplatesPage` sửa 5 mẫu email, xem trước bằng dữ liệu giả, gửi thử có rate limit; SMTP vẫn trong env | `MailTemplatesAdminTest`: lưu override giữ default, render HTML an toàn, kiểm quyền và gửi bằng Mail fake | PASS cho UI/copy; SMTP thật cần staging mailbox |
 | Integrations settings | reCAPTCHA, VNPay, mail, carrier config trong env | Code/config; carrier chỉ `mapping_required` | GAP cho Admin UI và carrier API |
 | Orders list/edit/payment | `OrderResource`, payment transaction domain | Synthetic order save chỉ đổi handling fields; nguồn local có 0 order | GAP cho order thật, refund/status workflows |
 | Contact/newsletter/leads | `LeadResource` hợp nhất contact/consultation/dealer | 2 row import; screen; không có lifecycle round-trip test | GAP |

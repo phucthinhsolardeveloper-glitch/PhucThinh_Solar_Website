@@ -10,6 +10,11 @@ class SiteSettings
     /** @var array<string, mixed>|null */
     private ?array $values = null;
 
+    public function clear(): void
+    {
+        $this->values = null;
+    }
+
     /** @return array<string, mixed> */
     public function options(): array
     {
