@@ -9,6 +9,7 @@ Chạy từ `tools/visual-tests`. Mọi script chỉ đọc, không gửi form h
 | `site-audit.cjs` | Quét cả site: tràn ngang, chữ bị cắt, ảnh hỏng, lỗi 5xx, lỗi JS, menu con bị che | `node audit/site-audit.cjs` |
 | `text-align-audit.cjs` | Đếm đoạn dài đã căn đều và độ rộng khe chữ lớn nhất | `node audit/text-align-audit.cjs` |
 | `admin-screens.cjs [thư mục]` | Đăng nhập Admin Filament, mở mọi màn ở máy tính và điện thoại, báo lỗi 5xx, lỗi JS, tràn ngang, chụp ảnh từng màn. Không bấm Lưu/Xóa | `ADMIN_USER=… ADMIN_PASS=… node audit/admin-screens.cjs` |
+| `lead-attribution.cjs` | Từ UTM sang trang sản phẩm và popup tư vấn; chặn POST ngay trong browser, không ghi lead/mail | `AUDIT_BASE=http://127.0.0.1:18085 node audit/lead-attribution.cjs` |
 | `check-viewers.cjs` | Mở khung chứng nhận, khung ảnh, menu màn hình thấp, bảng tìm kiếm rồi chụp ảnh | `node audit/check-viewers.cjs` |
 | `archive/wrap.cjs` | Đếm từ đôi bị ngắt và từ lẻ cuối đoạn | `node audit/archive/wrap.cjs` |
 | `archive/w.cjs` | Vị trí thanh nút giữa các trang cùng nhóm | `node audit/archive/w.cjs /tmp/out` |

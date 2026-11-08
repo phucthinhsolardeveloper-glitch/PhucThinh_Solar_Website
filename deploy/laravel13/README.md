@@ -30,6 +30,15 @@ tài khoản kiểm thử đã xóa. Test backend 131 pass/924 assertions, PHPSt
 Pint 252 file và snapshot API không lệch. Bốn hãng vận chuyển vẫn chỉ có
 credential contract/readiness; cần adapter cùng mapping trước khi tính phí thật.
 
+Mốc `b79645ba`: build lại cả backend và Nuxt candidate, hai container healthy.
+Trên trình duyệt qua Caddy, mã UTM được giữ sau khi chuyển từ trang đầu sang
+trang sản phẩm; popup tư vấn gửi đúng `source_url` của sản phẩm cùng mã chiến
+dịch. Request biểu mẫu được chặn và trả kết quả giả tại browser, không ghi lead
+hoặc gửi mail. Test backend 132 pass/936 assertions, Nuxt 478 test,
+typecheck/build, PHPStan 0, Pint 253 file, API snapshot không lệch.
+Bài thử có thể chạy lại bằng `tools/visual-tests/audit/lead-attribution.cjs`;
+báo cáo lần này ở `/tmp/pts-lead-attribution-b79645ba.json`.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
