@@ -23,6 +23,13 @@ restore/rollback với Caddy thật.
 Route `/robots.txt` của proxy candidate đã được sửa và kiểm trả đúng hai dòng
 `User-agent: *` / `Disallow: /`, cùng header `X-Robots-Tag: noindex`.
 
+Mốc `0740fe09`: backend candidate được build lại và healthy; Nuxt vẫn dùng
+image `8b116c59` vì không đổi frontend. Kiểm qua trình duyệt trên Caddy:
+`/admin/products` 200 và hiện cột **Cần bổ sung**, `/admin/tich-hop` 200;
+tài khoản kiểm thử đã xóa. Test backend 131 pass/924 assertions, PHPStan 0,
+Pint 252 file và snapshot API không lệch. Bốn hãng vận chuyển vẫn chỉ có
+credential contract/readiness; cần adapter cùng mapping trước khi tính phí thật.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
