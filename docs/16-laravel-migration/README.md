@@ -20,13 +20,17 @@ chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đ�
 và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
 Luồng CSV giá không thêm sản phẩm hoặc thay ảnh.
 
-CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: xuất mẫu gồm ID,
+CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: trước tiên dùng
+**Tải nhiều ảnh sản phẩm** (tối đa 20 ảnh/lần) để tải file vào `upload/product`
+và tải CSV tên file đã lưu. Sau đó xuất mẫu gồm ID,
 mã, tên, slug, ID danh mục và các ảnh. Dòng có ID chỉ sửa ảnh; ô trống giữ
 nguyên, `XÓA` bỏ ảnh hoặc thư viện ảnh. Dòng không ID tạo sản phẩm **ẩn**, cần
 tên và ID danh mục; slug để trống sẽ tự sinh từ tên. Ảnh phải có sẵn dưới
 `upload/product`, chỉ nhập tên file; thư viện ngăn cách bằng `|`. Admin xem trước,
 tải báo cáo từng dòng và xác nhận trong 15 phút. Một lỗi chặn cả file, không
 xóa file ảnh vật lý khi bỏ quan hệ. Tệp tối đa 2 MB và 5.000 dòng.
+Form sản phẩm và album đã được kiểm với upload file thật, đổi thứ tự và xóa ảnh
+khỏi thư viện; xóa quan hệ giữ file vật lý vì file có thể được nhiều bản ghi dùng.
 
 Quyền Admin theo từng thao tác: chủ website có toàn quyền; editor cần cả quyền
 khu vực và quyền thao tác để nhập CSV/bulk sản phẩm (`catalog_bulk`), xuất bản
@@ -46,6 +50,12 @@ văn của 5 email giao dịch, xem trước bằng dữ liệu giả. Người 
 `settings_mail_test` gửi bản thử tới địa chỉ
 nhập trong form (tối đa 5 lần/giờ cho mỗi người). SMTP vẫn cấu hình qua env;
 việc gửi qua SMTP thật cần thử ở staging mailbox.
+
+Admin **Tích hợp** tại `/admin/tich-hop` cho người có quyền settings xem trạng
+thái VNPay, reCAPTCHA, email và bốn hãng vận chuyển. Trang chỉ cho biết bật/tắt,
+thiếu cấu hình hoặc cần kiểm thử/mapping; không hiển thị hay chỉnh sửa secret.
+Carrier có credential vẫn cần kho gửi, mã dịch vụ, quy cách kiện hàng và adapter
+API trước khi dùng phí hãng trong checkout.
 
 Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_status` là
 thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán

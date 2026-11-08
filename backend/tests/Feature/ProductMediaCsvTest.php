@@ -174,12 +174,25 @@ it('runs the preview and apply actions inside the catalog permission area', func
     $this->actingAs($viewer, 'admin');
     $this->get('/admin/products')->assertOk();
     expect(ProductResource::canBulkImport())->toBeFalse();
-    Livewire\Livewire::test(ListProducts::class)->assertActionHidden('previewMedia')->assertActionHidden('applyMedia')
+    Livewire\Livewire::test(ListProducts::class)->assertActionHidden('uploadMediaBatch')->assertActionHidden('previewMedia')->assertActionHidden('applyMedia')
         ->assertActionHidden('previewPrices');
 
     $bulkEditor = User::query()->create(['name' => 'Nhập CSV', 'username' => 'media-bulk-'.bin2hex(random_bytes(4)),
         'password' => 'test-password', 'role' => User::ROLE_EDITOR, 'permissions' => ['catalog', 'catalog_bulk'], 'is_active' => true]);
     $this->flushSession();
     $this->actingAs($bulkEditor, 'admin');
-    Livewire\Livewire::test(ListProducts::class)->assertActionVisible('previewMedia')->assertActionVisible('previewPrices');
+    Livewire\Livewire::test(ListProducts::class)->assertActionVisible('uploadMediaBatch')->assertActionVisible('previewMedia')->assertActionVisible('previewPrices');
+});
+
+it('uploads a batch of real images and downloads the stored filenames for CSV mapping', function () {
+    $this->actingAs($this->csvActor, 'admin');
+    Livewire\Livewire::test(ListProducts::class)->callAction('uploadMediaBatch', data: [
+        'images' => [UploadedFile::fake()->image('batch-one.jpg'), UploadedFile::fake()->image('batch-two.png')],
+    ])->assertHasNoActionErrors()->assertFileDownloaded('pts-anh-san-pham-da-tai.csv');
+
+    $files = Storage::disk('upload_product')->files();
+    expect($files)->toHaveCount(2);
+    foreach ($files as $file) {
+        Storage::disk('upload_product')->assertExists($file);
+    }
 });

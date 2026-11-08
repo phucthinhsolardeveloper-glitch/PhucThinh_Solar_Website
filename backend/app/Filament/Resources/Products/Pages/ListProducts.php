@@ -6,6 +6,7 @@ use App\Domain\Catalog\ProductMediaCsv;
 use App\Domain\Catalog\ProductPriceCsv;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\Fields;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
@@ -25,6 +26,33 @@ class ListProducts extends ListRecords
                 ->action(fn () => app(ProductPriceCsv::class)->export()),
             Action::make('exportMedia')->label('Xuất CSV sản phẩm & ảnh')->icon('heroicon-o-photo')
                 ->action(fn () => app(ProductMediaCsv::class)->export()),
+            Action::make('uploadMediaBatch')->label('Tải nhiều ảnh sản phẩm')->icon('heroicon-o-cloud-arrow-up')
+                ->visible(fn () => ProductResource::canBulkImport())
+                ->modalHeading('Tải ảnh trước khi nhập CSV')
+                ->modalDescription('Chọn tối đa 20 ảnh. Sau khi tải, hệ thống trả CSV tên file đã lưu để dùng trong cột ảnh của CSV sản phẩm. Ảnh chưa được gắn với sản phẩm cho đến khi áp dụng CSV.')
+                ->schema([Fields::image('images', 'product', 'Ảnh sản phẩm')->multiple()->maxFiles(20)->required()])
+                ->action(function (array $data) {
+                    abort_unless(ProductResource::canBulkImport(), 403);
+                    $files = $data['images'] ?? [];
+                    if (! is_array($files) || $files === []) {
+                        throw ValidationException::withMessages(['images' => 'Cần tải ít nhất một ảnh.']);
+                    }
+                    foreach ($files as $file) {
+                        if (! is_string($file) || ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp|gif)$/i', $file)
+                            || ! Storage::disk('upload_product')->exists($file)) {
+                            throw ValidationException::withMessages(['images' => 'Một ảnh chưa được lưu hợp lệ. Hãy tải lại.']);
+                        }
+                    }
+
+                    return response()->streamDownload(function () use ($files): void {
+                        $out = fopen('php://output', 'w');
+                        fputcsv($out, ['ten_file'], ',', '"', '');
+                        foreach ($files as $file) {
+                            fputcsv($out, [$file], ',', '"', '');
+                        }
+                        fclose($out);
+                    }, 'pts-anh-san-pham-da-tai.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+                }),
             Action::make('previewMedia')->label('Nhập CSV sản phẩm & ảnh')->icon('heroicon-o-arrow-up-tray')
                 ->visible(fn () => ProductResource::canBulkImport())
                 ->modalHeading('Xem trước sản phẩm mới và ảnh')

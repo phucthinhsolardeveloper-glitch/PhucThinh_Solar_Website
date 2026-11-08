@@ -57,7 +57,7 @@ it('opens every list, create and edit screen for an owner', function () {
             $this->get("/admin/{$slug}/{$id}/edit")->assertOk();
         }
     }
-    foreach (['post-categories', 'page-items', 'banners', 'videos', 'wards', 'provinces', 'payment-methods', 'store-locations', 'leads', 'reviews', 'users', 'seo-pages', 'orders', 'thong-tin-website', ''] as $slug) {
+    foreach (['post-categories', 'page-items', 'banners', 'videos', 'wards', 'provinces', 'payment-methods', 'store-locations', 'leads', 'reviews', 'users', 'seo-pages', 'orders', 'thong-tin-website', 'tich-hop', ''] as $slug) {
         $this->get('/admin/'.$slug)->assertOk();
     }
 });
