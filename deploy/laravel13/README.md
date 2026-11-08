@@ -12,6 +12,15 @@ DB candidate nhận migration `000500` và `000600`. Qua Caddy, `/health`,
 đơn). Nuxt và Laravel healthy. Đây là rehearsal local; staging VPS, restore và
 rollback qua Caddy production vẫn chưa diễn tập.
 
+Mốc mới `8b116c59`: hai image candidate gắn tag SHA, backend/Nuxt healthy;
+qua Caddy `health`, Admin login và home trả 200. `shop-flow` đạt không gửi đơn,
+`site-audit` 0 lỗi trên 19 route × 4 viewport, `admin-screens` 46/46 màn
+desktop/mobile không có lỗi. Báo cáo và ảnh nằm ở `/tmp/pts-*8b116c59*`
+trên máy rehearsal; tài khoản Admin thử đã xóa. Laravel 129 test/908 assertions,
+PHPStan 0, Pint 250 file, Nuxt 476 test, typecheck/build và `pts:snapshot`
+đều qua. Đây vẫn là candidate **local**; chưa thay thế staging VPS hoặc thử
+restore/rollback với Caddy thật.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
