@@ -20,6 +20,8 @@ trên máy rehearsal; tài khoản Admin thử đã xóa. Laravel 129 test/908 a
 PHPStan 0, Pint 250 file, Nuxt 476 test, typecheck/build và `pts:snapshot`
 đều qua. Đây vẫn là candidate **local**; chưa thay thế staging VPS hoặc thử
 restore/rollback với Caddy thật.
+Route `/robots.txt` của proxy candidate đã được sửa và kiểm trả đúng hai dòng
+`User-agent: *` / `Disallow: /`, cùng header `X-Robots-Tag: noindex`.
 
 ## Runtime và quyết định tạm thời
 

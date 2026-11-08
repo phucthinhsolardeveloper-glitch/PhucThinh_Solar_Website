@@ -2,8 +2,13 @@
     encode zstd gzip
     header X-Robots-Tag "noindex, nofollow, noarchive"
 
-    @robots path /robots.txt
-    respond @robots "User-agent: *\nDisallow: /\n" 200
+    handle /robots.txt {
+        respond 200 {
+            body "User-agent: *
+Disallow: /
+"
+        }
+    }
 
     @laravel path /api/v1/* /admin /admin/* /livewire* /css/filament/* /js/filament/* /fonts/filament/* /upload/* /thumbs/* /health /up /sitemap.xml
     handle @laravel {
