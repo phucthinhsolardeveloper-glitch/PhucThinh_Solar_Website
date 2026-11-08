@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
+/** @property string $kind */
 class Post extends Model
 {
     protected $table = 'posts';
@@ -40,8 +41,15 @@ class Post extends Model
         return $this->belongsToMany(Product::class, 'post_products')->withPivot(['is_visible', 'sort_order']);
     }
 
+    /** @return MorphOne<SeoMeta, $this> */
     public function seo(): MorphOne
     {
         return $this->morphOne(SeoMeta::class, 'owner');
+    }
+
+    /** @return HasMany<PostRevision, $this> */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(PostRevision::class);
     }
 }

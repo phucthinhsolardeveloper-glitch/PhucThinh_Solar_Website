@@ -96,7 +96,7 @@ abstract class PostResource extends Resource
                 Select::make('products')->label('Sản phẩm')->relationship('products', 'name')->multiple()->searchable(),
             ]) : null,
             Section::make()->columns(4)->schema(array_values(array_filter([
-                Fields::visible(),
+                Fields::visible()->default($kind !== 'article'),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
                 Fields::sort(),

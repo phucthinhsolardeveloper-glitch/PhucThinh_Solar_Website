@@ -4,7 +4,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 
-const props = defineProps<{ article: PublicNewsDetailPayload['article'] }>()
+const props = defineProps<{ article: PublicNewsDetailPayload['article']; preview?: boolean }>()
 const { openConsultation } = useStorefrontModal()
 
 function extractImageStem(url: string): string {
@@ -151,6 +151,7 @@ function formatDate(value: string): string {
             </p>
             <button
               type="button"
+              :disabled="preview"
               class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-chip bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
               @click="openConsultation('Bài viết: ' + article.title)"
             >
@@ -187,7 +188,9 @@ function formatDate(value: string): string {
           </li>
         </ul>
 
-        <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.seo.canonical" />
+        <div v-if="article.content.html" :inert="preview" class="mt-8">
+          <EditorialShare :title="article.title" :canonical-path="article.seo.canonical" />
+        </div>
       </div>
 
     </div>

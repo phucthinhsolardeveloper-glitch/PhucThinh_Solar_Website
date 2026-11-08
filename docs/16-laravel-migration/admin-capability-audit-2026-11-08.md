@@ -23,7 +23,7 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 | Product specs, documents, applications, PDP inheritance | Tab Thông số/Mô tả/Tài liệu; resolver domain | `ProductSpecsTest`, `ProductContentResolverModesTest`, Product unchanged, API snapshot | PASS cho dữ liệu hiện có; upload tài liệu chưa kiểm |
 | News/solution/project/policy CRUD | 4 `PostResource`, RichEditor và media | Screen; save unchanged Article/Solution/Project; create/delete cả 4 loại | PASS cho CRUD; copy/policy HTML edit còn GAP |
 | Content sections import/export/restore/toggle/upload | `PageItemResource`, content blocks builder, media field | Screen và snapshot public; không có import/export/restore tương đương | GAP |
-| Visual Studio draft → preview → publish → rollback | Chưa có revision/preview token/publish flow | Phase 6 spec; không có trong Filament hiện tại | GAP |
+| Visual Studio draft → preview → publish → rollback | Bài viết có `ArticleDraftResource`, phiên bản, URL xem trước ký 15 phút trên Nuxt, publish transaction và khôi phục thành bản nháp | `ArticleWorkflowTest`: public giữ nguyên trước publish, preview có noindex, rollback nội dung, chặn draft cũ, giữ HTML | PASS cho bài viết; section tree, các loại content khác và sửa trực tiếp qua form cũ còn GAP |
 | Gallery/photo/banner/video | `AlbumResource`, `BannerResource`, `VideoResource`, post/product repeaters | Screen; Album unchanged; file path code | GAP cho upload/delete/reorder thực tế |
 | Rich editor media | `Fields::rich` lưu `filemanager/editor` trên disk uploads | Code path đúng; chưa upload và đọc lại file qua public route | GAP |
 | SEO page và SEO từng entity | `SeoPageResource`, SEO relation trên resource | Screen, save unchanged một số entity, snapshot 1.754/1.754 | PASS cho read/save unchanged; sửa nội dung SEO cần test |
@@ -45,7 +45,8 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
    owner/editor theo action, upload và rich editor, kiểm public API sau lưu.
 2. Product bulk image và create qua CSV còn thiếu; giá/trạng thái đã có luồng
    round-trip và preview. Chưa gọi Filament là parity đầy đủ với Admin PHP.
-3. Visual Studio draft/preview/publish/rollback theo spec; sau đó template mail,
+3. Mở workflow phiên bản sang Giải pháp/Dự án/Chính sách và page sections;
+   chặn đường sửa trực tiếp khi editor nháp đủ trường. Sau đó template mail,
    campaign và các module còn consumer thật.
 4. Orders/reviews cần fixture và tình huống thật vì clone local có 0 row; không
    lấy việc màn mở được làm bằng chứng chức năng.

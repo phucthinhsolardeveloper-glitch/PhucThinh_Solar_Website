@@ -5,6 +5,7 @@ namespace App\Domain\News;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
 use App\Models\Post;
+use App\Models\PostRevision;
 use App\Support\RichText;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -37,6 +38,39 @@ class NewsDetail extends PageSupport
         if (! $row) {
             return $notFound;
         }
+
+        return $this->renderArticle($row);
+    }
+
+    /** The signed preview renders the draft through the same presenter as the public article. */
+    public function preview(PostRevision $revision): array
+    {
+        $post = $revision->post;
+        if (! $post || $post->kind !== 'article') {
+            return [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
+        }
+        $payload = $revision->payload;
+        $row = [
+            'id' => $post->id, 'id_list' => $payload['category_id'] ?? $post->category_id,
+            'id_user' => $post->author_id, 'namevi' => $payload['title'] ?? $post->title,
+            'slugvi' => $payload['slug'] ?? $post->slug, 'photo' => $payload['image'] ?? $post->image,
+            'descvi' => $payload['summary'] ?? '', 'contentvi' => $payload['body'] ?? '',
+            'content1vi' => $payload['extra_body'] ?? '',
+            'date_created' => $payload['published_at'] ?? $post->published_at,
+            'updated_at' => $revision->updated_at?->toDateTimeString() ?? now()->toDateTimeString(),
+            'status' => 'hienthi', 'type' => 'tin-tuc',
+        ];
+        $seo = $payload['seo'] ?? [];
+
+        return $this->renderArticle($row, [
+            'titlevi' => $seo['title'] ?? '', 'descriptionvi' => $seo['description'] ?? '',
+            'keywordsvi' => $seo['keywords'] ?? '',
+        ]);
+    }
+
+    private function renderArticle(array $row, ?array $seoOverride = null): array
+    {
+        $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
         $id = (int) $row['id'];
         $title = self::text($row['namevi']);
         $articleSlug = Text::slug($row['slugvi']);
@@ -63,7 +97,7 @@ class NewsDetail extends PageSupport
         }
         $related = $this->rows("select n.id, n.title as namevi, n.slug as slugvi, coalesce(n.image,'') as photo, coalesce(n.summary,'') as descvi, n.published_at as date_created, 'hienthi' as status, u.name as author"
             ." from posts n left join users u on u.id=n.author_id where n.id<>? and n.category_id <=> ? and n.kind='article' and n.is_visible=1 and n.slug<>'' order by n.sort_order,n.id desc limit 12", [$id, $row['id_list']]);
-        $seo = $this->seoOf($id);
+        $seo = $seoOverride ?? $this->seoOf($id);
         $seoTitle = self::text($seo['titlevi'] ?? '') ?: $title;
         if (stripos($seoTitle, 'phúc thịnh s') === false) {
             $seoTitle .= ' | Phúc Thịnh Solar';

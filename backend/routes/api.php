@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AboutController;
+use App\Http\Controllers\Api\V1\ArticleDraftPreviewController;
 use App\Http\Controllers\Api\V1\CatalogController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\PagesController;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 // v1 mirrors the PHP endpoints Nuxt reads today (frontend/shared/contracts). Read-only.
 Route::prefix('v1')->group(function () {
+    Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
+        ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
     Route::get('about', AboutController::class);
     Route::get('brand-detail', [PagesController::class, 'brandDetail']);
     Route::get('catalog', CatalogController::class);

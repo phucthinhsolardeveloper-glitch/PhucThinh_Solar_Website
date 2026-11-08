@@ -20,6 +20,15 @@ chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đ�
 và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
 Ảnh và tạo mới qua CSV chưa có.
 
+Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
+bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt
+bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đổi trang public;
+publish lưu phiên bản trước đó và kiểm xung đột; phiên bản cũ có thể khôi phục
+thành bản nháp để kiểm tra trước khi xuất bản lại. Trang xem trước noindex,
+no-store và không gửi referrer. Form sửa bài gốc vẫn là đường sửa trực tiếp
+public; cần dùng workflow bản nháp để có lịch sử và kiểm duyệt. Giải pháp,
+Dự án, Chính sách và section tree chưa vào workflow này.
+
 ## Nhánh và môi trường
 
 | Thứ | Dùng gì |
