@@ -26,7 +26,7 @@ class ImportLegacyCommand extends Command
     /** legacy level+id => new category id */
     private array $categoryMap = [];
 
-    private const NEW_TABLES = ['review_media', 'reviews', 'payment_transactions', 'order_items', 'orders', 'leads', 'wards', 'provinces', 'post_revisions', 'post_products', 'post_media', 'posts', 'post_categories',
+    private const NEW_TABLES = ['review_media', 'reviews', 'payment_transactions', 'order_items', 'orders', 'lead_events', 'leads', 'wards', 'provinces', 'post_revisions', 'post_products', 'post_media', 'posts', 'post_categories',
         'content_sections', 'product_documents', 'product_images', 'product_options', 'products', 'brands', 'categories', 'page_items', 'banners', 'store_locations', 'payment_methods',
         'seo_metas', 'settings', 'album_images', 'albums', 'videos'];
 

@@ -36,6 +36,11 @@ thủ công chưa trả, người có quyền Orders có thể chọn **Xác nh�
 nhập mã giao dịch/phiếu thu; hệ thống lưu payment transaction và người xác nhận.
 Chưa có luồng hoàn tiền tự động trong Admin.
 
+Admin **Liên hệ & tư vấn** có thể phân công người có quyền Leads, đặt hạn theo
+dõi, lọc lead quá hạn và xem lịch sử đổi trạng thái/phân công/hạn. Ghi chú chỉ
+lưu ở lead hiện tại; lịch sử ghi việc đổi ghi chú, không sao chép nội dung khách.
+Lead đã xong hoặc bị đánh dấu rác sẽ xóa lịch hẹn theo dõi.
+
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
 bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt
 bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đổi trang public;
