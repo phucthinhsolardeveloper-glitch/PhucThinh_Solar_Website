@@ -79,6 +79,7 @@ class MailTemplatesPage extends Page
                         ->modalContent(fn () => view('filament.mail-template-preview', ['html' => app(MailTemplateStudio::class)->html($key, $this->draft($key))]))
                         ->modalSubmitAction(false)->modalCancelActionLabel('Đóng'),
                     Action::make('test_'.$key)->label('Gửi thử')->icon('heroicon-o-paper-airplane')
+                        ->visible(fn () => AdminActor::current()->canPerform('settings_mail_test'))
                         ->schema([TextInput::make('recipient')->label('Email nhận bản thử')->email()->required()])
                         ->requiresConfirmation()->action(fn (array $data) => $this->sendTest($key, $data['recipient'])),
                 ])->key('mail_template_'.$key),
@@ -125,8 +126,8 @@ class MailTemplatesPage extends Page
 
     private function sendTest(string $key, string $recipient): void
     {
-        abort_unless(self::canAccess(), 403);
         $actor = AdminActor::current();
+        abort_unless($actor->canPerform('settings_mail_test'), 403);
         $rateKey = 'mail-template-test:'.$actor->id;
         if (RateLimiter::tooManyAttempts($rateKey, 5)) {
             Notification::make()->title('Đã đạt giới hạn 5 email thử mỗi giờ')->danger()->send();

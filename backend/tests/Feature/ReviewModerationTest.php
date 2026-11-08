@@ -26,7 +26,7 @@ function pendingReview(Product $product): Review
 it('moderates a real review and reply through Filament and changes the public product API', function () {
     $product = Product::query()->where('is_visible', true)->firstOrFail();
     $review = pendingReview($product);
-    $this->actingAs(reviewEditor(['reviews']), 'admin');
+    $this->actingAs(reviewEditor(['reviews', 'reviews_moderate']), 'admin');
     $url = '/api/v1/product-extras?slug='.$product->slug;
     $before = $this->getJson($url)->assertOk()->json('reviews.total');
 
@@ -49,7 +49,7 @@ it('approves a selected batch and refuses unauthorized or nested mutations', fun
     $product = Product::query()->where('is_visible', true)->firstOrFail();
     $first = pendingReview($product);
     $second = pendingReview($product);
-    $editor = reviewEditor(['reviews']);
+    $editor = reviewEditor(['reviews', 'reviews_moderate']);
     $this->actingAs($editor, 'admin');
     Livewire\Livewire::test(ManageReviews::class)->callTableBulkAction('approveMany', [$first, $second])
         ->assertHasNoActionErrors();
@@ -60,6 +60,14 @@ it('approves a selected batch and refuses unauthorized or nested mutations', fun
     expect(fn () => app(ReviewModeration::class)->moderateMany(collect([$first->id, $reply->id]), $editor, 'hidden'))
         ->toThrow(ValidationException::class);
     expect($first->fresh()->status)->toBe('approved');
+
+    $viewer = reviewEditor(['reviews']);
+    $this->flushSession();
+    $this->actingAs($viewer, 'admin');
+    $this->get('/admin/reviews')->assertOk();
+    Livewire\Livewire::test(ManageReviews::class)->assertTableActionHidden('hide', $first);
+    expect(fn () => app(ReviewModeration::class)->moderate($first, $viewer, 'hidden'))
+        ->toThrow(HttpException::class);
 
     $outsider = reviewEditor(['content']);
     $this->flushSession();
@@ -76,7 +84,7 @@ it('lets staff inspect uploaded review media before approval', function () {
     $review = pendingReview($product);
     Storage::disk('uploads')->putFileAs('photo', UploadedFile::fake()->image('customer.jpg'), 'customer.jpg');
     $review->media()->create(['kind' => 'photo', 'path' => 'customer.jpg']);
-    $this->actingAs(reviewEditor(['reviews']), 'admin');
+    $this->actingAs(reviewEditor(['reviews', 'reviews_moderate']), 'admin');
 
     $component = Livewire\Livewire::test(ManageReviews::class)->assertTableActionVisible('viewMedia', $review)
         ->mountTableAction('viewMedia', $review);

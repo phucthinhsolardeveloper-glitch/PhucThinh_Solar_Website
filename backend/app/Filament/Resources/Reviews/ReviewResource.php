@@ -6,6 +6,7 @@ use App\Domain\Reviews\ReviewModeration;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
 use App\Models\Review;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -22,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 /** Customer reviews wait here until approved; staff can answer under a review. */
@@ -48,6 +50,18 @@ class ReviewResource extends Resource
     public static function canCreate(): bool
     {
         return false;
+    }
+
+    public static function canModerate(): bool
+    {
+        $user = auth('admin')->user();
+
+        return $user instanceof User && $user->canPerform('reviews_moderate');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return self::canModerate();
     }
 
     public static function getEloquentQuery(): Builder
@@ -90,28 +104,30 @@ class ReviewResource extends Resource
             ->filters([SelectFilter::make('status')->label('Tình trạng')->options(self::STATUSES)])
             ->recordActions([
                 Action::make('approve')->label('Duyệt')->icon(Heroicon::OutlinedCheck)->color('success')
-                    ->visible(fn (Review $record) => $record->status !== 'approved')
+                    ->visible(fn (Review $record) => self::canModerate() && $record->status !== 'approved')
                     ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'approved')),
                 Action::make('hide')->label('Ẩn')->icon(Heroicon::OutlinedEyeSlash)->requiresConfirmation()
-                    ->visible(fn (Review $record) => $record->status === 'approved')
+                    ->visible(fn (Review $record) => self::canModerate() && $record->status === 'approved')
                     ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'hidden')),
                 Action::make('reply')->label('Trả lời')->icon(Heroicon::OutlinedChatBubbleLeft)
-                    ->visible(fn (Review $record) => $record->status === 'approved')
+                    ->visible(fn (Review $record) => self::canModerate() && $record->status === 'approved')
                     ->schema([Textarea::make('content')->label('Câu trả lời của Phúc Thịnh Solar')->rows(4)->required()->maxLength(5000)])
                     ->action(fn (Review $record, array $data) => app(ReviewModeration::class)->reply($record, AdminActor::current(), $data['content'])),
                 Action::make('viewMedia')->label('Xem media')->icon(Heroicon::OutlinedPhoto)
                     ->visible(fn (Review $record) => $record->media()->exists())
                     ->modal()->modalHeading('Ảnh và video đánh giá')->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
                     ->modalContent(fn (Review $record) => view('filament.review-media', ['media' => $record->media()->get()])),
-                EditAction::make()->using(fn (Review $record, array $data) => app(ReviewModeration::class)->edit($record, AdminActor::current(), $data)),
+                EditAction::make()->visible(fn () => self::canModerate())
+                    ->using(fn (Review $record, array $data) => app(ReviewModeration::class)->edit($record, AdminActor::current(), $data)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('approveMany')->label('Duyệt các đánh giá đã chọn')
-                        ->requiresConfirmation()
+                        ->visible(fn () => self::canModerate())->requiresConfirmation()
                         ->action(fn (Collection $records) => app(ReviewModeration::class)->moderateMany($records, AdminActor::current(), 'approved'))
                         ->deselectRecordsAfterCompletion(),
                     BulkAction::make('hideMany')->label('Ẩn các đánh giá đã chọn')->requiresConfirmation()
+                        ->visible(fn () => self::canModerate())
                         ->action(fn (Collection $records) => app(ReviewModeration::class)->moderateMany($records, AdminActor::current(), 'hidden'))
                         ->deselectRecordsAfterCompletion(),
                 ]),

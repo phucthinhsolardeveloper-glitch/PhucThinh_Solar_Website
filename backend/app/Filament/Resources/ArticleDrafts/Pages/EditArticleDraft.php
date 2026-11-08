@@ -28,6 +28,7 @@ class EditArticleDraft extends EditRecord
             Action::make('preview')->label('Xem trước trên Nuxt')->icon('heroicon-o-eye')
                 ->url(fn () => app(ArticleWorkflow::class)->previewUrl($this->revision()))->openUrlInNewTab(),
             Action::make('publish')->label('Xuất bản')->icon('heroicon-o-paper-airplane')->color('success')
+                ->visible(fn () => AdminActor::current()->canPerform('content_publish'))
                 ->requiresConfirmation()->modalDescription('Lưu bản nháp trước khi xuất bản. Thao tác này cập nhật bài viết công khai và lưu lịch sử để có thể khôi phục.')
                 ->action(function () {
                     $revision = app(ArticleWorkflow::class)->publish($this->revision(), AdminActor::current());

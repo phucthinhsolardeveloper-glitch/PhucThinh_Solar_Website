@@ -102,7 +102,7 @@ class ArticleDraftResource extends Resource
                 Action::make('preview')->label('Xem trước')->icon(Heroicon::OutlinedEye)
                     ->url(fn (PostRevision $record) => app(ArticleWorkflow::class)->previewUrl($record))->openUrlInNewTab(),
                 Action::make('restore')->label('Khôi phục thành bản nháp')->icon(Heroicon::OutlinedArrowUturnLeft)
-                    ->visible(fn (PostRevision $record) => $record->state === 'published')->requiresConfirmation()
+                    ->visible(fn (PostRevision $record) => $record->state === 'published' && AdminActor::current()->canPerform('content_publish'))->requiresConfirmation()
                     ->action(function (PostRevision $record) {
                         $draft = app(ArticleWorkflow::class)->restoreAsDraft($record, AdminActor::current());
 

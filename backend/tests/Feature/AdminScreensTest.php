@@ -28,6 +28,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 // Every Admin screen opens for an owner, and an editor only sees the areas they were given.
 
@@ -56,7 +57,7 @@ it('opens every list, create and edit screen for an owner', function () {
             $this->get("/admin/{$slug}/{$id}/edit")->assertOk();
         }
     }
-    foreach (['post-categories', 'page-items', 'banners', 'videos', 'wards', 'payment-methods', 'store-locations', 'leads', 'reviews', 'users', 'seo-pages', 'orders', 'thong-tin-website', ''] as $slug) {
+    foreach (['post-categories', 'page-items', 'banners', 'videos', 'wards', 'provinces', 'payment-methods', 'store-locations', 'leads', 'reviews', 'users', 'seo-pages', 'orders', 'thong-tin-website', ''] as $slug) {
         $this->get('/admin/'.$slug)->assertOk();
     }
 });
@@ -88,7 +89,7 @@ it('changes only the handling fields of an order', function () {
 });
 
 it('records a manual payment with staff reference and forbids changing a VNPay order from Admin', function () {
-    $actor = admin(User::ROLE_EDITOR, ['orders']);
+    $actor = admin(User::ROLE_EDITOR, ['orders', 'orders_payment']);
     $this->actingAs($actor, 'admin');
     $base = ['customer_name' => 'Khách thử', 'phone' => '0912345678', 'address' => 'x',
         'subtotal' => 100000, 'total' => 100000, 'status' => 'new', 'payment_status' => 'unpaid',
@@ -115,6 +116,14 @@ it('records a manual payment with staff reference and forbids changing a VNPay o
         ->call('save')->assertHasNoFormErrors();
     expect(DB::table('orders')->where('id', $gatewayId)->value('payment_status'))->toBe('unpaid')
         ->and(DB::table('payment_transactions')->where('order_id', $gatewayId)->count())->toBe(0);
+
+    $viewer = admin(User::ROLE_EDITOR, ['orders']);
+    $this->flushSession();
+    $this->actingAs($viewer, 'admin');
+    $this->get('/admin/orders/'.$gatewayId.'/edit')->assertOk();
+    Livewire\Livewire::test(EditOrder::class, ['record' => $gatewayId])->assertActionHidden('confirmManualPayment');
+    expect(fn () => app(ManualPayment::class)->confirm(Order::findOrFail($gatewayId), $viewer, 'PHIEU-003'))
+        ->toThrow(HttpException::class);
 });
 
 it('refuses an area an editor was not given', function () {

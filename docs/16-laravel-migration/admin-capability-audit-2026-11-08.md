@@ -33,8 +33,8 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 | Orders list/edit/payment | `OrderResource` khóa thanh toán trực tiếp; xác nhận tiền thủ công có tham chiếu, người xử lý và transaction; VNPay do callback ký xác nhận | `AdminScreensTest` kiểm sửa đơn giữ dữ liệu khách, không giả trạng thái VNPay, xác nhận manual và chặn lặp | PASS cho xử lý manual cơ bản; GAP cho refund, status workflow và đơn thật ở staging |
 | Contact/newsletter/leads | `LeadResource` hợp nhất contact/consultation/dealer; phân công, hạn theo dõi, lọc quá hạn, lịch sử xử lý | `LeadTriageTest`: thao tác Filament thật, giữ nguyên dữ liệu khách, ghi lịch sử, chặn phân công sai quyền | PASS cho triage; GAP cho automation marketing và quy trình nhiều bước |
 | Comment/review moderation | `ReviewResource` duyệt/ẩn/sửa/trả lời, bulk có xác nhận, xem ảnh/video khách gửi; `ReviewModeration` kiểm quyền và trạng thái | `ReviewModerationTest`: Filament action/bulk thật, public API hiện/ẩn, reply, media route, RBAC âm | PASS trên fixture synthetic; cần dùng dữ liệu thật ở staging |
-| User management, owner/editor RBAC | `UserResource`, `RequiresPermission`, 7 permission areas | Login test; direct-route matrix; 2 user import | PASS cho route access; action/upload permission vẫn GAP |
-| Places (Tỉnh/TP → Phường/Xã) | `WardResource`, phí giao theo ward; Province nhập từ legacy | 97 tỉnh và 3.321 ward import, 0 orphan; checkout validation tests | PASS cho mô hình 2 cấp; create/edit Province UI GAP |
+| User management, owner/editor RBAC | `UserResource`, `RequiresPermission`, 7 area và 5 quyền thao tác: CSV/bulk sản phẩm, publish bài viết, manual payment, review moderation, mail test | `AdminLoginTest`, direct-route matrix và test service/action từng khu vực | PASS cho 5 thao tác này; upload và các domain nội dung khác còn GAP |
+| Places (Tỉnh/TP → Phường/Xã) | `ProvinceResource` tạo/sửa/ẩn; `WardResource` tạo/sửa, phí giao theo ward; không cho xóa vật lý | `ProvinceAdminTest`: tạo thật, public API, ẩn tỉnh, chặn quyền; checkout validation tests | PASS cho quản trị hai cấp; kiểm dữ liệu thật ở staging |
 | Quận/Huyện | Không đưa vào form/order mới, `district=0` legacy | Quy tắc `AGENTS.md` và checkout tests | RETIRED |
 | Cache clear Admin | Laravel cache/queue vận hành bằng CLI | Chưa có nhu cầu business cho nút Admin | RETIRED khỏi Admin |
 | Product campaign, OneSignal, tags, lang, word, generic Excel | Không tìm thấy workflow tương đương | Cần kiểm usage hiện hành trước khi quyết định nghỉ hẳn | GAP |
@@ -43,8 +43,8 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 
 1. Mutation thật trên DB staging: tạo/sửa/xóa/khôi phục từng nhóm, quyền
    owner/editor theo action, upload và rich editor, kiểm public API sau lưu.
-2. Product bulk image và create qua CSV còn thiếu; giá/trạng thái đã có luồng
-   round-trip và preview. Chưa gọi Filament là parity đầy đủ với Admin PHP.
+2. Nạp ảnh vật lý hàng loạt trước khi ghép CSV, upload/delete/reorder media
+   và kiểm thao tác với file thật. CSV giá và sản phẩm/ảnh đã có preview và round-trip.
 3. Mở workflow phiên bản sang Giải pháp/Dự án/Chính sách và page sections;
    chặn đường sửa trực tiếp khi editor nháp đủ trường. Sau đó template mail,
    campaign và các module còn consumer thật.

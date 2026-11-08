@@ -28,6 +28,8 @@ class ArticleWorkflow
 
     public function draft(Post $post, User $actor): PostRevision
     {
+        abort_unless($actor->is_active && $actor->hasPermission('content'), 403);
+
         return DB::transaction(function () use ($post, $actor): PostRevision {
             $locked = Post::query()->whereKey($post->id)->lockForUpdate()->firstOrFail();
             $this->assertArticle($locked);
@@ -47,6 +49,8 @@ class ArticleWorkflow
 
     public function save(PostRevision $revision, array $input, User $actor): PostRevision
     {
+        abort_unless($actor->is_active && $actor->hasPermission('content'), 403);
+
         return DB::transaction(function () use ($revision, $input, $actor): PostRevision {
             $draft = PostRevision::query()->whereKey($revision->id)->lockForUpdate()->firstOrFail();
             $this->assertDraft($draft);
@@ -76,6 +80,8 @@ class ArticleWorkflow
 
     public function publish(PostRevision $revision, User $actor): PostRevision
     {
+        abort_unless($actor->canPerform('content_publish'), 403);
+
         return DB::transaction(function () use ($revision, $actor): PostRevision {
             $post = Post::query()->whereKey($revision->post_id)->lockForUpdate()->firstOrFail();
             $this->assertArticle($post);
@@ -112,6 +118,8 @@ class ArticleWorkflow
 
     public function restoreAsDraft(PostRevision $revision, User $actor): PostRevision
     {
+        abort_unless($actor->canPerform('content_publish'), 403);
+
         return DB::transaction(function () use ($revision, $actor): PostRevision {
             $post = Post::query()->whereKey($revision->post_id)->lockForUpdate()->firstOrFail();
             $this->assertArticle($post);

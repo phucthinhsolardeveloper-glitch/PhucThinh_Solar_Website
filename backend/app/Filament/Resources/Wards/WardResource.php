@@ -7,8 +7,12 @@ use App\Models\Ward;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
@@ -16,6 +20,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 /** Delivery fee per ward (province → ward). Edited straight in the list; a fee of 0 means free or agreed later. */
@@ -41,7 +46,29 @@ class WardResource extends Resource
 
     public static function canCreate(): bool
     {
+        return static::allowed();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
         return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false;
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->columns(2)->components([
+            Select::make('province_id')->label('Tỉnh/TP')->relationship('province', 'name')->searchable()->preload()->required(),
+            TextInput::make('name')->label('Phường/Xã')->required()->maxLength(255),
+            TextInput::make('code')->label('Mã địa phương')->maxLength(255),
+            TextInput::make('shipping_fee')->label('Phí giao (đ)')->numeric()->minValue(0)->default(0)->required(),
+            TextInput::make('sort_order')->label('Thứ tự')->numeric()->integer()->default(0)->required(),
+            Toggle::make('is_visible')->label('Cho chọn khi đặt hàng')->default(true),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -55,6 +82,7 @@ class WardResource extends Resource
                 ToggleColumn::make('is_visible')->label('Cho chọn khi đặt hàng'),
             ])
             ->filters([SelectFilter::make('province_id')->label('Tỉnh/TP')->relationship('province', 'name')->searchable()->preload()])
+            ->recordActions([EditAction::make()])
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('fee')->label('Đặt phí cho các phường/xã đã chọn')

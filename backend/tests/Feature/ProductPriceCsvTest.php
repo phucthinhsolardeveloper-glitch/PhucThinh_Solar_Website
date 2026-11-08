@@ -8,6 +8,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
+beforeEach(function () {
+    $this->csvActor = User::query()->create(['name' => 'Quản trị CSV', 'username' => 'csv-service-'.bin2hex(random_bytes(4)),
+        'password' => 'test-password', 'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+});
+
 function priceCsvFile(array $rows): string
 {
     $path = tempnam(sys_get_temp_dir(), 'pts-price-');
@@ -38,7 +43,7 @@ it('exports then imports an unchanged file without changing products', function 
         expect($preview['total'])->toBe(Product::query()->count())
             ->and($preview['changed'])->toBe(0)
             ->and($preview['errors'])->toBe([]);
-        $applied = $service->apply($path, $preview['fingerprint']);
+        $applied = $service->apply($path, $preview['fingerprint'], $this->csvActor);
         expect($applied['changed'])->toBe(0);
     } finally {
         unlink($path);
@@ -67,7 +72,7 @@ it('previews and applies only edited fields and treats blanks as unchanged', fun
         $service = app(ProductPriceCsv::class);
         $preview = $service->preview($path);
         expect($preview['total'])->toBe(1)->and($preview['changed'])->toBe(1)->and($preview['errors'])->toBe([]);
-        $service->apply($path, $preview['fingerprint']);
+        $service->apply($path, $preview['fingerprint'], $this->csvActor);
         $product->refresh();
         expect((string) $product->regular_price)->toBe('1250000')
             ->and($product->is_visible)->toBeFalse()
@@ -93,7 +98,7 @@ it('rejects bad rows, duplicate IDs and changes since preview without partial wr
         $preview = $service->preview($path);
         expect($preview['errors'])->toHaveCount(2);
         try {
-            $service->apply($path, $preview['fingerprint']);
+            $service->apply($path, $preview['fingerprint'], $this->csvActor);
             test()->fail('CSV lỗi phải bị chặn.');
         } catch (ValidationException) {
             expect($first->fresh()->regular_price)->toBe($first->regular_price);
@@ -107,7 +112,7 @@ it('rejects bad rows, duplicate IDs and changes since preview without partial wr
         $preview = $service->preview($path);
         $first->update(['regular_price' => 999999]);
         $this->expectException(ValidationException::class);
-        $service->apply($path, $preview['fingerprint']);
+        $service->apply($path, $preview['fingerprint'], $this->csvActor);
     } finally {
         unlink($path);
     }

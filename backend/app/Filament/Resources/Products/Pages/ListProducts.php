@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\Pages;
 use App\Domain\Catalog\ProductMediaCsv;
 use App\Domain\Catalog\ProductPriceCsv;
 use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Support\AdminActor;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
@@ -25,12 +26,13 @@ class ListProducts extends ListRecords
             Action::make('exportMedia')->label('Xuất CSV sản phẩm & ảnh')->icon('heroicon-o-photo')
                 ->action(fn () => app(ProductMediaCsv::class)->export()),
             Action::make('previewMedia')->label('Nhập CSV sản phẩm & ảnh')->icon('heroicon-o-arrow-up-tray')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->modalHeading('Xem trước sản phẩm mới và ảnh')
                 ->modalDescription('Dòng có ID chỉ cập nhật ảnh; để trống ô là giữ nguyên, XÓA là bỏ ảnh. Dòng không ID tạo sản phẩm ẩn: cần tên và ID danh mục, đường dẫn có thể tự sinh. Ảnh phải có sẵn trong upload/product; thư viện ảnh ngăn cách bằng |.')
                 ->schema([FileUpload::make('file')->label('Tệp CSV')->disk('local')->directory('bulk-product-media')
                     ->acceptedFileTypes(['text/csv', 'text/plain', 'application/vnd.ms-excel'])->maxSize(2048)->required()])
                 ->action(function (array $data): void {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $relative = $data['file'];
                     $path = $this->csvPath($relative, 'bulk-product-media');
                     $result = app(ProductMediaCsv::class)->preview($path);
@@ -51,8 +53,9 @@ class ListProducts extends ListRecords
                     ($result['errors'] === [] ? $notification->success() : $notification->danger())->send();
                 }),
             Action::make('downloadMediaPreview')->label('Tải kết quả CSV sản phẩm')->icon('heroicon-o-document-arrow-down')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->action(function () {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $preview = session('product_media_csv_preview');
                     if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900) {
                         throw ValidationException::withMessages(['file' => 'Bản xem trước đã hết hạn. Hãy nhập CSV lại.']);
@@ -65,6 +68,7 @@ class ListProducts extends ListRecords
                     return app(ProductMediaCsv::class)->report(app(ProductMediaCsv::class)->preview($path));
                 }),
             Action::make('applyMedia')->label('Áp dụng CSV sản phẩm & ảnh')->icon('heroicon-o-check-circle')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->color('warning')->requiresConfirmation()->modalHeading('Xác nhận nhập sản phẩm và ảnh')
                 ->modalDescription(function (): string {
                     $preview = session('product_media_csv_preview');
@@ -75,7 +79,7 @@ class ListProducts extends ListRecords
                     return "{$preview['created']} sản phẩm mới sẽ được tạo ẩn; {$preview['updated']} sản phẩm sẽ đổi ảnh. Chỉ áp dụng nếu không có lỗi và dữ liệu chưa thay đổi.";
                 })
                 ->action(function (): void {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $preview = session('product_media_csv_preview');
                     if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900 || ($preview['errors'] ?? []) !== []) {
                         throw ValidationException::withMessages(['file' => 'Bản xem trước không hợp lệ hoặc đã quá 15 phút. Hãy nhập CSV lại.']);
@@ -85,13 +89,14 @@ class ListProducts extends ListRecords
                     if (! is_file($path) || ! hash_equals($preview['hash'], hash_file('sha256', $path))) {
                         throw ValidationException::withMessages(['file' => 'CSV đã thay đổi. Hãy nhập lại.']);
                     }
-                    $result = app(ProductMediaCsv::class)->apply($path, $preview['fingerprint']);
+                    $result = app(ProductMediaCsv::class)->apply($path, $preview['fingerprint'], AdminActor::current());
                     Storage::disk('local')->delete($relative);
                     session()->forget('product_media_csv_preview');
                     Notification::make()->title("Đã tạo {$result['created']} sản phẩm ẩn, cập nhật ảnh {$result['updated']} sản phẩm")
                         ->body("{$result['skipped']} sản phẩm giữ nguyên.")->success()->send();
                 }),
             Action::make('previewPrices')->label('Nhập CSV giá')->icon('heroicon-o-arrow-up-tray')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->modalHeading('Xem trước cập nhật giá sản phẩm')
                 ->modalDescription('Xuất CSV mẫu, chỉnh Giá bán, Giá khuyến mãi, Chỉ báo giá hoặc Hiển thị. Ô trống giữ nguyên; nhập XÓA ở Giá khuyến mãi để bỏ giá này. ID, mã và tên chỉ để đối chiếu.')
                 ->schema([
@@ -100,7 +105,7 @@ class ListProducts extends ListRecords
                         ->maxSize(2048)->required(),
                 ])
                 ->action(function (array $data): void {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $relative = $data['file'];
                     $path = $this->csvPath($relative);
                     $result = app(ProductPriceCsv::class)->preview($path);
@@ -122,8 +127,9 @@ class ListProducts extends ListRecords
                     ($result['errors'] === [] ? $notification->success() : $notification->danger())->send();
                 }),
             Action::make('downloadPricePreview')->label('Tải kết quả xem trước')->icon('heroicon-o-document-arrow-down')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->action(function () {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $preview = session('product_price_csv_preview');
                     if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900) {
                         throw ValidationException::withMessages(['file' => 'Bản xem trước đã hết hạn. Hãy nhập CSV lại.']);
@@ -136,6 +142,7 @@ class ListProducts extends ListRecords
                     return app(ProductPriceCsv::class)->report(app(ProductPriceCsv::class)->preview($path));
                 }),
             Action::make('applyPrices')->label('Áp dụng CSV đã xem trước')->icon('heroicon-o-check-circle')
+                ->visible(fn () => ProductResource::canBulkImport())
                 ->color('warning')->requiresConfirmation()
                 ->modalHeading('Xác nhận cập nhật giá sản phẩm')
                 ->modalDescription(function (): string {
@@ -147,7 +154,7 @@ class ListProducts extends ListRecords
                     return "{$preview['total']} dòng: {$preview['changed']} cần sửa, {$preview['skipped']} không đổi, ".count($preview['errors']).' lỗi. Chỉ áp dụng nếu không có lỗi và dữ liệu chưa thay đổi.';
                 })
                 ->action(function (): void {
-                    abort_unless(ProductResource::canViewAny(), 403);
+                    abort_unless(ProductResource::canBulkImport(), 403);
                     $preview = session('product_price_csv_preview');
                     if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900 || ($preview['errors'] ?? []) !== []) {
                         throw ValidationException::withMessages(['file' => 'Bản xem trước không hợp lệ hoặc đã quá 15 phút. Hãy nhập CSV lại.']);
@@ -157,7 +164,7 @@ class ListProducts extends ListRecords
                     if (! is_file($path) || ! hash_equals($preview['hash'], hash_file('sha256', $path))) {
                         throw ValidationException::withMessages(['file' => 'CSV đã thay đổi. Hãy nhập lại.']);
                     }
-                    $result = app(ProductPriceCsv::class)->apply($path, $preview['fingerprint']);
+                    $result = app(ProductPriceCsv::class)->apply($path, $preview['fingerprint'], AdminActor::current());
                     Storage::disk('local')->delete($relative);
                     session()->forget('product_price_csv_preview');
                     Notification::make()->title("Đã cập nhật {$result['changed']} sản phẩm")

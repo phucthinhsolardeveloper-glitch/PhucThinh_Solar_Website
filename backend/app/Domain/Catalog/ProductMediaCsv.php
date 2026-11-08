@@ -3,6 +3,7 @@
 namespace App\Domain\Catalog;
 
 use App\Models\Product;
+use App\Models\User;
 use App\Rules\FreePublicSlug;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -185,8 +186,10 @@ class ProductMediaCsv
         }
     }
 
-    public function apply(string $path, string $expectedFingerprint): array
+    public function apply(string $path, string $expectedFingerprint, User $actor): array
     {
+        abort_unless($actor->canPerform('catalog_bulk'), 403);
+
         return DB::transaction(function () use ($path, $expectedFingerprint): array {
             $preview = $this->preview($path, true);
             if ($preview['errors'] !== [] || ! hash_equals($expectedFingerprint, $preview['fingerprint'])) {

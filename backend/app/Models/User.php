@@ -36,12 +36,22 @@ class User extends Authenticatable implements FilamentUser, HasName
     /** Permission areas an editor can be given; owners have all of them. */
     public const PERMISSIONS = [
         'catalog' => 'Sản phẩm, danh mục, thương hiệu',
+        'catalog_bulk' => 'Thao tác: nhập CSV và đổi hiển thị hàng loạt',
         'content' => 'Bài viết, giải pháp, dự án, nội dung trang',
+        'content_publish' => 'Thao tác: xuất bản và khôi phục phiên bản bài viết',
         'media' => 'Ảnh vị trí, thư viện ảnh, video',
         'orders' => 'Đơn hàng, phí giao hàng, thanh toán',
+        'orders_payment' => 'Thao tác: xác nhận thanh toán thủ công',
         'leads' => 'Liên hệ, tư vấn, đăng ký đại lý',
         'reviews' => 'Đánh giá sản phẩm',
+        'reviews_moderate' => 'Thao tác: duyệt, ẩn, sửa và trả lời đánh giá',
         'settings' => 'Thông tin website, SEO trang',
+        'settings_mail_test' => 'Thao tác: gửi email thử',
+    ];
+
+    private const ACTION_AREAS = [
+        'catalog_bulk' => 'catalog', 'content_publish' => 'content', 'orders_payment' => 'orders',
+        'reviews_moderate' => 'reviews', 'settings_mail_test' => 'settings',
     ];
 
     /**
@@ -65,6 +75,14 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function hasPermission(string $key): bool
     {
         return $this->isOwner() || in_array($key, $this->permissions ?? [], true);
+    }
+
+    public function canPerform(string $action): bool
+    {
+        $area = self::ACTION_AREAS[$action] ?? null;
+
+        return $this->is_active && $area !== null && $this->hasPermission($area)
+            && ($this->isOwner() || in_array($action, $this->permissions ?? [], true));
     }
 
     public function canAccessPanel(Panel $panel): bool

@@ -92,6 +92,6 @@ class ReviewModeration
 
     private function authorize(User $actor): void
     {
-        abort_unless($actor->is_active && $actor->hasPermission('reviews'), 403);
+        abort_unless($actor->canPerform('reviews_moderate'), 403);
     }
 }

@@ -28,19 +28,28 @@ tên và ID danh mục; slug để trống sẽ tự sinh từ tên. Ảnh phả
 tải báo cáo từng dòng và xác nhận trong 15 phút. Một lỗi chặn cả file, không
 xóa file ảnh vật lý khi bỏ quan hệ. Tệp tối đa 2 MB và 5.000 dòng.
 
+Quyền Admin theo từng thao tác: chủ website có toàn quyền; editor cần cả quyền
+khu vực và quyền thao tác để nhập CSV/bulk sản phẩm (`catalog_bulk`), xuất bản
+bài viết (`content_publish`), xác nhận tiền thủ công (`orders_payment`), duyệt
+đánh giá (`reviews_moderate`) hoặc gửi email thử (`settings_mail_test`). Các
+quyền này cấp ở **Tài khoản quản trị**. Editor import từ hệ cũ chỉ có quyền khu
+vực, cần chủ website cấp thêm quyền thao tác tương ứng. Quyền `content_publish`
+hiện bảo vệ workflow **bài viết**; các loại nội dung khác chưa áp dụng workflow.
+
 Trong form sửa sản phẩm có **Tạo bản sao**: tạo sản phẩm ẩn, slug mới và mã
 sản phẩm trống; giữ thông số, ảnh, tài liệu, khối nội dung và SEO để biên tập
 trước khi công bố. Ảnh/tài liệu ở bản sao cùng tham chiếu file vật lý với bản gốc;
 xóa bản ghi hoặc đổi media không tự xóa file gốc.
 
 Admin **Mẫu email** tại `/admin/mau-email` cho người có quyền settings sửa lời
-văn của 5 email giao dịch, xem trước bằng dữ liệu giả và gửi bản thử tới địa chỉ
+văn của 5 email giao dịch, xem trước bằng dữ liệu giả. Người có thêm quyền
+`settings_mail_test` gửi bản thử tới địa chỉ
 nhập trong form (tối đa 5 lần/giờ cho mỗi người). SMTP vẫn cấu hình qua env;
 việc gửi qua SMTP thật cần thử ở staging mailbox.
 
 Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_status` là
 thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán
-thủ công chưa trả, người có quyền Orders có thể chọn **Xác nhận đã nhận tiền**,
+thủ công chưa trả, người có quyền Orders và `orders_payment` có thể chọn **Xác nhận đã nhận tiền**,
 nhập mã giao dịch/phiếu thu; hệ thống lưu payment transaction và người xác nhận.
 Chưa có luồng hoàn tiền tự động trong Admin.
 
@@ -51,7 +60,7 @@ Lead đã xong hoặc bị đánh dấu rác sẽ xóa lịch hẹn theo dõi.
 
 Admin **Đánh giá sản phẩm** cho xem ảnh/video trước khi duyệt, duyệt hoặc ẩn
 từng đánh giá hay theo lô, sửa nội dung và trả lời đánh giá đã duyệt. Các thao
-tác ghi qua service có kiểm quyền Reviews và khóa bản ghi; ẩn đánh giá gốc làm
+tác ghi qua service có kiểm quyền Reviews và `reviews_moderate`, khóa bản ghi; ẩn đánh giá gốc làm
 đánh giá cùng câu trả lời biến mất khỏi API public.
 
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
@@ -60,8 +69,15 @@ bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đ�
 publish lưu phiên bản trước đó và kiểm xung đột; phiên bản cũ có thể khôi phục
 thành bản nháp để kiểm tra trước khi xuất bản lại. Trang xem trước noindex,
 no-store và không gửi referrer. Form sửa bài gốc vẫn là đường sửa trực tiếp
-public; cần dùng workflow bản nháp để có lịch sử và kiểm duyệt. Giải pháp,
+public đối với người có quyền `content_publish`; editor chỉ có quyền Content
+phải dùng workflow bản nháp và không thể lưu trực tiếp bài đã xuất bản. Giải pháp,
 Dự án, Chính sách và section tree chưa vào workflow này.
+
+Địa chỉ giao hàng có màn **Tỉnh/thành phố** tại `/admin/provinces` để tạo/sửa
+tên, mã, thứ tự, hiển thị và màn **Phí giao hàng** tại `/admin/wards` để tạo/sửa
+phường/xã, tỉnh trực thuộc, phí. Tắt tỉnh sẽ ẩn toàn bộ phường/xã của tỉnh khỏi
+API chọn địa chỉ; không có thao tác xóa tỉnh/phường trong Admin vì đơn hàng và
+dữ liệu địa chỉ có thể còn tham chiếu.
 
 ## Nhánh và môi trường
 

@@ -63,6 +63,21 @@ it('grants owners everything and editors only their list', function () {
         ->and($editor->hasPermission('news_man'))->toBeFalse();
 });
 
+it('requires both the area and action permission for sensitive Admin writes', function () {
+    $owner = adminAccount(['role' => User::ROLE_OWNER, 'permissions' => json_encode([])]);
+    $areaOnly = adminAccount(['permissions' => json_encode(['catalog'])]);
+    $actionOnly = adminAccount(['permissions' => json_encode(['catalog_bulk'])]);
+    $both = adminAccount(['permissions' => json_encode(['catalog', 'catalog_bulk'])]);
+    $inactive = adminAccount(['permissions' => json_encode(['catalog', 'catalog_bulk']), 'is_active' => false]);
+
+    expect($owner->canPerform('catalog_bulk'))->toBeTrue()
+        ->and($areaOnly->canPerform('catalog_bulk'))->toBeFalse()
+        ->and($actionOnly->canPerform('catalog_bulk'))->toBeFalse()
+        ->and($both->canPerform('catalog_bulk'))->toBeTrue()
+        ->and($inactive->canPerform('catalog_bulk'))->toBeFalse()
+        ->and($owner->canPerform('unknown_action'))->toBeFalse();
+});
+
 it('serves the username login page', function () {
     $this->get('/admin/login')->assertOk()->assertSee('Tên đăng nhập');
 });

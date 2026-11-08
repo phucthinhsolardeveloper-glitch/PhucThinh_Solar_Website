@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Wards\Pages;
 
 use App\Filament\Resources\Wards\WardResource;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
 
 class ManageWards extends ManageRecords
@@ -11,6 +12,6 @@ class ManageWards extends ManageRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [CreateAction::make()];
     }
 }

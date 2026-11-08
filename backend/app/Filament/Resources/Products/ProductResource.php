@@ -6,6 +6,7 @@ use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
 use App\Models\Product;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -31,6 +32,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use UnitEnum;
 
@@ -65,6 +67,13 @@ class ProductResource extends Resource
     ];
 
     public const DOCUMENT_KINDS = ['datasheet' => 'Thông số kỹ thuật', 'manual' => 'Hướng dẫn sử dụng', 'warranty' => 'Bảo hành', 'certificate' => 'Chứng nhận', 'other' => 'Khác'];
+
+    public static function canBulkImport(): bool
+    {
+        $user = auth('admin')->user();
+
+        return $user instanceof User && $user->canPerform('catalog_bulk');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -183,9 +192,17 @@ class ProductResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('show')->label('Hiện trên website')->icon(Heroicon::OutlinedEye)
-                        ->action(fn (Collection $records) => $records->each->update(['is_visible' => true]))->deselectRecordsAfterCompletion(),
+                        ->visible(fn () => self::canBulkImport())->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            abort_unless(self::canBulkImport(), 403);
+                            DB::transaction(fn () => $records->each->update(['is_visible' => true]));
+                        })->deselectRecordsAfterCompletion(),
                     BulkAction::make('hide')->label('Ẩn khỏi website')->icon(Heroicon::OutlinedEyeSlash)->requiresConfirmation()
-                        ->action(fn (Collection $records) => $records->each->update(['is_visible' => false]))->deselectRecordsAfterCompletion(),
+                        ->visible(fn () => self::canBulkImport())
+                        ->action(function (Collection $records): void {
+                            abort_unless(self::canBulkImport(), 403);
+                            DB::transaction(fn () => $records->each->update(['is_visible' => false]));
+                        })->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

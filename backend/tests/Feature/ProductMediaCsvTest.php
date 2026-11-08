@@ -2,6 +2,7 @@
 
 use App\Domain\Catalog\ProductMediaCsv;
 use App\Filament\Resources\Products\Pages\ListProducts;
+use App\Filament\Resources\Products\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -30,6 +31,8 @@ function mediaCsvRow(Product $product): array
 
 beforeEach(function () {
     Storage::fake('upload_product');
+    $this->csvActor = User::query()->create(['name' => 'Quản trị CSV', 'username' => 'media-service-'.bin2hex(random_bytes(4)),
+        'password' => 'test-password', 'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
 });
 
 it('round-trips the exported catalog without changing existing products', function () {
@@ -43,7 +46,7 @@ it('round-trips the exported catalog without changing existing products', functi
         expect($preview['total'])->toBe(Product::query()->count())
             ->and($preview['created'])->toBe(0)->and($preview['updated'])->toBe(0)
             ->and($preview['errors'])->toBe([]);
-        expect($service->apply($path, $preview['fingerprint'])['updated'])->toBe(0);
+        expect($service->apply($path, $preview['fingerprint'], $this->csvActor)['updated'])->toBe(0);
     } finally {
         unlink($path);
     }
@@ -69,7 +72,7 @@ it('creates hidden products and updates only selected media while preserving gal
         $service = app(ProductMediaCsv::class);
         $preview = $service->preview($path);
         expect($preview['created'])->toBe(1)->and($preview['updated'])->toBe(1)->and($preview['errors'])->toBe([]);
-        $service->apply($path, $preview['fingerprint']);
+        $service->apply($path, $preview['fingerprint'], $this->csvActor);
         $saved = $product->fresh();
         expect($saved->image)->toBe('gallery.png')->and($saved->image_secondary)->toBe($product->image_secondary)
             ->and($saved->regular_price)->toBe($oldPrice)
@@ -94,7 +97,7 @@ it('blocks missing images and stale previews without a partial write', function 
         $service = app(ProductMediaCsv::class);
         $preview = $service->preview($path);
         expect($preview['errors'])->toHaveCount(1);
-        expect(fn () => $service->apply($path, $preview['fingerprint']))->toThrow(ValidationException::class);
+        expect(fn () => $service->apply($path, $preview['fingerprint'], $this->csvActor))->toThrow(ValidationException::class);
         expect($product->fresh()->image)->toBe($product->image)
             ->and(Product::query()->where('slug', $newSlug)->exists())->toBeFalse();
     } finally {
@@ -105,7 +108,7 @@ it('blocks missing images and stale previews without a partial write', function 
     try {
         $preview = $service->preview($path);
         $product->update(['image' => 'changed-outside-csv.jpg']);
-        expect(fn () => $service->apply($path, $preview['fingerprint']))->toThrow(ValidationException::class);
+        expect(fn () => $service->apply($path, $preview['fingerprint'], $this->csvActor))->toThrow(ValidationException::class);
     } finally {
         unlink($path);
     }
@@ -125,7 +128,7 @@ it('rejects renamed non-images and duplicate new product slugs', function () {
         $preview = app(ProductMediaCsv::class)->preview($path);
         expect($preview['errors'])->toHaveCount(2)
             ->and($preview['created'])->toBe(1);
-        expect(fn () => app(ProductMediaCsv::class)->apply($path, $preview['fingerprint']))
+        expect(fn () => app(ProductMediaCsv::class)->apply($path, $preview['fingerprint'], $this->csvActor))
             ->toThrow(ValidationException::class);
         expect(Product::query()->where('slug', $slug)->exists())->toBeFalse();
     } finally {
@@ -164,4 +167,19 @@ it('runs the preview and apply actions inside the catalog permission area', func
         'password' => 'test-password', 'role' => User::ROLE_EDITOR, 'permissions' => ['content'], 'is_active' => true]);
     $this->actingAs($outsider, 'admin');
     $this->get('/admin/products')->assertForbidden();
+
+    $viewer = User::query()->create(['name' => 'Xem sản phẩm', 'username' => 'media-view-'.bin2hex(random_bytes(4)),
+        'password' => 'test-password', 'role' => User::ROLE_EDITOR, 'permissions' => ['catalog'], 'is_active' => true]);
+    $this->flushSession();
+    $this->actingAs($viewer, 'admin');
+    $this->get('/admin/products')->assertOk();
+    expect(ProductResource::canBulkImport())->toBeFalse();
+    Livewire\Livewire::test(ListProducts::class)->assertActionHidden('previewMedia')->assertActionHidden('applyMedia')
+        ->assertActionHidden('previewPrices');
+
+    $bulkEditor = User::query()->create(['name' => 'Nhập CSV', 'username' => 'media-bulk-'.bin2hex(random_bytes(4)),
+        'password' => 'test-password', 'role' => User::ROLE_EDITOR, 'permissions' => ['catalog', 'catalog_bulk'], 'is_active' => true]);
+    $this->flushSession();
+    $this->actingAs($bulkEditor, 'admin');
+    Livewire\Livewire::test(ListProducts::class)->assertActionVisible('previewMedia')->assertActionVisible('previewPrices');
 });

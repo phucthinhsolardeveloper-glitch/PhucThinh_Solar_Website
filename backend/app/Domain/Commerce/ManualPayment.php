@@ -12,7 +12,7 @@ class ManualPayment
 {
     public function confirm(Order $order, User $actor, string $reference): void
     {
-        abort_unless($actor->hasPermission('orders'), 403);
+        abort_unless($actor->canPerform('orders_payment'), 403);
         $reference = trim($reference);
         if ($reference === '' || mb_strlen($reference) > 120) {
             throw ValidationException::withMessages(['reference' => 'Nhập mã tham chiếu giao dịch (tối đa 120 ký tự).']);

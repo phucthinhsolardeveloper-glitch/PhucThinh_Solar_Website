@@ -39,11 +39,13 @@ it('renders safe sample HTML and protects the mail settings area', function () {
     $this->flushSession();
     $this->actingAs(mailAdmin(['settings']), 'admin');
     $this->get('/admin/mau-email')->assertOk();
+    Livewire\Livewire::test(MailTemplatesPage::class)
+        ->assertFormComponentActionDoesNotExist('mail_template_contact_admin', 'test_contact_admin');
 });
 
 it('sends a synthetic test email only to the address entered by a settings editor', function () {
     Mail::fake();
-    $this->actingAs(mailAdmin(['settings']), 'admin');
+    $this->actingAs(mailAdmin(['settings', 'settings_mail_test']), 'admin');
 
     Livewire\Livewire::test(MailTemplatesPage::class)
         ->callFormComponentAction('mail_template_contact_admin', 'test_contact_admin', ['recipient' => 'preview@example.com'])

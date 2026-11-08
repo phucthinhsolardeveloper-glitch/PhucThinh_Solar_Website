@@ -7,6 +7,7 @@ use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 function articleWorkflowUser(array $permissions = []): User
 {
@@ -63,7 +64,7 @@ it('keeps public content unchanged until publish, then can restore an earlier ve
 });
 
 it('blocks publishing a stale draft and exposes the editor only to the content area', function () {
-    $actor = articleWorkflowUser(['content']);
+    $actor = articleWorkflowUser(['content', 'content_publish']);
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
     $workflow = app(ArticleWorkflow::class);
     $draft = $workflow->draft($post, $actor);
@@ -116,4 +117,26 @@ it('creates a new article hidden until an editor chooses to publish it', functio
         ->call('create')->assertHasNoFormErrors();
 
     expect(Post::query()->where('kind', 'article')->where('slug', $slug)->value('is_visible'))->toBeFalse();
+});
+
+it('lets a content editor draft but prevents publishing or direct public edits', function () {
+    $editor = articleWorkflowUser(['content']);
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $workflow = app(ArticleWorkflow::class);
+    $draft = $workflow->draft($post, $editor);
+    $workflow->save($draft, articleDraftInput('Bản nháp của editor'), $editor);
+    expect(fn () => $workflow->publish($draft, $editor))
+        ->toThrow(HttpException::class);
+
+    $this->actingAs($editor, 'admin');
+    Livewire\Livewire::test(EditArticleDraft::class, ['record' => $draft->id])->assertActionHidden('publish');
+    Livewire\Livewire::test(EditArticle::class, ['record' => $post->id])->assertSee('Bài đã xuất bản chỉ được sửa qua bản nháp')
+        ->fillForm(['title' => 'Sửa public không được duyệt'])->call('save')->assertForbidden();
+    expect($post->fresh()->title)->not->toBe('Sửa public không được duyệt');
+
+    $slug = 'editor-hidden-'.bin2hex(random_bytes(4));
+    Livewire\Livewire::test(CreateArticle::class)
+        ->fillForm(['title' => 'Bài editor', 'slug' => $slug, 'body' => '<p>Nội dung.</p>', 'is_visible' => true])
+        ->call('create')->assertHasNoFormErrors();
+    expect(Post::query()->where('slug', $slug)->value('is_visible'))->toBeFalse();
 });

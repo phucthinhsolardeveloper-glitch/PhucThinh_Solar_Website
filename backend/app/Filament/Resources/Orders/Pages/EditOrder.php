@@ -24,7 +24,8 @@ class EditOrder extends EditRecord
     {
         return [
             Action::make('confirmManualPayment')->label('Xác nhận đã nhận tiền')->icon('heroicon-o-banknotes')
-                ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'unpaid')
+                ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'unpaid'
+                    && AdminActor::current()->canPerform('orders_payment'))
                 ->schema([TextInput::make('reference')->label('Mã giao dịch / phiếu thu')->required()->maxLength(120)])
                 ->requiresConfirmation()
                 ->modalDescription('Chỉ dùng khi đã kiểm tra tiền hoặc phiếu thu thực tế. Thao tác sẽ lưu lịch sử giao dịch của đơn.')
