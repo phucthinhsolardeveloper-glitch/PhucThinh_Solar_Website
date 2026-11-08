@@ -5,6 +5,13 @@ Trạng thái 2026-11-08: **chưa triển khai production**. Compose ở đây t
 riêng; không thay Caddy, container, volume của website đang chạy, training hoặc ZCRM.
 Không chạy `down -v`.
 
+Mốc kiểm 2026-11-08: build lại candidate local từ `e0663f29` với tag riêng;
+DB candidate nhận migration `000500` và `000600`. Qua Caddy, `/health`,
+`/admin/login`, `/api/v1/site`, `/`, `/san-pham/`, `/gio-hang/`,
+`/thanh-toan/`, robots và sitemap đều trả 200; `shop-flow.cjs` đạt (không gửi
+đơn). Nuxt và Laravel healthy. Đây là rehearsal local; staging VPS, restore và
+rollback qua Caddy production vẫn chưa diễn tập.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
