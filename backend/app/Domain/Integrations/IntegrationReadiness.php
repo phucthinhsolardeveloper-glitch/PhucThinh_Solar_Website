@@ -2,6 +2,8 @@
 
 namespace App\Domain\Integrations;
 
+use App\Domain\Commerce\Payments;
+
 final class IntegrationReadiness
 {
     /** @return list<array{label:string,state:string,detail:string}> */
@@ -15,10 +17,12 @@ final class IntegrationReadiness
         $mailMissing = $this->missing(['from' => config('mail.from.address'), 'admin_to' => config('mail.admin_to')], ['from', 'admin_to']);
 
         $items = [
-            ['label' => 'VNPay', 'state' => ! ($vnpay['active'] ?? false) ? 'Tắt' : ($vnpayMissing === [] ? 'Cần kiểm thử' : 'Thiếu cấu hình'),
-                'detail' => ! ($vnpay['active'] ?? false) ? 'Thanh toán VNPay đang tắt.' : ($vnpayMissing === []
-                    ? (str_contains((string) ($vnpay['endpoint'] ?? ''), 'sandbox') ? 'Đang dùng sandbox.' : 'Kiểm tra endpoint và callback ở staging trước khi mở thật.')
-                    : 'Thiếu: '.implode(', ', $vnpayMissing).'.')],
+            ['label' => 'VNPay', 'state' => ! ($vnpay['active'] ?? false) ? 'Tắt' : ($vnpayMissing !== [] ? 'Thiếu cấu hình'
+                : (Payments::vnpayConfigured() ? 'Cần kiểm thử' : 'URL không hợp lệ')),
+                'detail' => ! ($vnpay['active'] ?? false) ? 'Thanh toán VNPay đang tắt.' : ($vnpayMissing !== []
+                    ? 'Thiếu: '.implode(', ', $vnpayMissing).'.'
+                    : (! Payments::vnpayConfigured() ? 'Kiểm tra endpoint, return URL và IPN URL trước khi thử callback.'
+                        : (str_contains((string) ($vnpay['endpoint'] ?? ''), 'sandbox') ? 'Đang dùng sandbox.' : 'Kiểm tra endpoint và callback ở staging trước khi mở thật.')))],
             ['label' => 'reCAPTCHA', 'state' => ! ($recaptcha['active'] ?? false) ? 'Tắt' : ($recaptchaMissing === [] ? 'Cần kiểm thử' : 'Thiếu cấu hình'),
                 'detail' => ! ($recaptcha['active'] ?? false) ? 'Xác minh biểu mẫu đang tắt.' : ($recaptchaMissing === []
                     ? 'Khóa công khai và khóa bí mật đã có; cần thử biểu mẫu ở staging.' : 'Thiếu: '.implode(', ', $recaptchaMissing).'.')],

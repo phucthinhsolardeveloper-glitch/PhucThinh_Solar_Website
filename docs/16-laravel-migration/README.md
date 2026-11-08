@@ -28,6 +28,12 @@ luồng này không tạo sản phẩm, không sửa giá, ảnh hay URL. Ô tr�
 `XÓA` bỏ giá trị trừ danh mục. Tệp tối đa 5 MB/5.000 sản phẩm, lỗi một dòng
 chặn toàn bộ; editor cần `catalog_bulk`. Mẫu xuất ra nhập lại không đổi dữ liệu.
 
+Danh sách sản phẩm Filament có cột và bộ lọc **Cần cải thiện** cho sản phẩm
+đang hiển thị: thiếu ảnh chính, SEO riêng chưa đủ tiêu đề/mô tả, thiếu mô tả
+ngắn, chưa có giá hoặc chế độ báo giá, và chưa liên kết bài viết đang hiển thị.
+Đây là hàng đợi biên tập cho SEO/bán hàng, không phải điểm xếp hạng tìm kiếm;
+sản phẩm đang ẩn không bị coi là lỗi public.
+
 CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: trước tiên dùng
 **Tải nhiều ảnh sản phẩm** (tối đa 20 ảnh/lần) để tải file vào `upload/product`
 và tải CSV tên file đã lưu. Sau đó xuất mẫu gồm ID,
@@ -64,6 +70,9 @@ thái VNPay, reCAPTCHA, email và bốn hãng vận chuyển. Trang chỉ cho bi
 thiếu cấu hình hoặc cần kiểm thử/mapping; không hiển thị hay chỉnh sửa secret.
 Carrier có credential vẫn cần kho gửi, mã dịch vụ, quy cách kiện hàng và adapter
 API trước khi dùng phí hãng trong checkout.
+Mẫu `deploy/laravel13/backend.env.example` liệt kê đầy đủ biến credential và
+endpoint của 4 hãng để chuẩn bị môi trường; điền biến **không tự bật API hãng**.
+VNPay bật nhưng URL endpoint/return/IPN sai sẽ hiện `URL không hợp lệ` ở Admin.
 
 Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_status` là
 thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán

@@ -20,7 +20,7 @@ public chỉ trả sản phẩm hiện, có ảnh; không tự sửa API snapsho
 
 | Legacy capability | Laravel/Filament equivalent | Test/evidence | Trạng thái |
 |---|---|---|---|
-| Product list/search/filter và form nhiều trường | `ProductResource`, 7 tab: chung, giá, media, specs, mô tả, tài liệu, SEO | Screen desktop/mobile; save unchanged với JSON, ảnh, khối nội dung | PASS cho đọc/sửa giữ dữ liệu |
+| Product list/search/filter và form nhiều trường | `ProductResource`, 7 tab: chung, giá, media, specs, mô tả, tài liệu, SEO; thêm cột/bộ lọc thiếu ảnh, SEO, mô tả, giá, liên kết bài viết | Screen desktop/mobile; save unchanged; `ProductSalesReadinessTest` kiểm lọc và giải quyết gap bằng dữ liệu thật trong test DB | PASS cho đọc/sửa giữ dữ liệu và hàng đợi biên tập |
 | Product create/delete | Create/Edit pages; delete có guard reviews/orders | Livewire create/delete, kiểm không sót content/SEO | PASS |
 | Product copy | `EditProduct` có action tạo bản sao ẩn, mã SKU trống, sao chép nội dung/SEO/ảnh/tài liệu | `ProductDuplicateTest`: bản sao độc lập với sản phẩm gốc và không mang review/order | PASS cho bản sao; ảnh/tài liệu dùng lại đường dẫn file gốc |
 | Product bulk status | Bulk hiện/ẩn trong `ProductResource` | Có code, chưa thử action và quyền trên record | GAP |

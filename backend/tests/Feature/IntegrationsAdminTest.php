@@ -21,6 +21,8 @@ it('shows integration readiness without exposing secrets or claiming carrier API
         ->assertDontSee('SECRET-VNPAY-DO-NOT-SHOW')->assertDontSee('SECRET-GHN-DO-NOT-SHOW');
     $states = app(IntegrationReadiness::class)->all();
     expect(collect($states)->firstWhere('label', 'GHN')['state'])->toBe('Cần mapping');
+    Config::set('commerce.vnpay.endpoint', 'khong-phai-url');
+    expect(collect(app(IntegrationReadiness::class)->all())->firstWhere('label', 'VNPay')['state'])->toBe('URL không hợp lệ');
 
     $editor = User::query()->create(['name' => 'Biên tập', 'username' => 'integration-editor', 'password' => 'test-password',
         'role' => User::ROLE_EDITOR, 'permissions' => ['catalog'], 'is_active' => true]);

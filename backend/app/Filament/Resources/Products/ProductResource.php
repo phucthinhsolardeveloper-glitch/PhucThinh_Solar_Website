@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Domain\Catalog\ProductSalesReadiness;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
@@ -31,6 +32,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -166,6 +168,7 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('seo')->withCount('visibleArticles'))
             ->defaultSort('id', 'desc')
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->square()->height(48),
@@ -179,6 +182,16 @@ class ProductResource extends Resource
                         (float) ($record->sale_price ?: $record->regular_price) > 0 => number_format((float) ($record->sale_price ?: $record->regular_price), 0, ',', '.').'đ',
                         default => 'Chưa có giá',
                     }),
+                TextColumn::make('sales_readiness')->label('Cần bổ sung')
+                    ->state(function (Product $record): string {
+                        if (! $record->is_visible) {
+                            return 'Đang ẩn';
+                        }
+
+                        $issues = app(ProductSalesReadiness::class)->issues($record);
+
+                        return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
+                    })->wrap()->toggleable(),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(),
             ])
@@ -187,6 +200,8 @@ class ProductResource extends Resource
                 SelectFilter::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->preload(),
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
                 TernaryFilter::make('quote_only')->label('Chỉ báo giá'),
+                SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS)
+                    ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])
             ->recordActions([EditAction::make()])
             ->toolbarActions([

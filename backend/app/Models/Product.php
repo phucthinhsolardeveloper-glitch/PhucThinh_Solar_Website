@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\UnicodeJson;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -38,6 +39,12 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function visibleArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'post_products')
+            ->where('posts.kind', 'article')->where('posts.is_visible', true)->wherePivot('is_visible', true);
     }
 
     public function images(): HasMany
