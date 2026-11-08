@@ -18,7 +18,15 @@ hiển thị**: tại `/admin/products`, xuất mẫu, sửa file UTF-8, nhập 
 tải báo cáo từng dòng rồi xác nhận áp dụng trong 15 phút. ID/mã/tên dùng để đối
 chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đó. Tệp tối đa 2 MB
 và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
-Ảnh và tạo mới qua CSV chưa có.
+Luồng CSV giá không thêm sản phẩm hoặc thay ảnh.
+
+CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: xuất mẫu gồm ID,
+mã, tên, slug, ID danh mục và các ảnh. Dòng có ID chỉ sửa ảnh; ô trống giữ
+nguyên, `XÓA` bỏ ảnh hoặc thư viện ảnh. Dòng không ID tạo sản phẩm **ẩn**, cần
+tên và ID danh mục; slug để trống sẽ tự sinh từ tên. Ảnh phải có sẵn dưới
+`upload/product`, chỉ nhập tên file; thư viện ngăn cách bằng `|`. Admin xem trước,
+tải báo cáo từng dòng và xác nhận trong 15 phút. Một lỗi chặn cả file, không
+xóa file ảnh vật lý khi bỏ quan hệ. Tệp tối đa 2 MB và 5.000 dòng.
 
 Trong form sửa sản phẩm có **Tạo bản sao**: tạo sản phẩm ẩn, slug mới và mã
 sản phẩm trống; giữ thông số, ảnh, tài liệu, khối nội dung và SEO để biên tập
