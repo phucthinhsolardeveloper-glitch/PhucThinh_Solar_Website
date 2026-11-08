@@ -30,6 +30,12 @@ văn của 5 email giao dịch, xem trước bằng dữ liệu giả và gửi 
 nhập trong form (tối đa 5 lần/giờ cho mỗi người). SMTP vẫn cấu hình qua env;
 việc gửi qua SMTP thật cần thử ở staging mailbox.
 
+Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_status` là
+thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán
+thủ công chưa trả, người có quyền Orders có thể chọn **Xác nhận đã nhận tiền**,
+nhập mã giao dịch/phiếu thu; hệ thống lưu payment transaction và người xác nhận.
+Chưa có luồng hoàn tiền tự động trong Admin.
+
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
 bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt
 bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đổi trang public;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Commerce\ManualPayment;
 use App\Filament\Pages\SiteSettingsPage;
 use App\Filament\Resources\Albums\Pages\CreateAlbum;
 use App\Filament\Resources\Albums\Pages\EditAlbum;
@@ -21,10 +22,12 @@ use App\Filament\Resources\Solutions\Pages\EditSolution;
 use App\Models\Album;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 // Every Admin screen opens for an owner, and an editor only sees the areas they were given.
 
@@ -75,12 +78,43 @@ it('changes only the handling fields of an order', function () {
     DB::table('order_items')->insert(['order_id' => $id, 'name' => 'Đèn thử', 'quantity' => 2, 'regular_price' => 50000, 'created_at' => now(), 'updated_at' => now()]);
 
     Livewire\Livewire::test(EditOrder::class, ['record' => $id])
-        ->fillForm(['status' => 'confirmed', 'notes' => 'Đã gọi khách', 'customer_name' => 'Sửa trộm'])
+        ->fillForm(['status' => 'confirmed', 'notes' => 'Đã gọi khách', 'customer_name' => 'Sửa trộm', 'payment_status' => 'paid'])
         ->call('save')->assertHasNoFormErrors();
 
     $order = DB::table('orders')->find($id);
     expect($order->status)->toBe('confirmed')->and($order->notes)->toBe('Đã gọi khách')->and($order->customer_name)->toBe('Khách thử')
+        ->and($order->payment_status)->toBe('unpaid')
         ->and(DB::table('order_items')->where('order_id', $id)->value('quantity'))->toBe(2);
+});
+
+it('records a manual payment with staff reference and forbids changing a VNPay order from Admin', function () {
+    $actor = admin(User::ROLE_EDITOR, ['orders']);
+    $this->actingAs($actor, 'admin');
+    $base = ['customer_name' => 'Khách thử', 'phone' => '0912345678', 'address' => 'x',
+        'subtotal' => 100000, 'total' => 100000, 'status' => 'new', 'payment_status' => 'unpaid',
+        'created_at' => now(), 'updated_at' => now()];
+    $manualId = DB::table('orders')->insertGetId($base + ['code' => 'ADMIN-CASH', 'payment_code' => 'manual']);
+    $gatewayId = DB::table('orders')->insertGetId($base + ['code' => 'ADMIN-VNP', 'payment_code' => 'vnpay']);
+
+    Livewire\Livewire::test(EditOrder::class, ['record' => $manualId])
+        ->callAction('confirmManualPayment', ['reference' => 'PHIEU-001'])
+        ->assertHasNoActionErrors();
+    $manual = DB::table('orders')->find($manualId);
+    $transaction = DB::table('payment_transactions')->where('order_id', $manualId)->first();
+    expect($manual->payment_status)->toBe('paid')->and($manual->payment_reference)->toBe('PHIEU-001')
+        ->and($transaction->provider)->toBe('manual')->and($transaction->amount)->toBe('100000')
+        ->and($transaction->provider_reference)->toBe('PHIEU-001');
+    expect(json_decode($transaction->payload, true)['confirmed_by'])->toBe($actor->id);
+    expect(fn () => app(ManualPayment::class)->confirm(Order::findOrFail($manualId), $actor, 'PHIEU-002'))
+        ->toThrow(ValidationException::class);
+    expect(DB::table('payment_transactions')->where('order_id', $manualId)->count())->toBe(1);
+
+    Livewire\Livewire::test(EditOrder::class, ['record' => $gatewayId])
+        ->assertActionHidden('confirmManualPayment')
+        ->fillForm(['payment_status' => 'paid', 'status' => 'confirmed'])
+        ->call('save')->assertHasNoFormErrors();
+    expect(DB::table('orders')->where('id', $gatewayId)->value('payment_status'))->toBe('unpaid')
+        ->and(DB::table('payment_transactions')->where('order_id', $gatewayId)->count())->toBe(0);
 });
 
 it('refuses an area an editor was not given', function () {

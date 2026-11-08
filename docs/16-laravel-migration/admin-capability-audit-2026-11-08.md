@@ -30,7 +30,7 @@ evidence ở `/tmp/pts-laravel13-rehearsal/`.
 | Settings/site info | `SiteSettingsPage`, credentials trong env | Save unchanged test, screen | PASS cho các field hiện có |
 | Mail template preview/test send | `MailTemplatesPage` sửa 5 mẫu email, xem trước bằng dữ liệu giả, gửi thử có rate limit; SMTP vẫn trong env | `MailTemplatesAdminTest`: lưu override giữ default, render HTML an toàn, kiểm quyền và gửi bằng Mail fake | PASS cho UI/copy; SMTP thật cần staging mailbox |
 | Integrations settings | reCAPTCHA, VNPay, mail, carrier config trong env | Code/config; carrier chỉ `mapping_required` | GAP cho Admin UI và carrier API |
-| Orders list/edit/payment | `OrderResource`, payment transaction domain | Synthetic order save chỉ đổi handling fields; nguồn local có 0 order | GAP cho order thật, refund/status workflows |
+| Orders list/edit/payment | `OrderResource` khóa thanh toán trực tiếp; xác nhận tiền thủ công có tham chiếu, người xử lý và transaction; VNPay do callback ký xác nhận | `AdminScreensTest` kiểm sửa đơn giữ dữ liệu khách, không giả trạng thái VNPay, xác nhận manual và chặn lặp | PASS cho xử lý manual cơ bản; GAP cho refund, status workflow và đơn thật ở staging |
 | Contact/newsletter/leads | `LeadResource` hợp nhất contact/consultation/dealer | 2 row import; screen; không có lifecycle round-trip test | GAP |
 | Comment/review moderation | `ReviewResource`, bulk approve/hide | Screen; local legacy có 0 review | GAP cho mutation và media |
 | User management, owner/editor RBAC | `UserResource`, `RequiresPermission`, 7 permission areas | Login test; direct-route matrix; 2 user import | PASS cho route access; action/upload permission vẫn GAP |
