@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 /** Pictures with a fixed place on the site: logo, home slides, popup, certificates, dealer photos. */
@@ -47,12 +48,18 @@ class BannerResource extends Resource
     public const PLACEMENTS = [
         'logo' => 'Logo đầu trang', 'logo-footer' => 'Logo chân trang', 'favicon' => 'Biểu tượng trên tab trình duyệt',
         'hero-carousel' => 'Trang chủ · Ảnh đầu trang (chạy vòng)', 'popup' => 'Trang chủ · Popup quảng cáo',
+        'home-campaign' => 'Trang chủ · Chiến dịch',
         'chungnhan' => 'Giới thiệu · Chứng nhận', 'adv' => 'Giới thiệu · Ảnh quảng bá', 'hinh-anh-dai-ly' => 'Đại lý · Hình ảnh',
         'bct' => 'Chân trang · Logo đã thông báo Bộ Công Thương',
-        'home-hero-bg' => 'Không hiển thị · Nền đầu trang cũ', 'slide' => 'Không hiển thị · Slide cũ', 'banner-top' => 'Không hiển thị · Banner cũ',
-        'doitac' => 'Không hiển thị · Đối tác cũ', 'social' => 'Không hiển thị · Mạng xã hội cũ',
-        'watermark' => 'Không hiển thị · Đóng dấu ảnh sản phẩm cũ', 'watermark-news' => 'Không hiển thị · Đóng dấu ảnh tin cũ',
+        'about-cta' => 'Giới thiệu · Lời mời tư vấn', 'about-showroom' => 'Giới thiệu · Showroom',
+        'contact-visual' => 'Liên hệ · Ảnh giới thiệu', 'dealer-hero' => 'Đại lý · Ảnh đầu trang',
+        'product-category-hero' => 'Danh mục · Ảnh đầu trang', 'catalog-campaign' => 'Danh mục · Chiến dịch',
     ];
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('placement', array_keys(self::PLACEMENTS));
+    }
 
     public static function form(Schema $schema): Schema
     {

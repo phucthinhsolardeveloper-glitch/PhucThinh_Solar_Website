@@ -21,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 /** Small editable blocks of the fixed pages: home steps, about history, dealer benefits, page intros and CTAs. */
@@ -61,6 +62,8 @@ class PageItemResource extends Resource
         'dealer.support' => ['Đại lý · Hỗ trợ', ['title', 'summary']],
         'dealer.testimonials' => ['Đại lý · Phản hồi đại lý', ['title', 'summary', 'body', 'image']],
         'product.commitments' => ['Trang sản phẩm · Cam kết', ['title', 'image']],
+        'catalog.benefits' => ['Danh mục · Lợi ích', ['title', 'summary', 'image']],
+        'search.suggestions' => ['Tìm kiếm · Gợi ý', ['title']],
         'solutions.intro' => ['Giải pháp · Phần mở đầu', ['title', 'subtitle', 'summary', 'body', 'image']],
         'solutions.cta' => ['Giải pháp · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'extra', 'image']],
         'news.intro' => ['Tin tức · Phần mở đầu', ['title', 'summary']],
@@ -78,12 +81,12 @@ class PageItemResource extends Resource
     /** @return array<string, string> */
     public static function sectionOptions(): array
     {
-        $options = array_map(fn ($section) => $section[0], self::SECTIONS);
-        foreach (PageItem::query()->distinct()->pluck('section') as $section) {
-            $options[$section] ??= str_starts_with($section, 'archive.') ? 'Lưu trữ (không hiển thị) · '.$section : $section;
-        }
+        return array_map(fn ($section) => $section[0], self::SECTIONS);
+    }
 
-        return $options;
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('section', array_keys(self::SECTIONS));
     }
 
     private static function shows(string $field): \Closure

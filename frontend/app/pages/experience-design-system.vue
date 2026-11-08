@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '~/assets/css/experience-design-system.css'
 import PtsChapterNav from '~/components/design-system/PtsChapterNav.vue'
 import PtsJourney from '~/components/design-system/PtsJourney.vue'
 import PtsLayout from '~/components/design-system/PtsLayout.vue'

@@ -46,6 +46,11 @@ xóa file ảnh vật lý khi bỏ quan hệ. Tệp tối đa 2 MB và 5.000 dò
 Form sản phẩm và album đã được kiểm với upload file thật, đổi thứ tự và xóa ảnh
 khỏi thư viện; xóa quan hệ giữ file vật lý vì file có thể được nhiều bản ghi dùng.
 
+Importer và Admin bỏ qua ảnh vị trí legacy cùng các section `archive.*` không
+còn consumer. DB clone hiện hữu dọn bằng `pts:prune-retired-content` (mặc định
+chỉ xem số lượng; `--apply` backup rồi xóa). Bằng chứng và rollback ở
+[`retired-content-cleanup-2026-11-08.md`](retired-content-cleanup-2026-11-08.md).
+
 Quyền Admin theo từng thao tác: chủ website có toàn quyền; editor cần cả quyền
 khu vực và quyền thao tác để nhập CSV/bulk sản phẩm (`catalog_bulk`), xuất bản
 nội dung (`content_publish`), xác nhận tiền thủ công (`orders_payment`), duyệt

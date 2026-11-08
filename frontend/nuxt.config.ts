@@ -29,7 +29,7 @@ export default defineNuxtConfig({
    * main.css nạp Tailwind v4, theme và style CMS. tokens.css nạp sau để reset
    * global nhỏ, không nằm trong layer, áp dụng sau Preflight của Tailwind.
    */
-  css: ['~/assets/css/main.css', '~/assets/css/tokens.css', '~/assets/css/experience-design-system.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/tokens.css'],
 
   /*
    * @nuxt/fonts đi kèm @nuxt/ui và MẶC ĐỊNH tự đi tải mọi font-family nó thấy
@@ -82,6 +82,11 @@ export default defineNuxtConfig({
   nitro: { compressPublicAssets: { gzip: true, brotli: true } },
 
   routeRules: {
+    // Historical copies live at /assets/images/site-visuals; keep old links working without shipping duplicate bytes.
+    '/images/site-visuals/catalog-equipment-system.jpg': { redirect: { to: '/assets/images/site-visuals/catalog-equipment-system.jpg', statusCode: 301 } },
+    '/images/site-visuals/home-outdoor-lighting.jpg': { redirect: { to: '/assets/images/site-visuals/home-outdoor-lighting.jpg', statusCode: 301 } },
+    '/images/site-visuals/home-solar-storage.jpg': { redirect: { to: '/assets/images/site-visuals/home-solar-storage.jpg', statusCode: 301 } },
+    '/images/site-visuals/home-street-lighting-v2.png': { redirect: { to: '/assets/images/site-visuals/home-street-lighting-v2.png', statusCode: 301 } },
     // Same protection headers the old site set for every response.
     '/**': {
       headers: {

@@ -1,5 +1,9 @@
 # Solar Cinema — video preview for PTS (2026-11-03)
 
+Lưu trữ lịch sử: route preview đã được gỡ trong đợt migration. Video, poster và
+script tạo thử đã được xóa khỏi release Nuxt ngày 2026-11-08 vì không có
+consumer FE/API/Admin; chỉ giữ tài liệu quyết định thiết kế này.
+
 ## Intent and placement
 - Target: a concept film for a selected solutions/about storytelling section, **not** a production homepage replacement.
 - Visual language: Precision Paper + Solar Cinema, original PTS navy/gold tokens, modest camera motion, website-owned HTML title/buttons.
@@ -8,8 +12,8 @@
 
 ## Current local asset
 - Original illustration already in the repository: `frontend/public/assets/images/site-visuals/pdp-usecase-v2/panel-commercial-roof.webp`.
-- Deliverables: `frontend/public/assets/video/pts-solar-cinema-preview.mp4` (8 s, 1280x720, 24 fps, mute, about 211 KB) and `pts-solar-cinema-poster.webp` (about 198 KB).
-- Regenerate: `FFMPEG_BIN=/absolute/path/to/ffmpeg python3 frontend/scripts/generate-solar-cinema-preview.py`. The script uses static-image camera motion, not generative text-to-video.
+- Historical deliverables: `pts-solar-cinema-preview.mp4` and `pts-solar-cinema-poster.webp`; both were removed after the preview route was retired.
+- The local motion-photo generator was removed with its output; a future approved video needs a new scoped implementation.
 - Current implementation: source deferred by browser `preload=none`, intersection-based pause, visibility pause, reduced-motion and mobile manual start, manual play/pause control, poster on non-playback. Existing header/footer reuse `usePublicSite()`.
 
 ## Higgsfield attempt and target generation

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Support\ContentBlocks;
+use App\Support\RetiredLegacyContent;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
@@ -41,14 +42,12 @@ class ImportLegacyCommand extends Command
         'about-principle' => 'about.principles', 'home-about' => 'home.about', 'home-about-point' => 'home.about_points', 'home-energy-chain' => 'home.energy_chain',
         'catalog-benefit' => 'catalog.benefits', 'quick-search' => 'search.suggestions', 'news-intro' => 'news.intro', 'news-cta' => 'news.cta', 'project-cta' => 'projects.cta',
         'project-trust' => 'projects.trust', 'project-intro' => 'projects.intro', 'project-benefit' => 'projects.benefits', 'solution-intro' => 'solutions.intro', 'solution-cta' => 'solutions.cta',
-        'loi-ich' => 'archive.benefits', 'so-lieu-thong-ke' => 'archive.stats', 'tieu-chi' => 'archive.criteria',
     ];
 
     private const POST_KINDS = ['tin-tuc' => 'article', 'giai-phap' => 'solution', 'du-an' => 'project', 'chinh-sach' => 'policy'];
 
     /** Fixed page texts in table_static => page section key. */
-    private const STATIC_SECTIONS = ['footer' => 'site.footer', 'lienhe' => 'contact.intro', 'dai-ly-1' => 'dealer.intro', 'dai-ly-2' => 'dealer.overview', 'dai-ly-3' => 'dealer.support',
-        'tom-tat-gioi-thieu' => 'archive.about_summary', 'su-menh' => 'archive.mission', 'loi-ich' => 'archive.benefits_text'];
+    private const STATIC_SECTIONS = ['footer' => 'site.footer', 'lienhe' => 'contact.intro', 'dai-ly-1' => 'dealer.intro', 'dai-ly-2' => 'dealer.overview', 'dai-ly-3' => 'dealer.support'];
 
     public function handle(): int
     {
@@ -265,6 +264,9 @@ class ImportLegacyCommand extends Command
             if ($row->type === 'video') {
                 $this->new->table('videos')->insert(['id' => $row->id, 'title' => self::text($row->namevi), 'url' => (string) $row->link_video, 'is_visible' => self::visible($row->status), 'sort_order' => (int) $row->numb] + self::times((array) $row));
 
+                continue;
+            }
+            if (in_array($row->type, RetiredLegacyContent::BANNER_PLACEMENTS, true)) {
                 continue;
             }
             $flags = self::flags($row->status);
