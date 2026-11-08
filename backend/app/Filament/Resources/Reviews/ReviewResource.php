@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Reviews;
 
+use App\Domain\Reviews\ReviewModeration;
 use App\Filament\Concerns\RequiresPermission;
+use App\Filament\Support\AdminActor;
 use App\Models\Review;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -89,21 +91,29 @@ class ReviewResource extends Resource
             ->recordActions([
                 Action::make('approve')->label('Duyệt')->icon(Heroicon::OutlinedCheck)->color('success')
                     ->visible(fn (Review $record) => $record->status !== 'approved')
-                    ->action(fn (Review $record) => $record->update(['status' => 'approved'])),
+                    ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'approved')),
+                Action::make('hide')->label('Ẩn')->icon(Heroicon::OutlinedEyeSlash)->requiresConfirmation()
+                    ->visible(fn (Review $record) => $record->status === 'approved')
+                    ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'hidden')),
                 Action::make('reply')->label('Trả lời')->icon(Heroicon::OutlinedChatBubbleLeft)
-                    ->schema([Textarea::make('content')->label('Câu trả lời của Phúc Thịnh Solar')->rows(4)->required()])
-                    ->action(fn (Review $record, array $data) => $record->replies()->create([
-                        'product_id' => $record->product_id, 'content' => $data['content'], 'name' => 'Phúc Thịnh Solar',
-                        'by_staff' => true, 'status' => 'approved',
-                    ])),
-                EditAction::make(),
+                    ->visible(fn (Review $record) => $record->status === 'approved')
+                    ->schema([Textarea::make('content')->label('Câu trả lời của Phúc Thịnh Solar')->rows(4)->required()->maxLength(5000)])
+                    ->action(fn (Review $record, array $data) => app(ReviewModeration::class)->reply($record, AdminActor::current(), $data['content'])),
+                Action::make('viewMedia')->label('Xem media')->icon(Heroicon::OutlinedPhoto)
+                    ->visible(fn (Review $record) => $record->media()->exists())
+                    ->modal()->modalHeading('Ảnh và video đánh giá')->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
+                    ->modalContent(fn (Review $record) => view('filament.review-media', ['media' => $record->media()->get()])),
+                EditAction::make()->using(fn (Review $record, array $data) => app(ReviewModeration::class)->edit($record, AdminActor::current(), $data)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('approveMany')->label('Duyệt các đánh giá đã chọn')
-                        ->action(fn (Collection $records) => $records->each->update(['status' => 'approved']))->deselectRecordsAfterCompletion(),
-                    BulkAction::make('hideMany')->label('Ẩn các đánh giá đã chọn')
-                        ->action(fn (Collection $records) => $records->each->update(['status' => 'hidden']))->deselectRecordsAfterCompletion(),
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records) => app(ReviewModeration::class)->moderateMany($records, AdminActor::current(), 'approved'))
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('hideMany')->label('Ẩn các đánh giá đã chọn')->requiresConfirmation()
+                        ->action(fn (Collection $records) => app(ReviewModeration::class)->moderateMany($records, AdminActor::current(), 'hidden'))
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

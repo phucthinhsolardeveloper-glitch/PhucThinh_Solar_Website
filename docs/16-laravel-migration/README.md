@@ -41,6 +41,11 @@ dõi, lọc lead quá hạn và xem lịch sử đổi trạng thái/phân công
 lưu ở lead hiện tại; lịch sử ghi việc đổi ghi chú, không sao chép nội dung khách.
 Lead đã xong hoặc bị đánh dấu rác sẽ xóa lịch hẹn theo dõi.
 
+Admin **Đánh giá sản phẩm** cho xem ảnh/video trước khi duyệt, duyệt hoặc ẩn
+từng đánh giá hay theo lô, sửa nội dung và trả lời đánh giá đã duyệt. Các thao
+tác ghi qua service có kiểm quyền Reviews và khóa bản ghi; ẩn đánh giá gốc làm
+đánh giá cùng câu trả lời biến mất khỏi API public.
+
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
 bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt
 bằng liên kết ký 15 phút, rồi **Xuất bản**. Bản nháp không đổi trang public;
