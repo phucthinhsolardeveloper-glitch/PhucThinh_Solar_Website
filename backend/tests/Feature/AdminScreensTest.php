@@ -1,13 +1,22 @@
 <?php
 
 use App\Filament\Pages\SiteSettingsPage;
+use App\Filament\Resources\Albums\Pages\CreateAlbum;
 use App\Filament\Resources\Albums\Pages\EditAlbum;
+use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
+use App\Filament\Resources\Brands\Pages\CreateBrand;
 use App\Filament\Resources\Brands\Pages\EditBrand;
+use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Orders\Pages\EditOrder;
+use App\Filament\Resources\Policies\Pages\CreatePolicy;
+use App\Filament\Resources\Policies\Pages\EditPolicy;
+use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
+use App\Filament\Resources\Solutions\Pages\CreateSolution;
 use App\Filament\Resources\Solutions\Pages\EditSolution;
 use App\Models\Album;
 use App\Models\Brand;
@@ -84,6 +93,34 @@ it('opens the area an editor was given', function () {
     $this->get('/admin/products')->assertOk();
 });
 
+it('enforces each editor area on direct Admin routes', function () {
+    $areas = [
+        'catalog' => 'products', 'content' => 'articles', 'media' => 'banners',
+        'orders' => 'orders', 'leads' => 'leads', 'reviews' => 'reviews',
+        'settings' => 'seo-pages',
+    ];
+
+    foreach (array_keys($areas) as $granted) {
+        $this->flushSession();
+        $this->actingAs(admin(User::ROLE_EDITOR, [$granted]), 'admin');
+        foreach ($areas as $area => $route) {
+            $this->get('/admin/'.$route)->assertStatus($area === $granted ? 200 : 403);
+        }
+        $this->get('/admin/users')->assertForbidden();
+        $this->get('/admin/thong-tin-website')->assertStatus($granted === 'settings' ? 200 : 403);
+    }
+
+    $productId = DB::table('products')->value('id');
+    $this->flushSession();
+    $this->actingAs(admin(User::ROLE_EDITOR, ['content']), 'admin');
+    $this->get('/admin/products/create')->assertForbidden();
+    $this->get('/admin/products/'.$productId.'/edit')->assertForbidden();
+    $this->flushSession();
+    $this->actingAs(admin(User::ROLE_EDITOR, ['catalog']), 'admin');
+    $this->get('/admin/products/create')->assertOk();
+    $this->get('/admin/products/'.$productId.'/edit')->assertOk();
+});
+
 it('saves a product unchanged when nothing was edited', function () {
     $this->actingAs(admin(), 'admin');
     $id = DB::table('products as p')->join('content_sections as c', fn ($j) => $j->on('c.owner_id', '=', 'p.id')->where('c.owner_type', Product::class))
@@ -107,6 +144,49 @@ it('saves a product unchanged when nothing was edited', function () {
         ->toBe(json_decode((string) $blocksBefore, true))
         ->and(DB::table('product_images')->where('product_id', $id)->orderBy('id')->pluck('path')->all())->toBe($imagesBefore);
 });
+
+it('creates and deletes a product without leaving its related rows behind', function () {
+    $this->actingAs(admin(), 'admin');
+    $slug = 'admin-create-delete-'.bin2hex(random_bytes(4));
+    $categoryId = DB::table('categories')->value('id');
+
+    Livewire\Livewire::test(CreateProduct::class)
+        ->fillForm(['name' => 'Sản phẩm thử Admin', 'slug' => $slug, 'category_id' => $categoryId,
+            'regular_price' => 100000, 'is_visible' => true])
+        ->call('create')->assertHasNoFormErrors();
+
+    $id = DB::table('products')->where('slug', $slug)->value('id');
+    expect($id)->not->toBeNull();
+    Livewire\Livewire::test(EditProduct::class, ['record' => $id])
+        ->callAction('delete')->assertHasNoActionErrors();
+
+    expect(DB::table('products')->where('id', $id)->exists())->toBeFalse()
+        ->and(DB::table('content_sections')->where('owner_type', Product::class)->where('owner_id', $id)->exists())->toBeFalse()
+        ->and(DB::table('seo_metas')->where('owner_type', Product::class)->where('owner_id', $id)->exists())->toBeFalse();
+});
+
+dataset('created admin records', [
+    'category' => ['categories', CreateCategory::class, EditCategory::class, 'name'],
+    'brand' => ['brands', CreateBrand::class, EditBrand::class, 'name'],
+    'article' => ['posts', CreateArticle::class, EditArticle::class, 'title'],
+    'solution' => ['posts', CreateSolution::class, EditSolution::class, 'title'],
+    'project' => ['posts', CreateProject::class, EditProject::class, 'title'],
+    'policy' => ['posts', CreatePolicy::class, EditPolicy::class, 'title'],
+    'album' => ['albums', CreateAlbum::class, EditAlbum::class, 'title'],
+]);
+
+it('creates and deletes a record through its Admin form', function (string $table, string $createPage, string $editPage, string $titleField) {
+    $this->actingAs(admin(), 'admin');
+    $slug = 'admin-crud-'.bin2hex(random_bytes(4));
+
+    Livewire\Livewire::test($createPage)->fillForm([$titleField => 'Nội dung thử Admin', 'slug' => $slug, 'is_visible' => true])
+        ->call('create')->assertHasNoFormErrors();
+
+    $id = DB::table($table)->where('slug', $slug)->value('id');
+    expect($id)->not->toBeNull();
+    Livewire\Livewire::test($editPage, ['record' => $id])->callAction('delete')->assertHasNoActionErrors();
+    expect(DB::table($table)->where('id', $id)->exists())->toBeFalse();
+})->with('created admin records');
 
 dataset('editable records', [
     'category' => ['categories', Category::class, EditCategory::class, []],
