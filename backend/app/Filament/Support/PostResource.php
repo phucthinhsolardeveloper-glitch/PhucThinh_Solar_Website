@@ -92,8 +92,10 @@ abstract class PostResource extends Resource
                         ])->grid(2)->collapsible()->defaultItems(0)->columnSpanFull()->addActionLabel('Thêm ảnh / video')
                     : null,
             ]))),
-            $kind === 'project' ? Section::make('Thiết bị đã dùng')->schema([
-                Select::make('products')->label('Sản phẩm')->relationship('products', 'name')->multiple()->searchable(),
+            in_array($kind, ['article', 'project'], true) ? Section::make($kind === 'article' ? 'Sản phẩm liên quan' : 'Thiết bị đã dùng')->schema([
+                Select::make('products')->label('Sản phẩm')->relationship('products', 'name')->multiple()->searchable()
+                    ->maxItems($kind === 'article' ? 4 : null)
+                    ->helperText($kind === 'article' ? 'Chọn sản phẩm phù hợp để liên kết trực tiếp từ bài viết tới trang bán hàng. Tối đa 4 sản phẩm sẽ hiện trên bài.' : null),
             ]) : null,
             Section::make()->columns(4)->schema(array_values(array_filter([
                 Fields::visible()->default($kind !== 'article'),

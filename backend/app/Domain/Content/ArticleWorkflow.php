@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /** Drafts never modify the published post. A publish or restore is one database transaction. */
@@ -63,6 +64,8 @@ class ArticleWorkflow
                 'seo.title' => ['nullable', 'string', 'max:255'],
                 'seo.description' => ['nullable', 'string', 'max:500'],
                 'seo.keywords' => ['nullable', 'string', 'max:1000'],
+                'products' => ['sometimes', 'array', 'max:4'],
+                'products.*' => ['integer', Rule::exists('products', 'id')->where('is_visible', true)],
             ])->validate();
             $payload = $draft->payload;
             foreach (self::EDITABLE_FIELDS as $field) {
@@ -71,6 +74,9 @@ class ArticleWorkflow
             }
             foreach (['title', 'description', 'keywords'] as $field) {
                 $payload['seo'][$field] = $clean['seo'][$field] ?? null;
+            }
+            if (array_key_exists('products', $input)) {
+                $payload['products'] = array_values(array_unique(array_map('intval', $clean['products'] ?? [])));
             }
             $draft->update(['payload' => $payload, 'updated_by' => $actor->id]);
 
@@ -88,7 +94,10 @@ class ArticleWorkflow
             $draft = PostRevision::query()->whereKey($revision->id)->lockForUpdate()->firstOrFail();
             $this->assertDraft($draft);
             $current = $this->snapshot($post);
-            if (! hash_equals((string) $draft->base_hash, $this->fingerprint($current))) {
+            $legacyBase = $current;
+            unset($legacyBase['products']);
+            if (! hash_equals((string) $draft->base_hash, $this->fingerprint($current))
+                && ! hash_equals((string) $draft->base_hash, $this->fingerprint($legacyBase))) {
                 throw ValidationException::withMessages(['draft' => 'Bài public đã thay đổi sau khi tạo nháp. Hãy rà soát và tạo nháp mới.']);
             }
             $payload = $draft->payload;
@@ -108,6 +117,9 @@ class ArticleWorkflow
             $fields['is_visible'] = true;
             $post->update($fields);
             $post->seo()->updateOrCreate([], $payload['seo'] ?? []);
+            if (array_key_exists('products', $payload)) {
+                $post->products()->sync($payload['products']);
+            }
             $payload['published_at'] = $fields['published_at'];
             $payload['is_visible'] = true;
             $draft->update(['payload' => $payload, 'state' => 'published', 'published_by' => $actor->id, 'published_at' => now()]);
@@ -131,6 +143,7 @@ class ArticleWorkflow
 
             $payload = $historical->payload;
             $payload['slug'] = $post->slug;
+            $payload['products'] ??= $current['products'];
 
             return $post->revisions()->create([
                 'version' => $this->nextVersion($post), 'state' => 'draft', 'payload' => $payload,
@@ -151,6 +164,8 @@ class ArticleWorkflow
             'title' => $seo?->title, 'description' => $seo?->description,
             'keywords' => $seo?->keywords, 'image' => $seo?->image,
         ];
+        $data['products'] = $post->products()->orderBy('post_products.sort_order')->orderBy('post_products.id')
+            ->pluck('products.id')->map(fn ($id) => (int) $id)->all();
 
         return $data;
     }

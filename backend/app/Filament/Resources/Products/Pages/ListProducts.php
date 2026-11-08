@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
+use App\Domain\Catalog\ProductContentWorkbook;
 use App\Domain\Catalog\ProductMediaCsv;
 use App\Domain\Catalog\ProductPriceCsv;
 use App\Filament\Resources\Products\ProductResource;
@@ -26,6 +27,75 @@ class ListProducts extends ListRecords
                 ->action(fn () => app(ProductPriceCsv::class)->export()),
             Action::make('exportMedia')->label('Xuất CSV sản phẩm & ảnh')->icon('heroicon-o-photo')
                 ->action(fn () => app(ProductMediaCsv::class)->export()),
+            Action::make('exportContentWorkbook')->label('Xuất Excel nội dung & SEO')->icon('heroicon-o-table-cells')
+                ->action(fn () => app(ProductContentWorkbook::class)->export()),
+            Action::make('previewContentWorkbook')->label('Nhập Excel nội dung & SEO')->icon('heroicon-o-arrow-up-tray')
+                ->visible(fn () => ProductResource::canBulkImport())
+                ->modalHeading('Xem trước nội dung và SEO sản phẩm')
+                ->modalDescription('Xuất mẫu Excel, sửa mô tả, danh mục, thương hiệu, thông số hoặc SEO. ID/mã/tên chỉ đối chiếu; ô trống giữ nguyên; XÓA bỏ giá trị (trừ danh mục). Không sửa giá, ảnh hay đường dẫn ở luồng này.')
+                ->schema([FileUpload::make('file')->label('Tệp XLSX hoặc CSV UTF-8')->disk('local')->directory('bulk-product-content')
+                    ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv', 'text/plain'])
+                    ->maxSize(5120)->required()])
+                ->action(function (array $data): void {
+                    abort_unless(ProductResource::canBulkImport(), 403);
+                    $relative = $data['file'];
+                    $path = $this->workbookPath($relative);
+                    $result = app(ProductContentWorkbook::class)->preview($path);
+                    $previous = session('product_content_workbook_preview.path');
+                    if (is_string($previous) && $previous !== $relative && preg_match('#^bulk-product-content/[A-Za-z0-9._-]+\.(?:xlsx|csv)$#', $previous)) {
+                        Storage::disk('local')->delete($previous);
+                    }
+                    session()->put('product_content_workbook_preview', [
+                        'path' => $relative, 'hash' => hash_file('sha256', $path), 'fingerprint' => $result['fingerprint'],
+                        'at' => now()->timestamp, 'total' => $result['total'], 'changed' => $result['changed'],
+                        'skipped' => $result['skipped'], 'errors' => $result['errors'],
+                    ]);
+                    $message = "{$result['total']} dòng: {$result['changed']} cần sửa, {$result['skipped']} không đổi, ".count($result['errors']).' lỗi.';
+                    $notification = Notification::make()->title('Kết quả xem trước Excel nội dung & SEO')->body($message)->persistent();
+                    ($result['errors'] === [] ? $notification->success() : $notification->danger())->send();
+                }),
+            Action::make('downloadContentWorkbookPreview')->label('Tải kết quả Excel nội dung & SEO')->icon('heroicon-o-document-arrow-down')
+                ->visible(fn () => ProductResource::canBulkImport())
+                ->action(function () {
+                    abort_unless(ProductResource::canBulkImport(), 403);
+                    $preview = session('product_content_workbook_preview');
+                    if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900) {
+                        throw ValidationException::withMessages(['file' => 'Bản xem trước đã hết hạn. Hãy nhập lại.']);
+                    }
+                    $path = $this->workbookPath($preview['path'] ?? null);
+                    if (! is_file($path) || ! hash_equals($preview['hash'], hash_file('sha256', $path))) {
+                        throw ValidationException::withMessages(['file' => 'Tệp đã thay đổi. Hãy nhập lại.']);
+                    }
+
+                    return app(ProductContentWorkbook::class)->report(app(ProductContentWorkbook::class)->preview($path));
+                }),
+            Action::make('applyContentWorkbook')->label('Áp dụng Excel nội dung & SEO')->icon('heroicon-o-check-circle')
+                ->visible(fn () => ProductResource::canBulkImport())
+                ->color('warning')->requiresConfirmation()
+                ->modalHeading('Xác nhận cập nhật nội dung và SEO')
+                ->modalDescription(function (): string {
+                    $preview = session('product_content_workbook_preview');
+
+                    return is_array($preview)
+                        ? "{$preview['changed']} sản phẩm cần sửa; ".count($preview['errors']).' lỗi. Chỉ áp dụng khi không có lỗi và dữ liệu chưa đổi.'
+                        : 'Chưa có bảng tính hợp lệ. Hãy dùng Nhập Excel nội dung & SEO trước.';
+                })
+                ->action(function (): void {
+                    abort_unless(ProductResource::canBulkImport(), 403);
+                    $preview = session('product_content_workbook_preview');
+                    if (! is_array($preview) || now()->timestamp - ($preview['at'] ?? 0) > 900 || ($preview['errors'] ?? []) !== []) {
+                        throw ValidationException::withMessages(['file' => 'Bản xem trước không hợp lệ hoặc đã quá 15 phút.']);
+                    }
+                    $relative = $preview['path'] ?? null;
+                    $path = $this->workbookPath($relative);
+                    if (! is_file($path) || ! hash_equals($preview['hash'], hash_file('sha256', $path))) {
+                        throw ValidationException::withMessages(['file' => 'Tệp đã thay đổi. Hãy nhập lại.']);
+                    }
+                    $result = app(ProductContentWorkbook::class)->apply($path, $preview['fingerprint'], AdminActor::current());
+                    Storage::disk('local')->delete($relative);
+                    session()->forget('product_content_workbook_preview');
+                    Notification::make()->title("Đã cập nhật nội dung và SEO của {$result['changed']} sản phẩm")->success()->send();
+                }),
             Action::make('uploadMediaBatch')->label('Tải nhiều ảnh sản phẩm')->icon('heroicon-o-cloud-arrow-up')
                 ->visible(fn () => ProductResource::canBulkImport())
                 ->modalHeading('Tải ảnh trước khi nhập CSV')
@@ -207,6 +277,15 @@ class ListProducts extends ListRecords
         if (! is_string($relative) || ! in_array($directory, ['bulk-product-prices', 'bulk-product-media'], true)
             || ! preg_match('#^'.preg_quote($directory, '#').'/[A-Za-z0-9._-]+\.csv$#', $relative)) {
             throw ValidationException::withMessages(['file' => 'Đường dẫn CSV không hợp lệ.']);
+        }
+
+        return Storage::disk('local')->path($relative);
+    }
+
+    private function workbookPath(mixed $relative): string
+    {
+        if (! is_string($relative) || ! preg_match('#^bulk-product-content/[A-Za-z0-9._-]+\.(?:xlsx|csv)$#', $relative)) {
+            throw ValidationException::withMessages(['file' => 'Đường dẫn bảng tính không hợp lệ.']);
         }
 
         return Storage::disk('local')->path($relative);

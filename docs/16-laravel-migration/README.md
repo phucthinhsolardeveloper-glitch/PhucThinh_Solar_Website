@@ -20,6 +20,14 @@ chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đ�
 và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
 Luồng CSV giá không thêm sản phẩm hoặc thay ảnh.
 
+Admin sản phẩm còn có **Excel nội dung & SEO** (`.xlsx`, hoặc CSV UTF-8 theo
+cùng mẫu): xuất mẫu từ dữ liệu hiện tại, sửa mô tả ngắn, danh mục/thương hiệu,
+công suất, thông số và title/description/keywords SEO, xem trước từng dòng,
+tải báo cáo rồi áp dụng trong 15 phút. ID/mã/tên phải khớp sản phẩm đã có;
+luồng này không tạo sản phẩm, không sửa giá, ảnh hay URL. Ô trống giữ nguyên;
+`XÓA` bỏ giá trị trừ danh mục. Tệp tối đa 5 MB/5.000 sản phẩm, lỗi một dòng
+chặn toàn bộ; editor cần `catalog_bulk`. Mẫu xuất ra nhập lại không đổi dữ liệu.
+
 CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: trước tiên dùng
 **Tải nhiều ảnh sản phẩm** (tối đa 20 ảnh/lần) để tải file vào `upload/product`
 và tải CSV tên file đã lưu. Sau đó xuất mẫu gồm ID,
@@ -75,6 +83,11 @@ Admin **Đánh giá sản phẩm** cho xem ảnh/video trước khi duyệt, duy
 từng đánh giá hay theo lô, sửa nội dung và trả lời đánh giá đã duyệt. Các thao
 tác ghi qua service có kiểm quyền Reviews và `reviews_moderate`, khóa bản ghi; ẩn đánh giá gốc làm
 đánh giá cùng câu trả lời biến mất khỏi API public.
+
+Bài viết có thể chọn tối đa 4 sản phẩm liên quan trong form hoặc bản nháp;
+trang bài viết public ưu tiên hiển thị các sản phẩm được biên tập chọn và dẫn
+thẳng đến trang sản phẩm. Sản phẩm ẩn hoặc thiếu ảnh không xuất hiện. Nếu chưa
+chọn, frontend vẫn dùng gợi ý theo danh mục như trước.
 
 Bài viết đã có workflow biên tập trong Filament: từ trang sửa bài chọn **Soạn
 bản nháp**, sửa và lưu trong **Bản nháp & lịch sử bài viết**, mở xem trước Nuxt

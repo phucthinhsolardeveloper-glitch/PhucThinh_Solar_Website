@@ -6,6 +6,7 @@ use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
 use App\Models\Post;
 use App\Models\PostRevision;
+use App\Models\Product;
 use App\Support\RichText;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -65,10 +66,10 @@ class NewsDetail extends PageSupport
         return $this->renderArticle($row, [
             'titlevi' => $seo['title'] ?? '', 'descriptionvi' => $seo['description'] ?? '',
             'keywordsvi' => $seo['keywords'] ?? '',
-        ]);
+        ], $payload['products'] ?? null);
     }
 
-    private function renderArticle(array $row, ?array $seoOverride = null): array
+    private function renderArticle(array $row, ?array $seoOverride = null, ?array $draftProductIds = null): array
     {
         $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
         $id = (int) $row['id'];
@@ -106,28 +107,50 @@ class NewsDetail extends PageSupport
         $cover = NewsListing::media($this->photo($row['photo']));
         $quote = RichText::sanitize($row['content1vi']);
         $published = self::date($row['date_created']);
+        $linkedRows = $draftProductIds === null
+            ? $this->rows("select p.id, p.name, p.slug, coalesce(p.image,'') as image from post_products pp inner join products p on p.id=pp.product_id"
+                .' where pp.post_id=? and pp.is_visible=1 and p.is_visible=1 order by pp.sort_order,pp.id limit 4', [$id])
+            : Product::query()->whereKey($draftProductIds)->where('is_visible', true)->get(['id', 'name', 'slug', 'image'])->toArray();
+        if ($draftProductIds !== null) {
+            $positions = array_flip(array_map('intval', $draftProductIds));
+            usort($linkedRows, fn (array $a, array $b) => ($positions[(int) $a['id']] ?? 999) <=> ($positions[(int) $b['id']] ?? 999));
+        }
+        $linkedProducts = [];
+        foreach (array_slice($linkedRows, 0, 4) as $product) {
+            $productSlug = Text::slug($product['slug']);
+            $image = $this->urls->product($product['image']);
+            if ($productSlug !== '' && $image !== '') {
+                $linkedProducts[] = ['id' => (int) $product['id'], 'name' => self::text($product['name']),
+                    'url' => '/san-pham/'.$productSlug, 'image' => $image];
+            }
+        }
+
+        $article = [
+            'schemaVersion' => 1,
+            'locale' => 'vi',
+            'id' => $id,
+            'title' => $title,
+            'slug' => $articleSlug,
+            'canonical' => '/'.$articleSlug.'/',
+            'date' => $published,
+            'datePublished' => $published,
+            'dateModified' => self::date(strtotime((string) $row['updated_at']) ?: $row['date_created']),
+            'author' => ['name' => $this->author($row['id_user'])],
+            'description' => $description,
+            'cover' => $cover,
+            'showCover' => $cover !== '' && ! self::contentRepeatsCover($row['contentvi'], (string) $row['photo']),
+            'content' => RichText::dto(RichText::sanitize($row['contentvi'])),
+            'quote' => $quote !== '' ? RichText::dto($quote) : null,
+            'category' => $category,
+            'media' => $media,
+            'seo' => ['title' => $seoTitle, 'description' => self::text($seo['descriptionvi'] ?? '') ?: $description, 'keywords' => self::text($seo['keywordsvi'] ?? ''), 'canonical' => '/'.$articleSlug],
+        ];
+        if ($linkedProducts !== []) {
+            $article['linkedProducts'] = $linkedProducts;
+        }
 
         return [200, [
-            'article' => [
-                'schemaVersion' => 1,
-                'locale' => 'vi',
-                'id' => $id,
-                'title' => $title,
-                'slug' => $articleSlug,
-                'canonical' => '/'.$articleSlug.'/',
-                'date' => $published,
-                'datePublished' => $published,
-                'dateModified' => self::date(strtotime((string) $row['updated_at']) ?: $row['date_created']),
-                'author' => ['name' => $this->author($row['id_user'])],
-                'description' => $description,
-                'cover' => $cover,
-                'showCover' => $cover !== '' && ! self::contentRepeatsCover($row['contentvi'], (string) $row['photo']),
-                'content' => RichText::dto(RichText::sanitize($row['contentvi'])),
-                'quote' => $quote !== '' ? RichText::dto($quote) : null,
-                'category' => $category,
-                'media' => $media,
-                'seo' => ['title' => $seoTitle, 'description' => self::text($seo['descriptionvi'] ?? '') ?: $description, 'keywords' => self::text($seo['keywordsvi'] ?? ''), 'canonical' => '/'.$articleSlug],
-            ],
+            'article' => $article,
             'related' => $this->related($related),
             'cta' => $this->cta(),
         ]];

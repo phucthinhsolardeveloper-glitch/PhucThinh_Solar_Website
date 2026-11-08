@@ -27,10 +27,15 @@ const topic = computed(() => {
 
 const products = ref<PublicCatalogProduct[]>([])
 const categoryUrl = ref('')
+const linkedProducts = computed(() => props.article.linkedProducts ?? [])
+const cards = computed(() => linkedProducts.value.length
+  ? linkedProducts.value.map((product) => ({ id: product.id, name: product.name, url: product.url, image: product.image, price: 'Xem sản phẩm', quoted: true }))
+  : products.value.map((product) => ({ id: product.id, name: product.name, url: product.url, image: product.media[0] || '', price: price(product), quoted: product.pricing?.mode !== 'price' })))
 const rootRef = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | undefined
 
 async function load() {
+  if (linkedProducts.value.length) return
   if (!topic.value) return
   try {
     const payload = await $fetch<PublicCatalogPayload>('/_api/catalog', { query: { category: topic.value.slug, per_page: 12 } })
@@ -41,6 +46,7 @@ async function load() {
   } catch { products.value = [] }
 }
 onMounted(() => {
+  if (linkedProducts.value.length) return
   if (!rootRef.value || !('IntersectionObserver' in window)) { void load(); return }
   observer = new IntersectionObserver((records) => {
     if (!records.some((r) => r.isIntersecting)) return
@@ -62,24 +68,24 @@ function price(product: PublicCatalogProduct) {
 
 <template>
   <div ref="rootRef">
-    <section v-if="topic && products.length" class="article-products" aria-labelledby="article-products-title">
+    <section v-if="cards.length && (topic || linkedProducts.length)" class="article-products" aria-labelledby="article-products-title">
       <header class="article-products-head">
         <div>
-          <h2 id="article-products-title">Sản phẩm cho chủ đề này</h2>
-          <p>{{ topic.name }} đang có tại Phúc Thịnh Solar.</p>
+          <h2 id="article-products-title">{{ linkedProducts.length ? 'Sản phẩm liên quan' : 'Sản phẩm cho chủ đề này' }}</h2>
+          <p>{{ linkedProducts.length ? 'Được chọn cho nội dung bài viết này.' : `${topic?.name} đang có tại Phúc Thịnh Solar.` }}</p>
         </div>
-        <a :href="links.generic(categoryUrl)">Xem tất cả <span aria-hidden="true">→</span></a>
+        <a :href="links.generic(linkedProducts.length ? '/san-pham/' : categoryUrl)">Xem tất cả <span aria-hidden="true">→</span></a>
       </header>
       <ul>
-        <li v-for="product in products" :key="product.id">
+        <li v-for="product in cards" :key="product.id">
           <a class="article-product" :href="links.generic(product.url)">
-            <span class="article-product-media"><img :src="thumb(product.media[0]!)" :alt="product.name" width="240" height="240" loading="lazy" decoding="async"></span>
+            <span class="article-product-media"><img :src="thumb(product.image)" :alt="product.name" width="240" height="240" loading="lazy" decoding="async"></span>
             <strong>{{ product.name }}</strong>
-            <span class="article-product-price" :class="{ 'is-quote': product.pricing?.mode !== 'price' }">{{ price(product) }}</span>
+            <span class="article-product-price" :class="{ 'is-quote': product.quoted }">{{ product.price }}</span>
           </a>
         </li>
       </ul>
-      <button type="button" class="article-products-cta" @click="openConsultation(`${topic.name} (từ bài: ${article.title})`)">
+      <button type="button" class="article-products-cta" @click="openConsultation(`${linkedProducts.length ? 'Sản phẩm liên quan' : topic?.name} (từ bài: ${article.title})`)">
         Cần chọn đúng sản phẩm? Nhận tư vấn miễn phí <span aria-hidden="true">→</span>
       </button>
     </section>

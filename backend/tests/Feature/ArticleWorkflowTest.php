@@ -1,11 +1,15 @@
 <?php
 
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Content\ArticleWorkflow;
 use App\Filament\Resources\ArticleDrafts\Pages\EditArticleDraft;
 use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Models\Post;
+use App\Models\Product;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -139,4 +143,48 @@ it('lets a content editor draft but prevents publishing or direct public edits',
         ->fillForm(['title' => 'Bài editor', 'slug' => $slug, 'body' => '<p>Nội dung.</p>', 'is_visible' => true])
         ->call('create')->assertHasNoFormErrors();
     expect(Post::query()->where('slug', $slug)->value('is_visible'))->toBeFalse();
+});
+
+it('previews linked products from the draft and publishes them with the article', function () {
+    Storage::fake('uploads');
+    Storage::disk('uploads')->putFileAs('product', UploadedFile::fake()->image('draft-linked.jpg'), 'draft-linked.jpg');
+    app()->instance(ProductMediaUrls::class, new ProductMediaUrls(Storage::disk('uploads')->path('')));
+    $actor = articleWorkflowUser();
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $product = Product::query()->where('is_visible', true)->firstOrFail();
+    $product->update(['image' => 'draft-linked.jpg']);
+    $workflow = app(ArticleWorkflow::class);
+    $draft = $workflow->draft($post, $actor);
+    $workflow->save($draft, [...articleDraftInput('Bài có sản phẩm'), 'products' => [$product->id]], $actor);
+
+    $query = parse_url($workflow->previewUrl($draft->fresh()), PHP_URL_QUERY);
+    $this->getJson('/api/v1/article-draft-preview/'.$draft->id.'?'.$query)->assertOk()
+        ->assertJsonPath('article.linkedProducts.0.id', $product->id);
+    $this->getJson('/api/v1/news-detail?slug='.$post->slug)->assertOk()->assertJsonMissingPath('article.linkedProducts');
+
+    $workflow->publish($draft, $actor);
+    expect($post->fresh()->products->pluck('id')->all())->toBe([$product->id]);
+    $this->getJson('/api/v1/news-detail?slug='.$post->slug)->assertOk()
+        ->assertJsonPath('article.linkedProducts.0.id', $product->id);
+
+    $baseline = $post->revisions()->where('version', 0)->firstOrFail();
+    $restored = $workflow->restoreAsDraft($baseline, $actor);
+    $workflow->publish($restored, $actor);
+    expect($post->fresh()->products()->count())->toBe(0);
+});
+
+it('publishes a legacy draft after its product links are edited', function () {
+    $actor = articleWorkflowUser();
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $product = Product::query()->where('is_visible', true)->firstOrFail();
+    $workflow = app(ArticleWorkflow::class);
+    $draft = $workflow->draft($post, $actor);
+    $legacyPayload = $draft->payload;
+    unset($legacyPayload['products']);
+    $draft->update(['payload' => $legacyPayload,
+        'base_hash' => hash('sha256', json_encode($legacyPayload, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))]);
+
+    $workflow->save($draft, [...articleDraftInput('Bài nháp cũ'), 'products' => [$product->id]], $actor);
+    $workflow->publish($draft, $actor);
+    expect($post->fresh()->products->pluck('id')->all())->toBe([$product->id]);
 });

@@ -1,16 +1,18 @@
 import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
 
 export interface PublicNewsDetailMedia { gallery: { image: string; alt: string }[]; videos: { url: string; title: string }[] }
+export interface PublicNewsLinkedProduct { id: number; name: string; url: string; image: string }
 export interface PublicNewsDetailRelated { id: number; title: string; slug: string; canonical: string; date: string; author: string; description: string; image: string }
 export interface PublicNewsDetailCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicNewsDetailPayload {
-  article: { schemaVersion: 1; locale: 'vi'; id: number; title: string; slug: string; canonical: string; date: string; datePublished: string; dateModified: string; author: { name: string }; description: string; cover: string; showCover: boolean; content: PublicSanitizedRichText; quote?: PublicSanitizedRichText | null; category: { id: number; name: string; slug: string; url: string } | Record<string, never>; media: PublicNewsDetailMedia; seo: { title: string; description: string; keywords: string; canonical: string } }
+  article: { schemaVersion: 1; locale: 'vi'; id: number; title: string; slug: string; canonical: string; date: string; datePublished: string; dateModified: string; author: { name: string }; description: string; cover: string; showCover: boolean; content: PublicSanitizedRichText; quote?: PublicSanitizedRichText | null; category: { id: number; name: string; slug: string; url: string } | Record<string, never>; media: PublicNewsDetailMedia; linkedProducts?: PublicNewsLinkedProduct[]; seo: { title: string; description: string; keywords: string; canonical: string } }
   cta: PublicNewsDetailCta | null
   related: PublicNewsDetailRelated[]
 }
 
 const slugRe = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const imageRe = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
+const productImageRe = /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
 const text = (v: unknown, empty = false): v is string => typeof v === 'string' && (empty || v.trim() !== '') && !/[<>\x00-\x1f\x7f]/.test(v)
 export const isNewsDetailSlug = (v: unknown): v is string => typeof v === 'string' && slugRe.test(v)
 export function isPublicNewsDetailPayload(value: unknown): value is PublicNewsDetailPayload {
@@ -29,6 +31,7 @@ export function isPublicNewsDetailPayload(value: unknown): value is PublicNewsDe
   if (!isPublicSanitizedRichText(a.content) || !a.media || !Array.isArray(a.media.gallery) || !Array.isArray(a.media.videos) || !a.seo || a.seo.canonical !== `/${a.slug}` || !text(a.seo.title) || !text(a.seo.description, true) || !text(a.seo.keywords, true)) return false
   if (a.quote !== undefined && a.quote !== null && !isPublicSanitizedRichText(a.quote)) return false
   if (a.media.gallery.some((m: any) => !image(m?.image) || !text(m?.alt, true)) || a.media.videos.some((m: any) => !/^https:\/\/(?:www\.)?(?:youtube\.com|youtu\.be|vimeo\.com)(?:\/|$)/i.test(m?.url || '') || !text(m?.title, true))) return false
+  if (a.linkedProducts !== undefined && (!Array.isArray(a.linkedProducts) || a.linkedProducts.length > 4 || a.linkedProducts.some((p: any) => !Number.isSafeInteger(p?.id) || p.id < 1 || !text(p.name) || typeof p.url !== 'string' || !/^\/san-pham\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.url) || typeof p.image !== 'string' || !productImageRe.test(p.image)))) return false
   const cta = (value as any).cta
   if (cta !== null && (!cta || typeof cta !== 'object' || Array.isArray(cta) || !text(cta.title) || !text(cta.description, true) || !text(cta.buttonLabel, true) || !image(cta.image) || !(cta.hotline === null || cta.hotline && typeof cta.hotline === 'object' && !Array.isArray(cta.hotline) && text(cta.hotline.label) && text(cta.hotline.text) && text(cta.hotline.tel, true)))) return false
   if (!Array.isArray((value as any).related)) return false

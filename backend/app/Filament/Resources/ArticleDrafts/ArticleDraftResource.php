@@ -6,11 +6,13 @@ use App\Domain\Content\ArticleWorkflow;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
 use App\Models\PostRevision;
+use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\RichContentRenderer;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -76,6 +78,9 @@ class ArticleDraftResource extends Resource
                     Textarea::make('payload.summary')->label('Mô tả ngắn')->rows(3)->maxLength(2000),
                     self::draftRich('body', 'Nội dung chính'),
                     self::draftRich('extra_body', 'Nội dung phụ'),
+                    Select::make('payload.products')->label('Sản phẩm liên quan')->multiple()->maxItems(4)->searchable()->preload()
+                        ->options(fn () => Product::query()->where('is_visible', true)->orderBy('name')->pluck('name', 'id')->all())
+                        ->helperText('Tối đa 4 sản phẩm hiển thị trên bài viết sau khi xuất bản.'),
                 ]),
             Section::make('SEO')->collapsed()->schema([
                 TextInput::make('payload.seo.title')->label('Tiêu đề SEO')->maxLength(255),

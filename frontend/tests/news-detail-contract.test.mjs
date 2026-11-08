@@ -7,6 +7,12 @@ const article = { schemaVersion: 1, locale: 'vi', id: 8, title: 'Bài viết CMS
 const cta = { title: 'Cần tư vấn?', description: 'Liên hệ để được hỗ trợ.', buttonLabel: 'Nhận tư vấn', image: '', hotline: { label: 'Gọi ngay hotline', text: '0901 234 567', tel: '0901234567' } }
 const good = { article, cta, related: [{ id: 9, title: 'Tin khác', slug: 'tin-khac', canonical: '/tin-khac/', date: '', author: 'Phúc Thịnh Solar', description: '', image: '' }] }
 test('accepts safe read-only detail DTO', () => assert.equal(isPublicNewsDetailPayload(good), true))
+test('allows selected product links and rejects unsafe or excessive product suggestions', () => {
+  const product = { id: 10, name: 'Đèn năng lượng mặt trời', url: '/san-pham/den-nang-luong', image: '/upload/product/den.webp' }
+  assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, linkedProducts: [product] } }), true)
+  assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, linkedProducts: [{ ...product, url: 'https://other.example/' }] } }), false)
+  assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, linkedProducts: Array(5).fill(product) } }), false)
+})
 test('requires PHP bare-slug canonical metadata while preserving the slash URL for links', () => {
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, seo: { ...article.seo, canonical: '/bai-viet-cms/' } } }), false)
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, canonical: '/bai-viet-cms' } }), false)

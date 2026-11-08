@@ -12,18 +12,24 @@ Article/Solution/Project/Policy/Album, settings, order synthetic và quyền
 editor. Audit screen không bấm Save/Xóa. DB rehearsal từ zero và snapshots có
 evidence ở `/tmp/pts-laravel13-rehearsal/`.
 
+Cập nhật sau baseline: `ProductContentWorkbookTest` kiểm xuất/nhập XLSX giữ
+nguyên, sửa thông số và SEO, preview/apply qua Filament, chống file lỗi/dữ liệu
+đổi/quyền thiếu; `EditorialProductLinksTest` và `ArticleWorkflowTest` kiểm liên
+kết bài viết → sản phẩm qua form, bản nháp, preview, publish và restore. Test
+public chỉ trả sản phẩm hiện, có ảnh; không tự sửa API snapshot cũ.
+
 | Legacy capability | Laravel/Filament equivalent | Test/evidence | Trạng thái |
 |---|---|---|---|
 | Product list/search/filter và form nhiều trường | `ProductResource`, 7 tab: chung, giá, media, specs, mô tả, tài liệu, SEO | Screen desktop/mobile; save unchanged với JSON, ảnh, khối nội dung | PASS cho đọc/sửa giữ dữ liệu |
 | Product create/delete | Create/Edit pages; delete có guard reviews/orders | Livewire create/delete, kiểm không sót content/SEO | PASS |
 | Product copy | `EditProduct` có action tạo bản sao ẩn, mã SKU trống, sao chép nội dung/SEO/ảnh/tài liệu | `ProductDuplicateTest`: bản sao độc lập với sản phẩm gốc và không mang review/order | PASS cho bản sao; ảnh/tài liệu dùng lại đường dẫn file gốc |
 | Product bulk status | Bulk hiện/ẩn trong `ProductResource` | Có code, chưa thử action và quyền trên record | GAP |
-| Product bulk price, CSV feed/template, import/export | `ListProducts` có CSV giá/trạng thái và CSV sản phẩm/ảnh riêng; batch upload 20 ảnh/lần trả CSV tên file, xem trước và áp dụng transaction | `ProductPriceCsvTest`, `ProductMediaCsvTest`: round-trip, tạo sản phẩm ẩn, batch upload thật, giữ caption, chặn ảnh thiếu và dữ liệu đổi sau preview | PASS cho bulk giá, tạo sản phẩm ẩn và batch ảnh; cần vận hành file thật ở staging |
+| Product bulk price, CSV feed/template, import/export | `ListProducts` có CSV giá/trạng thái, CSV sản phẩm/ảnh và Excel nội dung/thông số/SEO; batch upload 20 ảnh/lần trả CSV tên file, các luồng có xem trước và áp dụng transaction | `ProductPriceCsvTest`, `ProductMediaCsvTest`, `ProductContentWorkbookTest`: round-trip, tạo sản phẩm ẩn, batch upload, sửa thông số/SEO, chặn dữ liệu đổi sau preview | PASS cho ba luồng bulk; cần vận hành file thật ở staging |
 | Category/Brand CRUD, thứ tự, SEO, khối kế thừa | `CategoryResource`, `BrandResource`, `contentSection`, `seo` | Screen; save unchanged; create/delete; sort field | PASS cho CRUD; kéo sắp xếp chưa có |
 | Product specs, documents, applications, PDP inheritance | Tab Thông số/Mô tả/Tài liệu; resolver domain | `ProductSpecsTest`, `ProductContentResolverModesTest`, Product unchanged, API snapshot | PASS cho dữ liệu hiện có; upload tài liệu chưa kiểm |
 | News/solution/project/policy CRUD | 4 `PostResource`, RichEditor và media | Screen; save unchanged Article/Solution/Project; create/delete cả 4 loại | PASS cho CRUD; copy/policy HTML edit còn GAP |
 | Content sections import/export/restore/toggle/upload | `PageItemResource`, content blocks builder, media field | Screen và snapshot public; không có import/export/restore tương đương | GAP |
-| Visual Studio draft → preview → publish → rollback | Bài viết có `ArticleDraftResource`, phiên bản, URL xem trước ký 15 phút trên Nuxt, publish transaction và khôi phục thành bản nháp | `ArticleWorkflowTest`: public giữ nguyên trước publish, preview có noindex, rollback nội dung, chặn draft cũ, giữ HTML | PASS cho bài viết; section tree, các loại content khác và sửa trực tiếp qua form cũ còn GAP |
+| Visual Studio draft → preview → publish → rollback | Bài viết có `ArticleDraftResource`, phiên bản, URL xem trước ký 15 phút trên Nuxt, publish transaction, liên kết tối đa 4 sản phẩm và khôi phục thành bản nháp | `ArticleWorkflowTest`: public giữ nguyên trước publish, preview có noindex, rollback nội dung và liên kết sản phẩm, chặn draft cũ, giữ HTML | PASS cho bài viết; section tree và các loại content khác còn GAP |
 | Gallery/photo/banner/video | `AlbumResource`, `BannerResource`, `VideoResource`, post/product repeaters | `ProductMediaAdminTest`, `AlbumMediaAdminTest`: upload tạo file, đổi thứ tự, xóa quan hệ và giữ file gốc | PASS cho sản phẩm/album; banner/video/post upload chưa kiểm thật, xóa file vật lý cần kiểm tham chiếu |
 | Rich editor media | `Fields::rich` lưu `filemanager/editor` trên disk uploads | Code path đúng; chưa upload và đọc lại file qua public route | GAP |
 | SEO page và SEO từng entity | `SeoPageResource`, SEO relation trên resource | Screen, save unchanged một số entity, snapshot 1.754/1.754 | PASS cho read/save unchanged; sửa nội dung SEO cần test |
