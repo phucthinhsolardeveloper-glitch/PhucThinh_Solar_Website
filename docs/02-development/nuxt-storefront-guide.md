@@ -53,7 +53,7 @@ Trong lúc build, người đang xem có thể gặp lỗi 500 chốc lát. Lỗ
 | Kiểm tra | Lệnh | Mốc gần nhất |
 |---|---|---|
 | Kiểu dữ liệu | `cd frontend && npx nuxt typecheck` | 0 lỗi |
-| Test hợp đồng giao diện | `cd frontend && npm test` | 509 đạt |
+| Test hợp đồng giao diện | `cd frontend && npm test` | 478 đạt trên nhánh Laravel |
 | Test trình duyệt trên Nuxt | `cd tools/visual-tests && npm run test:nuxt` | 45 đạt, 25 bỏ qua |
 | Quét cả site | `node audit/site-audit.cjs` | 0 lỗi trên 19 trang |
 | Script đo theo vấn đề | xem [audit/README.md](../../tools/visual-tests/audit/README.md) | |
