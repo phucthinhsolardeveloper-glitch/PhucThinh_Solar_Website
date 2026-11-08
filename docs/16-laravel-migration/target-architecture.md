@@ -4,6 +4,10 @@ Ngày 2026-11-07. Chủ website chốt: không chép backend cũ; dựng lại t
 cần, cho tùy biến sâu hơn và thông minh hơn. Tài liệu này là hướng thiết kế. Từng phần vẫn qua
 golden master trước khi thay PHP, để site không hỏng trong lúc chuyển.
 
+Mục "Thứ tự" ở cuối là kế hoạch lúc khởi đầu, không còn là tiến độ hiện hành.
+Xem [README.md](README.md) và [ma trận Admin](admin-capability-audit-2026-11-08.md)
+cho trạng thái kiểm chứng sau commit Filament.
+
 ## 1. Dựng theo Nuxt, không theo file PHP
 
 [phase-0/usage-map.md](phase-0/usage-map.md) cho thấy:

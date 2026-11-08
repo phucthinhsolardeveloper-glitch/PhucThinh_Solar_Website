@@ -1,0 +1,18 @@
+# Merge this site block into the existing VPS Caddyfile. Preserve the training and ZCRM blocks.
+# Do not replace the live Caddyfile or enable this route before an approved cutover.
+www.phucthinhsolar.com {
+    redir https://phucthinhsolar.com{uri} permanent
+}
+
+phucthinhsolar.com {
+    encode zstd gzip
+
+    @laravel path /api/v1/* /admin /admin/* /livewire* /css/filament/* /js/filament/* /fonts/filament/* /upload/* /thumbs/* /health /up /sitemap.xml
+    handle @laravel {
+        reverse_proxy pts-laravel13-backend:80
+    }
+
+    handle {
+        reverse_proxy pts-laravel13-nuxt:3000
+    }
+}

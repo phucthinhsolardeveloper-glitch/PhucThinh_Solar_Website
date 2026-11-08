@@ -1,0 +1,116 @@
+name: pts_laravel13_candidate
+
+services:
+  proxy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PTS_REHEARSAL_PORT:-18085}:80"
+    volumes:
+      - ./Caddyfile.rehearsal:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    depends_on:
+      backend: {condition: service_healthy}
+      nuxt: {condition: service_healthy}
+    logging: &bounded_logging
+      driver: json-file
+      options: {max-size: "10m", max-file: "5"}
+
+  nuxt:
+    image: ${PTS_NUXT_IMAGE:?Set an immutable Nuxt image tag}
+    build:
+      context: ../../frontend
+      dockerfile: ../deploy/laravel13/nuxt.Dockerfile
+    restart: unless-stopped
+    container_name: pts-laravel13-nuxt
+    environment:
+      NUXT_API_ORIGIN: http://backend:80
+      NUXT_API_ORIGIN_ALLOWLIST: backend:80
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: "3000"
+      NODE_ENV: production
+      NUXT_PUBLIC_CANONICAL_SITE_ORIGIN: ${NUXT_PUBLIC_CANONICAL_SITE_ORIGIN:-https://phucthinhsolar.com}
+    networks: [edge]
+    depends_on:
+      backend: {condition: service_healthy}
+    mem_limit: 1g
+    pids_limit: 200
+    logging: *bounded_logging
+
+  backend:
+    image: ${PTS_BACKEND_IMAGE:?Set an immutable backend image tag}
+    build:
+      context: ../../backend
+      dockerfile: ../deploy/laravel13/backend.Dockerfile
+    restart: unless-stopped
+    container_name: pts-laravel13-backend
+    env_file:
+      - path: ${PTS_BACKEND_ENV:-./runtime/backend.env}
+        required: true
+    environment:
+      DB_CONNECTION: mariadb
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE:?Set candidate database name}
+      DB_USERNAME: ${DB_USERNAME:?Set candidate database user}
+      DB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
+      LEGACY_DB_HOST: db
+      LEGACY_DB_DATABASE: ${DB_DATABASE:?Set candidate database name}
+      LEGACY_DB_USERNAME: ${DB_USERNAME:?Set candidate database user}
+      LEGACY_DB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
+      DB_PREFIX: ""
+      APP_ENV: production
+      APP_DEBUG: "false"
+      UPLOAD_PATH: /srv/upload
+      ASSETS_PATH: /srv/assets
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-172.16.0.0/12}
+    volumes:
+      - ${PTS_UPLOAD_DIR:?Set an isolated upload directory}:/srv/upload
+      - ../../frontend/public/assets:/srv/assets:ro
+      - app_storage:/var/www/html/storage
+    networks: [edge, data]
+    depends_on:
+      db: {condition: service_healthy}
+    mem_limit: 3g
+    pids_limit: 300
+    logging: *bounded_logging
+
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE:?Set candidate database name}
+      MARIADB_USER: ${DB_USERNAME:?Set candidate database user}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set candidate root password}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-name-resolve
+      - --innodb-buffer-pool-size=1G
+      - --max-connections=100
+    volumes:
+      - db_data:/var/lib/mysql
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u\"$$MARIADB_USER\" -p\"$$MARIADB_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    mem_limit: 4g
+    pids_limit: 300
+    logging: *bounded_logging
+
+networks:
+  edge:
+  data:
+    internal: true
+
+volumes:
+  db_data:
+  app_storage:
+  caddy_data:
+  caddy_config:

@@ -2,6 +2,13 @@
 
 Cập nhật: 2026-11-07.
 
+**Ghi chú nhánh migration 2026-11-08:** các mục mô tả PHP/Admin bên dưới là
+production/master hiện tại và lịch sử, không phải kiến trúc đích của worktree
+`pts-laravel13`. Ở nhánh này Nuxt gọi Laravel 13, Admin dùng Filament `/admin`,
+schema mới ở DB `pts_app`; production chưa cutover. Xem
+[`16-laravel-migration/README.md`](16-laravel-migration/README.md) và ma trận
+Admin mới trước khi dùng bản đồ file PHP ở mục 2.
+
 Tài liệu này là **cửa vào duy nhất** khi bắt đầu một phiên làm việc mới, cho
 người thật hoặc cho AI vừa mất hết context. Nó không giải thích chi tiết — nó
 nói **việc bạn cần làm nằm ở tài liệu nào**, và nói trước những cái bẫy khiến

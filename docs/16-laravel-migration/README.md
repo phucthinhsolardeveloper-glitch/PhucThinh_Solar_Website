@@ -3,13 +3,30 @@
 Tài liệu đặc tả gốc: [../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md](../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md).
 Thư mục này ghi trạng thái thật của quá trình chuyển đổi.
 
+**Cập nhật 2026-11-08:** HEAD bàn giao `7265b9ad`; các mục Phase 1–4 bên dưới
+là nhật ký từng mốc và có đường dẫn/tên DB cũ. Runtime hiện tại dùng Laravel
+13/PHP 8.4/Filament 5 ở `/admin`, DB `pts_app`, Nuxt chỉ đọc Laravel. Kiểm
+chứng tiếp quản: 27 API snapshot 1.754/1.754 theo file hiện có, DB clone từ zero/import khớp 15
+nhóm số dòng và 0 orphan đã kiểm; 46 màn Admin desktop/mobile; candidate
+Caddy → Nuxt/Laravel chạy local, `site-audit` 0 lỗi trên 19 route × 4 viewport,
+`shop-flow` đạt. Chi tiết Admin: [admin-capability-audit-2026-11-08.md](admin-capability-audit-2026-11-08.md).
+Candidate deployment: [../../deploy/laravel13/README.md](../../deploy/laravel13/README.md).
+**Production/master chưa chuyển Laravel.**
+
+Admin sản phẩm hiện có CSV cập nhật **giá bán, giá khuyến mãi, chỉ báo giá và
+hiển thị**: tại `/admin/products`, xuất mẫu, sửa file UTF-8, nhập để xem trước,
+tải báo cáo từng dòng rồi xác nhận áp dụng trong 15 phút. ID/mã/tên dùng để đối
+chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đó. Tệp tối đa 2 MB
+và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
+Ảnh và tạo mới qua CSV chưa có.
+
 ## Nhánh và môi trường
 
 | Thứ | Dùng gì |
 |---|---|
 | Production, GitHub `master`, git local `master`, container local đang chạy site | Bản mới nhất của `master` |
 | Chuyển đổi Laravel | Nhánh `migration/laravel13-integration`, worktree `/home/admin01/src/pts-laravel13` |
-| Database cho Laravel | `pts_laravel13_clone` trong container `pts-mariadb-local`, bản sao của `phucthinhs_local`. Không trỏ Laravel vào `phucthinhs_local` hay production |
+| Database cho Laravel hiện tại | `pts_app` trong `pts-mariadb-local`; test `pts_app_test`. Nguồn legacy chỉ đọc: `pts_laravel13_clone`. Rehearsal mới tạo DB riêng có tên ghi ở `/tmp/pts-laravel13-rehearsal-db`. Không trỏ Laravel vào production |
 
 Không code Laravel trên `master`. Mọi thay đổi trên `master` phải đưa sang nhánh
 chuyển đổi bằng `scripts/sync-laravel-branch.sh` ngay sau khi push. Script dừng khi
@@ -25,6 +42,10 @@ có xung đột và không ép push.
 | 2 — Lớp tương thích | Xong phần trang sản phẩm cần | Mục "Phase 2" bên dưới |
 | 3 — Toàn bộ API công khai trên Laravel | Xong, 2026-11-07: 27 API đọc khớp PHP 1.751/1.751 ca; ghi (form, đánh giá, giỏ hàng, đặt hàng, VNPay) có test | Mục "Phase 3" bên dưới |
 | 4 — Nuxt chỉ dùng Laravel | Xong, 2026-11-07: không còn đường gọi PHP, không còn lớp preview cũ | Mục "Phase 4" bên dưới |
+| 5 — Filament Admin | Có 23 màn, đọc/sửa nhiều domain; chưa parity thao tác đầy đủ | `admin-capability-audit-2026-11-08.md` |
+| 11 — Schema mới và import | Schema mới + import đã có; rehearsal zero DB đạt trên clone local | `/tmp/pts-laravel13-rehearsal/` |
+| 13 — Staging/cutover rehearsal | Candidate stack local chạy qua Caddy; staging VPS, restore và rollback route chưa có | `deploy/laravel13/README.md` |
+| 14 — Production | Chưa làm, cần duyệt rõ | Không có deploy production |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
 | Kiến trúc đích (dựng theo Nuxt, tùy biến sâu) | Có hiệu lực | [target-architecture.md](target-architecture.md), [phase-0/usage-map.md](phase-0/usage-map.md) |
 
@@ -42,6 +63,12 @@ có xung đột và không ép push.
 - Không có thay đổi production nào trong Phase 0. Không có secret hay dữ liệu cá nhân trong các file trên.
 
 Chạy lại kiểm kê: `python3 tools/migration/phase0_inventory.py` từ gốc worktree.
+
+## Nhật ký Phase 1–4 (mốc lịch sử, không phải lệnh chạy hiện tại)
+
+Các tên `lv_*`, `/admin-next`, `docker-compose.laravel.yml` và cầu PHP dưới đây
+đã được thay ở các commit sau. Dùng bảng trạng thái ở đầu file và code hiện hành
+khi chạy môi trường mới.
 
 ## Phase 1 — nền Laravel
 
@@ -135,7 +162,10 @@ với mốc này mà không cần PHP.
 
 ## Việc tiếp theo
 
-1. Cấu trúc dữ liệu mới thay các bảng `table_*` cũ, có lệnh nhập dữ liệu một lần; mọi API
-   phải khớp mốc snapshot.
-2. Admin Filament cho từng nhóm nội dung, thay Admin PHP.
-3. `robots.txt`, `sitemap.xml`, đổi định tuyến Caddy production, rồi gỡ code PHP khỏi repo.
+1. Đóng gap Admin theo ma trận: create/delete/upload/permission theo action,
+   product bulk import/export/price/image, rich editor, Visual Studio draft/preview.
+2. Kiểm commerce/security sâu với order/review fixture, callback song song,
+   backup/restore; carrier API chờ mapping kho/dịch vụ/kiện hàng.
+3. Chạy staging VPS và benchmark runtime cùng dữ liệu; diễn tập route/image và
+   DB rollback trước khi trình phương án cutover. Không deploy production khi
+   chưa được chủ project duyệt rõ.

@@ -1,0 +1,16 @@
+:80 {
+    encode zstd gzip
+    header X-Robots-Tag "noindex, nofollow, noarchive"
+
+    @robots path /robots.txt
+    respond @robots "User-agent: *\nDisallow: /\n" 200
+
+    @laravel path /api/v1/* /admin /admin/* /livewire* /css/filament/* /js/filament/* /fonts/filament/* /upload/* /thumbs/* /health /up /sitemap.xml
+    handle @laravel {
+        reverse_proxy backend:80
+    }
+
+    handle {
+        reverse_proxy nuxt:3000
+    }
+}

@@ -32,6 +32,18 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-11-08 — tiếp quản Laravel 13 và rehearsal triển khai riêng
+
+- Đối chiếu HEAD `7265b9ad` với runtime/test: cập nhật `16-laravel-migration/README.md`,
+  đánh dấu các mốc `lv_*`/`admin-next` là lịch sử và thêm ma trận Admin theo
+  capability. Ghi nhận product bulk import/export, Visual Studio, upload/action
+  RBAC và carrier adapter chưa hoàn tất.
+- Thêm `deploy/laravel13/` làm candidate stack riêng, Caddy rehearsal chỉ mở
+  localhost, không chạm production hoặc site training/ZCRM. Ghi env, upload,
+  backup/import, cutover và rollback gate.
+- `SO-TAY.md` và `target-architecture.md` trỏ tới trạng thái migration hiện hành;
+  các phần mô tả PHP vẫn là lịch sử/production đang chạy.
+
 ### 2026-11-07 — chuẩn hóa tài liệu storefront Nuxt và vòng làm việc với chủ website
 
 - Thêm `02-development/nuxt-storefront-guide.md`: kiến trúc, chỗ đặt code, lệnh
