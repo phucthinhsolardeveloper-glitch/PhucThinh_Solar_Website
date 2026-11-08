@@ -32,4 +32,31 @@ class ManualPayment
             $locked->update(['payment_status' => 'paid', 'payment_reference' => $reference]);
         });
     }
+
+    /** Records an external full refund that staff has already completed. No money is transferred here. */
+    public function recordRefund(Order $order, User $actor, string $reference): void
+    {
+        abort_unless($actor->canPerform('orders_payment'), 403);
+        $reference = trim($reference);
+        if ($reference === '' || mb_strlen($reference) > 120) {
+            throw ValidationException::withMessages(['reference' => 'Nhập mã tham chiếu hoàn tiền (tối đa 120 ký tự).']);
+        }
+
+        DB::transaction(function () use ($order, $actor, $reference): void {
+            $locked = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
+            if ($locked->payment_code !== 'manual' || $locked->payment_status !== 'paid') {
+                throw ValidationException::withMessages(['reference' => 'Chỉ ghi nhận hoàn tiền cho đơn thủ công đã thanh toán.']);
+            }
+            if ($locked->payments()->where('provider', 'manual')->where('status', 'refunded')->exists()) {
+                throw ValidationException::withMessages(['reference' => 'Đơn này đã có bản ghi hoàn tiền.']);
+            }
+
+            $locked->payments()->create([
+                'provider' => 'manual', 'reference' => 'refund:'.$locked->id,
+                'provider_reference' => $reference, 'amount' => $locked->total,
+                'status' => 'refunded', 'payload' => ['type' => 'external_full_refund', 'recorded_by' => $actor->id],
+            ]);
+            $locked->update(['payment_status' => 'refunded']);
+        });
+    }
 }

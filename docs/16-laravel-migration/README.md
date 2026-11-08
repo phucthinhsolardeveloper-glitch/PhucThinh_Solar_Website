@@ -61,7 +61,10 @@ Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_
 thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán
 thủ công chưa trả, người có quyền Orders và `orders_payment` có thể chọn **Xác nhận đã nhận tiền**,
 nhập mã giao dịch/phiếu thu; hệ thống lưu payment transaction và người xác nhận.
-Chưa có luồng hoàn tiền tự động trong Admin.
+Khi đã hoàn đủ tiền **ngoài hệ thống**, cùng quyền này có thể chọn **Ghi nhận đã
+hoàn tiền** và nhập mã tham chiếu; hệ thống ghi một transaction hoàn tiền, khóa
+lặp, đổi trạng thái thanh toán và hiển thị lịch sử trên đơn. Không chuyển tiền
+qua Admin và không tự hoàn VNPay.
 
 Admin **Liên hệ & tư vấn** có thể phân công người có quyền Leads, đặt hạn theo
 dõi, lọc lead quá hạn và xem lịch sử đổi trạng thái/phân công/hạn. Ghi chú chỉ

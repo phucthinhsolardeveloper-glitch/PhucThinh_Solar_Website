@@ -33,6 +33,17 @@ class EditOrder extends EditRecord
                     app(ManualPayment::class)->confirm($record, AdminActor::current(), $data['reference']);
                     $this->refreshFormData(['payment_status', 'payment_reference']);
                 }),
+            Action::make('recordManualRefund')->label('Ghi nhận đã hoàn tiền')->icon('heroicon-o-arrow-uturn-left')
+                ->color('warning')
+                ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'paid'
+                    && AdminActor::current()->canPerform('orders_payment'))
+                ->schema([TextInput::make('reference')->label('Mã giao dịch / phiếu hoàn tiền')->required()->maxLength(120)])
+                ->requiresConfirmation()
+                ->modalDescription('Chỉ ghi nhận sau khi đã hoàn đủ tiền bên ngoài hệ thống. Thao tác này không chuyển tiền và không tự hoàn VNPay.')
+                ->action(function (Order $record, array $data) {
+                    app(ManualPayment::class)->recordRefund($record, AdminActor::current(), $data['reference']);
+                    $this->refreshFormData(['payment_status']);
+                }),
         ];
     }
 }

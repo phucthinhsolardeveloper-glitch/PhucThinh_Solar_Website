@@ -102,6 +102,16 @@ class OrderResource extends Resource
                 TextInput::make('totals')->label('Tạm tính · phí giao · tổng cộng')->disabled()->dehydrated(false)
                     ->formatStateUsing(fn (?Order $record) => $record ? self::money($record->subtotal).' · '.self::money($record->shipping_fee).' · '.self::money($record->total) : ''),
             ]),
+            Section::make('Lịch sử thanh toán')->columnSpanFull()->collapsed()->schema([
+                Repeater::make('payments')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)
+                    ->schema([
+                        TextInput::make('status')->label('Trạng thái'),
+                        TextInput::make('provider')->label('Nguồn'),
+                        TextInput::make('provider_reference')->label('Mã tham chiếu'),
+                        TextInput::make('amount')->label('Số tiền (đ)'),
+                        TextInput::make('created_at')->label('Ghi nhận lúc'),
+                    ])->columns(5),
+            ]),
         ]);
     }
 

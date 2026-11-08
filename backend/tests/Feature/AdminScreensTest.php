@@ -110,19 +110,36 @@ it('records a manual payment with staff reference and forbids changing a VNPay o
         ->toThrow(ValidationException::class);
     expect(DB::table('payment_transactions')->where('order_id', $manualId)->count())->toBe(1);
 
+    Livewire\Livewire::test(EditOrder::class, ['record' => $manualId])
+        ->assertActionVisible('recordManualRefund')
+        ->callAction('recordManualRefund', ['reference' => 'HOAN-001'])
+        ->assertHasNoActionErrors();
+    $refund = DB::table('payment_transactions')->where('order_id', $manualId)->where('status', 'refunded')->first();
+    expect(DB::table('orders')->where('id', $manualId)->value('payment_status'))->toBe('refunded')
+        ->and($refund->amount)->toBe('100000')->and($refund->provider_reference)->toBe('HOAN-001')
+        ->and(json_decode($refund->payload, true)['recorded_by'])->toBe($actor->id);
+    expect(fn () => app(ManualPayment::class)->recordRefund(Order::findOrFail($manualId), $actor, 'HOAN-002'))
+        ->toThrow(ValidationException::class);
+    expect(DB::table('payment_transactions')->where('order_id', $manualId)->count())->toBe(2);
+
     Livewire\Livewire::test(EditOrder::class, ['record' => $gatewayId])
-        ->assertActionHidden('confirmManualPayment')
+        ->assertActionHidden('confirmManualPayment')->assertActionHidden('recordManualRefund')
         ->fillForm(['payment_status' => 'paid', 'status' => 'confirmed'])
         ->call('save')->assertHasNoFormErrors();
     expect(DB::table('orders')->where('id', $gatewayId)->value('payment_status'))->toBe('unpaid')
         ->and(DB::table('payment_transactions')->where('order_id', $gatewayId)->count())->toBe(0);
+    expect(fn () => app(ManualPayment::class)->recordRefund(Order::findOrFail($gatewayId), $actor, 'HOAN-003'))
+        ->toThrow(ValidationException::class);
 
     $viewer = admin(User::ROLE_EDITOR, ['orders']);
     $this->flushSession();
     $this->actingAs($viewer, 'admin');
     $this->get('/admin/orders/'.$gatewayId.'/edit')->assertOk();
-    Livewire\Livewire::test(EditOrder::class, ['record' => $gatewayId])->assertActionHidden('confirmManualPayment');
+    Livewire\Livewire::test(EditOrder::class, ['record' => $gatewayId])
+        ->assertActionHidden('confirmManualPayment')->assertActionHidden('recordManualRefund');
     expect(fn () => app(ManualPayment::class)->confirm(Order::findOrFail($gatewayId), $viewer, 'PHIEU-003'))
+        ->toThrow(HttpException::class);
+    expect(fn () => app(ManualPayment::class)->recordRefund(Order::findOrFail($manualId), $viewer, 'HOAN-004'))
         ->toThrow(HttpException::class);
 });
 
