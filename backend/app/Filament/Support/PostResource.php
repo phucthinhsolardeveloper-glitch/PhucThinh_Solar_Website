@@ -52,6 +52,16 @@ abstract class PostResource extends Resource
         return parent::getEloquentQuery()->where('kind', static::$kind);
     }
 
+    public static function canDelete(Model $record): bool
+    {
+        return static::allowed() && (! $record instanceof Post || ! $record->is_visible || AdminActor::current()->canPerform('content_publish'));
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         $kind = static::$kind;

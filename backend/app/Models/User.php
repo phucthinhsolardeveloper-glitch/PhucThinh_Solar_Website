@@ -38,7 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'catalog' => 'Sản phẩm, danh mục, thương hiệu',
         'catalog_bulk' => 'Thao tác: nhập CSV và đổi hiển thị hàng loạt',
         'content' => 'Bài viết, giải pháp, dự án, nội dung trang',
-        'content_publish' => 'Thao tác: xuất bản và khôi phục phiên bản bài viết',
+        'content_publish' => 'Thao tác: xuất bản và khôi phục phiên bản nội dung',
         'media' => 'Ảnh vị trí, thư viện ảnh, video',
         'orders' => 'Đơn hàng, phí giao hàng, thanh toán',
         'orders_payment' => 'Thao tác: xác nhận thanh toán thủ công',

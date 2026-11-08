@@ -48,11 +48,11 @@ khỏi thư viện; xóa quan hệ giữ file vật lý vì file có thể đư�
 
 Quyền Admin theo từng thao tác: chủ website có toàn quyền; editor cần cả quyền
 khu vực và quyền thao tác để nhập CSV/bulk sản phẩm (`catalog_bulk`), xuất bản
-bài viết (`content_publish`), xác nhận tiền thủ công (`orders_payment`), duyệt
+nội dung (`content_publish`), xác nhận tiền thủ công (`orders_payment`), duyệt
 đánh giá (`reviews_moderate`) hoặc gửi email thử (`settings_mail_test`). Các
 quyền này cấp ở **Tài khoản quản trị**. Editor import từ hệ cũ chỉ có quyền khu
 vực, cần chủ website cấp thêm quyền thao tác tương ứng. Quyền `content_publish`
-hiện bảo vệ workflow **bài viết**; các loại nội dung khác chưa áp dụng workflow.
+hiện bảo vệ workflow **bài viết, giải pháp, dự án và chính sách**.
 
 Trong form sửa sản phẩm có **Tạo bản sao**: tạo sản phẩm ẩn, slug mới và mã
 sản phẩm trống; giữ thông số, ảnh, tài liệu, khối nội dung và SEO để biên tập
@@ -113,7 +113,11 @@ thành bản nháp để kiểm tra trước khi xuất bản lại. Trang xem t
 no-store và không gửi referrer. Form sửa bài gốc vẫn là đường sửa trực tiếp
 public đối với người có quyền `content_publish`; editor chỉ có quyền Content
 phải dùng workflow bản nháp và không thể lưu trực tiếp bài đã xuất bản. Giải pháp,
-Dự án, Chính sách và section tree chưa vào workflow này.
+Dự án và Chính sách cũng có **Bản nháp Giải pháp / Dự án / Chính sách**: sửa nội
+dung, SEO, thông tin Dự án và thiết bị liên quan, kiểm xung đột, xuất bản và
+khôi phục phiên bản trước. Tạo mới bởi editor chỉ lưu ở trạng thái ẩn. Ảnh,
+thư viện và URL vẫn quản lý ở bản gốc; luồng này chưa có xem trước trên Nuxt.
+Section tree chưa vào workflow phiên bản.
 
 Địa chỉ giao hàng có màn **Tỉnh/thành phố** tại `/admin/provinces` để tạo/sửa
 tên, mã, thứ tự, hiển thị và màn **Phí giao hàng** tại `/admin/wards` để tạo/sửa

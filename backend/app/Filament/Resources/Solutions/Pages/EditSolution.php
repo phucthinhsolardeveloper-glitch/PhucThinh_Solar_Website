@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Solutions\Pages;
 
 use App\Filament\Resources\Solutions\SolutionResource;
-use Filament\Actions\DeleteAction;
+use App\Filament\Support\ManagesPostPublication;
 use Filament\Resources\Pages\EditRecord;
 
 class EditSolution extends EditRecord
 {
-    protected static string $resource = SolutionResource::class;
+    use ManagesPostPublication;
 
-    protected function getHeaderActions(): array
-    {
-        return [DeleteAction::make()];
-    }
+    protected static string $resource = SolutionResource::class;
 }
