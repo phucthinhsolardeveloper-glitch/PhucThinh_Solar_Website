@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
 
+Route::get('/admin/favicon.png', fn () => response()->file(public_path('favicon.png'), [
+    'Content-Type' => 'image/png', 'Cache-Control' => 'public, max-age=86400',
+]));
+
 // Uploaded files and on-demand thumbnails of uploads and site pictures.
 Route::get('/upload/{path}', [MediaController::class, 'file'])->where('path', '.+');
 Route::get('/thumbs/{width}x{height}x{mode}/{path}', [MediaController::class, 'thumb'])

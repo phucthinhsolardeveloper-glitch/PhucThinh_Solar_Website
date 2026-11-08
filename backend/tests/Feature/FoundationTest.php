@@ -18,5 +18,6 @@ it('keeps app tables without a prefix', function () {
 });
 
 it('serves the Filament login at /admin', function () {
-    $this->get('/admin/login')->assertOk();
+    $this->get('/admin/login')->assertOk()->assertSee('/admin/favicon.png');
+    $this->get('/admin/favicon.png')->assertOk()->assertHeader('Content-Type', 'image/png');
 });

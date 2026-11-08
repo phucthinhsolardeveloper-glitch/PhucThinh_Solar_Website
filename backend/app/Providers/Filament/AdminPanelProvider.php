@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->authGuard('admin')
             ->brandName('Phúc Thịnh Solar')
-            ->favicon('/favicon.png')
+            ->favicon('/admin/favicon.png')
             ->colors([
                 'primary' => Color::Amber,
             ])
