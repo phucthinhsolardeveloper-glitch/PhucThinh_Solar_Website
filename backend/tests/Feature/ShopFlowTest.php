@@ -91,7 +91,7 @@ it('answers VNPay IPN with its own codes and never trusts an unsigned call', fun
 it('marks an order paid only for a correctly signed VNPay IPN with the right amount, once', function () {
     config(['commerce.vnpay.hash_secret' => 'test-secret']);
     $id = DB::table('orders')->insertGetId(['code' => 'VNTEST', 'total' => 150000, 'subtotal' => 150000, 'payment_status' => 'unpaid', 'customer_name' => 'Khách thử',
-        'phone' => '0912345678', 'email' => 'k@example.test', 'address' => 'x', 'checkout_token' => str_repeat('b', 64), 'created_at' => now(), 'updated_at' => now()]);
+        'phone' => '0912345678', 'email' => 'k@example.test', 'address' => 'x', 'checkout_token' => str_repeat('b', 64), 'payment_code' => 'vnpay', 'created_at' => now(), 'updated_at' => now()]);
     $signed = function (array $params) {
         ksort($params);
         $query = implode('&', array_map(fn ($k, $v) => urlencode($k).'='.urlencode($v), array_keys($params), $params));
@@ -99,10 +99,41 @@ it('marks an order paid only for a correctly signed VNPay IPN with the right amo
         return '/api/v1/payment/vnpay?mode=ipn&'.$query.'&vnp_SecureHash='.hash_hmac('sha512', $query, 'test-secret');
     };
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '100', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '04');
+    shop('GET', $signed(['vnp_TxnRef' => 'MISSING', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '01');
+    DB::table('orders')->insert(['code' => 'MANUAL', 'total' => 150000, 'subtotal' => 150000, 'payment_status' => 'unpaid', 'payment_code' => 'manual',
+        'customer_name' => 'Khách thử', 'phone' => '0912345678', 'address' => 'x', 'created_at' => now(), 'updated_at' => now()]);
+    shop('GET', $signed(['vnp_TxnRef' => 'MANUAL', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '01');
+    expect(DB::table('orders')->where('code', 'MANUAL')->value('payment_status'))->toBe('unpaid');
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '00');
     expect(DB::table('orders')->where('id', $id)->value('payment_status'))->toBe('paid')
         ->and(DB::table('payment_transactions')->where('order_id', $id)->value('status'))->toBe('paid');
     shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '00', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '02');
+    shop('GET', $signed(['vnp_TxnRef' => 'VNTEST', 'vnp_Amount' => '15000000', 'vnp_ResponseCode' => '24', 'vnp_TransactionNo' => '1']))->assertJsonPath('RspCode', '02');
+    expect(DB::table('orders')->where('id', $id)->value('payment_status'))->toBe('paid')
+        ->and(DB::table('payment_transactions')->where('order_id', $id)->value('status'))->toBe('paid');
+});
+
+it('retries a pending VNPay checkout with the same order and payment redirect', function () {
+    config(['commerce.vnpay' => [
+        'active' => true, 'tmn_code' => 'TEST', 'hash_secret' => 'test-secret',
+        'endpoint' => 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+        'return_url' => 'https://example.test/api/v1/payment/vnpay',
+        'ipn_url' => 'https://example.test/api/v1/payment/vnpay?mode=ipn',
+    ]]);
+    $product = buyableProduct();
+    $ward = DB::table('wards')->where('is_visible', true)->first();
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 1]);
+    $checkout = shop('GET', '/api/v1/checkout')->assertOk();
+    $body = ['csrfToken' => $checkout->json('csrfToken'), 'checkoutToken' => $checkout->json('checkoutToken'), 'data' => [
+        'fullname' => 'Khách thử', 'phone' => '0912345678', 'email' => 'khach@example.test', 'city' => $ward->province_id,
+        'ward' => $ward->id, 'address' => '1 Đường Thử', 'payments' => -1]];
+
+    $first = shop('POST', '/api/v1/checkout', $body)->assertOk();
+    $retry = shop('POST', '/api/v1/checkout', $body)->assertOk()->assertJsonPath('orderCode', $first->json('orderCode'));
+    expect($first->json('redirect'))->toStartWith('https://sandbox.vnpayment.vn/')
+        ->and($retry->json('redirect'))->toStartWith('https://sandbox.vnpayment.vn/')
+        ->and(DB::table('orders')->where('checkout_token', $body['checkoutToken'])->count())->toBe(1)
+        ->and(DB::table('payment_transactions')->where('reference', $first->json('orderCode'))->where('status', 'pending')->count())->toBe(1);
 });
 
 it('accepts the classic checkout form and sends errors back to the cart as a one-time notice', function () {

@@ -185,7 +185,7 @@ class Shop
         }
         // A repeated submit of an order already saved (double click, retry) goes to the same thank-you page.
         if ($existing = $this->persistedOrder($token)) {
-            return [200, $this->finish($existing['id'], $existing['code'])];
+            return $this->finishExistingOrder($existing, $ip);
         }
         if (! hash_equals($this->checkoutToken(), $token)) {
             return [409, ['error' => ['code' => 'CHECKOUT_TOKEN', 'message' => 'Phiên gửi đơn hàng không hợp lệ. Vui lòng tải lại trang.']]];
@@ -292,7 +292,7 @@ class Shop
         ];
 
         try {
-            [$orderId, $items] = $db->transaction(function () use ($db, $order, $lines) {
+            [$orderId, $items] = $db->transaction(function () use ($db, $order, $lines, $payment, $total) {
                 $orderId = (int) $db->table('orders')->insertGetId($order);
                 $items = [];
                 foreach ($lines as $line) {
@@ -309,13 +309,17 @@ class Shop
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
                     $items[] = ['name' => (string) $product['namevi'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
                 }
+                if ((int) $payment['id'] === Payments::VNPAY_ID) {
+                    $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total,
+                        'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
+                }
 
                 return [$orderId, $items];
             });
         } catch (Throwable $e) {
             Log::error('Checkout failed to save the order', ['error' => $e->getMessage()]);
             if ($existing = $this->persistedOrder($token)) {
-                return [200, $this->finish($existing['id'], $existing['code'])];
+                return $this->finishExistingOrder($existing, $ip);
             }
 
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Có lỗi khi lưu đơn hàng. Giỏ hàng của bạn vẫn được giữ nguyên, vui lòng thử lại.']]];
@@ -326,7 +330,6 @@ class Shop
             if ($url === null) {
                 return [503, ['error' => ['code' => 'PAYMENT_UNAVAILABLE', 'message' => 'Cổng thanh toán đang tạm thời chưa sẵn sàng. Vui lòng chọn chuyển khoản hoặc COD.']]];
             }
-            $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
 
             return [200, $this->finish($orderId, $order['code'], $url)];
         }
@@ -415,21 +418,28 @@ class Shop
         }
         $code = trim((string) ($input['vnp_TxnRef'] ?? ''));
         $db = DB::connection();
-        $order = $code !== '' ? $db->selectOne("select id, total as total_price, if(payment_status='paid',1,0) as payment_status from orders where code = ? limit 1", [$code]) : null;
+        $order = $code !== '' ? $db->selectOne('select id, total as total_price, payment_code from orders where code = ? limit 1', [$code]) : null;
         if (! $order) {
             return $ipn ? $ipnReply('01', 'Order not found') : [400, 'Invalid order or amount'];
+        }
+        if ($order->payment_code !== 'vnpay') {
+            return $ipn ? $ipnReply('01', 'Order is not payable through VNPay') : [400, 'Invalid order or amount'];
         }
         $amount = (float) ($input['vnp_Amount'] ?? 0) / 100;
         if (abs((float) $order->total_price - $amount) > 0.01) {
             return $ipn ? $ipnReply('04', 'Invalid amount') : [400, 'Invalid order or amount'];
         }
-        if ($ipn && (int) $order->payment_status === 1) {
-            return $ipnReply('02', 'Order already confirmed');
-        }
         $status = ($input['vnp_ResponseCode'] ?? '') === '00' ? 'paid' : 'failed';
         $transaction = trim((string) ($input['vnp_TransactionNo'] ?? ''));
         $payload = (string) json_encode($input, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount) {
+        $alreadyPaid = false;
+        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount, &$alreadyPaid) {
+            $locked = $db->table('orders')->where('id', $order->id)->lockForUpdate()->first(['payment_status']);
+            if ($locked?->payment_status === 'paid') {
+                $alreadyPaid = true;
+
+                return;
+            }
             $existing = $db->table('payment_transactions')->where('provider', 'vnpay')->where('reference', $code)->first();
             $row = ['provider_reference' => $transaction, 'status' => $status, 'payload' => $payload, 'updated_at' => now()];
             if ($existing) {
@@ -441,6 +451,9 @@ class Shop
                 $db->table('orders')->where('id', $order->id)->update(['payment_status' => 'paid', 'payment_code' => 'vnpay', 'payment_reference' => $transaction, 'updated_at' => now()]);
             }
         });
+        if ($ipn && $alreadyPaid) {
+            return $ipnReply('02', 'Order already confirmed');
+        }
         if ($ipn) {
             return $ipnReply('00', 'Confirm Success');
         }
@@ -450,7 +463,7 @@ class Shop
             }
         }
 
-        return [200, ($status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
+        return [200, ($alreadyPaid || $status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
     }
 
     /** Six characters, unique among existing orders (the PHP code drew one without checking). */
@@ -475,12 +488,27 @@ class Shop
         return $token;
     }
 
-    /** @return array{id: int, code: string}|null */
+    /** @return array{id: int, code: string, total: float, payment_code: string, payment_status: string}|null */
     private function persistedOrder(string $token): ?array
     {
-        $row = DB::selectOne('select o.id, o.code, count(i.id) as detail_count from orders o left join order_items i on i.order_id = o.id where o.checkout_token = ? group by o.id, o.code limit 0,1', [$token]);
+        $row = DB::selectOne('select o.id, o.code, o.total, o.payment_code, o.payment_status, count(i.id) as detail_count from orders o left join order_items i on i.order_id = o.id where o.checkout_token = ? group by o.id, o.code, o.total, o.payment_code, o.payment_status limit 0,1', [$token]);
 
-        return $row && (int) $row->detail_count > 0 ? ['id' => (int) $row->id, 'code' => (string) $row->code] : null;
+        return $row && (int) $row->detail_count > 0 ? ['id' => (int) $row->id, 'code' => (string) $row->code, 'total' => (float) $row->total,
+            'payment_code' => (string) $row->payment_code, 'payment_status' => (string) $row->payment_status] : null;
+    }
+
+    /** @param array{id: int, code: string, total: float, payment_code: string, payment_status: string} $existing
+     * @return array{0: int, 1: array<string, mixed>}
+     */
+    private function finishExistingOrder(array $existing, string $ip): array
+    {
+        $pendingVnpay = $existing['payment_code'] === 'vnpay' && $existing['payment_status'] !== 'paid';
+        $url = $pendingVnpay ? Payments::vnpayUrl($existing['code'], $existing['total'], 'Thanh toan don hang '.$existing['code'], $ip) : null;
+        if ($pendingVnpay && $url === null) {
+            return [503, ['error' => ['code' => 'PAYMENT_UNAVAILABLE', 'message' => 'Cổng thanh toán đang tạm thời chưa sẵn sàng. Vui lòng thử lại sau.']]];
+        }
+
+        return [200, $this->finish($existing['id'], $existing['code'], $url)];
     }
 
     /** Empty the cart, retire the checkout key and hand out a thank-you token. */

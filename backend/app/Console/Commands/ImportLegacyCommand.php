@@ -6,7 +6,6 @@ use App\Support\ContentBlocks;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * One-time move of the PHP site's data (connection "legacy") into the new schema.
@@ -55,14 +54,18 @@ class ImportLegacyCommand extends Command
     {
         $this->old = DB::connection('legacy');
         $this->new = DB::connection();
-        if ($this->option('fresh')) {
-            Schema::disableForeignKeyConstraints();
-            foreach (array_merge(self::NEW_TABLES, ['users']) as $table) {
-                $this->new->table($table)->truncate();
-            }
-            Schema::enableForeignKeyConstraints();
-        }
         $this->new->transaction(function () {
+            if ($this->option('fresh')) {
+                // TRUNCATE commits implicitly in MariaDB, so use DELETE to keep a failed import reversible.
+                $this->new->statement('SET FOREIGN_KEY_CHECKS=0');
+                try {
+                    foreach (array_merge(self::NEW_TABLES, ['users']) as $table) {
+                        $this->new->table($table)->delete();
+                    }
+                } finally {
+                    $this->new->statement('SET FOREIGN_KEY_CHECKS=1');
+                }
+            }
             $this->users();
             $this->settings();
             $this->catalog();
