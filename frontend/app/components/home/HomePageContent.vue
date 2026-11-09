@@ -6,19 +6,26 @@ import { isPublicSitePayload } from '#shared/contracts/public-site'
 import HomeHero from '~/components/home/HomeHero.vue'
 import HomeCatalog from '~/components/home/HomeCatalog.vue'
 import HomeCampaigns from '~/components/home/HomeCampaigns.vue'
-import HomeEditorial from '~/components/home/HomeEditorial.vue'
+import HomeSolutions from '~/components/home/HomeSolutions.vue'
+import HomeProcess from '~/components/home/HomeProcess.vue'
+import HomeDealer from '~/components/home/HomeDealer.vue'
+import HomeAbout from '~/components/home/HomeAbout.vue'
+import { pageLayout, type LayoutDraftQuery } from '#shared/page-layout'
 import HomeContact from '~/components/home/HomeContact.vue'
 import HomePromoPopup from '~/components/home/HomePromoPopup.vue'
 import EnergyStageSection from '~/components/experience-v3/EnergyStageSection.vue'
 
+// A signed layout draft from Admin "Bố cục trang" replaces the published section order.
+const props = defineProps<{ draft?: LayoutDraftQuery }>()
 const config = useRuntimeConfig()
-const indexable = computed(() => config.public.homePublicRouteIndexable === true
+const indexable = computed(() => !props.draft && config.public.homePublicRouteIndexable === true
   && !!home.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
-const { data: homeData, error } = await useFetch<unknown>('/_api/home')
+const { data: homeData, error } = await useFetch<unknown>(props.draft ? '/_api/page-layout-draft' : '/_api/home', props.draft ? { query: props.draft } : {})
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const home = computed(() => isPublicHomePayload(homeData.value) ? homeData.value : null)
+const layout = computed(() => pageLayout('home', (homeData.value as { layout?: unknown } | null)?.layout))
 const fallbackTitle = computed(() => 'Phúc Thịnh Solar')
 
 if (import.meta.server && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !home.value)) {
@@ -50,12 +57,17 @@ usePublicSocialMeta({
         <p class="mt-4 max-w-[68ch] leading-[1.7] text-slate-500">Không thể tải dữ liệu trang chủ hiện tại. Không hiển thị nội dung giả.</p>
       </div>
       <template v-else>
-        <HomeHero :hero="home.hero" />
-        <HomeCatalog :categories="home.categories" :campaigns="home.campaigns" :energy-chain="home.energyChain" />
-        <EnergyStageSection />
-        <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
-        <HomeEditorial :data="home" />
-        <HomeContact :contact="home.contact" />
+        <template v-for="block in layout" :key="block.type">
+          <HomeHero v-if="block.type === 'hero'" :hero="home.hero" />
+          <HomeCatalog v-else-if="block.type === 'catalog'" :categories="home.categories" :campaigns="home.campaigns" :energy-chain="home.energyChain" />
+          <EnergyStageSection v-else-if="block.type === 'energy'" />
+          <HomeCampaigns v-else-if="block.type === 'campaigns'" :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
+          <HomeSolutions v-else-if="block.type === 'solutions'" :data="home" />
+          <HomeProcess v-else-if="block.type === 'process'" :steps="home.process" />
+          <HomeDealer v-else-if="block.type === 'dealer'" :dealer="home.dealer" />
+          <HomeAbout v-else-if="block.type === 'about'" :about="home.about" />
+          <HomeContact v-else-if="block.type === 'contact'" :contact="home.contact" />
+        </template>
         <HomePromoPopup v-if="home.popup" :popup="home.popup" />
       </template>
     </main>

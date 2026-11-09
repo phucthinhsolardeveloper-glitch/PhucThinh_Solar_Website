@@ -3,6 +3,7 @@
 namespace App\Domain\About;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Pages\PageLayouts;
 use App\Models\Brand;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -53,7 +54,8 @@ class AboutAssembler
     }
 
     /** @return array<string, mixed> */
-    public function build(): array
+    /** @param list<array{type: string, variant: string}>|null $layout a draft layout for preview; null = the published one */
+    public function build(?array $layout = null): array
     {
         $l = self::LABELS;
         $history = $this->section('about.history', 8);
@@ -137,6 +139,7 @@ class AboutAssembler
             'schemaVersion' => 2,
             'locale' => 'vi',
             'path' => '/gioi-thieu/',
+            'layout' => $layout ?? app(PageLayouts::class)->published('about'),
             'title' => 'Giới thiệu Phúc Thịnh Solar',
             'seo' => [
                 'title' => self::text(Text::flat((string) $seoRow?->title)),

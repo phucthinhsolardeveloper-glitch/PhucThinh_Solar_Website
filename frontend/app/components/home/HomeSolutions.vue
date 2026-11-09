@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { PublicHomePayload } from '#shared/contracts/public-home'
 import DirectorStage, { type DirectorStageItem } from '~/components/home/DirectorStage.vue'
-import HomeProcess from '~/components/home/HomeProcess.vue'
-import HomeDealer from '~/components/home/HomeDealer.vue'
-import HomeAbout from '~/components/home/HomeAbout.vue'
 
 const props = defineProps<{ data: PublicHomePayload }>()
 const solutionChips = [
@@ -105,9 +102,4 @@ function requestConsultation(subject: string) {
     </div>
   </section>
 
-  <HomeProcess :steps="data.process" />
-
-  <HomeDealer :dealer="data.dealer" />
-
-  <HomeAbout :about="data.about" />
 </template>

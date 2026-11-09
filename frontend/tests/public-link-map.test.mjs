@@ -71,7 +71,7 @@ test('shared catalog and shell links resolve CMS internal URLs and keep exactly 
   const homeProductGroups = readApp('components/home/HomeProductGroups.vue')
   const homeCampaigns = readApp('components/home/HomeCampaigns.vue')
   const homeHero = readApp('components/home/HomeHero.vue')
-  const homeEditorial = readApp('components/home/HomeEditorial.vue')
+  const homeEditorial = readApp('components/home/HomeSolutions.vue')
   const homeAbout = readApp('components/home/HomeAbout.vue')
   const homeDealer = readApp('components/home/HomeDealer.vue')
   const directorStage = readApp('components/home/DirectorStage.vue')

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { pageLayout } from '#shared/page-layout'
 import type { PublicAboutPayload } from '#shared/contracts/public-about'
 
 const props = defineProps<{ about: PublicAboutPayload }>()
@@ -23,15 +24,24 @@ const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
 const partnerBrands = computed(() => props.about.partners ?? [])
-const aboutSectionNavItems = computed(() => [
-  { id: 've-phuc-thinh', label: props.about.labels.story },
-  { id: 'lich-su-phat-trien', label: 'Lịch sử hình thành' },
-  { id: 'con-nguoi', label: props.about.labels.people },
-  ...(props.about.trust.items.length ? [{ id: 'vi-sao-chon-chung-toi', label: props.about.trust.title }] : []),
-  { id: 'thuong-hieu-dong-hanh', label: 'Thương hiệu đồng hành' },
-  ...(props.about.compass.items.length ? [{ id: 'tam-nhin-su-menh', label: props.about.labels.compass }] : []),
-  ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
-])
+// Sections in the order published in Admin ("Bố cục trang"); the story always opens the page.
+const layout = computed(() => pageLayout('about', (props.about as { layout?: unknown }).layout).filter((block) => block.type !== 'story'))
+const shown = computed(() => new Set<string>(layout.value.map((block) => block.type)))
+function tone(block: { variant: string }, fallback: string): string {
+  return block.variant === 'white' ? 'bg-white' : block.variant === 'muted' ? 'bg-slate-50' : fallback
+}
+const aboutSectionNavItems = computed(() => {
+  const chapters: Record<string, { id: string, label: string } | null> = {
+    history: { id: 'lich-su-phat-trien', label: 'Lịch sử hình thành' },
+    people: { id: 'con-nguoi', label: props.about.labels.people },
+    trust: props.about.trust.items.length ? { id: 'vi-sao-chon-chung-toi', label: props.about.trust.title } : null,
+    brands: { id: 'thuong-hieu-dong-hanh', label: 'Thương hiệu đồng hành' },
+    compass: props.about.compass.items.length ? { id: 'tam-nhin-su-menh', label: props.about.labels.compass } : null,
+    certificates: props.about.certificates.items.length ? { id: 'about-certificates', label: props.about.labels.certificates } : null,
+  }
+  return [{ id: 've-phuc-thinh', label: props.about.labels.story },
+    ...layout.value.map((block) => chapters[block.type]).filter((item): item is { id: string, label: string } => !!item)]
+})
 
 const aboutSpy = useSectionSpy(() => aboutSectionNavItems.value.map((item) => item.id), activeAboutSection, aboutNavRef)
 
@@ -155,7 +165,7 @@ const showroomImage = computed(() => {
               <span aria-hidden="true">→</span>
             </button>
             <a
-              v-if="about.certificates.items.length"
+              v-if="about.certificates.items.length && shown.has('certificates')"
               href="#about-certificates"
               class="m-lg-dark inline-flex min-h-11 items-center gap-2 rounded-btn border border-white/25 bg-white/5 px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:text-gold-300"
               @click.prevent="navigateAboutSection('about-certificates')"
@@ -190,143 +200,171 @@ const showroomImage = computed(() => {
       </div>
     </nav>
 
-    <!-- Chapter 2: History Timeline / Dòng thời gian phát triển -->
-    <AboutHistory :image="showroomImage" />
-
-    <!-- Chapter 3: People & Core Principles / Con người & Nguyên tắc hành động -->
-    <section id="con-nguoi" class="about-chapter scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
-      <div class="pts-container">
-        <div class="about-people-grid grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
-          <figure v-if="about.people.image" class="about-people-media m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-            <img class="block h-full w-full object-cover" :src="optimizedImage(about.people.image, 1200, 900)" :alt="about.people.title" width="780" height="620" loading="lazy">
-          </figure>
-          <div>
-            <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
-            <p v-if="about.people.intro" class="mt-[1.1rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.intro }}</p>
-            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.body }}</p>
-          </div>
-        </div>
-
-        <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
-        <div v-if="about.people.principles.length" class="about-principles mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
-          <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="mb-3.5 flex items-center justify-end">
-              <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
-            </header>
-            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (2 cột trên desktop) -->
-    <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="about-chapter scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
-      <div class="about-trust-grid pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
-        <div>
-          <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
-        </div>
-
-        <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
-        <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
-          <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="mb-3.5 flex items-center justify-end">
-              <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
-            </header>
-            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="thuong-hieu-dong-hanh" class="about-brand-section scroll-mt-[160px] max-[800px]:scroll-mt-[116px]" aria-labelledby="about-brands-title">
-      <div class="pts-container about-brand-layout">
-        <div class="about-brand-copy">
-          <h2 id="about-brands-title">Thương hiệu đồng hành</h2>
-          <p>Từ thiết bị năng lượng đến chiếu sáng, những thương hiệu đã đồng hành cùng Phúc Thịnh Solar.</p>
-        </div>
-        <div class="about-brand-board" aria-label="Các thương hiệu thiết bị">
-          <span class="about-brand-circuit" aria-hidden="true" />
-          <ul class="about-brand-grid">
-            <li v-for="brand in partnerBrands" :key="brand.id" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
-              <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
-                <img :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
-              </NuxtLink>
-              <img v-else :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- Chapter 5: Compass / Tầm nhìn - Sứ mệnh - Giá trị (Dark Stage Tone) -->
-    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="about-chapter scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
-      <div class="pts-container">
-        <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
-
-        <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
-        <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
-          <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header class="mb-3.5 flex items-center justify-between gap-4">
-              <h3 v-if="item.title" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ item.title }}</h3>
-              <img v-if="item.image" class="about-compass-icon size-9 flex-none object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
-            </header>
-            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Chapter 6: Certificates & Proof / Năng lực & Chứng nhận đã kiểm chứng -->
-    <section v-if="about.certificates.items.length" id="about-certificates" class="about-chapter scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
-      <div class="pts-container">
-        <header class="about-cert-head grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
-          <div>
-            <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
-            <p class="mt-3 max-w-[48rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.certificates.intro }}</p>
-          </div>
-          <button
-            v-if="galleryCertificates.length"
-            type="button"
-            class="mb-1 inline-flex min-h-11 items-center gap-2 justify-self-start font-bold text-navy-800 underline-offset-4 hover:underline min-[801px]:justify-self-end"
-            @click="openAllCertificates"
-          >
-            {{ about.labels.certAll }} <span aria-hidden="true">→</span>
-          </button>
-        </header>
-
-        <!-- Hợp nhất Card 4: Certificates (Đồng bộ ngôn ngữ Atelier Grid) -->
-        <div class="about-cert-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
-          <article
-            v-for="item in visibleCertificates"
-            :key="item.id"
-            class="group flex flex-col justify-between border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500"
-          >
-            <div>
-              <div v-if="item.image" class="about-cert-thumb-wrap mb-4 overflow-hidden rounded-sm bg-slate-50 p-4 border border-slate-100">
-                <button
-                  type="button"
-                  class="about-cert-thumb block w-full h-48 focus:outline-none cursor-pointer"
-                  :aria-label="`Mở chứng nhận ${item.name}`"
-                  @click="openCertificate(item, $event)"
-                >
-                  <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="optimizedImage(item.image, 600, 800)" :alt="item.name" width="260" height="360" loading="lazy">
-                </button>
+    <template v-for="block in layout" :key="block.type">
+      <template v-if="block.type === 'history'">
+        <!-- Chapter 2: History Timeline / Dòng thời gian phát triển -->
+        <AboutHistory :image="showroomImage" />
+      </template>
+      <template v-if="block.type === 'people'">
+        <!-- Chapter 3: People & Core Principles / Con người & Nguyên tắc hành động -->
+        <section id="con-nguoi" :class="tone(block, 'bg-white')" class="about-chapter scroll-mt-[160px] py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
+          <div class="pts-container">
+            <div class="about-people-grid grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
+              <figure v-if="about.people.image" class="about-people-media m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+                <img class="block h-full w-full object-cover" :src="optimizedImage(about.people.image, 1200, 900)" :alt="about.people.title" width="780" height="620" loading="lazy">
+              </figure>
+              <div>
+                <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
+                <p v-if="about.people.intro" class="mt-[1.1rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.intro }}</p>
+                <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.body }}</p>
               </div>
-              <span class="text-[15px] font-bold text-gold-700">{{ about.labels.certLabel }}</span>
-              <h3 class="mt-1.5 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.name }}</h3>
-              <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
             </div>
-            <div v-if="item.image" class="about-cert-more-wrap mt-4 pt-3 border-t border-slate-100">
-              <button type="button" class="about-cert-more inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
-                {{ about.labels.certDetail }} <span aria-hidden="true">→</span>
+
+            <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
+            <div v-if="about.people.principles.length" class="about-principles mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+              <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
+                <header class="mb-3.5 flex items-center justify-end">
+                  <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
+                </header>
+                <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
+                <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </template>
+      <template v-if="block.type === 'trust'">
+        <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (2 cột trên desktop) -->
+        <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" :class="tone(block, 'bg-slate-50')" class="about-chapter scroll-mt-[160px] py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
+          <div class="about-trust-grid pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
+            <div>
+              <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
+            </div>
+
+            <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
+            <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+              <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
+                <header class="mb-3.5 flex items-center justify-end">
+                  <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
+                </header>
+                <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
+                <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </template>
+      <template v-if="block.type === 'brands'">
+        <section id="thuong-hieu-dong-hanh" class="about-brand-section scroll-mt-[160px] max-[800px]:scroll-mt-[116px]" aria-labelledby="about-brands-title">
+          <div class="pts-container about-brand-layout">
+            <div class="about-brand-copy">
+              <h2 id="about-brands-title">Thương hiệu đồng hành</h2>
+              <p>Từ thiết bị năng lượng đến chiếu sáng, những thương hiệu đã đồng hành cùng Phúc Thịnh Solar.</p>
+            </div>
+            <div class="about-brand-board" aria-label="Các thương hiệu thiết bị">
+              <span class="about-brand-circuit" aria-hidden="true" />
+              <ul class="about-brand-grid">
+                <li v-for="brand in partnerBrands" :key="brand.id" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
+                  <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
+                    <img :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
+                  </NuxtLink>
+                  <img v-else :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </template>
+      <template v-if="block.type === 'compass'">
+        <!-- Chapter 5: Compass / Tầm nhìn - Sứ mệnh - Giá trị (Dark Stage Tone) -->
+        <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="about-chapter scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
+          <div class="pts-container">
+            <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
+
+            <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
+            <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+              <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
+                <header class="mb-3.5 flex items-center justify-between gap-4">
+                  <h3 v-if="item.title" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ item.title }}</h3>
+                  <img v-if="item.image" class="about-compass-icon size-9 flex-none object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
+                </header>
+                <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </template>
+      <template v-if="block.type === 'certificates'">
+        <!-- Chapter 6: Certificates & Proof / Năng lực & Chứng nhận đã kiểm chứng -->
+        <section v-if="about.certificates.items.length" id="about-certificates" :class="tone(block, 'bg-white')" class="about-chapter scroll-mt-[160px] py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
+          <div class="pts-container">
+            <header class="about-cert-head grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
+              <div>
+                <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
+                <p class="mt-3 max-w-[48rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.certificates.intro }}</p>
+              </div>
+              <button
+                v-if="galleryCertificates.length"
+                type="button"
+                class="mb-1 inline-flex min-h-11 items-center gap-2 justify-self-start font-bold text-navy-800 underline-offset-4 hover:underline min-[801px]:justify-self-end"
+                @click="openAllCertificates"
+              >
+                {{ about.labels.certAll }} <span aria-hidden="true">→</span>
               </button>
+            </header>
+
+            <!-- Hợp nhất Card 4: Certificates (Đồng bộ ngôn ngữ Atelier Grid) -->
+            <div class="about-cert-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+              <article
+                v-for="item in visibleCertificates"
+                :key="item.id"
+                class="group flex flex-col justify-between border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500"
+              >
+                <div>
+                  <div v-if="item.image" class="about-cert-thumb-wrap mb-4 overflow-hidden rounded-sm bg-slate-50 p-4 border border-slate-100">
+                    <button
+                      type="button"
+                      class="about-cert-thumb block w-full h-48 focus:outline-none cursor-pointer"
+                      :aria-label="`Mở chứng nhận ${item.name}`"
+                      @click="openCertificate(item, $event)"
+                    >
+                      <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="optimizedImage(item.image, 600, 800)" :alt="item.name" width="260" height="360" loading="lazy">
+                    </button>
+                  </div>
+                  <span class="text-[15px] font-bold text-gold-700">{{ about.labels.certLabel }}</span>
+                  <h3 class="mt-1.5 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.name }}</h3>
+                  <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
+                </div>
+                <div v-if="item.image" class="about-cert-more-wrap mt-4 pt-3 border-t border-slate-100">
+                  <button type="button" class="about-cert-more inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
+                    {{ about.labels.certDetail }} <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+              </article>
             </div>
-          </article>
-        </div>
-      </div>
-    </section>
+          </div>
+        </section>
+      </template>
+      <template v-if="block.type === 'contact'">
+        <!-- Chapter 7: Corporate CTA / Điểm chốt chuyển đổi đồng hành -->
+        <section class="about-contact py-12">
+          <div class="pts-container">
+            <PublicCtaBanner
+              variant="corporate"
+              :image="about.cta.image"
+              title-id="about-cta-title"
+              :title="about.cta.title"
+              :description="about.cta.description"
+              :hotline="about.cta.hotline?.text"
+              :zalo="about.cta.zaloUrl || undefined"
+              :button-label="about.cta.buttonLabel"
+              :subject="'Giới thiệu: ' + about.cta.title"
+              :fallback-href="about.cta.href || '/lien-he/#yeu-cau-tu-van'"
+            />
+          </div>
+        </section>
+      </template>
+    </template>
 
     <!-- Certificate Modal Dialog (A11y & Keyboard Navigation) -->
     <dialog
@@ -365,24 +403,6 @@ const showroomImage = computed(() => {
         </footer>
       </div>
     </dialog>
-
-    <!-- Chapter 7: Corporate CTA / Điểm chốt chuyển đổi đồng hành -->
-    <section class="about-contact py-12">
-      <div class="pts-container">
-        <PublicCtaBanner
-          variant="corporate"
-          :image="about.cta.image"
-          title-id="about-cta-title"
-          :title="about.cta.title"
-          :description="about.cta.description"
-          :hotline="about.cta.hotline?.text"
-          :zalo="about.cta.zaloUrl || undefined"
-          :button-label="about.cta.buttonLabel"
-          :subject="'Giới thiệu: ' + about.cta.title"
-          :fallback-href="about.cta.href || '/lien-he/#yeu-cau-tu-van'"
-        />
-      </div>
-    </section>
   </div>
 </template>
 

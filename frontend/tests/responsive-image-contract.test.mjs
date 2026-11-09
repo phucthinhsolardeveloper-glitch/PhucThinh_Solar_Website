@@ -48,7 +48,7 @@ test('news cards use allowlisted PHP thumbnails and match the rendered 16:9 fram
 test('homepage media uses the same PHP thumbnail contracts and prioritizes the first hero', () => {
   const hero = read('app/components/home/HomeHero.vue')
   const homeCatalog = read('app/components/home/HomeCatalog.vue')
-  const editorial = read('app/components/home/HomeEditorial.vue')
+  const editorial = read('app/components/home/HomeSolutions.vue')
   const about = read('app/components/home/HomeAbout.vue')
   assert.match(hero, /thumbUrl\(src, width, height\)/)
   assert.match(hero, /heroImageCandidate\(src, 960\).*960w,.*heroImageCandidate\(src, 1600\).*1600w/s)

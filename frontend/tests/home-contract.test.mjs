@@ -7,7 +7,7 @@ const homePreview = readFileSync(new URL('../app/components/home/HomePageContent
 const homeHero = readFileSync(new URL('../app/components/home/HomeHero.vue', import.meta.url), 'utf8')
 const homeCatalog = readFileSync(new URL('../app/components/home/HomeCatalog.vue', import.meta.url), 'utf8')
 const homeCampaigns = readFileSync(new URL('../app/components/home/HomeCampaigns.vue', import.meta.url), 'utf8')
-const homeEditorial = readFileSync(new URL('../app/components/home/HomeEditorial.vue', import.meta.url), 'utf8')
+const homeEditorial = readFileSync(new URL('../app/components/home/HomeSolutions.vue', import.meta.url), 'utf8')
 const homeAbout = readFileSync(new URL('../app/components/home/HomeAbout.vue', import.meta.url), 'utf8')
 const homeContact = readFileSync(new URL('../app/components/home/HomeContact.vue', import.meta.url), 'utf8')
 const good = { schemaVersion: 1, locale: 'vi', path: '/', seo: { title: '', description: '' }, hero: [{ key: 'x', name: 'Hero', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], categories: [{ id: 1, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/den/', major: true, image: '' }], campaigns: [{ name: 'Campaign', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], solutions: [{ label: 'Gia đình', name: 'Solar', description: 'Mô tả', image: '/assets/images/site-visuals/a.webp', href: '/giai-phap/' }], process: [{ number: '01', name: 'Tư vấn', description: 'Mô tả' }], dealer: { title: 'Đại lý', description: 'Mô tả', href: '/dai-ly/' }, about: { configured: false, visible: false, title: 'About', description: 'Mô tả', href: '/gioi-thieu/', action: 'Xem' }, contact: { hotline: '', email: '', address: '', workingHours: '' }, productGroups: [{ categoryId: 1, categoryName: 'Đèn', categoryUrl: '/danh-muc-san-pham/den/', products: [{ id: 2, name: 'Sản phẩm', slug: 'san-pham', href: '/san-pham/san-pham/', image: '/upload/product/a.webp' }] }], summary: { hero: 1, categories: 1, campaigns: 1, solutions: 1, process: 1, productGroups: 1 } }
@@ -68,18 +68,12 @@ test('homepage about visibility follows the configured and visible CMS state', (
   assert.equal(isPublicHomePayload({ ...good, about: { ...good.about, configured: false, visible: true } }), false)
   assert.match(homeAbout, /v-if="!about\.configured \|\| about\.visible"/)
 })
-test('homepage preview follows the PHP section order without inserting product grids', () => {
-  assert.match(homePreview, /HomeHero|<HomeHero\b/)
-  assert.match(homePreview, /<HomeCatalog\b/)
+test('homepage renders its sections in the published layout order, defaulting to the PHP order', () => {
+  assert.match(homePreview, /v-for="block in layout"/)
+  assert.match(homePreview, /pageLayout\('home'/)
   assert.doesNotMatch(homePreview, /HomeProductGroups/)
-  assert.match(homePreview, /<HomeCampaigns\b/)
-  assert.match(homePreview, /<HomeEditorial\b/)
-  assert.match(homePreview, /<HomeContact\b/)
-  assert.ok(homePreview.indexOf('<HomeHero') < homePreview.indexOf('<HomeCatalog'))
-  assert.ok(homePreview.indexOf('<HomeCatalog') < homePreview.indexOf('<EnergyStageSection'))
-  assert.ok(homePreview.indexOf('<EnergyStageSection') < homePreview.indexOf('<HomeCampaigns'))
-  assert.ok(homePreview.indexOf('<HomeCampaigns') < homePreview.indexOf('<HomeEditorial'))
-  assert.ok(homePreview.indexOf('<HomeEditorial') < homePreview.indexOf('<HomeContact'))
+  const order = ['<HomeHero', '<HomeCatalog', '<EnergyStageSection', '<HomeCampaigns', '<HomeSolutions', '<HomeProcess', '<HomeDealer', '<HomeAbout', '<HomeContact']
+  for (let i = 1; i < order.length; i++) assert.ok(homePreview.indexOf(order[i - 1]) < homePreview.indexOf(order[i]), order[i])
   assert.match(homeCatalog, /id="home-catalog-title"/)
   assert.match(homeCatalog, /v-for="slot in chain"/)
   assert.match(homeCatalog, /const slots = \[/)

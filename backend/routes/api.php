@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AboutController;
 use App\Http\Controllers\Api\V1\ArticleDraftPreviewController;
 use App\Http\Controllers\Api\V1\CatalogController;
 use App\Http\Controllers\Api\V1\HomeController;
+use App\Http\Controllers\Api\V1\PageLayoutPreviewController;
 use App\Http\Controllers\Api\V1\PagesController;
 use App\Http\Controllers\Api\V1\ProductDetailController;
 use App\Http\Controllers\Api\V1\ShopController;
@@ -20,6 +21,8 @@ Route::prefix('v1')->group(function () {
     Route::post('track', PageViewController::class)->middleware('throttle:120,1');
     Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
         ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
+    Route::get('page-layout-preview/{layout}', PageLayoutPreviewController::class)
+        ->whereNumber('layout')->middleware(['signed:relative', 'throttle:30,1'])->name('page-layout.preview');
     Route::get('post-draft-preview/{revision}', [ArticleDraftPreviewController::class, 'post'])
         ->middleware(['signed:relative', 'throttle:30,1'])->name('post-draft.preview');
     Route::get('about', AboutController::class);

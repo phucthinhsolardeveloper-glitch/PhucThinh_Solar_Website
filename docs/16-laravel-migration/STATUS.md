@@ -7,7 +7,7 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 Không có việc dở.
 
 ## Chưa làm (theo thứ tự)
-- [ ] Task 5: chỉnh trang theo khối (Home + About POC)
+Không còn mục nào. Việc tiếp: chuẩn bị chuyển hệ thống (xem HANDOFF → Cutover).
 
 ## Không làm (đã kiểm chứng)
 | Mục | Lý do |
@@ -43,3 +43,4 @@ Không có việc dở.
 | Checkout tính phí Nhất Tín (Tiết kiệm) từ cân nặng sản phẩm; mô phỏng ghi rõ; >50 kg hoặc thiếu cân nặng (sandbox/production) → nhân viên báo phí; ghi chú QR ở mục Chuyển khoản | 1abecf60 | Cần điền cân nặng sản phẩm (Admin hoặc Excel cột "Cân nặng đóng gói (kg)"). Tắt bằng `NTL_CHECKOUT_QUOTES=0` |
 | Thử thật upload banner, ảnh chèn trong editor (chặn file lạ, không lưu ảnh hỏng), ẩn/hiện hàng loạt theo quyền | bf664e4c | Video là link YouTube, không có upload |
 | Xem trước bản nháp Giải pháp / Dự án / Chính sách trên Nuxt (link ký 15 phút, giống hệt trang thật, kể cả ảnh/sản phẩm/SEO) | 2cae7811 | Dựng bằng cách ghi nháp vào DB trong transaction rồi rollback; các builder công khai không cache |
+| Task 5: Bố cục trang (Trang chủ, Giới thiệu): thứ tự, ẩn/hiện, màu nền khối Giới thiệu, nháp, xem trước ký 15 phút, xuất bản, mở lại bản cũ | commit kế tiếp | Chữ/ảnh trong khối vẫn ở `page_items` (Nội dung các trang); chưa xuất bản bản nào thì trang dùng thứ tự gốc |

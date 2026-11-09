@@ -80,4 +80,4 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 
 ## Việc tiếp theo
 
-Theo thứ tự trong `STATUS.md`, mục “Chưa làm”. Task 5 gồm: `Page`, `PageRevision`, `PageSection` có kiểu; registry section; Nuxt render theo type + variant + props; thử trên Home và About với sắp xếp, ẩn hiện, variant, nháp, xem trước, xuất bản, rollback; giữ tương thích `PageItems`.
+Danh sách "Chưa làm" trong `STATUS.md` đã hết. Bố cục trang (Task 5) nằm ở `App\Domain\Pages\PageLayouts` (danh mục khối `PAGES`, khớp `frontend/shared/page-layout.ts`; thêm khối mới phải sửa cả hai). Việc tiếp theo là chuẩn bị chuyển hệ thống: khai tài khoản nhận chuyển khoản, kho gửi hàng, cân nặng sản phẩm, tài khoản sandbox Nhất Tín.

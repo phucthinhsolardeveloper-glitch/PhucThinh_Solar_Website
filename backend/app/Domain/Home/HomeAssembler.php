@@ -4,6 +4,7 @@ namespace App\Domain\Home;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Pages\PageLayouts;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Database\Connection;
@@ -53,7 +54,8 @@ class HomeAssembler
     }
 
     /** @return array<string, mixed> */
-    public function build(): array
+    /** @param list<array{type: string, variant: string}>|null $layout a draft layout for preview; null = the published one */
+    public function build(?array $layout = null): array
     {
         // Featured top categories with products to show; the major ones come first.
         $categories = $this->db->table('categories')->where('depth', 1)->where('is_featured', true)->where('is_visible', true)
@@ -87,6 +89,7 @@ class HomeAssembler
             'schemaVersion' => 1,
             'locale' => 'vi',
             'path' => '/',
+            'layout' => $layout ?? app(PageLayouts::class)->published('home'),
             'seo' => [
                 'title' => self::text(Text::flat((string) $seoRow?->title)),
                 'description' => self::text(Text::flat((string) $seoRow?->description)),
