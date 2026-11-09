@@ -73,6 +73,17 @@ typecheck/build pass. Image rollback gần nhất: backend `49dbf3dc-candidate`,
 Nuxt `967315c0-candidate`. Chưa thử thanh toán VNPay sandbox hoặc SMTP thật;
 outbox/database queue đã xong ở `bff35f79` (compose có service `worker` và `scheduler`). Production không đổi.
 
+Mốc `e02a4a1b` (2026-11-09, thay `4ab50eaf`): build lại backend và Nuxt, sao lưu DB
+ứng viên trước (`candidate-db-before-c3c4c372.sql.gz` trên máy rehearsal), chạy 17
+migration mới (không `--fresh`), `pts:ward-codes` (34 tỉnh, 3.321 phường/xã) và
+`pts:brand-logos`. Mốc API lưu lại cho layout, cờ chuyển khoản, logo đối tác, mô tả
+dự án. `verify-candidate.sh` đạt; `site-audit` 0 lỗi trên 19 route × 4 khổ;
+`shop-flow` đạt (không gửi đơn); `admin-screens` DEEP 87 màn không lỗi (tài khoản thử
+đã xóa); `ux-seo-checklist` không tràn, og:image 1200×630, LocalBusiness. Với
+`APP_ENV=production` + `NTL_MODE=mock`, phí checkout lấy bảng khu vực. Image rollback:
+`4ab50eaf-candidate`. Backend 211 test, Nuxt 484 test, typecheck/build, PHPStan, Pint
+đều qua. Vẫn chưa có staging VPS, sandbox VNPay/Nhất Tín/SMTP, restore/rollback qua Caddy thật.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
