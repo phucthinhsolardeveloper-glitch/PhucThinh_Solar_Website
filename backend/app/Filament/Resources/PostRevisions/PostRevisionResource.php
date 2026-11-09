@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PostRevisions;
 
 use App\Domain\Content\PostRevisions;
+use App\Domain\Projects\ProjectSystem;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Policies\PolicyResource;
@@ -120,6 +121,7 @@ class PostRevisionResource extends Resource
                 DatePicker::make('payload.started_on')->label('Khởi công'),
                 DatePicker::make('payload.finished_on')->label('Hoàn thành'),
             ]),
+            Section::make('Thông số hệ thống')->columns(3)->visible($has('capacity_kwp'))->schema(ProjectSystem::fields('payload.')),
             Section::make('Hình ảnh')->columns(2)->visible($has('image'))->schema([
                 Fields::image('payload.image', 'news', 'Ảnh đại diện'),
                 Fields::image('payload.cover_image', 'news', 'Ảnh bìa')->visible($has('cover_image')),

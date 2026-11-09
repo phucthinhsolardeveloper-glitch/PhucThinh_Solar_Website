@@ -87,6 +87,7 @@ class ProjectDetail extends PageSupport
                 'address' => Text::cms(ProjectLocation::label($post->address, $post->province_id, $post->ward_id)),
                 'startDate' => self::date($post->started_on),
                 'endDate' => self::date($post->finished_on),
+                'system' => ProjectSystem::payload($post),
                 'gallery' => $gallery,
                 'relatedEquipment' => $equipment,
                 'relatedProjects' => $nearby,

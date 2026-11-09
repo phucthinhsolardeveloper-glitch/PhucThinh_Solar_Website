@@ -69,7 +69,7 @@ class ProjectListing extends PageSupport
             ->when($selected !== null, fn ($q) => $q->where('category_id', $selected['id']));
         $total = (clone $listed)->count();
         $rows = $listed->orderBy('sort_order')->orderByDesc('id')->forPage($page, $perPage)
-            ->get(['id', 'category_id', 'title', 'slug', 'image', 'summary', 'address', 'province_id', 'ward_id', 'in_hub'])->map(fn ($row) => (array) $row)->all();
+            ->get(['id', 'category_id', 'title', 'slug', 'image', 'summary', 'address', 'province_id', 'ward_id', 'in_hub', 'capacity_kwp'])->map(fn ($row) => (array) $row)->all();
         $featuredRow = [];
         if ($page === 1 && $selected === null && $rows) {
             foreach ($rows as $index => $row) {
@@ -141,7 +141,8 @@ class ProjectListing extends PageSupport
         $categoryId = (int) $row['category_id'];
 
         return ['id' => (int) $row['id'], 'title' => $name, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms((string) $row['summary']), 'address' => Text::cms(ProjectLocation::label($row['address'], $row['province_id'] ?? null, $row['ward_id'] ?? null)),
-            'image' => NewsListing::media($this->photo($row['image'])), 'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null, 'featured' => $featured];
+            'image' => NewsListing::media($this->photo($row['image'])), 'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null, 'featured' => $featured,
+            'kwp' => is_numeric($row['capacity_kwp'] ?? null) && (float) $row['capacity_kwp'] > 0 ? (float) $row['capacity_kwp'] : null];
     }
 
     private function intro(array $rows, ?array $category): array

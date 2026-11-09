@@ -4,6 +4,7 @@ namespace App\Domain\Content;
 
 use App\Domain\News\NewsDetail;
 use App\Domain\Projects\ProjectDetail;
+use App\Domain\Projects\ProjectSystem;
 use App\Domain\Solutions\SolutionDetail;
 use App\Models\Post;
 use App\Models\PostRevision;
@@ -26,7 +27,8 @@ final class PostRevisions
 {
     /** Columns copied to the post on publish. */
     public const COLUMNS = ['title', 'nav_title', 'slug', 'category_id', 'summary', 'body', 'extra_body', 'image', 'cover_image',
-        'is_featured', 'in_hub', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'published_at'];
+        'is_featured', 'in_hub', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'published_at',
+        'system_type', 'capacity_kwp', 'storage_kwh', 'output_kwh_month', 'saving_vnd_month', 'build_days'];
 
     /**
      * What a draft may change per kind. products: false = no product links, 0 = unlimited, n = at most n.
@@ -36,7 +38,8 @@ final class PostRevisions
     public const KINDS = [
         'article' => ['fields' => ['title', 'summary', 'body', 'extra_body', 'image'], 'products' => 4, 'media' => true],
         'solution' => ['fields' => ['title', 'nav_title', 'summary', 'body', 'extra_body', 'image', 'cover_image'], 'products' => false, 'media' => true],
-        'project' => ['fields' => ['title', 'summary', 'body', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'image', 'cover_image'], 'products' => 0, 'media' => true],
+        'project' => ['fields' => ['title', 'summary', 'body', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'image', 'cover_image',
+            'system_type', 'capacity_kwp', 'storage_kwh', 'output_kwh_month', 'saving_vnd_month', 'build_days'], 'products' => 0, 'media' => true],
         'policy' => ['fields' => ['title', 'summary', 'body'], 'products' => false, 'media' => false],
     ];
 
@@ -46,6 +49,8 @@ final class PostRevisions
         'body' => 'Nội dung chính', 'extra_body' => 'Nội dung bổ sung', 'image' => 'Ảnh đại diện', 'cover_image' => 'Ảnh bìa',
         'is_featured' => 'Nổi bật', 'in_hub' => 'Hiện ở trang tổng', 'client_name' => 'Chủ đầu tư', 'address' => 'Số nhà, đường', 'province_id' => 'Tỉnh / thành phố', 'ward_id' => 'Phường / xã',
         'started_on' => 'Khởi công', 'finished_on' => 'Hoàn thành', 'published_at' => 'Ngày đăng', 'is_visible' => 'Hiển thị',
+        'system_type' => 'Loại hệ thống', 'capacity_kwp' => 'Công suất (kWp)', 'storage_kwh' => 'Lưu trữ (kWh)', 'output_kwh_month' => 'Sản lượng/tháng (kWh)',
+        'saving_vnd_month' => 'Tiết kiệm/tháng (đ)', 'build_days' => 'Thi công (ngày)',
         'seo' => 'SEO', 'products' => 'Sản phẩm liên kết', 'media' => 'Thư viện ảnh / video',
     ];
 
@@ -340,6 +345,7 @@ final class PostRevisions
             'ward_id' => ['nullable', 'integer', Rule::exists('wards', 'id')->where(fn ($q) => $q->where('province_id', (int) ($input['province_id'] ?? 0)))],
             'started_on' => ['nullable', 'date'],
             'finished_on' => ['nullable', 'date', 'after_or_equal:started_on'],
+            ...ProjectSystem::rules(),
             'seo' => ['sometimes', 'array'],
             'seo.title' => ['nullable', 'string', 'max:255'],
             'seo.description' => ['nullable', 'string', 'max:500'],

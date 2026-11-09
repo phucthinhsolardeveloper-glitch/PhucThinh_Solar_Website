@@ -1,7 +1,7 @@
 import { isPagination, isPositiveId, isPublicImage, isPublicSeoMetadata, isRecord, isSlug, isText, type PublicSeoMetadata } from './core.ts'
 
 export interface PublicProjectCategory { id: number; name: string; description: string; slug: string; url: string; canonicalPath: string; image: string; seo?: PublicSeoMetadata }
-export interface PublicProject { id: number; title: string; slug: string; url: string; description: string; address: string; image: string; category: PublicProjectCategory | null; featured: boolean }
+export interface PublicProject { id: number; title: string; slug: string; url: string; description: string; address: string; image: string; category: PublicProjectCategory | null; featured: boolean; kwp?: number | null }
 export interface PublicProjectIntro { visible: boolean; title: string; description: string }
 export interface PublicProjectBenefit { label: string; image: string }
 export interface PublicProjectsCtaTrust { label: string; image: string; icon: 'headset' | 'cogs' | 'shield' }
@@ -17,7 +17,8 @@ export interface PublicProjectsPayload {
 
 function isImage(value: unknown): value is string { return isPublicImage(value, ['/upload/news/']) }
 function isCategory(value: unknown): value is PublicProjectCategory { return isRecord(value) && isPositiveId(value.id) && isText(value.name, true) && isText(value.description, true) && isSlug(value.slug) && value.url === `/danh-muc-du-an/${value.slug}/` && value.canonicalPath === `/${value.slug}` && isImage(value.image) && (value.seo === undefined || isPublicSeoMetadata(value.seo, ['/upload/news/'])) }
-function isProject(value: unknown): value is PublicProject { return isRecord(value) && isPositiveId(value.id) && isText(value.title, true) && isSlug(value.slug) && value.url === `/${value.slug}/` && isText(value.description, true) && isText(value.address, true) && isImage(value.image) && typeof value.featured === 'boolean' && (value.category === null || isCategory(value.category)) }
+function isProject(value: unknown): value is PublicProject { return isRecord(value) && isPositiveId(value.id) && isText(value.title, true) && isSlug(value.slug) && value.url === `/${value.slug}/` && isText(value.description, true) && isText(value.address, true) && isImage(value.image) && typeof value.featured === 'boolean' && (value.category === null || isCategory(value.category))
+  && (value.kwp === undefined || value.kwp === null || (typeof value.kwp === 'number' && Number.isFinite(value.kwp) && value.kwp > 0)) }
 
 export function isPublicProjectsPayload(value: unknown): value is PublicProjectsPayload {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/du-an-da-thuc-hien/' || !isText(value.title, true)) return false

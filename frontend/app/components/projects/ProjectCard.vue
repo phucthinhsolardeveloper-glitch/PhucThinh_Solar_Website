@@ -13,7 +13,10 @@ const links = usePublicLinks()
         <span v-else aria-hidden="true">Chưa có hình ảnh</span>
       </span>
       <span class="project-card__body">
-        <span v-if="project.category" class="project-card__category">{{ project.category.name }}</span>
+        <span v-if="project.category || project.kwp" class="project-card__tags">
+          <span v-if="project.category" class="project-card__category">{{ project.category.name }}</span>
+          <span v-if="project.kwp" class="project-card__kwp"><UIcon name="i-lucide-sun" class="size-3.5" aria-hidden="true" />{{ project.kwp.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) }} kWp</span>
+        </span>
         <h2>{{ project.title }}</h2>
         <span v-if="project.address" class="project-card__place">
           <UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-600" aria-hidden="true" />{{ project.address }}
@@ -34,6 +37,8 @@ const links = usePublicLinks()
 .project-card__category { color: var(--color-gold-700); font-size: 13.5px; font-weight: 700; }
 .project-card__body h2 { margin: 0; color: var(--color-navy-950); font-size: clamp(18px, 1.35vw, 21px); font-weight: 800; line-height: 1.32; transition: color 0.2s ease; }
 .project-card__link:hover h2 { color: var(--color-gold-700); }
+.project-card__tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.project-card__kwp { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--radius-chip, 6px); background: #fffbf2; box-shadow: inset 0 0 0 1px rgb(201 150 46 / 40%); color: var(--color-navy-900); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .project-card__place { display: inline-flex; align-items: center; gap: 6px; color: #64748b; font-size: 14.5px; }
 .project-card__go { margin-top: auto; padding-top: 6px; color: var(--color-navy-800); font-size: 14.5px; font-weight: 800; }
 .project-card__go > span { display: inline-block; transition: transform 0.3s ease; }

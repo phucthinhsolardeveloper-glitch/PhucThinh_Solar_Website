@@ -2,6 +2,7 @@
 
 namespace App\Filament\Support;
 
+use App\Domain\Projects\ProjectSystem;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Post;
 use App\Support\Slugs;
@@ -82,6 +83,8 @@ abstract class PostResource extends Resource
                 DatePicker::make('started_on')->label('Khởi công'),
                 DatePicker::make('finished_on')->label('Hoàn thành'),
             ]) : null,
+            $kind === 'project' ? Section::make('Thông số hệ thống')->description('Hiện thành dải thông số trên trang dự án; ô để trống thì không hiện.')->columns(3)
+                ->schema(ProjectSystem::fields()) : null,
             Section::make('Nội dung')->schema(array_filter([
                 Fields::rich('body', 'Nội dung chính')
                     ->helperText('Dùng Tiêu đề 2/3 cho các mục; mục lục được tạo tự động từ các tiêu đề này.'),

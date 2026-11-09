@@ -3,6 +3,7 @@ import type { PublicProjectDetail } from '#shared/contracts/public-project-detai
 import type { PublicSanitizedRichText } from '#shared/contracts/editorial-rich-text'
 import ProjectDetailEquipment from './ProjectDetailEquipment.vue'
 import ProjectDetailGallery from './ProjectDetailGallery.vue'
+import ProjectDetailSystem from './ProjectDetailSystem.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import { formatProjectDate } from '#shared/project-date'
 import { restructureLineBreaks } from '~/utils/lineBreakLists'
@@ -87,6 +88,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </div>
       </div>
     </header>
+
+    <ProjectDetailSystem v-if="project.system" :system="project.system" />
 
     <nav v-if="chapters.length" class="project-story__chapters overflow-x-auto border-b border-slate-200 bg-white" aria-label="Các phần trong hồ sơ dự án">
       <div class="pts-container flex min-w-max items-center justify-between gap-6 py-3 tb:gap-9">

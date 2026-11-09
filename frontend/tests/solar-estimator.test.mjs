@@ -42,3 +42,15 @@ test('solution pages link to the estimator only while it is switched on', () => 
   assert.match(solution, /publicSite\.value\?\.estimator === true/)
   assert.match(solution, /to="\/uoc-tinh-dien-mat-troi\/"/)
 })
+
+test('project pages accept system figures, refuse broken ones and show only filled facts', async () => {
+  const { isPublicProjectDetailPayload } = await import('../shared/contracts/public-project-detail.ts')
+  const sample = JSON.parse(read('../backend/resources/api-snapshots/project-detail.json'))[0].body
+  assert.equal(isPublicProjectDetailPayload(sample), true)
+  const withSystem = { ...sample, project: { ...sample.project, system: { type: 'hybrid', typeLabel: 'Hybrid có lưu trữ', kwp: 10.5, storageKwh: null, outputKwhMonth: 1300, savingMonth: null, buildDays: 2 } } }
+  assert.equal(isPublicProjectDetailPayload(withSystem), true)
+  assert.equal(isPublicProjectDetailPayload({ ...withSystem, project: { ...withSystem.project, system: { ...withSystem.project.system, kwp: -3 } } }), false)
+  const view = read('app/components/project-detail/ProjectDetailSystem.vue')
+  assert.match(view, /\.filter\(\(fact\) => fact !== null\)/)
+  assert.match(read('app/components/project-detail/ProjectDetailPage.vue'), /<ProjectDetailSystem v-if="project\.system"/)
+})
