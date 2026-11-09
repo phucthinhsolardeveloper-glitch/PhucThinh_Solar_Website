@@ -197,6 +197,17 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           @error="markImageError(product)"
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>
+        <img
+          v-if="product.promoFrame"
+          :src="product.promoFrame"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 z-[5] h-full w-full object-contain"
+          loading="lazy"
+          decoding="async"
+          width="640"
+          height="640"
+        >
         <span v-if="product.powerWatts" class="absolute bottom-2 left-2 z-10 rounded-sm bg-navy-950 px-2 py-0.5 text-[13px] font-extrabold tabular-nums text-gold-300 tb:hidden">{{ formatPower(product.powerWatts) }}</span>
 
       </NuxtLink>

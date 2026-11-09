@@ -14,6 +14,8 @@ export interface PublicCatalogProduct {
   powerWatts?: number | null
   quickSpecs?: string[]
   pricing?: PublicCatalogPricing
+  /** Transparent promotion frame laid over the picture while a campaign covers the product. */
+  promoFrame?: string
 }
 
 export type PublicCatalogPricing =
@@ -93,8 +95,14 @@ function isCategory(value: unknown): value is PublicCatalogCategory {
   return isRecord(value) && hasExactKeys(value, ['id', 'name', 'slug', 'url']) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && typeof value.url === 'string' && /^\/danh-muc-san-pham\/[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*){0,3}\/$/.test(value.url) && value.url.endsWith(`/${value.slug}/`)
 }
 
+const PROMO_FRAME = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.png$/i
+
 export function isPublicCatalogProduct(value: unknown): value is PublicCatalogProduct {
   if (!isRecord(value)) return false
+  if ('promoFrame' in value) {
+    const { promoFrame, ...card } = value
+    return typeof promoFrame === 'string' && PROMO_FRAME.test(promoFrame) && isPublicCatalogProduct(card)
+  }
   const basic = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
   const extended = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'pricing'])
   const extendedWithSpecs = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'quickSpecs', 'pricing'])

@@ -31,6 +31,7 @@ final class MediaReferences
         'seo_metas' => ['image' => ['seopage', 'product', 'news']],
         'review_media' => ['path' => ['photo', 'video'], 'poster' => ['photo']],
         'order_items' => ['image' => ['product']],
+        'product_campaigns' => ['frame_image' => ['photo']],
     ];
 
     /** Columns holding HTML or JSON in which "/upload/..." links are looked for. */

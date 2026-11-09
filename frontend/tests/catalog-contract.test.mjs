@@ -125,3 +125,10 @@ test('rejects invented IDs that are not safe positive integers in selected filte
   assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, brandIds: [-1] } }), false)
   assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, brandIds: [1.5] } }), false)
 })
+test('accepts a transparent promotion frame from upload/photo and nothing else', () => {
+  const withFrame = (promoFrame) => isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], promoFrame }] })
+  assert.equal(withFrame('/upload/photo/khung-tet-2027.png'), true)
+  assert.equal(withFrame('/upload/photo/khung.jpg'), false)
+  assert.equal(withFrame('https://evil.test/k.png'), false)
+  assert.equal(withFrame(null), false)
+})

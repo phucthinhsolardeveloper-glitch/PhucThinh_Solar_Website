@@ -41,7 +41,7 @@ final class CatalogFilters
     public const CARD_COLUMNS = self::CARD_BASE.", coalesce(p.waterproof_rating,'') as waterproof_rating, coalesce(p.lighting_time,'') as lighting_time";
 
     /** Cards on search, brand and related lists show the power only (no water rating or lighting time), as before. */
-    public const CARD_BASE = "p.id, p.name, p.slug, coalesce(p.image,'') as image, coalesce(p.image_secondary,'') as image_secondary, p.is_visible, p.quote_only,"
+    public const CARD_BASE = "p.id, p.category_id, p.brand_id, p.name, p.slug, coalesce(p.image,'') as image, coalesce(p.image_secondary,'') as image_secondary, p.is_visible, p.quote_only,"
         ." coalesce(p.regular_price,0) as regular_price, coalesce(p.sale_price,0) as sale_price, coalesce(p.power_watts,'') as power_watts";
 
     /** @return array{0: string, 1: list<mixed>} price bands on the price the buyer pays; quotation-only products never match */

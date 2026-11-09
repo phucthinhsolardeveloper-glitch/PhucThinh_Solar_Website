@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Catalog\PromoFrames;
 use App\Support\Text;
 
 /** A product tile in lists: pictures, power, up to three quick specs, price. */
@@ -11,7 +12,7 @@ class ProductCard
 {
     private const MISSING = '/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)(?:\s|$)/iu';
 
-    public function __construct(private readonly ProductMediaUrls $urls) {}
+    public function __construct(private readonly ProductMediaUrls $urls, private readonly PromoFrames $frames) {}
 
     /** @param list<string> $gallery gallery file names already checked on disk, shown between the two main photos */
     public function dto(array $row, PricingPolicy $pricing, array $gallery = []): ?array
@@ -36,7 +37,7 @@ class ProductCard
             }
         }
 
-        return [
+        $card = [
             'id' => $id,
             'name' => $name,
             'slug' => $slug,
@@ -46,5 +47,11 @@ class ProductCard
             'quickSpecs' => array_slice($quick, 0, 3),
             'pricing' => $pricing->forProduct($row),
         ];
+        // Present only while a campaign covers the product, so cards without one keep their shape.
+        if (($frame = $this->frames->for($row)) !== null) {
+            $card['promoFrame'] = $frame;
+        }
+
+        return $card;
     }
 }
