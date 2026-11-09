@@ -84,6 +84,12 @@ dự án. `verify-candidate.sh` đạt; `site-audit` 0 lỗi trên 19 route × 4
 `4ab50eaf-candidate`. Backend 211 test, Nuxt 484 test, typecheck/build, PHPStan, Pint
 đều qua. Vẫn chưa có staging VPS, sandbox VNPay/Nhất Tín/SMTP, restore/rollback qua Caddy thật.
 
+Mốc `5f3e0ba8` (2026-11-10): thêm công cụ ước tính (tắt mặc định, trang 404) và thông số dự án
+(migration `001500`). `verify-candidate.sh` đạt với cấu hình phát hành; `site-audit` 0 lỗi; Admin
+88 màn (DEEP) + `bo-cuc-trang`, `cong-cu-uoc-tinh` không lỗi. Giả lập VNPay/Nhất Tín/Mailpit
+(`docker-compose.sim.yml`) đạt: Nhất Tín 11/11 bước, VNPay thành công/báo 2 lần/thất bại/hủy, mail qua worker.
+Với giả lập bật, gate báo `checkout` có thêm VNPay: đúng như cấu hình, không phải lỗi.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho

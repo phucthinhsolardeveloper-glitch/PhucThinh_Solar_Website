@@ -12,7 +12,8 @@ const base = process.env.ADMIN_BASE || 'http://127.0.0.1:8090';
 const out = process.argv[2] || path.join(__dirname, 'out', 'admin');
 const screens = ['', 'products', 'products/create', 'categories', 'brands', 'articles', 'solutions', 'projects', 'policies', 'post-categories',
   'page-items', 'banners', 'albums', 'videos', 'orders', 'wards', 'payment-methods', 'leads', 'reviews', 'thong-tin-website',
-  'store-locations', 'seo-pages', 'users', 'media-files', 'audit-events', 'ban-nhap', 'mau-email', 'tich-hop', 'redirects', 'nhap-xuat-san-pham', 'product-campaigns', 'content-sections'];
+  'store-locations', 'seo-pages', 'users', 'media-files', 'audit-events', 'ban-nhap', 'mau-email', 'tich-hop', 'redirects', 'nhap-xuat-san-pham', 'product-campaigns', 'content-sections',
+  'bo-cuc-trang', 'cong-cu-uoc-tinh'];
 // With DEEP=1 the first record's edit page and the create page of each list are opened too.
 const deep = process.env.DEEP === '1';
 
