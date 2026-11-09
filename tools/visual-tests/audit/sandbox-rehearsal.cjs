@@ -3,6 +3,7 @@
 // failure, cancel. Then reads Mailpit to see which mails the worker really sent over SMTP.
 // Only for the local rehearsal stack with docker-compose.sim.yml. Orders it creates start with the name
 // "Khách thử SIM" and are listed at the end so they can be removed.
+// The shop accepts 5 orders per IP in 10 minutes (anti-spam), so run it at most once per 10 minutes.
 //
 //   AUDIT_BASE=http://127.0.0.1:18085 SIM=http://127.0.0.1:18086 MAILPIT=http://127.0.0.1:18025 node audit/sandbox-rehearsal.cjs
 const { chromium } = require('playwright');

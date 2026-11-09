@@ -21,5 +21,6 @@ services:
     image: axllent/mailpit:v1.21.8
     ports:
       - "127.0.0.1:18025:8025"
-    networks: [data]
+    # data is internal (no published ports); edge only carries the loopback web UI.
+    networks: [edge, data]
     restart: unless-stopped
