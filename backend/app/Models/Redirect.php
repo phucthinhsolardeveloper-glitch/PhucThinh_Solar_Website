@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Old address => new address; see App\Domain\Routing\Redirects.
  *
- * @property \Illuminate\Support\Carbon|null $last_hit_at
+ * @property Carbon|null $last_hit_at
  */
 class Redirect extends Model
 {

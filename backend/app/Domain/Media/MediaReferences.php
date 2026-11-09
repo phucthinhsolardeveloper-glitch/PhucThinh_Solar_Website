@@ -16,7 +16,7 @@ final class MediaReferences
 {
     /** table => [column => candidate folders]; a bare name is looked up in each folder in turn. */
     public const COLUMNS = [
-        'products' => ['image' => ['product'], 'image_secondary' => ['product']],
+        'products' => ['image' => ['product'], 'image_secondary' => ['product'], 'feed_image' => ['product']],
         'product_images' => ['path' => ['product']],
         'product_documents' => ['path' => ['file']],
         'albums' => ['image' => ['product']],

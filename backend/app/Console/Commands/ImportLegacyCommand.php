@@ -163,7 +163,7 @@ class ImportLegacyCommand extends Command
                 'installation' => self::text($row['installationvi']), 'specs_html' => self::text($row['thongsokythuatvi']), 'purchase_policy' => self::text($row['chinhsachmuahangvi']),
                 'price_range' => self::nullable(self::text($row['khoanggia'])), 'regular_price' => (float) $row['regular_price'] > 0 ? round((float) $row['regular_price']) : null,
                 'sale_price' => (float) $row['sale_price'] > 0 ? round((float) $row['sale_price']) : null, 'quote_only' => in_array('baogia', $flags, true),
-                'image' => self::nullable($row['photo']), 'image_secondary' => self::nullable($row['photo2']), 'video_url' => self::nullable(self::text($row['video_url'])),
+                'image' => self::nullable($row['photo']), 'image_secondary' => self::nullable($row['photo2']), 'feed_image' => self::nullable($row['photo_feed']), 'video_url' => self::nullable(self::text($row['video_url'])),
                 'pdp_profile' => self::nullable($row['pdp_profile']), 'power_watts' => is_numeric(str_replace(',', '.', (string) $row['cong_suat'])) && (float) str_replace(',', '.', (string) $row['cong_suat']) != 0 ? (float) str_replace(',', '.', (string) $row['cong_suat']) : null,
                 'package_contents' => self::nullable(self::text($row['package_contents'])), 'additional_specs' => is_array($additional) ? json_encode($additional, JSON_UNESCAPED_UNICODE) : null,
                 'is_visible' => in_array('hienthi', $flags, true), 'is_bestseller' => in_array('banchay', $flags, true), 'sort_order' => (int) $row['numb'], 'views' => (int) $row['view']] + self::times($row);
