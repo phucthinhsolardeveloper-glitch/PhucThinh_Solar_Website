@@ -39,4 +39,4 @@ Không có việc dở.
 | Logo thương hiệu quản lý trong Admin | 553ebb8f | `pts:brand-logos` tự chạy trong `pts:import-legacy`; DB dev chưa chạy vì kho upload local chỉ đọc |
 | Khối mô tả: danh sách, độ phủ, lịch sử, khôi phục | e7b7ecea | Đã đối chiếu `content_section.php`, `productLegacyHtmlToBlocks` |
 | Mã tỉnh (BNV) và mã phường/xã (TMS) từ `Danh-muc-Phuong-xa_moi.xlsx` | e09127f8 | 3.321/3.321 phường, 34/34 tỉnh; mã phường là mã thuế 8 số, khác mã Nhất Tín trong ví dụ, phải đối chiếu khi có sandbox |
-| Chuyển khoản VietQR theo đơn, xác nhận thủ công đối chiếu số tiền | commit kế tiếp | Tài khoản nhận khai ở Thông tin website (chỉ chủ website). **Chưa khai thì checkout ẩn mục Chuyển khoản**: phải khai trước khi chuyển hệ thống |
+| Chuyển khoản VietQR theo đơn, xác nhận thủ công đối chiếu số tiền | 5b35487a | Tài khoản nhận khai ở Thông tin website (chỉ chủ website). **Chưa khai thì checkout ẩn mục Chuyển khoản**: phải khai trước khi chuyển hệ thống |
