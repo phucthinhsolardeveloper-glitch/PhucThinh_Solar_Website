@@ -1,0 +1,25 @@
+# Rehearsal only: fake VNPay + Nhất Tín (tools/sandbox-sim) and a mail catcher next to the candidate stack.
+#   docker compose --env-file runtime/stack.env -f docker-compose.yml -f docker-compose.sim.yml up -d
+# The backend then needs the SIM values from runtime/backend.env (see tools/sandbox-sim/README.md).
+# Never use this file on a server: no real gateway, waybill or mailbox is reached.
+services:
+  sim:
+    image: node:24.20.0-alpine
+    command: ["node", "/sim/server.mjs"]
+    read_only: true
+    volumes:
+      - ../../tools/sandbox-sim:/sim:ro
+    env_file:
+      - path: ./runtime/sim.env
+        required: true
+    ports:
+      - "127.0.0.1:18086:8080"
+    networks: [edge, data]
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.21.8
+    ports:
+      - "127.0.0.1:18025:8025"
+    networks: [data]
+    restart: unless-stopped

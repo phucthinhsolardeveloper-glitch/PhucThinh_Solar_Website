@@ -5,7 +5,8 @@
 return [
     'nhattin' => [
         'mode' => env('NTL_MODE', 'mock'),
-        'hosts' => ['sandbox' => 'https://apisandbox.ntlogistics.vn', 'production' => 'https://apiws.ntlogistics.vn'],
+        // NTL_SANDBOX_URL only exists for the local rehearsal simulator (tools/sandbox-sim); production is fixed.
+        'hosts' => ['sandbox' => env('NTL_SANDBOX_URL', 'https://apisandbox.ntlogistics.vn'), 'production' => 'https://apiws.ntlogistics.vn'],
         'production_unlocked' => env('NTL_PRODUCTION_UNLOCKED') === '1',
         // Show the Nhất Tín fee at checkout (otherwise the area fee table, or staff confirm).
         'checkout_quotes' => env('NTL_CHECKOUT_QUOTES', '1') === '1',
