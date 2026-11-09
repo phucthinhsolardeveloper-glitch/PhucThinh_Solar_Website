@@ -6,6 +6,8 @@ COPY . .
 RUN npm run build
 
 FROM node:24.20.0-alpine
+ARG PTS_SOURCE_REVISION
+LABEL org.opencontainers.image.revision="${PTS_SOURCE_REVISION}"
 WORKDIR /app
 ENV NODE_ENV=production NITRO_HOST=0.0.0.0 NITRO_PORT=3000
 RUN addgroup -S nuxt && adduser -S nuxt -G nuxt

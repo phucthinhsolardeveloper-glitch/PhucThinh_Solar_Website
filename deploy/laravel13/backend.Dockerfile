@@ -1,5 +1,8 @@
 FROM php:8.4-apache-bookworm
 
+ARG PTS_SOURCE_REVISION
+LABEL org.opencontainers.image.revision="${PTS_SOURCE_REVISION}"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libwebp-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \

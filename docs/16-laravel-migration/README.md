@@ -16,6 +16,9 @@ Candidate deployment: [../../deploy/laravel13/README.md](../../deploy/laravel13/
 Correctness P0 của VNPay conversion/mail và review media đã được xử lý trên
 nhánh migration; chi tiết hành vi, test và giới hạn còn lại ở
 [commerce-media-correctness-2026-11-09.md](commerce-media-correctness-2026-11-09.md).
+Bộ snapshot API chuẩn hiện được version hóa tại `backend/resources/api-snapshots`
+và đóng vào image. Gate deploy tại `deploy/laravel13/verify-candidate.sh` kiểm
+image ID, migration, snapshot và route trước cutover.
 
 Admin sản phẩm hiện có CSV cập nhật **giá bán, giá khuyến mãi, chỉ báo giá và
 hiển thị**: tại `/admin/products`, xuất mẫu, sửa file UTF-8, nhập để xem trước,
@@ -270,8 +273,9 @@ Chỉ commit ở local, chưa push.
 Kiểm trên Nuxt :3110 + Laravel :8090: `site-audit` 0 lỗi trên 19 trang × 4 độ rộng;
 `audit/shop-flow.cjs` thêm hàng vào giỏ, giỏ giữ qua cookie, form thanh toán trỏ đúng API.
 
-Mốc API: `php artisan pts:parity <api> --save` lưu câu trả lời hiện tại (đã khớp PHP) vào
-`backend/storage/app/snapshots/`. Sau khi đổi cấu trúc dữ liệu, `--against-snapshot` so
+Mốc lịch sử: `php artisan pts:parity <api> --save` từng lưu câu trả lời (đã khớp PHP) vào
+`backend/storage/app/snapshots/`. Bộ chuẩn hiện ở `backend/resources/api-snapshots`.
+Sau khi đổi cấu trúc dữ liệu, `--against-snapshot` so
 với mốc này mà không cần PHP.
 
 ## Việc tiếp theo

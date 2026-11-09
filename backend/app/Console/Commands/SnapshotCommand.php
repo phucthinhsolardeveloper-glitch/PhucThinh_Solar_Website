@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 
 /**
- * Regression check for the public API: every stored case (storage/app/snapshots/<api>.json) is asked
+ * Regression check for the public API: every stored case (resources/api-snapshots/<api>.json) is asked
  * again and compared field by field with the stored answer. --save replaces the stored answers after
  * a deliberate change has been reviewed.
  */
@@ -23,8 +23,13 @@ class SnapshotCommand extends Command
 
     public function handle(): int
     {
-        $dir = storage_path('app/snapshots');
+        $dir = resource_path('api-snapshots');
         $apis = $this->argument('api') !== null ? [(string) $this->argument('api')] : array_map(fn ($file) => basename($file, '.json'), glob($dir.'/*.json') ?: []);
+        if ($apis === []) {
+            $this->error('No API snapshots found in '.$dir);
+
+            return self::FAILURE;
+        }
         $failed = false;
         foreach ($apis as $api) {
             $failed = ! $this->check($api, $dir.'/'.$api.'.json') || $failed;
@@ -48,7 +53,13 @@ class SnapshotCommand extends Command
             $query = $case['query'];
             $response = app()->handle(Request::create('/api/v1/'.$api, 'GET', $query));
             $now = ['status' => $response->getStatusCode(), 'body' => json_decode((string) $response->getContent(), true)];
-            $saved[] = ['query' => $query] + $now;
+            $forStorage = $now;
+            foreach (self::VOLATILE[$api] ?? [] as $key) {
+                if (isset($forStorage['body'][$key])) {
+                    $forStorage['body'][$key] = '__VOLATILE__';
+                }
+            }
+            $saved[] = ['query' => $query] + $forStorage;
             $before = ['status' => $case['status'], 'body' => $case['body']];
             foreach (self::VOLATILE[$api] ?? [] as $key) {
                 unset($before['body'][$key], $now['body'][$key]);

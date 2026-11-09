@@ -82,6 +82,11 @@ Apache là baseline rehearsal vì repo đã có đường chạy PHP qua HTTP; q
 giữa Apache, PHP-FPM và FrankenPHP để production cần benchmark cùng dữ liệu và
 tải. Không đổi runtime chỉ vì tên mới. Image backend và Nuxt phải gắn tag SHA
 bất biến; không dùng `latest` cho cutover/rollback.
+Snapshot API chuẩn nằm trong `backend/resources/api-snapshots` và được đóng
+vào backend image. Volume `app_storage` chỉ chứa state runtime; không dùng file
+còn sót từ một volume local cũ làm bằng chứng cho release mới. Các giá trị
+CSRF/checkout token biến động đã được thay bằng placeholder; mọi trường còn lại
+giữ nguyên so với bộ chuẩn cũ.
 
 Upload ở `${PTS_UPLOAD_DIR}` là bind mount **có thể ghi** cho Admin, nằm ngoài
 DocumentRoot PHP. `app_storage` chứa session/cache/log và `db_data` chứa MariaDB;
@@ -110,17 +115,27 @@ khi mở Admin. File `.env` được loại khỏi Docker build context.
    checksum. Dump MariaDB nên dùng `--single-transaction --quick`, không chứa
    `CREATE DATABASE`/`USE` để nạp vào DB candidate. Chỉ dùng dữ liệu được phép
    trên staging; không đưa dump/ảnh chứa PII vào Git hoặc báo cáo.
-4. Từ thư mục này: `docker compose --env-file runtime/stack.env config --quiet`;
-   `docker compose --env-file runtime/stack.env build backend nuxt`;
-   `docker compose --env-file runtime/stack.env up -d db`.
+4. Chốt commit sạch, đặt `PTS_SOURCE_REVISION` bằng **SHA đầy đủ** của commit và
+   tag hai image theo 8 ký tự đầu (`<sha8>-candidate`). Từ thư mục này chạy
+   `./build-candidate.sh runtime/stack.env`. Script gắn revision label và ghi
+   image ID vào `runtime/release-manifest.json`. Để chạy đúng bản đã thử trên
+   VPS, chuyển **chính hai image** bằng registry digest hoặc `docker save` /
+   `docker load` cùng manifest; đối chiếu SHA-256 file tar và image ID. Không
+   build lại cùng tag trên VPS rồi giả định bytes giống nhau. Đo chỗ trống
+   trước khi tạo tar. Sau đó `docker compose --env-file runtime/stack.env up -d db`.
 5. Nạp dump vào DB candidate qua `docker compose exec -T db`; sau đó chạy
    `docker compose run --rm --no-deps backend php artisan migrate --force` và
    `docker compose run --rm --no-deps backend php artisan pts:import-legacy --fresh`.
-   Không trỏ hai lệnh vào DB production. So counts, quan hệ, orphan, tiền,
-   content inheritance, user/SEO/media và snapshot trước khi tiếp tục.
+   Đây chỉ là **lần import đầu trên DB clone riêng**. Bản nâng cấp sau đó chạy
+   migration mới trên clone và kiểm dữ liệu; tuyệt đối không chạy lại `--fresh`
+   trên DB đã nhận đơn/lead/Admin write. Không trỏ hai lệnh vào DB production.
+   So counts, quan hệ, orphan, tiền, content inheritance, user/SEO/media.
 6. `docker compose --env-file runtime/stack.env up -d backend nuxt proxy`.
-   Kiểm `curl -f http://127.0.0.1:18085/health`, API, trang public, `/admin/login`,
-   `/upload/*`, `/thumbs/*`, sitemap, robots noindex và response 404. Chạy
+   Chạy `./verify-candidate.sh runtime/stack.env runtime/release-manifest.json`:
+   gate so image ID của **container đang chạy** với manifest, DB chỉ nằm trong
+   stack tách biệt, migration không pending, snapshot API khớp, route chính 200
+   và candidate noindex. Nếu fail thì giữ route cũ; chẩn đoán DB/image/config
+   trước khi thử lại. Kiểm thêm `/upload/*`, `/thumbs/*` và response 404. Chạy
    `site-audit`, `shop-flow`, `admin-screens`, bảo mật và benchmark trên origin
    staging. Script Admin chỉ mở màn; CRUD/RBAC/save phải có kiểm riêng.
 
@@ -133,6 +148,12 @@ Không thay route của training/ZCRM. Kiểm hostname và TLS qua proxy thật.
 - Trước import/cutover: giữ dump DB legacy, bản sao upload, checksum, image IDs,
   Caddyfile đang chạy và release/commit cũ. Thử restore dump vào DB clone mới,
   không chỉ kiểm file tồn tại. Phân biệt bản sao này với snapshot VPS CloudFly.
+- Mỗi release phải có **cùng image ID** ở candidate đã kiểm và VPS staging.
+  Ghi manifest, checksum tar/digest registry, migration batch, số dòng quan
+  trọng, kết quả snapshot và route smoke. Migration luôn chạy trên DB clone
+  trước; khi cutover được duyệt, tạo backup mới rồi mới áp migration lên DB đích.
+  Nếu migration đổi schema không tương thích image cũ, rollback cần DB snapshot
+  hoặc forward fix đã diễn tập, không chỉ đổi tag image.
 - `Caddyfile.production-site` chỉ là **site block ứng viên** để merge vào Caddy
   hiện có sau duyệt. Kiểm network của Caddy cũ rồi mới nối tới container mới;
   không thay toàn bộ Caddyfile. Chạy `caddy validate` trên cấu hình đã merge,

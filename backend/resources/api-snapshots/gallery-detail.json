@@ -1,0 +1,1 @@
+[{"query":{"slug":"khong-co"},"status":404,"body":{"error":{"code":"GALLERY_NOT_FOUND"}}},{"query":{"slug":"Bad"},"status":400,"body":{"error":{"code":"BAD_QUERY"}}},{"query":[],"status":400,"body":{"error":{"code":"BAD_QUERY"}}},{"query":{"slug":"a","x":"1"},"status":400,"body":{"error":{"code":"BAD_QUERY"}}}]

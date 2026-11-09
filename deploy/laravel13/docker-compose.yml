@@ -23,6 +23,8 @@ services:
     build:
       context: ../../frontend
       dockerfile: ../deploy/laravel13/nuxt.Dockerfile
+      args:
+        PTS_SOURCE_REVISION: ${PTS_SOURCE_REVISION:?Set the source commit SHA}
     restart: unless-stopped
     container_name: pts-laravel13-nuxt
     environment:
@@ -44,6 +46,8 @@ services:
     build:
       context: ../../backend
       dockerfile: ../deploy/laravel13/backend.Dockerfile
+      args:
+        PTS_SOURCE_REVISION: ${PTS_SOURCE_REVISION:?Set the source commit SHA}
     restart: unless-stopped
     container_name: pts-laravel13-backend
     env_file:
