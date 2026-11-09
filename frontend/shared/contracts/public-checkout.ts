@@ -37,8 +37,19 @@ export interface PublicOrderThanksPayload {
   schemaVersion: 1
   locale: 'vi'
   order: { code: string; customerName: string; totalPrice: number }
-  paymentState: 'accepted' | 'pending' | 'paid' | 'failed'
+  paymentState: 'accepted' | 'pending' | 'paid' | 'failed' | 'awaiting_transfer'
   conversionPending: boolean
+  /** Fixed VietQR instruction of a bank-transfer order; scanning it pays nothing by itself. */
+  transfer?: PublicOrderTransfer
+}
+export interface PublicOrderTransfer {
+  bankName: string
+  accountNo: string
+  accountName: string
+  amount: number
+  note: string
+  qrImage: string
+  reported: boolean
 }
 
 function record(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
@@ -78,11 +89,20 @@ export function isPublicCheckoutNoticePayload(value: unknown): value is PublicCh
     && text(item) && item.length <= limits[key]!)
     && ['city', 'ward', 'payments'].every((key) => form[key] === undefined || /^-?\d{1,12}$/.test(form[key] as string))
 }
+function isOrderTransfer(value: unknown): value is PublicOrderTransfer {
+  return record(value) && text(value.bankName) && typeof value.accountNo === 'string' && /^[0-9A-Za-z]{4,19}$/.test(value.accountNo)
+    && text(value.accountName) && typeof value.amount === 'number' && Number.isSafeInteger(value.amount) && value.amount > 0
+    && typeof value.note === 'string' && /^[A-Z0-9]{4,25}$/.test(value.note)
+    && typeof value.qrImage === 'string' && value.qrImage.startsWith('data:image/svg+xml;base64,') && value.qrImage.length < 200000
+    && typeof value.reported === 'boolean'
+}
 export function isPublicOrderThanksPayload(value: unknown): value is PublicOrderThanksPayload {
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.order)
-    || typeof value.paymentState !== 'string' || !['accepted', 'pending', 'paid', 'failed'].includes(value.paymentState)
+    || typeof value.paymentState !== 'string' || !['accepted', 'pending', 'paid', 'failed', 'awaiting_transfer'].includes(value.paymentState)
     || typeof value.conversionPending !== 'boolean') return false
-  if (value.conversionPending && !['accepted', 'paid'].includes(value.paymentState)) return false
+  if (value.conversionPending && !['accepted', 'paid', 'awaiting_transfer'].includes(value.paymentState)) return false
+  if (value.paymentState === 'awaiting_transfer' && value.transfer === undefined) return false
+  if (value.transfer !== undefined && !isOrderTransfer(value.transfer)) return false
   return text(value.order.code) && text(value.order.customerName) && typeof value.order.totalPrice === 'number'
     && Number.isSafeInteger(value.order.totalPrice) && value.order.totalPrice >= 0
 }

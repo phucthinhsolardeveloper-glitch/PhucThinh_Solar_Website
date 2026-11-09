@@ -44,6 +44,7 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 - Tài khoản Admin để test: tạo tạm bằng tinker (`username` = `kiemtra-local`, `role` = `owner`, mật khẩu ngẫu nhiên), xóa sau khi xong. Hiện có đúng 2 tài khoản thật: `admin`, `quoccuong123`.
 - Logo đối tác: `php artisan pts:brand-logos` đưa 20 logo trong `backend/resources/brand-logos` vào kho upload và gắn vào thương hiệu (giữ logo đã chọn trong Admin, trừ khi `--force`). Tự chạy trong `pts:import-legacy`. DB dev chưa chạy vì `/srv/upload` mount chỉ đọc, nên trang Giới thiệu local chỉ hiện 3 logo.
 - Bản ghi trang Đại lý (`page_items` 2167, `dealer.intro`) đã bị tài khoản `admin` xóa trên DB dev lúc 11:55 ngày 09/11; snapshot `dealer` vì thế lệch, chưa lưu đè.
+- Chuyển khoản: chủ website khai ngân hàng, số tài khoản, tên chủ tài khoản ở Admin → Thông tin website. Chưa khai thì checkout không hiện Chuyển khoản. Thử đặt đơn trên Nuxt local cần chuyển `/api/v1/*` sang cổng 8090 (production có Caddy làm việc này).
 - Dữ liệu mẫu: `php artisan pts:demo-data`, xóa bằng `--remove`. Hiện đã xóa. Dữ liệu mẫu có đánh giá đã duyệt, phải xóa trước khi chạy `pts:snapshot`.
 - Audit: trong `tools/visual-tests`: `AUDIT_BASE=http://127.0.0.1:3110 node audit/site-audit.cjs`, `audit/shop-flow.cjs`, `DEEP=1 ADMIN_USER=… ADMIN_PASS=… node audit/admin-screens.cjs <thư mục>`. Bộ `visual-tests` cũ nhắm vào PHP nên đỏ trên Nuxt, không dùng làm cổng phát hành.
 

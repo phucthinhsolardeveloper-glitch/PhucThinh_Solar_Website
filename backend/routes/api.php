@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
         Route::post('shipping-quote', [ShopController::class, 'shippingQuote']);
         Route::get('checkout-notice', [ShopController::class, 'notice']);
         Route::get('order-thanks', [ShopController::class, 'thanks']);
+        Route::post('order-thanks/transferred', [ShopController::class, 'reportTransfer'])->middleware('throttle:10,1');
         Route::get('payment/vnpay', [ShopController::class, 'vnpay']);
     });
 });

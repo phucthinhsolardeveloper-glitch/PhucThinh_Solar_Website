@@ -14,19 +14,6 @@ beforeEach(function () {
     $GLOBALS['shopCookies'] = [];
 });
 
-/** Sends a request carrying the session cookie of the previous one, like a browser. */
-function shop(string $method, string $uri, array $body = [])
-{
-    // Cookies come back already encrypted, so they are replayed as they are.
-    $test = test()->withUnencryptedCookies($GLOBALS['shopCookies']);
-    $response = $method === 'GET' ? $test->getJson($uri) : $test->postJson($uri, $body);
-    foreach ($response->headers->getCookies() as $cookie) {
-        $GLOBALS['shopCookies'][$cookie->getName()] = $cookie->getValue();
-    }
-
-    return $response;
-}
-
 function buyableProduct(): object
 {
     return DB::table('products')->where('is_visible', true)->where('quote_only', false)

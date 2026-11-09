@@ -29,3 +29,12 @@ test('validates wards and session-bound thank-you DTO', () => {
   assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách hàng', totalPrice: 500000 }, paymentState: 'failed', conversionPending: true }), false)
   assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: '', customerName: 'Khách hàng', totalPrice: -1 }, paymentState: 'accepted', conversionPending: false }), false)
 })
+
+test('bank transfer orders carry a fixed VietQR instruction', () => {
+  const base = { schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách', totalPrice: 1030000 }, conversionPending: true }
+  const transfer = { bankName: 'VietinBank', accountNo: '113366668888', accountName: 'TAI KHOAN THU NGHIEM', amount: 1030000, note: 'PTSABC123', qrImage: 'data:image/svg+xml;base64,PHN2Zz4=', reported: false }
+  assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer', transfer }), true)
+  assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer' }), false)
+  assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer', transfer: { ...transfer, qrImage: 'https://evil.test/qr.png' } }), false)
+  assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer', transfer: { ...transfer, note: 'pts abc' } }), false)
+})

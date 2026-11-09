@@ -3,9 +3,11 @@
 namespace App\Filament\Pages;
 
 use App\Domain\Audit\Audit;
+use App\Domain\Commerce\VietQr;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -40,7 +42,11 @@ class SiteSettingsPage extends Page
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     /** Keys this page edits; anything else in the table is left alone. */
-    public const TEXT_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours', 'fanpage', 'youtube'];
+    public const TEXT_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours', 'fanpage', 'youtube',
+        'bank_bin', 'bank_account_no', 'bank_account_name'];
+
+    /** Only the owner may change where customers send money. */
+    public const OWNER_KEYS = ['bank_bin', 'bank_account_no', 'bank_account_name'];
 
     public const SWITCH_KEYS = ['public_product_prices', 'review_require_order_code'];
 
@@ -52,6 +58,13 @@ class SiteSettingsPage extends Page
         $user = auth('admin')->user();
 
         return $user instanceof User && $user->hasPermission('settings');
+    }
+
+    private static function isOwner(): bool
+    {
+        $user = auth('admin')->user();
+
+        return $user instanceof User && $user->isOwner();
     }
 
     public function mount(): void
@@ -86,6 +99,13 @@ class SiteSettingsPage extends Page
                 TextInput::make('fanpage')->label('Facebook')->url(),
                 TextInput::make('youtube')->label('YouTube')->url(),
             ]),
+            Section::make('Tài khoản nhận chuyển khoản')->columns(3)->visible(fn () => self::isOwner())
+                ->description('Khách chọn chuyển khoản sẽ thấy mã VietQR theo tài khoản này, kèm số tiền và nội dung riêng cho từng đơn. Để trống thì không nhận chuyển khoản.')
+                ->schema([
+                    Select::make('bank_bin')->label('Ngân hàng')->searchable()->options(VietQr::BANKS),
+                    TextInput::make('bank_account_no')->label('Số tài khoản')->regex('/^[0-9A-Za-z ]{4,23}$/'),
+                    TextInput::make('bank_account_name')->label('Tên chủ tài khoản')->maxLength(60)->helperText('Viết như trên thẻ ngân hàng, không dấu cũng được.'),
+                ]),
             Section::make('Bán hàng')->columns(2)->schema([
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
@@ -110,6 +130,11 @@ class SiteSettingsPage extends Page
         foreach (self::TEXT_KEYS as $key) {
             $after[$key] = (string) ($data[$key] ?? '');
         }
+        if (! self::isOwner()) {
+            $after = array_diff_key($after, array_flip(self::OWNER_KEYS));
+        }
+        // A setting never filled in stays absent rather than becoming an empty row.
+        $after = array_filter($after, fn ($value, $key) => $value !== '' || array_key_exists($key, $before), ARRAY_FILTER_USE_BOTH);
         foreach (self::SWITCH_KEYS as $key) {
             $after[$key] = ! empty($data[$key]) ? '1' : '0';
         }

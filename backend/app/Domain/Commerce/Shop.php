@@ -308,6 +308,9 @@ class Shop
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
                     $items[] = ['name' => (string) $product['name'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
                 }
+                if (($payment['kind'] ?? '') === 'bank_transfer') {
+                    app(BankTransfer::class)->issue($orderId, $order['code'], (int) round($total));
+                }
                 if ((int) $payment['id'] === Payments::VNPAY_ID) {
                     $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total,
                         'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
@@ -339,6 +342,33 @@ class Shop
         return [200, $this->finish($orderId, $order['code'])];
     }
 
+    /** @return array<string, mixed> what the thank-you page shows to pay by transfer */
+    private static function transfer(object $instruction, bool $reported): array
+    {
+        return ['bankName' => (string) $instruction->bank_name, 'accountNo' => (string) $instruction->account_no, 'accountName' => (string) $instruction->account_name,
+            'amount' => (int) $instruction->amount, 'note' => (string) $instruction->reference, 'qrImage' => VietQr::svg((string) $instruction->qr_text),
+            'reported' => $reported];
+    }
+
+    /**
+     * POST /order-thanks/transferred: the buyer says the transfer is done. Staff still check the bank
+     * statement before the order counts as paid.
+     *
+     * @return array{0: int, 1: array<string, mixed>}
+     */
+    public function reportTransfer(array $input): array
+    {
+        $token = is_scalar($input['token'] ?? null) ? trim((string) $input['token']) : '';
+        $entry = ((array) $this->session->get('order_thanks', []))[$token] ?? null;
+        if (! preg_match('/^[a-f0-9]{48}$/', $token) || ! is_array($entry) || time() - (int) ($entry['created_at'] ?? 0) > self::THANKS_TTL) {
+            return [404, ['error' => ['code' => 'NOT_FOUND']]];
+        }
+        $updated = DB::table('orders')->where('id', (int) ($entry['id'] ?? 0))->where('code', (string) ($entry['code'] ?? ''))->where('payment_status', 'unpaid')->whereNull('transfer_reported_at')
+            ->update(['transfer_reported_at' => now(), 'updated_at' => now()]);
+
+        return [200, ['ok' => true, 'reported' => true, 'changed' => $updated > 0]];
+    }
+
     /** @return array{0: int, 1: array<string, mixed>} GET /order-thanks?token= (one conversion event per order) */
     public function thanks(array $get): array
     {
@@ -355,23 +385,25 @@ class Shop
 
             return $notFound;
         }
-        $order = DB::selectOne('select id, code, customer_name as fullname, total as total_price, payment_code, payment_status from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
+        $order = DB::selectOne('select id, code, customer_name as fullname, total as total_price, payment_code, payment_status, transfer_reported_at from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
         if (! $order || empty($order->code)) {
             unset($all[$token]);
             $this->session->put('order_thanks', $all);
 
             return $notFound;
         }
-        $paymentState = $order->payment_code === 'manual' ? 'accepted' : ($order->payment_status === 'paid' ? 'paid' :
-            (DB::table('payment_transactions')->where('order_id', $order->id)->where('provider', 'vnpay')->value('status') === 'failed' ? 'failed' : 'pending'));
+        $instruction = $order->payment_code === 'manual' ? app(BankTransfer::class)->active((int) $order->id) : null;
+        $paymentState = $instruction ? ($order->payment_status === 'paid' ? 'paid' : 'awaiting_transfer') : ($order->payment_code === 'manual' ? 'accepted' : ($order->payment_status === 'paid' ? 'paid' :
+            (DB::table('payment_transactions')->where('order_id', $order->id)->where('provider', 'vnpay')->value('status') === 'failed' ? 'failed' : 'pending')));
         $consumed = array_key_exists('conversion_consumed', $entry) ? (bool) $entry['conversion_consumed'] : empty($entry['conversion_pending']);
-        $fire = ! $consumed && in_array($paymentState, ['accepted', 'paid'], true);
+        $fire = ! $consumed && in_array($paymentState, ['accepted', 'paid', 'awaiting_transfer'], true);
         $all[$token]['conversion_consumed'] = $consumed || $fire;
         $all[$token]['conversion_pending'] = false;
         $this->session->put('order_thanks', $all);
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'order' => ['code' => trim((string) $order->code), 'customerName' => trim(strip_tags((string) $order->fullname)),
-            'totalPrice' => max(0, (int) round((float) $order->total_price))], 'paymentState' => $paymentState, 'conversionPending' => $fire]];
+            'totalPrice' => max(0, (int) round((float) $order->total_price))], 'paymentState' => $paymentState, 'conversionPending' => $fire]
+            + ($instruction ? ['transfer' => self::transfer($instruction, $order->transfer_reported_at !== null)] : [])];
     }
 
     /**

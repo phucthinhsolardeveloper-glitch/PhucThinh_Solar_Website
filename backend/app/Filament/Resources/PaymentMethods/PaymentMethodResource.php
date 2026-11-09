@@ -7,6 +7,7 @@ use App\Filament\Support\Fields;
 use App\Models\PaymentMethod;
 use BackedEnum;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -35,10 +36,14 @@ class PaymentMethodResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
+    public const KINDS = ['cash' => 'Tiền mặt tại công ty', 'bank_transfer' => 'Chuyển khoản (VietQR)', 'cod' => 'Thu tiền khi nhận hàng', 'other' => 'Khác'];
+
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
             TextInput::make('name')->label('Tên')->required(),
+            Select::make('kind')->label('Loại')->required()->default('other')->options(self::KINDS)
+                ->helperText('Chuyển khoản: khách thấy mã VietQR theo đơn. Thu khi nhận hàng: vận đơn Nhất Tín thu hộ đúng tổng tiền đơn.'),
             Textarea::make('description')->label('Hướng dẫn hiện khi khách chọn (số tài khoản, ghi chú…)')->rows(4)->columnSpanFull(),
             Fields::visible(),
         ]);

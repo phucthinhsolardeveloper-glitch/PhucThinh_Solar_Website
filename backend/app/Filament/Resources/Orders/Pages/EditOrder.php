@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
+use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\ManualPayment;
 use App\Domain\Commerce\OrderLifecycle;
 use App\Filament\Resources\Orders\OrderResource;
@@ -31,11 +32,17 @@ class EditOrder extends EditRecord
             Action::make('confirmManualPayment')->label('Xác nhận đã nhận tiền')->icon('heroicon-o-banknotes')
                 ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'unpaid'
                     && AdminActor::current()->canPerform('orders_payment'))
-                ->schema([TextInput::make('reference')->label('Mã giao dịch / phiếu thu')->required()->maxLength(120)])
+                ->schema([
+                    TextInput::make('reference')->label('Mã giao dịch / phiếu thu')->required()->maxLength(120),
+                    TextInput::make('amount')->label('Số tiền đã nhận (đ)')->numeric()->required()
+                        ->default(fn (Order $record) => (int) $record->total)
+                        ->helperText('Lấy từ sao kê tài khoản hoặc phiếu thu, không lấy từ ảnh khách gửi.'),
+                ])
                 ->requiresConfirmation()
-                ->modalDescription('Chỉ dùng khi đã kiểm tra tiền hoặc phiếu thu thực tế. Thao tác sẽ lưu lịch sử giao dịch của đơn.')
+                ->modalDescription(fn (Order $record) => 'Chỉ xác nhận khi đã thấy tiền vào tài khoản hoặc phiếu thu thực tế.'
+                    .(($i = app(BankTransfer::class)->active((int) $record->id)) ? ' Đối chiếu nội dung chuyển khoản: '.$i->reference.'.' : ''))
                 ->action(function (Order $record, array $data) {
-                    app(ManualPayment::class)->confirm($record, AdminActor::current(), $data['reference']);
+                    app(ManualPayment::class)->confirm($record, AdminActor::current(), $data['reference'], (int) $data['amount']);
                     $this->refreshFormData(['payment_status', 'payment_reference']);
                 }),
             Action::make('recordManualRefund')->label('Ghi nhận đã hoàn tiền')->icon('heroicon-o-arrow-uturn-left')

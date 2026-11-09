@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
 use App\Filament\Concerns\RequiresPermission;
@@ -96,6 +97,14 @@ class OrderResource extends Resource
                 TextInput::make('payment_method')->label('Hình thức thanh toán')->disabled()->dehydrated(false)
                     ->formatStateUsing(fn (?Order $record) => $record?->paymentMethod->name ?? ($record?->payment_code === 'vnpay' ? 'VNPay' : '')),
                 TextInput::make('payment_reference')->label('Mã giao dịch')->disabled(),
+                TextInput::make('transfer')->label('Chuyển khoản cần nhận')->disabled()->dehydrated(false)->columnSpanFull()
+                    ->visible(fn (?Order $record) => $record && app(BankTransfer::class)->active((int) $record->id) !== null)
+                    ->formatStateUsing(function (?Order $record) {
+                        $i = $record ? app(BankTransfer::class)->active((int) $record->id) : null;
+
+                        return $i ? self::money($i->amount).' · nội dung '.$i->reference.' · '.$i->bank_name.' '.$i->account_no
+                            .($record->transfer_reported_at ? ' · khách báo đã chuyển lúc '.Carbon::parse($record->transfer_reported_at)->format('H:i d/m') : '') : '';
+                    }),
                 Textarea::make('requirements')->label('Yêu cầu của khách')->disabled()->columnSpanFull(),
             ]),
             Section::make('Sản phẩm')->columnSpanFull()->schema([

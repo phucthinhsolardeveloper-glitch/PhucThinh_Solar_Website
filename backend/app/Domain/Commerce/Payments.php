@@ -14,7 +14,11 @@ class Payments
     /** @return list<array{id: int, name: string, description: string}> offered methods, VNPay last when configured */
     public function visible(): array
     {
-        $methods = DB::table('payment_methods')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'description'])
+        $bankReady = app(BankTransfer::class)->ready();
+        $methods = DB::table('payment_methods')->where('is_visible', true)
+            // Bank transfer is offered only once the owner has set the receiving account.
+            ->when(! $bankReady, fn ($q) => $q->where('kind', '!=', 'bank_transfer'))
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'description'])
             ->map(fn ($row) => ['id' => (int) $row->id, 'name' => (string) $row->name, 'description' => (string) $row->description])->all();
         if (self::vnpayConfigured()) {
             $methods[] = self::VNPAY;
@@ -30,7 +34,8 @@ class Payments
             return self::vnpayConfigured() ? self::VNPAY : [];
         }
 
-        return $id > 0 ? (array) (DB::table('payment_methods')->where('id', $id)->where('is_visible', true)->first(['id', 'name', 'description']) ?? []) : [];
+        return $id > 0 ? (array) (DB::table('payment_methods')->where('id', $id)->where('is_visible', true)
+            ->when(! app(BankTransfer::class)->ready(), fn ($q) => $q->where('kind', '!=', 'bank_transfer'))->first(['id', 'name', 'description', 'kind']) ?? []) : [];
     }
 
     public static function vnpayConfigured(): bool

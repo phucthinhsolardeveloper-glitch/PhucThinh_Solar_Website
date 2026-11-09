@@ -47,6 +47,11 @@ class ShopController extends Controller
         return self::reply($shop->shippingQuote(json_decode($request->getContent(), true) ?? $request->post()));
     }
 
+    public function reportTransfer(Request $request, Shop $shop): JsonResponse
+    {
+        return self::reply($shop->reportTransfer($request->only('token')));
+    }
+
     public function thanks(Request $request, Shop $shop): JsonResponse
     {
         return self::reply($shop->thanks($request->query()));
