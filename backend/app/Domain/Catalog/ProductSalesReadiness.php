@@ -16,6 +16,16 @@ class ProductSalesReadiness
         'article' => 'Chưa liên kết bài viết',
     ];
 
+    /** Data worth completing, but not counted as a sales gap on each row. */
+    public const DATA_FILTERS = [
+        'feed' => 'Thiếu ảnh Google Shopping',
+        'content' => 'Thiếu nội dung chi tiết',
+        'specs' => 'Thiếu thông số kỹ thuật',
+        'power' => 'Thiếu công suất',
+        'shipping' => 'Thiếu kích thước đóng gói',
+        'discount' => 'Đang giảm giá',
+    ];
+
     /** @return list<string> */
     public function issues(Product $product): array
     {
@@ -50,7 +60,7 @@ class ProductSalesReadiness
     /** @param Builder<Product> $query @return Builder<Product> */
     public function filter(Builder $query, string $gap): Builder
     {
-        if (! array_key_exists($gap, self::FILTERS)) {
+        if (! array_key_exists($gap, self::FILTERS + self::DATA_FILTERS)) {
             return $query;
         }
 
@@ -65,6 +75,13 @@ class ProductSalesReadiness
             'price' => $query->where('products.quote_only', false)
                 ->where(fn (Builder $price) => $price->whereNull('products.regular_price')->orWhere('products.regular_price', '<=', 0)),
             'article' => $query->whereDoesntHave('visibleArticles'),
+            'feed' => $query->whereRaw("TRIM(COALESCE(products.feed_image, '')) = ''"),
+            'content' => $query->whereRaw("TRIM(COALESCE(products.body, '')) = ''")
+                ->whereDoesntHave('contentSection', fn (Builder $section) => $section->where('is_visible', true)->whereNotNull('blocks')->where('blocks', '!=', '[]')),
+            'specs' => $query->whereRaw("TRIM(COALESCE(products.specs_html, '')) = ''")->whereRaw("TRIM(COALESCE(products.additional_specs, '')) IN ('', '[]')"),
+            'power' => $query->where(fn (Builder $power) => $power->whereNull('products.power_watts')->orWhere('products.power_watts', '<=', 0)),
+            'shipping' => $query->where(fn (Builder $box) => $box->whereRaw("TRIM(COALESCE(products.carton_dimensions, '')) = ''")->orWhereRaw("TRIM(COALESCE(products.weight, '')) IN ('', '0')")),
+            'discount' => $query->where('products.sale_price', '>', 0)->whereColumn('products.sale_price', '<', 'products.regular_price'),
         };
     }
 }

@@ -9,8 +9,6 @@ use App\Filament\Support\Options;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
-use Filament\Actions\BulkAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -26,15 +24,13 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use UnitEnum;
 
@@ -193,7 +189,9 @@ class ProductResource extends Resource
 
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
                     })->wrap()->toggleable(),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị')->disabled(fn () => ! self::canBulkImport()),
+                ToggleColumn::make('quote_only')->label('Báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(),
+                ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -201,26 +199,11 @@ class ProductResource extends Resource
                 SelectFilter::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->preload(),
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
                 TernaryFilter::make('quote_only')->label('Chỉ báo giá'),
-                SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS)
+                SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])
             ->recordActions([EditAction::make()])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    BulkAction::make('show')->label('Hiện trên website')->icon(Heroicon::OutlinedEye)
-                        ->visible(fn () => self::canBulkImport())->requiresConfirmation()
-                        ->action(function (Collection $records): void {
-                            abort_unless(self::canBulkImport(), 403);
-                            DB::transaction(fn () => $records->each->update(['is_visible' => true]));
-                        })->deselectRecordsAfterCompletion(),
-                    BulkAction::make('hide')->label('Ẩn khỏi website')->icon(Heroicon::OutlinedEyeSlash)->requiresConfirmation()
-                        ->visible(fn () => self::canBulkImport())
-                        ->action(function (Collection $records): void {
-                            abort_unless(self::canBulkImport(), 403);
-                            DB::transaction(fn () => $records->each->update(['is_visible' => false]));
-                        })->deselectRecordsAfterCompletion(),
-                ]),
-            ]);
+            ->toolbarActions(ProductBulkActions::groups());
     }
 
     public static function getGloballySearchableAttributes(): array
