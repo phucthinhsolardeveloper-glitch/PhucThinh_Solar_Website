@@ -59,6 +59,8 @@ class ProvinceResource extends Resource
     {
         return $table->defaultSort('sort_order')->columns([
             TextColumn::make('name')->label('Tỉnh/TP')->searchable()->sortable(),
+            TextColumn::make('code')->label('Mã tỉnh')->searchable(),
+            TextColumn::make('tax_code')->label('Mã thuế')->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('code')->label('Mã')->searchable(),
             TextColumn::make('wards_count')->label('Phường/Xã')->counts('wards')->sortable(),
             IconColumn::make('is_visible')->label('Cho chọn')->boolean(),

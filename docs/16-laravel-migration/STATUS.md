@@ -37,3 +37,4 @@ Không có việc dở.
 | Khung khuyến mãi theo chiến dịch | 225b2b21 | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
 | Logo thương hiệu quản lý trong Admin | 553ebb8f | `pts:brand-logos` tự chạy trong `pts:import-legacy`; DB dev chưa chạy vì kho upload local chỉ đọc |
 | Khối mô tả: danh sách, độ phủ, lịch sử, khôi phục, JSON, HTML→khối | e7b7ecea | Đã đối chiếu `content_section.php`, `productLegacyHtmlToBlocks` |
+| Mã tỉnh (BNV) và mã phường/xã (TMS) từ `Danh-muc-Phuong-xa_moi.xlsx` | commit kế tiếp | 3.321/3.321 phường, 34/34 tỉnh; mã phường là mã thuế 8 số, khác mã Nhất Tín trong ví dụ, phải đối chiếu khi có sandbox |

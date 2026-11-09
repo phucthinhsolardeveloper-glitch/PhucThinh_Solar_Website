@@ -78,6 +78,7 @@ class WardResource extends Resource
             ->columns([
                 TextColumn::make('province.name')->label('Tỉnh/TP')->sortable(),
                 TextColumn::make('name')->label('Phường/Xã')->searchable()->sortable(),
+                TextColumn::make('tax_code')->label('Mã phường/xã')->searchable()->toggleable(),
                 TextInputColumn::make('shipping_fee')->label('Phí giao (đ)')->type('number')->rules(['numeric', 'min:0']),
                 ToggleColumn::make('is_visible')->label('Cho chọn khi đặt hàng'),
             ])
