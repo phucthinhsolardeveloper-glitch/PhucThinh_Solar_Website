@@ -1,6 +1,6 @@
 # Ứng viên triển khai Laravel 13 — chỉ dùng cho rehearsal
 
-Trạng thái 2026-11-08: **chưa triển khai production**. Compose ở đây tạo project
+Trạng thái 2026-11-09: **chưa triển khai production**. Compose ở đây tạo project
 `pts_laravel13_candidate` riêng, chỉ mở Caddy ở `127.0.0.1:18085`. DB và upload
 riêng; không thay Caddy, container, volume của website đang chạy, training hoặc ZCRM.
 Không chạy `down -v`.
@@ -38,6 +38,19 @@ hoặc gửi mail. Test backend 132 pass/936 assertions, Nuxt 478 test,
 typecheck/build, PHPStan 0, Pint 253 file, API snapshot không lệch.
 Bài thử có thể chạy lại bằng `tools/visual-tests/audit/lead-attribution.cjs`;
 báo cáo lần này ở `/tmp/pts-lead-attribution-b79645ba.json`.
+
+Mốc `5cc09fc7`: backend image `5cc09fc7-candidate`, Nuxt image
+`967315c0-candidate` đều healthy. Qua Caddy candidate, `/`, `/health`,
+`/admin/login`, `/api/v1/site` và `/admin/favicon.png` trả 200; đường dẫn ảnh
+site trùng cũ trả 301 tới bản đang dùng. DB candidate đã dọn 24 banner và
+19 page item retired có JSON backup; snapshot 1.754/1.754 không đổi.
+21 ảnh chỉ còn liên quan đến banner retired đã được lưu tar kèm SHA-256 trước
+khi xóa khỏi **upload candidate**; ảnh banner đang hiển thị không thiếu.
+Xem `docs/16-laravel-migration/retired-content-cleanup-2026-11-08.md` để khôi
+phục. Giữ hai image `b79645ba-candidate` làm rollback point. Khoảng 1.105
+file upload khác chưa có DB/source tham chiếu vẫn được giữ để tránh làm hỏng URL
+media cũ. Laravel 146 test/1.042 assertions, PHPStan 0, Pint 263 file; Nuxt
+478 test, typecheck/build đều qua trước khi chốt candidate.
 
 ## Runtime và quyết định tạm thời
 
