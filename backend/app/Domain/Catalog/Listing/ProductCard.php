@@ -6,7 +6,7 @@ use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Support\Text;
 
-/** A product tile in lists (ptsCatalogProductDto): pictures, power, up to three quick specs, price. */
+/** A product tile in lists: pictures, power, up to three quick specs, price. */
 class ProductCard
 {
     private const MISSING = '/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)(?:\s|$)/iu';

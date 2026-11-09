@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class PruneRetiredContentCommand extends Command
 {
     protected $signature = 'pts:prune-retired-content
-        {--apply : Back up and remove retired legacy Admin records}
+        {--apply : Back up and remove retired Admin records}
         {--isolated-candidate : Permit the named local candidate database even when its APP_ENV is production}';
 
     protected $description = 'Report or prune banner and page-item types without a current public consumer.';
@@ -19,7 +19,7 @@ class PruneRetiredContentCommand extends Command
     {
         $banners = DB::table('banners')->whereIn('placement', RetiredLegacyContent::BANNER_PLACEMENTS);
         $items = DB::table('page_items')->where('section', 'like', RetiredLegacyContent::PAGE_SECTION_PREFIX.'%');
-        $this->line('Ảnh vị trí legacy: '.$banners->count());
+        $this->line('Ảnh vị trí không còn dùng: '.$banners->count());
         $this->line('Nội dung archive: '.$items->count());
 
         if (! $this->option('apply')) {

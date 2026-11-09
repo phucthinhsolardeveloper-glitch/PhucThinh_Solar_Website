@@ -10,15 +10,10 @@ use App\Support\Text;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Builds the /api/v1/product-detail payload, same contract as api/pts_v1_product_detail.php
- * (frontend/shared/contracts/public-product-detail.ts). Sections still served only by PHP are marked
- * in PORTED so the parity report shows exactly what is left.
+ * Builds the /api/v1/product-detail payload (frontend/shared/contracts/public-product-detail.ts).
  */
 class ProductDetailAssembler
 {
-    /** Sections not ported yet; they return empty values until they are. */
-    public const NOT_PORTED = [];
-
     public function __construct(
         private readonly ProductContentResolver $contentResolver,
         private readonly ProductContentPresenter $contentPresenter,

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Shopping cart kept in the visitor's Laravel session (class.Cart.php kept it in the PHP session).
+ * Shopping cart kept in the visitor's Laravel session.
  * A line is {productid, qty, color, size, code}; code = md5(product id . color . size), so adding the
  * same product and option again raises the quantity (capped at 999).
  */

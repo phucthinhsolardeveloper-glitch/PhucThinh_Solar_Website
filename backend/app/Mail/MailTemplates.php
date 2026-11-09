@@ -5,7 +5,7 @@ namespace App\Mail;
 use App\Support\SiteSettings;
 
 /**
- * Wording of transactional emails (libraries/mail_templates.php). Layout stays in code; Admin may
+ * Wording of transactional emails. Layout stays in code; Admin may
  * override subject, heading, intro and closing as plain text (setting options "mail_templates").
  */
 class MailTemplates

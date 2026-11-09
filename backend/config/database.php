@@ -83,7 +83,6 @@ return [
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-        // PHP-era tables (table_*), same database without the Laravel prefix. Read-only until a phase hands a domain over.
         // The PHP site's database, read only by the one-time import (pts:import-legacy).
         'legacy' => [
             'driver' => 'mariadb',

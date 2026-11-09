@@ -7,7 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use SensitiveParameter;
 
-/** Admin accounts sign in with the username they already use in the PHP admin, not an e-mail. */
+/** Admin accounts sign in with a username, not an e-mail. */
 class Login extends BaseLogin
 {
     protected function getEmailFormComponent(): Component

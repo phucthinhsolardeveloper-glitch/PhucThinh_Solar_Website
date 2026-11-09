@@ -3,7 +3,7 @@
 namespace App\Domain\Catalog;
 
 /**
- * Whole Vietnamese dong. Prices are stored as DOUBLE in the PHP-era tables; this is the one place that
+ * Whole Vietnamese dong. Prices are stored as decimals; this is the one place that
  * turns them into an amount, so every page agrees on what "has a price" means.
  */
 final class Money

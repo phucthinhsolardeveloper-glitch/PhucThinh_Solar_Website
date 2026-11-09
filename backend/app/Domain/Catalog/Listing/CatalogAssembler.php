@@ -13,7 +13,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Builds the /api/v1/catalog payload, same contract as api/pts_v1_catalog.php
+ * Builds the /api/v1/catalog payload
  * (frontend/shared/contracts/public-catalog.ts): products of a category path with filters, sort and
  * paging, plus the category landing extras (hero, "choose by need" cards, FAQ, support banner, SEO).
  */

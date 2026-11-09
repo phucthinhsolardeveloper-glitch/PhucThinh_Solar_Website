@@ -28,7 +28,7 @@ class ShopController extends Controller
 
     /**
      * JSON from the new checkout, or the classic form post of the current checkout page
-     * (form_csrf, checkout_token, dataOrder[...]); the form gets redirects, like sources/order.php gave.
+     * (form_csrf, checkout_token, dataOrder[...]); the form gets redirects.
      */
     public function placeOrder(Request $request, Shop $shop): Response
     {

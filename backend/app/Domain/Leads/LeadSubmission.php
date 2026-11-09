@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
 /**
- * POST /api/v1/lead-form (api/pts_v1_lead_form.php POST branch): contact requests, product
- * consultations and dealer sign-ups. Rows go to the same tables the PHP Admin lists
+ * POST /api/v1/lead-form: contact requests, product consultations and dealer sign-ups.
  * Every request is one row in leads (kind contact / consultation / dealer) for the Admin to follow up.
  */
 class LeadSubmission
@@ -192,7 +191,7 @@ class LeadSubmission
         return [200, ['ok' => true, 'message' => 'Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.']];
     }
 
-    /** Google reCAPTCHA v3 when switched on (score 0.5, matching action); always passes when off, as in PHP. */
+    /** Google reCAPTCHA v3 when switched on (score 0.5, matching action); always passes when off. */
     private function captchaPassed(mixed $token, string $action): bool
     {
         if (! config('site.recaptcha.active')) {
@@ -242,7 +241,7 @@ class LeadSubmission
         }
     }
 
-    /** @return array<string, string> trimmed, length-capped scalar values (ptsLeadValue) */
+    /** @return array<string, string> trimmed, length-capped scalar values */
     private static function values(array $input, array $limits): array
     {
         $out = [];

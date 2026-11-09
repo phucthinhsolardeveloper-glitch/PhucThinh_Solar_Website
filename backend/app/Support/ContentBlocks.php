@@ -3,12 +3,12 @@
 namespace App\Support;
 
 /**
- * Decoding of the JSON block lists the PHP admin stores HTML-escaped (productSectionsDecode()).
+ * Decoding of the JSON block lists the old Admin stored HTML-escaped; used by the one-time import.
  */
 final class ContentBlocks
 {
     /**
-     * Blocks are arrays with a non-empty "type"; anything else is dropped, as in the PHP code.
+     * Blocks are arrays with a non-empty "type"; anything else is dropped.
      *
      * @return list<array<string, mixed>>
      */

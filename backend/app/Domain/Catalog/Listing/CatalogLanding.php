@@ -8,14 +8,13 @@ use App\Support\Text;
 use Illuminate\Database\Connection;
 
 /**
- * Category landing extras of the catalog payload (ptsCatalogPageExtrasDto): hero picture, "choose by
+ * Category landing extras of the catalog payload: hero picture, "choose by
  * need" cards, FAQ, support banner, SEO and canonical URL.
  */
 final class CatalogLanding
 {
     /**
-     * Stock hero pictures for category paths without one in Admin (ptsCatalogCategoryHeroFallback).
-     * "danh-muc-san-pham/den-san-vuon" appears twice in the PHP list; only the later entry (the one PHP uses) is kept.
+     * Stock hero pictures for category paths without one in Admin.
      */
     private const HERO_FALLBACKS = [
         'san-pham' => ['catalog-products-hero-20261007-v2.png', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'],

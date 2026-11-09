@@ -11,7 +11,7 @@ use App\Models\Brand;
 use App\Support\SiteSettings;
 use App\Support\Text;
 
-/** Products of one brand (api/pts_v1_brand_detail.php, /thuong-hieu/<slug>/), with sort, price filter and paging. */
+/** Products of one brand (/thuong-hieu/<slug>/), with sort, price filter and paging. */
 class BrandDetail extends PageSupport
 {
     public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly ProductCard $cards)

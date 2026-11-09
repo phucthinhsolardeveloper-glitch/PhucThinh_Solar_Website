@@ -13,7 +13,7 @@ use App\Support\SiteSettings;
 use App\Support\Text;
 
 /**
- * Product page extras (api/pts_v1_product_extras.php): related products, warranty links, reviews with
+ * Product page extras: related products, warranty links, reviews with
  * photos, videos and replies (paged), commitments, consultation needs and a form token.
  */
 class ProductExtras extends PageSupport

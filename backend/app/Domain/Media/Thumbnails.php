@@ -7,7 +7,7 @@ use GdImage;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Resized pictures for /thumbs/<w>x<h>x<mode>/<public path>[.webp] (the PHP createThumb()).
+ * Resized pictures for /thumbs/<w>x<h>x<mode>/<public path>[.webp].
  * Mode 1 crops to fill the box, mode 2 fits inside the box on a white canvas, mode 3 fits and keeps
  * the picture's own proportions. A trailing ".webp" asks for a WebP copy of a JPG/PNG. Results are
  * kept on the "thumbs" disk, so each size is made once.

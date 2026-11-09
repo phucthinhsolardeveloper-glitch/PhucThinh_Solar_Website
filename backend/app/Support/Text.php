@@ -55,7 +55,7 @@ final class Text
         return trim((string) preg_replace('/\s+/u', ' ', strip_tags($value)));
     }
 
-    /** Plain text cut at a word boundary with an ellipsis, as the PHP site API does for short labels. */
+    /** Plain text cut at a word boundary with an ellipsis. */
     public static function excerpt(mixed $value, int $limit): string
     {
         $value = trim((string) preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode(is_scalar($value) ? (string) $value : '', ENT_QUOTES, 'UTF-8'))));
@@ -78,7 +78,7 @@ final class Text
         return preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $value) ? $value : '';
     }
 
-    /** Vietnamese text to an ASCII slug, exactly as the PHP $func->changeTitle() does (used for search and matching). */
+    /** Vietnamese text to an ASCII slug (used for search and matching). */
     public static function changeTitle(string $text): string
     {
         if ($text === '') {

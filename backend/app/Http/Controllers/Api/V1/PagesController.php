@@ -22,7 +22,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** Fixed editorial pages without parameters. Each refuses a query string with the PHP error code. */
+/** Fixed editorial pages without parameters. Each refuses a query string with BAD_QUERY. */
 class PagesController extends Controller
 {
     public function contact(Request $request, ContactAssembler $assembler): JsonResponse

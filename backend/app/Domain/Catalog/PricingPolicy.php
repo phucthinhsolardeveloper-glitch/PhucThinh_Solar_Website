@@ -3,8 +3,7 @@
 namespace App\Domain\Catalog;
 
 /**
- * Whether a product shows a price or asks for a quote. The PHP site computes this in three places
- * (catalog DTO, product page DTO, public_pricing.php); this is the single rule they share:
+ * Whether a product shows a price or asks for a quote, the one rule shared by cards, product pages and cart:
  * prices are on for the site, the product is not quotation-only, and it has a regular or sale price.
  */
 final class PricingPolicy

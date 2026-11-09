@@ -13,7 +13,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
-// v1 mirrors the PHP endpoints Nuxt reads today (frontend/shared/contracts). Read-only.
+// v1: the payloads Nuxt reads (frontend/shared/contracts).
 Route::prefix('v1')->group(function () {
     Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
         ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function () {
     Route::get('search', [PagesController::class, 'search']);
     Route::get('site', SiteController::class);
 
-    // Cart and checkout keep state in the visitor's session (cookie), like the PHP session did.
+    // Cart and checkout keep state in the visitor's session (cookie).
     Route::middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class])->group(function () {
         Route::get('cart', [ShopController::class, 'cart']);
         Route::post('cart', [ShopController::class, 'mutateCart']);

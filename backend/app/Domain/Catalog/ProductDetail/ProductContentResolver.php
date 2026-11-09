@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Which description blocks a product shows, and where they come from (the PHP productResolveSections()).
+ * Which description blocks a product shows, and where they come from.
  * The product's own section, its brand's, its level-2 category's ("cat") and its top category's ("list").
  *
  * Product mode: own | both | hide | inherit (default when the product has no row).

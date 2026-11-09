@@ -1,7 +1,6 @@
 <?php
 
 // Decision metric units, icons and images for the product page.
-// Hand-copied from ptsPdpDecisionMetricsDto() (libraries/pts_public_product_detail_api.php).
 $config = [];
 $config['metric_units'] = ['cong_suat' => 'W', 'ac_power' => 'W', 'motor_power' => 'HP', 'panel_power' => 'W', 'battery_capacity' => 'Wh', 'usable_capacity' => 'kWh', 'battery_voltage' => 'V', 'lighting_time' => 'giờ', 'runtime' => 'giờ', 'cycle_life' => 'chu kỳ', 'efficiency' => '%', 'phase_count' => 'pha', 'mppt_count' => 'MPPT', 'input_voltage' => 'V', 'max_flow' => 'm³/h', 'max_head' => 'm', 'rated_voltage' => 'V', 'rated_current' => 'A', 'installation_height' => 'm', 'warranty' => 'tháng'];
 $config['metric_icons'] = ['battery_capacity' => 'battery', 'usable_capacity' => 'battery', 'battery_voltage' => 'battery', 'installation_height' => 'height', 'max_head' => 'height', 'warranty' => 'shield', 'waterproof_rating' => 'shield', 'cong_suat' => 'bolt', 'ac_power' => 'bolt', 'motor_power' => 'bolt', 'rated_voltage' => 'bolt', 'rated_current' => 'bolt'];

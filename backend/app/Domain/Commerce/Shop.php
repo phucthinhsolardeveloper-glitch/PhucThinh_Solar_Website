@@ -21,8 +21,7 @@ use Illuminate\Support\Str;
 use Throwable;
 
 /**
- * Cart, checkout and thank-you page for Nuxt (pts_v1_cart*, pts_v1_checkout*, pts_v1_order_thanks,
- * sources/order.php, payment_vnpay.php). State lives in the Laravel session; orders are written to
+ * Cart, checkout, VNPay return and thank-you page for Nuxt. State lives in the Laravel session; orders are written to
  * orders / order_items for the Admin.
  */
 class Shop
@@ -479,7 +478,7 @@ class Shop
         return [200, ($alreadyPaid || $status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
     }
 
-    /** Six characters, unique among existing orders (the PHP code drew one without checking). */
+    /** Six characters, unique among existing orders. */
     private function newOrderCode(): string
     {
         do {

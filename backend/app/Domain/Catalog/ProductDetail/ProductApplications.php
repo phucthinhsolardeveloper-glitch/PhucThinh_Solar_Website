@@ -5,9 +5,9 @@ namespace App\Domain\Catalog\ProductDetail;
 use App\Support\Text;
 
 /**
- * "Where to use it" cards (ptsPdpApplicationsDto), buying cues (ptsPdpBuyingGuidesDto) and documents
- * (ptsPdpDocumentsDto). Cards come from the content section that follows an "Ứng dụng"/"Phù hợp" heading;
- * without one, the profile's stock use cases fill in, picked by product type (productPdpUseCaseVariant).
+ * "Where to use it" cards, buying cues and documents
+ *. Cards come from the content section that follows an "Ứng dụng"/"Phù hợp" heading;
+ * without one, the profile's stock use cases fill in, picked by product type.
  */
 class ProductApplications
 {
@@ -187,7 +187,7 @@ class ProductApplications
         return $useCases['variants'][$variant] ?? $useCases['profiles'][$profileKey] ?? $useCases['profiles']['lighting'];
     }
 
-    /** Stock picture for a card title (productPdpUseCasePhoto). */
+    /** Stock picture for a card title. */
     private function photo(string $profileKey, string $title, int $index, string $variant): string
     {
         $defaults = $this->defaults($profileKey, $variant);

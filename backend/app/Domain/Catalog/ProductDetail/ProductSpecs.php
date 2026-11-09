@@ -5,10 +5,8 @@ namespace App\Domain\Catalog\ProductDetail;
 use App\Support\Text;
 
 /**
- * Product specification rules of the PHP site, in one place: profile choice (productPdpResolveProfile),
- * value lookup with aliases (productPdpSpecValue), package contents, the spec table (productStructuredSpecs,
- * ptsPdpSpecDto), highlight chips (productAutoHighlights) and decision metrics (ptsPdpDecisionMetricsDto).
- * Profile data lives in config/pdp.php, exported from the PHP library.
+ * Product specification rules in one place: profile choice, value lookup with aliases, package contents,
+ * the spec table, highlight chips and decision metrics. Profile data lives in config/pdp.php.
  */
 class ProductSpecs
 {
@@ -211,8 +209,8 @@ class ProductSpecs
     }
 
     /**
-     * First spec whose label contains a needle. The PHP spec table tries needles in order
-     * (ptsPdpSpecDto); the decision metrics walk the specs first (ptsPdpDecisionMetricsDto).
+     * First spec whose label contains a needle. The spec table tries needles in order;
+     * the decision metrics walk the specs first.
      * The two orders give different answers when several labels match, so both are kept.
      */
     private function lookup(array $structured, string|array $needles, bool $needlesFirst = true): string

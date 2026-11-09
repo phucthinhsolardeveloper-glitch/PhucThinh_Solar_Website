@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** GET /api/v1/catalog — same query rules and error codes as api/pts_v1_catalog.php. */
+/** GET /api/v1/catalog — validated by CatalogRequest; unknown keys and bad values are 400. */
 class CatalogController extends Controller
 {
     public function __invoke(Request $request, CatalogAssembler $assembler): JsonResponse

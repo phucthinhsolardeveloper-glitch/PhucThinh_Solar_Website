@@ -3,8 +3,8 @@
 namespace App\Support;
 
 /**
- * Stateless anti-forgery token for public forms (replaces the PHP session token formCsrfToken()).
- * Nuxt renders pages server-side and shares no PHP session, so the token carries its issue time and
+ * Stateless anti-forgery token for public forms.
+ * Nuxt renders pages server-side and shares no session with the API, so the token carries its issue time and
  * an HMAC with the app key. Format stays 64 lowercase hex characters, the shape the Nuxt contracts
  * check: 8 hex digits of issue time followed by 56 hex digits of signature.
  */

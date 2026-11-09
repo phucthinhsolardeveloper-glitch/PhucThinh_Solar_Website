@@ -145,7 +145,7 @@ final class CatalogFilters
         return "{$rank}case when {$hasPhoto} then 0 else 1 end, p.sort_order, p.id desc";
     }
 
-    /** Search slug of a keyword, as the PHP $func->changeTitle() builds it. */
+    /** Search slug of a keyword. */
     public static function keywordSlug(string $text): string
     {
         return Text::changeTitle($text);

@@ -22,7 +22,7 @@ class FormMetadata extends PageSupport
         return $cities;
     }
 
-    /** @return array{0: int, 1: array<string, mixed>} GET /lead-form (api/pts_v1_lead_form.php GET branch) */
+    /** @return array{0: int, 1: array<string, mixed>} GET /lead-form: token and options for the public forms */
     public function leadForm(array $get): array
     {
         if ($get) {

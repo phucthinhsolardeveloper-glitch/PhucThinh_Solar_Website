@@ -3,7 +3,7 @@
 namespace App\Domain\Catalog\Listing;
 
 /**
- * The validated query of GET /api/v1/catalog. Same rules as api/pts_v1_catalog.php: unknown keys,
+ * The validated query of GET /api/v1/catalog. Unknown keys,
  * arrays, empty values and malformed lists are refused (BAD_QUERY) rather than silently ignored.
  */
 final class CatalogRequest

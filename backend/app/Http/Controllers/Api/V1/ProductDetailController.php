@@ -8,7 +8,7 @@ use App\Support\Text;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** GET /api/v1/product-detail?slug= — same query rules and error codes as the PHP endpoint. */
+/** GET /api/v1/product-detail?slug= — strict query rules: only ?slug, malformed slugs are 400. */
 class ProductDetailController extends Controller
 {
     public function __invoke(Request $request, ProductDetailAssembler $assembler): JsonResponse

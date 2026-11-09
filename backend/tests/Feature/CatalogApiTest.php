@@ -2,7 +2,7 @@
 
 use App\Domain\Catalog\Listing\CatalogFilters;
 
-it('refuses malformed catalog queries like the PHP endpoint', function (array $query) {
+it('refuses malformed catalog queries with BAD_QUERY', function (array $query) {
     $this->getJson('/api/v1/catalog?'.http_build_query($query))
         ->assertStatus(400)->assertExactJson(['error' => ['code' => 'BAD_QUERY']]);
 })->with([
@@ -27,7 +27,7 @@ it('returns the v1 catalog shape for /san-pham/', function () {
         ->assertJsonStructure(['category', 'categories', 'products', 'filters' => ['brands', 'priceRanges', 'subcategories', 'needs'], 'selected', 'categoryHero', 'categoryContent', 'support', 'seo']);
 });
 
-it('builds keyword slugs the way the PHP site does', function () {
+it('builds keyword slugs without accents or punctuation', function () {
     expect(CatalogFilters::keywordSlug('Đèn  Blue Carbon 100W!'))->toBe('den-blue-carbon-100w')
         ->and(CatalogFilters::keywordSlug('  Đường '))->toBe('duong');
 });

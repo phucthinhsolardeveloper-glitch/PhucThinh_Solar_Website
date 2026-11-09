@@ -1,6 +1,6 @@
 <?php
 
-// Online payment and carriers for checkout (integrations in the PHP libraries/config.php). All off unless set.
+// Online payment and carriers for checkout. All off unless set.
 return [
     'vnpay' => [
         'active' => env('VNPAY_ACTIVE') === '1',

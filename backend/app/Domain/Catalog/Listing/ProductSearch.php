@@ -8,7 +8,7 @@ use App\Support\Text;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Product search (api/pts_v1_search.php, same matching as sources/search.php): the raw keyword against
+ * Product search: the raw keyword against
  * names, specs and content, its slug form against slugs, and a compact form (no separators) against
  * model codes, so "BCT-WR10" also finds "bctwr10".
  */

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
- * Product review from the product page (api/pts_v1_review.php + Comments::add): stars, text, up to
+ * Product review from the product page: stars, text, up to
  * three photos and one video with poster. Reviews wait for Admin approval (status "pending"); a matching
  * order code (same product, phone and email) adds the "verified-purchase" badge.
  */
