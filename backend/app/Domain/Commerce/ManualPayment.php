@@ -29,7 +29,7 @@ class ManualPayment
                 'provider_reference' => $reference, 'amount' => $locked->total,
                 'status' => 'paid', 'payload' => ['confirmed_by' => $actor->id],
             ]);
-            $locked->update(['payment_status' => 'paid', 'payment_reference' => $reference]);
+            OrderLifecycle::movePayment($locked, 'paid', ['payment_reference' => $reference]);
         });
     }
 
@@ -56,7 +56,7 @@ class ManualPayment
                 'provider_reference' => $reference, 'amount' => $locked->total,
                 'status' => 'refunded', 'payload' => ['type' => 'external_full_refund', 'recorded_by' => $actor->id],
             ]);
-            $locked->update(['payment_status' => 'refunded']);
+            OrderLifecycle::movePayment($locked, 'refunded');
         });
     }
 }

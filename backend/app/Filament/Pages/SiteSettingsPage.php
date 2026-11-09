@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Domain\Audit\Audit;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -119,12 +120,23 @@ class SiteSettingsPage extends Page
     {
         $data = $this->form->getState();
         $now = now();
+        $before = DB::table('settings')->pluck('value', 'key')->map(fn ($v) => json_decode((string) $v, true))->all();
+        $after = [];
         foreach (self::TEXT_KEYS as $key) {
-            $this->store($key, (string) ($data[$key] ?? ''), $now);
+            $after[$key] = (string) ($data[$key] ?? '');
         }
         foreach (self::SWITCH_KEYS as $key) {
-            $this->store($key, ! empty($data[$key]) ? '1' : '0', $now);
+            $after[$key] = ! empty($data[$key]) ? '1' : '0';
         }
+        DB::transaction(function () use ($before, $after, $now) {
+            foreach ($after as $key => $value) {
+                $this->store($key, $value, $now);
+            }
+            [$from, $to] = Audit::diff(array_intersect_key($before, $after), $after);
+            if ($to !== []) {
+                Audit::record('settings.update', 'Settings', null, $from, $to);
+            }
+        });
         Notification::make()->title('Đã lưu thông tin website')->success()->send();
     }
 

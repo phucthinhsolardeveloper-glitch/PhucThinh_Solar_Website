@@ -3,21 +3,26 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Domain\Commerce\ManualPayment;
+use App\Domain\Commerce\OrderLifecycle;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Support\AdminActor;
 use App\Models\Order;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditOrder extends EditRecord
 {
     protected static string $resource = OrderResource::class;
 
-    /** Only the handling fields are written; the order as placed never changes here. */
-    protected function mutateFormDataBeforeSave(array $data): array
+    /** Only status and notes change here, through the lifecycle rules and the audit log. */
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        return array_intersect_key($data, array_flip(['status', 'notes']));
+        /** @var Order $record */
+        app(OrderLifecycle::class)->update($record, (string) $data['status'], $data['notes'] ?? null);
+
+        return $record;
     }
 
     protected function getHeaderActions(): array

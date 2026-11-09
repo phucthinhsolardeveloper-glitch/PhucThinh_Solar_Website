@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Audited;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 /** @property string $kind */
 class Post extends Model
 {
+    use Audited;
+
     protected $table = 'posts';
 
     protected $guarded = ['id'];
@@ -51,5 +54,11 @@ class Post extends Model
     public function revisions(): HasMany
     {
         return $this->hasMany(PostRevision::class);
+    }
+
+    /** Deletions are written to the audit log. */
+    public static function auditedAttributes(): array
+    {
+        return [];
     }
 }

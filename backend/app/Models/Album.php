@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Audited;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Album extends Model
 {
+    use Audited;
+
     protected $table = 'albums';
 
     protected $guarded = ['id'];
@@ -27,5 +30,11 @@ class Album extends Model
     public function seo(): MorphOne
     {
         return $this->morphOne(SeoMeta::class, 'owner');
+    }
+
+    /** Deletions are written to the audit log. */
+    public static function auditedAttributes(): array
+    {
+        return [];
     }
 }

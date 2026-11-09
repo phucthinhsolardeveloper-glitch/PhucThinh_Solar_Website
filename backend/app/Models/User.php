@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Audited;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -26,6 +27,8 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasName
 {
+    use Audited;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -93,5 +96,11 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function getFilamentName(): string
     {
         return $this->name ?: (string) $this->username;
+    }
+
+    /** Attributes whose changes are written to the audit log; deletions are always logged. */
+    public static function auditedAttributes(): array
+    {
+        return ['username', 'role', 'permissions', 'is_active', 'password'];
     }
 }

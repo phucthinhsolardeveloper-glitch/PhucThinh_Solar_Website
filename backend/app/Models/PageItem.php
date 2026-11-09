@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Casts\UnicodeJson;
+use App\Models\Concerns\Audited;
 use Illuminate\Database\Eloquent\Model;
 
 class PageItem extends Model
 {
+    use Audited;
+
     protected $table = 'page_items';
 
     protected $guarded = ['id'];
@@ -18,5 +21,11 @@ class PageItem extends Model
             'data' => UnicodeJson::class,
             'is_visible' => 'boolean',
         ];
+    }
+
+    /** Deletions are written to the audit log. */
+    public static function auditedAttributes(): array
+    {
+        return [];
     }
 }

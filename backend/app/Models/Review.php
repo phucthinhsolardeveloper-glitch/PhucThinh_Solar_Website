@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Audited;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Review extends Model
 {
+    use Audited;
+
     protected $table = 'reviews';
 
     protected $guarded = ['id'];
@@ -33,5 +36,11 @@ class Review extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    /** Deletions are written to the audit log. */
+    public static function auditedAttributes(): array
+    {
+        return [];
     }
 }

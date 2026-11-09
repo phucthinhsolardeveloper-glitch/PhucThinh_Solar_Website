@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Audited;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class PostCategory extends Model
 {
+    use Audited;
+
     protected $table = 'post_categories';
 
     protected $guarded = ['id'];
@@ -27,5 +30,11 @@ class PostCategory extends Model
     public function seo(): MorphOne
     {
         return $this->morphOne(SeoMeta::class, 'owner');
+    }
+
+    /** Deletions are written to the audit log. */
+    public static function auditedAttributes(): array
+    {
+        return [];
     }
 }

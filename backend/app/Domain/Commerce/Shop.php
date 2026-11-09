@@ -445,8 +445,9 @@ class Shop
         $alreadyPaid = false;
         $becamePaid = false;
         $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount, &$alreadyPaid, &$becamePaid) {
-            $locked = $db->table('orders')->where('id', $order->id)->lockForUpdate()->first(['payment_status']);
-            if ($locked?->payment_status === 'paid') {
+            $locked = $db->table('orders')->where('id', $order->id)->lockForUpdate()->first(['id', 'payment_status']);
+            // Paid or already refunded: the gateway result never moves the payment state again.
+            if ($locked?->payment_status !== 'unpaid') {
                 $alreadyPaid = true;
 
                 return;
@@ -459,7 +460,7 @@ class Shop
                 $db->table('payment_transactions')->insert($row + ['order_id' => (int) $order->id, 'provider' => 'vnpay', 'reference' => $code, 'amount' => $amount, 'created_at' => now()]);
             }
             if ($status === 'paid') {
-                $db->table('orders')->where('id', $order->id)->update(['payment_status' => 'paid', 'payment_code' => 'vnpay', 'payment_reference' => $transaction, 'updated_at' => now()]);
+                OrderLifecycle::movePayment($locked, 'paid', ['payment_code' => 'vnpay', 'payment_reference' => $transaction], 'system:vnpay');
                 $becamePaid = true;
                 $this->queuePaidOrderMails((int) $order->id);
             }

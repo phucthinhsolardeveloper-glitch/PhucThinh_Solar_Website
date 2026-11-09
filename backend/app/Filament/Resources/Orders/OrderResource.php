@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Domain\Commerce\OrderLifecycle;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Order;
 use BackedEnum;
@@ -72,7 +73,8 @@ class OrderResource extends Resource
     {
         return $schema->columns(3)->components([
             Section::make('Xử lý')->columnSpan(1)->schema([
-                Select::make('status')->label('Trạng thái')->options(self::STATUSES)->required(),
+                Select::make('status')->label('Trạng thái')->required()
+                    ->options(fn (?Order $record) => $record ? OrderLifecycle::statusChoices((string) $record->status, self::STATUSES) : self::STATUSES),
                 Select::make('payment_status')->label('Thanh toán')->options(self::PAYMENT)->disabled()->dehydrated(false)
                     ->helperText('Xác nhận thanh toán thủ công bằng thao tác riêng. VNPay chỉ cập nhật qua callback hợp lệ.'),
                 Textarea::make('notes')->label('Ghi chú nội bộ')->rows(4),
