@@ -45,14 +45,13 @@ class StoreLocationResource extends Resource
             TextInput::make('map_url')->label('Link Google Maps')->url()->columnSpanFull(),
             Textarea::make('map_embed')->label('Mã nhúng bản đồ (iframe)')->rows(3)->columnSpanFull(),
             Fields::visible(),
-            Fields::sort(),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 TextColumn::make('name')->label('Chi nhánh'),
                 TextColumn::make('address')->label('Địa chỉ')->limit(60),

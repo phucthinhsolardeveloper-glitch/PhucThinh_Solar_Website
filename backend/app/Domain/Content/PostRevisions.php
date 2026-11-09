@@ -23,7 +23,7 @@ final class PostRevisions
 {
     /** Columns copied to the post on publish. */
     public const COLUMNS = ['title', 'nav_title', 'slug', 'category_id', 'summary', 'body', 'extra_body', 'image', 'cover_image',
-        'is_featured', 'in_hub', 'client_name', 'address', 'started_on', 'finished_on', 'published_at'];
+        'is_featured', 'in_hub', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'published_at'];
 
     /**
      * What a draft may change per kind. products: false = no product links, 0 = unlimited, n = at most n.
@@ -33,7 +33,7 @@ final class PostRevisions
     public const KINDS = [
         'article' => ['fields' => ['title', 'summary', 'body', 'extra_body', 'image'], 'products' => 4, 'media' => true],
         'solution' => ['fields' => ['title', 'nav_title', 'summary', 'body', 'extra_body', 'image', 'cover_image'], 'products' => false, 'media' => true],
-        'project' => ['fields' => ['title', 'summary', 'body', 'client_name', 'address', 'started_on', 'finished_on', 'image', 'cover_image'], 'products' => 0, 'media' => true],
+        'project' => ['fields' => ['title', 'summary', 'body', 'client_name', 'address', 'province_id', 'ward_id', 'started_on', 'finished_on', 'image', 'cover_image'], 'products' => 0, 'media' => true],
         'policy' => ['fields' => ['title', 'summary', 'body'], 'products' => false, 'media' => false],
     ];
 
@@ -41,7 +41,7 @@ final class PostRevisions
     public const LABELS = [
         'title' => 'Tiêu đề', 'nav_title' => 'Tên ngắn trên menu', 'slug' => 'Đường dẫn', 'category_id' => 'Nhóm', 'summary' => 'Mô tả ngắn',
         'body' => 'Nội dung chính', 'extra_body' => 'Nội dung bổ sung', 'image' => 'Ảnh đại diện', 'cover_image' => 'Ảnh bìa',
-        'is_featured' => 'Nổi bật', 'in_hub' => 'Hiện ở trang tổng', 'client_name' => 'Chủ đầu tư', 'address' => 'Địa điểm',
+        'is_featured' => 'Nổi bật', 'in_hub' => 'Hiện ở trang tổng', 'client_name' => 'Chủ đầu tư', 'address' => 'Số nhà, đường', 'province_id' => 'Tỉnh / thành phố', 'ward_id' => 'Phường / xã',
         'started_on' => 'Khởi công', 'finished_on' => 'Hoàn thành', 'published_at' => 'Ngày đăng', 'is_visible' => 'Hiển thị',
         'seo' => 'SEO', 'products' => 'Sản phẩm liên kết', 'media' => 'Thư viện ảnh / video',
     ];
@@ -79,7 +79,7 @@ final class PostRevisions
             $draft = PostRevision::query()->whereKey($revision->id)->lockForUpdate()->firstOrFail();
             $this->assertDraft($draft);
             $profile = self::profile($draft->post);
-            $clean = Validator::make($input, $this->rules($profile))->validate();
+            $clean = Validator::make($input, $this->rules($profile, $input))->validate();
             $payload = $draft->payload;
             foreach ($profile['fields'] as $field) {
                 if (array_key_exists($field, $clean)) {
@@ -130,7 +130,7 @@ final class PostRevisions
             $this->keepBaseline($post, $current);
 
             $columns = array_intersect_key($payload, array_flip(self::COLUMNS));
-            $columns['published_at'] = $columns['published_at'] ?: now()->timestamp;
+            $columns['published_at'] = $columns['published_at'] ?: now()->format('Y-m-d H:i:s');
             $columns['is_visible'] = true;
             $post->update($columns);
             $post->seo()->updateOrCreate([], array_intersect_key((array) ($payload['seo'] ?? []), array_flip(['title', 'description', 'keywords', 'image'])));
@@ -272,7 +272,7 @@ final class PostRevisions
         return $out;
     }
 
-    private function rules(array $profile): array
+    private function rules(array $profile, array $input): array
     {
         $file = ['nullable', 'string', 'max:255', 'not_regex:#(^|/)\.\.(/|$)#'];
 
@@ -286,6 +286,8 @@ final class PostRevisions
             'cover_image' => $file,
             'client_name' => ['nullable', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
+            'province_id' => ['nullable', 'integer', Rule::exists('provinces', 'id')],
+            'ward_id' => ['nullable', 'integer', Rule::exists('wards', 'id')->where(fn ($q) => $q->where('province_id', (int) ($input['province_id'] ?? 0)))],
             'started_on' => ['nullable', 'date'],
             'finished_on' => ['nullable', 'date', 'after_or_equal:started_on'],
             'seo' => ['sometimes', 'array'],

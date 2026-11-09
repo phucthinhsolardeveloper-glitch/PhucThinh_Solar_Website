@@ -75,14 +75,13 @@ class BannerResource extends Resource
                 ->helperText('titleLine2: dòng tiêu đề thứ hai; ctaLabel / cta2Label / cta2Href: chữ và liên kết hai nút; theme: light hoặc dark; tags: các thẻ, cách nhau bằng dấu phẩy.')
                 ->visible(fn (Get $get) => $get('placement') === 'hero-carousel')->columnSpanFull(),
             Fields::visible(),
-            Fields::sort(),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->defaultGroup('placement')
             ->groups([Group::make('placement')->label('Vị trí')->getTitleFromRecordUsing(fn (Banner $record) => self::PLACEMENTS[$record->placement] ?? $record->placement)])
             ->columns([

@@ -39,7 +39,6 @@ class PaymentMethodResource extends Resource
     {
         return $schema->columns(2)->components([
             TextInput::make('name')->label('Tên')->required(),
-            Fields::sort(),
             Textarea::make('description')->label('Hướng dẫn hiện khi khách chọn (số tài khoản, ghi chú…)')->rows(4)->columnSpanFull(),
             Fields::visible(),
         ]);
@@ -48,7 +47,7 @@ class PaymentMethodResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 TextColumn::make('name')->label('Hình thức'),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),

@@ -199,7 +199,7 @@ class NewsListing extends PageSupport
             'slug' => $slug,
             'url' => '/'.$slug.'/',
             'description' => $description,
-            'date' => ! empty($row['published_at']) ? date('Y-m-d', (int) $row['published_at']) : '',
+            'date' => ! empty($row['published_at']) ? date('Y-m-d', (int) strtotime((string) $row['published_at'])) : '',
             'image' => self::media($this->newsPhotoExists($row['image']) ? $row['image'] : ''),
             'readingMinutes' => self::readingMinutes($content),
             'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null,

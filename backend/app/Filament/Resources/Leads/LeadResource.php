@@ -25,6 +25,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use UnitEnum;
 
 /** Contact requests, product consultations and dealer sign-ups from the site's forms. */
@@ -96,19 +97,19 @@ class LeadResource extends Resource
             ->defaultSort('id', 'desc')
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['assignee', 'product']))
             ->columns([
-                TextColumn::make('created_at')->label('Gửi lúc')->dateTime('H:i d/m/Y')->sortable(),
-                TextColumn::make('kind')->label('Loại')->badge()->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state),
+                TextColumn::make('created_at')->label('Gửi lúc')->dateTime('d/m H:i')->sortable()->wrap(false)
+                    ->description(fn (Lead $record) => self::KINDS[$record->kind] ?? $record->kind),
                 TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])->description(fn (Lead $record) => $record->phone),
-                TextColumn::make('product.name')->label('Sản phẩm')->placeholder('—')->toggleable()
-                    ->url(fn (Lead $record) => $record->product?->is_visible ? url('/san-pham/'.$record->product->slug) : null, true),
-                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(40)->toggleable()->searchable()
+                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(30)->toggleable()->searchable()->wrap(false)
                     ->formatStateUsing(fn ($state) => LeadSource::normalize($state) ?? '—')
                     ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
-                TextColumn::make('message')->label('Nội dung')->limit(60)->placeholder('—')->toggleable(),
+                TextColumn::make('message')->label('Nội dung')->limit(90)->placeholder('—')->toggleable()->grow()
+                    ->description(fn (Lead $record) => data_get($record, 'product.name') ? 'Sản phẩm: '.data_get($record, 'product.name') : null),
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
-                    ->description(fn (Lead $record) => data_get($record, 'assignee.name') ?? 'Chưa phân công'),
-                TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('H:i d/m/Y')->sortable()->placeholder('—'),
+                    ->description(fn (Lead $record) => (data_get($record, 'assignee.name') ?? 'Chưa phân công')
+                        .($record->follow_up_at ? ' · hẹn '.Carbon::parse($record->follow_up_at)->format('d/m H:i') : '')),
+                TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('d/m/Y H:i')->sortable()->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('kind')->label('Loại')->options(self::KINDS),
@@ -122,7 +123,7 @@ class LeadResource extends Resource
             ->recordActions([
                 EditAction::make()->label('Xem / xử lý')
                     ->using(fn (Lead $record, array $data) => app(LeadTriage::class)->update($record, $data, AdminActor::current())),
-                Action::make('history')->label('Lịch sử')->icon(Heroicon::OutlinedClock)
+                Action::make('history')->label('Lịch sử')->icon(Heroicon::OutlinedClock)->iconButton()->tooltip('Lịch sử xử lý')
                     ->modal()->modalHeading('Lịch sử xử lý')->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
                     ->modalContent(fn (Lead $record) => view('filament.lead-history', ['events' => $record->events()->with('actor')->latest()->limit(100)->get()])),
             ]);

@@ -57,7 +57,7 @@ class ContactAssembler extends PageSupport
                 'hotline' => $text($options['hotline'] ?? ''),
                 'email' => $text($options['email'] ?? ''),
                 'address' => $text($options['address'] ?? ''),
-                'workingHours' => $text($options['thoigianlamviec'] ?? ''),
+                'workingHours' => $text($options['working_hours'] ?? ''),
             ],
             'locations' => $locations,
             'labels' => [

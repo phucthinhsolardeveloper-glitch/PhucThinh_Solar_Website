@@ -2,8 +2,11 @@
 
 namespace App\Filament\Support;
 
-use App\Rules\FreePublicSlug;
+use App\Models\Province;
+use App\Models\Ward;
+use App\Support\Slugs;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
@@ -14,7 +17,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -22,30 +27,57 @@ use Illuminate\Support\Str;
 /** Form pieces shared by the Admin resources, so every screen names and stores things the same way. */
 final class Fields
 {
-    /** Name field that fills the slug while a new record is being written. */
+    /** Name field. While a record is being created the slug follows it, until someone writes their own slug. */
     public static function title(string $name = 'name', string $label = 'Tên', string $slugField = 'slug'): TextInput
     {
         return TextInput::make($name)->label($label)->required()->maxLength(255)
             ->live(onBlur: true)
-            ->afterStateUpdated(function (Set $set, ?string $state, string $operation) use ($slugField) {
-                if ($operation === 'create') {
-                    $set($slugField, Str::slug((string) $state));
+            ->afterStateUpdated(function (Get $get, Set $set, ?string $state, ?string $old, string $operation) use ($slugField) {
+                $slug = (string) $get($slugField);
+                if ($operation === 'create' && ($slug === '' || $slug === Slugs::from($old))) {
+                    $set($slugField, Slugs::from($state));
                 }
             });
     }
 
-    /** Slug of a page answering on "/<slug>": checked against every table sharing that space. */
-    public static function publicSlug(string $table): TextInput
+    /** Slug of a page answering on "/<slug>": free across every table sharing that space. */
+    public static function publicSlug(string $table, string $from = 'name'): TextInput
     {
-        return self::slug()->rules([fn (?Model $record) => new FreePublicSlug($table, $record?->getKey())]);
+        return self::slug($from, fn (?Model $record) => Slugs::publicScope($table, $record?->getKey()));
     }
 
-    public static function slug(): TextInput
+    /**
+     * Address of a page. Left empty it is made from the name; a taken one gets "-2", "-3"... when
+     * generated, or an error with a free suggestion when typed. Changing it on a public page keeps the
+     * old link working (see RedirectsOldSlug).
+     *
+     * @param  (Closure(?Model, Get): (Closure(string): bool))|null  $scope  which slugs are taken
+     */
+    public static function slug(string $from = 'name', ?Closure $scope = null): TextInput
     {
-        return TextInput::make('slug')->label('Đường dẫn')->required()->maxLength(255)
-            ->helperText('Chữ thường không dấu, cách nhau bằng dấu gạch ngang. Đổi đường dẫn sẽ làm link cũ không mở được.')
-            ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
-            ->dehydrateStateUsing(fn (?string $state) => Str::slug((string) $state));
+        $taken = fn (?Model $record, Get $get): Closure => $scope ? $scope($record, $get) : fn (string $slug) => false;
+
+        return TextInput::make('slug')->label('Đường dẫn')->maxLength(200)
+            ->placeholder('Tự tạo từ tên')
+            ->helperText(fn (string $operation) => $operation === 'create'
+                ? 'Tự tạo từ tên; sửa nếu muốn đường dẫn ngắn hơn.'
+                : 'Đổi đường dẫn thì link cũ tự chuyển sang link mới.')
+            ->suffixAction(Action::make('slugFromName')->icon('heroicon-m-arrow-path')->tooltip('Tạo lại từ tên')
+                ->action(fn (Get $get, Set $set, ?Model $record) => $set('slug', Slugs::free((string) $get($from), $taken($record, $get)))))
+            ->rules([fn (?Model $record, Get $get) => function (string $attribute, mixed $value, Closure $fail) use ($taken, $record, $get) {
+                $value = (string) $value;
+                if ($value === '') {
+                    return;
+                }
+                if (! preg_match(Slugs::PATTERN, $value)) {
+                    $fail('Chỉ dùng chữ thường không dấu, số và dấu gạch ngang. Gợi ý: '.Slugs::from($value));
+                } elseif ($taken($record, $get)($value)) {
+                    $fail('Đã có trang khác dùng đường dẫn này. Gợi ý: '.Slugs::free($value, $taken($record, $get)));
+                }
+            }])
+            ->dehydrateStateUsing(fn (?string $state, Get $get, ?Model $record) => filled($state)
+                ? $state
+                : Slugs::free((string) $get($from), $taken($record, $get)));
     }
 
     /**
@@ -127,6 +159,27 @@ final class Fields
 
             return (bool) $hasContent(is_array($state) ? $state : []);
         };
+    }
+
+    /**
+     * Province, then ward of that province, from the current administrative list; "address" holds
+     * only the street or village. $prefix is "payload." when the fields live inside a draft.
+     *
+     * @return list<Component>
+     */
+    public static function location(string $prefix = ''): array
+    {
+        return [
+            Select::make($prefix.'province_id')->label('Tỉnh / thành phố')->searchable()->live()
+                ->options(fn () => Province::query()->where('is_visible', true)->orderBy('name')->pluck('name', 'id')->all())
+                ->afterStateUpdated(fn (Set $set) => $set($prefix.'ward_id', null)),
+            Select::make($prefix.'ward_id')->label('Phường / xã')->searchable()
+                ->options(fn (Get $get) => $get($prefix.'province_id')
+                    ? Ward::query()->where('province_id', $get($prefix.'province_id'))->orderBy('name')->pluck('name', 'id')->all() : [])
+                ->disabled(fn (Get $get) => ! $get($prefix.'province_id'))
+                ->placeholder(fn (Get $get) => $get($prefix.'province_id') ? 'Chọn phường / xã' : 'Chọn tỉnh trước'),
+            TextInput::make($prefix.'address')->label('Số nhà, đường, thôn / ấp')->maxLength(255)->columnSpanFull(),
+        ];
     }
 
     /** SEO overrides kept in seo_metas through the record's "seo" relationship. */

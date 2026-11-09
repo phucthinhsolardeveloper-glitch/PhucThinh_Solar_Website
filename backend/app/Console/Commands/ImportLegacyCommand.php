@@ -32,9 +32,6 @@ class ImportLegacyCommand extends Command
         'seo_metas', 'settings', 'album_images', 'albums', 'videos'];
 
     /** Setting keys that hold mail server credentials; they belong in .env, never in the database. */
-    private const SECRET_SETTINGS = ['mailertype', 'ip_host', 'port_host', 'secure_host', 'email_host', 'password_host', 'host_gmail', 'port_gmail', 'secure_gmail', 'email_gmail',
-        'password_gmail', 'ip_host_as', 'email_host_as', 'password_host_as', 'email_as', 'apdev_as'];
-
     /** Small blocks kept in table_news by type => page section key. */
     private const NEWS_SECTIONS = [
         'cam-ket' => 'product.commitments', 'cam-ket-dai-ly' => 'dealer.benefits', 'phan-hoi-dai-ly' => 'dealer.testimonials', 'so-lieu-thong-ke-dai-ly' => 'dealer.stats',
@@ -106,9 +103,13 @@ class ImportLegacyCommand extends Command
         $row = (array) $this->old->table('table_setting')->orderBy('id')->first();
         $options = json_decode((string) ($row['options'] ?? ''), true) ?: [];
         $values = ['site_name' => self::text($row['namevi'] ?? '')];
+        // Only what the site reads; old keys get plain names. Secrets stay in .env.
+        $keep = ['address' => 'address', 'email' => 'email', 'hotline' => 'hotline', 'hotline_technical' => 'hotline_technical', 'phone' => 'phone',
+            'zalo' => 'zalo', 'thoigianlamviec' => 'working_hours', 'fanpage' => 'fanpage', 'youtube' => 'youtube',
+            'public_product_prices' => 'public_product_prices', 'review_require_order_code' => 'review_require_order_code'];
         foreach ($options as $key => $value) {
-            if (! in_array($key, self::SECRET_SETTINGS, true)) {
-                $values[$key] = $value;
+            if (isset($keep[$key])) {
+                $values[$keep[$key]] = $value;
             }
         }
         foreach ($values as $key => $value) {
@@ -224,7 +225,7 @@ class ImportLegacyCommand extends Command
                     'cover_image' => self::nullable($row['photo1']), 'is_visible' => in_array('hienthi', $flags, true), 'is_featured' => in_array('noibat', $flags, true),
                     'in_hub' => (bool) array_intersect(['solutionhub', 'newshub', 'projecthub'], $flags), 'client_name' => self::nullable(self::text($row['tenkhachhang'])),
                     'address' => self::nullable(self::text($row['address'])), 'started_on' => self::date($row['project_start_date']), 'finished_on' => self::date($row['project_end_date']),
-                    'sort_order' => (int) $row['numb'], 'views' => (int) $row['view'], 'published_at' => (int) $row['date_created'] ?: null] + self::times($row));
+                    'sort_order' => (int) $row['numb'], 'views' => (int) $row['view'], 'published_at' => (int) $row['date_created'] > 0 ? date('Y-m-d H:i:s', (int) $row['date_created']) : null] + self::times($row));
             } elseif ($row['type'] === 'he-thong-cua-hang') {
                 $this->new->table('store_locations')->insert(['id' => $row['id'], 'name' => self::text($row['namevi']), 'address' => self::text($row['address']), 'map_url' => self::nullable($row['ggmap']),
                     'map_embed' => self::nullable($row['map_iframe']), 'is_visible' => in_array('hienthi', $flags, true), 'sort_order' => (int) $row['numb']] + self::times($row));
@@ -318,7 +319,9 @@ class ImportLegacyCommand extends Command
 
     private function commerce(): void
     {
-        foreach ($this->old->table('table_city')->orderBy('id')->get() as $row) {
+        // Only provinces of the current (post-2025) map, i.e. those that have wards.
+        $withWards = $this->old->table('table_ward')->where('id_district', 0)->distinct()->pluck('id_city')->all();
+        foreach ($this->old->table('table_city')->whereIn('id', $withWards)->orderBy('id')->get() as $row) {
             $this->new->table('provinces')->insert(['id' => $row->id, 'name' => $row->name, 'code' => self::nullable($row->code), 'is_visible' => self::visible($row->status), 'sort_order' => (int) $row->numb] + self::times((array) $row));
         }
         foreach ($this->old->table('table_ward')->where('id_district', 0)->orderBy('id')->lazy(2000) as $row) {

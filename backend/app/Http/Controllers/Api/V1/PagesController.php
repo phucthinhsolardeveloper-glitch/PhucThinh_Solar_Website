@@ -16,6 +16,7 @@ use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectListing;
 use App\Domain\Reviews\ReviewSubmission;
 use App\Domain\Routing\PublicRouteResolver;
+use App\Domain\Routing\Redirects;
 use App\Domain\Solutions\SolutionDetail;
 use App\Domain\Solutions\SolutionsListing;
 use App\Http\Controllers\Controller;
@@ -106,6 +107,18 @@ class PagesController extends Controller
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
 
         return $response;
+    }
+
+    /** Where an address that answered 404 has moved: {"location": "/new/"} or 404. */
+    public function redirect(Request $request): JsonResponse
+    {
+        $path = $request->query('path');
+        if (count($request->query()) !== 1 || ! is_string($path) || strlen($path) > 500) {
+            return response()->json(['error' => ['code' => 'BAD_QUERY']], 400);
+        }
+        $location = Redirects::find($path);
+
+        return $location === null ? response()->json(['error' => ['code' => 'NOT_MOVED']], 404) : self::json(['location' => $location]);
     }
 
     public function leadForm(Request $request, FormMetadata $forms): JsonResponse

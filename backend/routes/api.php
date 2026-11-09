@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
     Route::get('solutions', [PagesController::class, 'solutions']);
     Route::get('video', [PagesController::class, 'video']);
     Route::get('public-route-resolve', [PagesController::class, 'publicRouteResolve']);
+    Route::get('redirect', [PagesController::class, 'redirect']);
     Route::get('search', [PagesController::class, 'search']);
     Route::get('site', SiteController::class);
 

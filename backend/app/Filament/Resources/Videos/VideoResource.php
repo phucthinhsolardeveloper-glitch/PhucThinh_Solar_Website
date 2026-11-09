@@ -42,14 +42,13 @@ class VideoResource extends Resource
             TextInput::make('url')->label('Link YouTube')->url()->required()
                 ->rule('regex:#^https://(www\.)?(youtube\.com|youtu\.be)/#')->validationMessages(['regex' => 'Dán link video YouTube.']),
             Fields::visible(),
-            Fields::sort(),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 TextColumn::make('title')->label('Video')->searchable(),
                 TextColumn::make('url')->label('Link')->limit(40)->url(fn (Video $record) => $record->url, true),

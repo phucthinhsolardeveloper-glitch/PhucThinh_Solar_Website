@@ -43,10 +43,10 @@ class AlbumResource extends Resource
         return $schema->components([
             Section::make()->columns(2)->schema([
                 Fields::title('title', 'Tên album'),
-                Fields::publicSlug('albums'),
+                Fields::publicSlug('albums', 'title'),
                 Textarea::make('summary')->label('Mô tả')->rows(3)->columnSpanFull(),
                 Fields::image('image', 'product', 'Ảnh đại diện'),
-                Section::make()->schema([Fields::visible(), Fields::sort()]),
+                Section::make()->schema([Fields::visible()]),
             ]),
             Repeater::make('images')->label('Ảnh trong album')->relationship()->orderColumn('sort_order')->reorderable()
                 ->schema([Fields::image('path', 'product')->required(), TextInput::make('caption')->label('Chú thích'), Fields::visible('Hiển thị')])
@@ -58,7 +58,7 @@ class AlbumResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->height(48),
                 TextColumn::make('title')->label('Album')->searchable(),

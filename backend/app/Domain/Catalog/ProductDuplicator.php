@@ -4,10 +4,8 @@ namespace App\Domain\Catalog;
 
 use App\Models\Product;
 use App\Models\SeoMeta;
-use App\Rules\FreePublicSlug;
+use App\Support\Slugs;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class ProductDuplicator
 {
@@ -46,14 +44,6 @@ class ProductDuplicator
 
     private function newSlug(string $source): string
     {
-        $stem = rtrim(substr($source, 0, 225), '-');
-        for ($attempt = 0; $attempt < 5; $attempt++) {
-            $slug = $stem.'-ban-sao-'.bin2hex(random_bytes(8));
-            if (Validator::make(['slug' => $slug], ['slug' => [new FreePublicSlug('products')]])->passes()) {
-                return $slug;
-            }
-        }
-
-        throw ValidationException::withMessages(['slug' => 'Không tạo được đường dẫn bản sao duy nhất. Vui lòng thử lại.']);
+        return Slugs::free(substr($source, 0, 190).'-ban-sao', Slugs::publicScope('products'));
     }
 }

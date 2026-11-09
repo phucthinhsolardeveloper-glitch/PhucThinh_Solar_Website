@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\Audited;
+use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 /** @property string $kind */
 class Post extends Model
 {
-    use Audited;
+    use Audited, RedirectsOldSlug;
 
     protected $table = 'posts';
 
@@ -60,5 +61,17 @@ class Post extends Model
     public static function auditedAttributes(): array
     {
         return [];
+    }
+
+    public function publicPath(?string $slug = null): ?string
+    {
+        $slug ??= $this->slug;
+
+        return match ($this->kind) {
+            'article', 'project' => '/'.$slug.'/',
+            'solution' => '/giai-phap/'.$slug.'/',
+            'policy' => '/ho-tro/'.$slug.'/',
+            default => null,
+        };
     }
 }

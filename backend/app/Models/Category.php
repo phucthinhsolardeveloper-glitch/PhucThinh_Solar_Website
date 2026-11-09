@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Models\Concerns\Audited;
+use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Category extends Model
 {
-    use Audited;
+    use Audited, RedirectsOldSlug;
 
     protected $table = 'categories';
 
@@ -55,5 +57,16 @@ class Category extends Model
     public static function auditedAttributes(): array
     {
         return [];
+    }
+
+    /** The tree is read from the database, so before a save it still gives the old address. */
+    public function publicPath(?string $slug = null): ?string
+    {
+        return '/'.(new CategoryTree)->path((int) $this->getKey());
+    }
+
+    protected function publicPathIsSection(): bool
+    {
+        return true;
     }
 }

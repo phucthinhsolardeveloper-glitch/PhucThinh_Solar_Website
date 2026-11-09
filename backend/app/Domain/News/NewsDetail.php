@@ -273,7 +273,7 @@ class NewsDetail extends PageSupport
 
     private static function date(mixed $value): string
     {
-        $timestamp = is_numeric($value) ? (int) $value : 0;
+        $timestamp = is_numeric($value) ? (int) $value : (int) strtotime((string) $value);
 
         return $timestamp > 0 ? date('Y-m-d', $timestamp) : '';
     }

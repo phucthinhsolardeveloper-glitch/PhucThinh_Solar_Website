@@ -6,9 +6,8 @@ use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
 use App\Models\Category;
-use App\Rules\FreePublicSlug;
+use App\Support\Slugs;
 use BackedEnum;
-use Closure;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -51,7 +50,9 @@ class CategoryResource extends Resource
         return $schema->components([
             Section::make()->columns(2)->schema([
                 Fields::title(),
-                Fields::slug()->rules([fn (Get $get, ?Model $record) => self::slugRule($get('parent_id'), $record)]),
+                Fields::slug('name', fn (?Model $record, Get $get) => $get('parent_id')
+                    ? Slugs::scope('categories', ['parent_id' => $get('parent_id')], $record?->getKey())
+                    : Slugs::publicScope('categories', $record?->getKey())),
                 Select::make('parent_id')->label('Thuộc danh mục')->placeholder('Danh mục cấp 1')
                     ->options(fn (?Model $record) => Options::categoryPaths(3, $record?->getKey()))->searchable()->live()
                     ->disabled(fn (?Category $record) => (bool) $record?->children()->exists())
@@ -112,20 +113,5 @@ class CategoryResource extends Resource
         $data['depth'] = $parentDepth + 1;
 
         return $data;
-    }
-
-    private static function slugRule(mixed $parentId, ?Model $record): Closure|FreePublicSlug
-    {
-        if (! $parentId) {
-            return new FreePublicSlug('categories', $record?->getKey());
-        }
-
-        return function (string $attribute, mixed $value, Closure $fail) use ($parentId, $record) {
-            $taken = DB::table('categories')->where('parent_id', $parentId)->where('slug', $value)
-                ->when($record, fn ($q) => $q->where('id', '!=', $record->getKey()))->exists();
-            if ($taken) {
-                $fail('Danh mục cùng cấp đã có đường dẫn này.');
-            }
-        };
     }
 }

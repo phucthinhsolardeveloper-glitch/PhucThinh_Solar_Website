@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Models\Concerns\Audited;
+use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Album extends Model
 {
-    use Audited;
+    use Audited, RedirectsOldSlug;
 
     protected $table = 'albums';
 
@@ -36,5 +37,10 @@ class Album extends Model
     public static function auditedAttributes(): array
     {
         return [];
+    }
+
+    public function publicPath(?string $slug = null): ?string
+    {
+        return '/'.($slug ?? $this->slug).'/';
     }
 }

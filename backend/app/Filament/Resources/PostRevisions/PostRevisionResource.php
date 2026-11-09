@@ -34,6 +34,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use UnitEnum;
 
 /**
@@ -114,8 +115,8 @@ class PostRevisionResource extends Resource
                     self::draftRich('extra_body', fn (?PostRevision $record) => $kind($record) === 'solution' ? 'Nội dung bổ sung' : 'Nội dung phụ')->visible($has('extra_body')),
                 ]),
             Section::make('Thông tin công trình')->columns(2)->visible($has('client_name'))->schema([
-                TextInput::make('payload.client_name')->label('Chủ đầu tư / khách hàng')->maxLength(255),
-                TextInput::make('payload.address')->label('Địa điểm')->maxLength(255),
+                TextInput::make('payload.client_name')->label('Chủ đầu tư / khách hàng')->maxLength(255)->columnSpanFull(),
+                ...Fields::location('payload.'),
                 DatePicker::make('payload.started_on')->label('Khởi công'),
                 DatePicker::make('payload.finished_on')->label('Hoàn thành'),
             ]),
@@ -220,8 +221,11 @@ class PostRevisionResource extends Resource
         if ($field === 'seo') {
             return collect((array) $value)->filter(fn ($v) => filled($v))->map(fn ($v, $k) => $k.': '.$v)->implode("\n") ?: '—';
         }
-        if ($field === 'published_at' && is_numeric($value)) {
-            return date('d/m/Y H:i', (int) $value);
+        if ($field === 'province_id' || $field === 'ward_id') {
+            return (string) (DB::table($field === 'province_id' ? 'provinces' : 'wards')->where('id', (int) $value)->value('name') ?? '—');
+        }
+        if ($field === 'published_at' && filled($value)) {
+            return date('d/m/Y H:i', (int) strtotime((string) $value));
         }
         if (is_bool($value) || in_array($field, ['is_featured', 'in_hub', 'is_visible'], true)) {
             return $value ? 'Có' : 'Không';

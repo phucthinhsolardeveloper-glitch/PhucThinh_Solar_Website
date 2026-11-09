@@ -45,7 +45,7 @@ class BrandResource extends Resource
                 Textarea::make('summary')->label('Mô tả ngắn')->rows(3)->columnSpanFull(),
                 Fields::rich('body', 'Giới thiệu')->columnSpanFull(),
                 Fields::image('image', 'product', 'Logo'),
-                Section::make()->schema([Fields::visible(), Fields::sort()]),
+                Section::make()->schema([Fields::visible()]),
             ]),
             Section::make('Khối mô tả dùng chung')->relationship('contentSection', Fields::keepRelation('contentSection', fn (array $state) => filled($state['blocks'] ?? null)))->collapsed()
                 ->description('Sản phẩm của thương hiệu kế thừa các khối này khi sản phẩm không có mô tả riêng.')
@@ -58,7 +58,7 @@ class BrandResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 ImageColumn::make('image')->label('Logo')->disk('upload_product')->height(36),
                 TextColumn::make('name')->label('Thương hiệu')->searchable()->sortable(),

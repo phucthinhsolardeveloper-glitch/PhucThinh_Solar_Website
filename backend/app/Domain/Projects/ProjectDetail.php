@@ -59,12 +59,12 @@ class ProjectDetail extends PageSupport
         $nearby = [];
         $others = $this->db->table('posts')->where('id', '<>', $id)->where('kind', 'project')->where('is_visible', true)
             ->when($post->category_id, fn ($q) => $q->where('category_id', $post->category_id), fn ($q) => $q->whereNull('category_id'))
-            ->orderBy('sort_order')->orderByDesc('id')->limit(3)->get(['id', 'title', 'slug', 'image', 'address']);
+            ->orderBy('sort_order')->orderByDesc('id')->limit(3)->get(['id', 'title', 'slug', 'image', 'address', 'province_id', 'ward_id']);
         foreach ($others as $other) {
             $otherSlug = Text::slug($other->slug);
             $otherTitle = Text::cms($other->title);
             if ($otherSlug !== '' && $otherTitle !== '') {
-                $nearby[] = ['id' => (int) $other->id, 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => Text::cms((string) $other->address), 'image' => $this->strictImage((string) $other->image, 'upload/news/')];
+                $nearby[] = ['id' => (int) $other->id, 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => Text::cms(ProjectLocation::label($other->address, $other->province_id, $other->ward_id)), 'image' => $this->strictImage((string) $other->image, 'upload/news/')];
             }
         }
         $seoTitle = filled($seoRow?->title) ? Text::cms($seoRow->title) : $title;
@@ -84,7 +84,7 @@ class ProjectDetail extends PageSupport
                 'coverImage' => $this->strictImage((string) $post->image, 'upload/news/'),
                 'category' => $category,
                 'client' => Text::cms((string) $post->client_name),
-                'address' => Text::cms((string) $post->address),
+                'address' => Text::cms(ProjectLocation::label($post->address, $post->province_id, $post->ward_id)),
                 'startDate' => self::date($post->started_on),
                 'endDate' => self::date($post->finished_on),
                 'gallery' => $gallery,

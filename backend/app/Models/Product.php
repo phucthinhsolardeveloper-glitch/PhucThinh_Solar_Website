@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\UnicodeJson;
 use App\Models\Concerns\Audited;
+use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Product extends Model
 {
-    use Audited;
+    use Audited, RedirectsOldSlug;
 
     protected $table = 'products';
 
@@ -79,5 +80,10 @@ class Product extends Model
     public static function auditedAttributes(): array
     {
         return ['name', 'slug', 'code', 'category_id', 'brand_id', 'regular_price', 'sale_price', 'quote_only', 'is_visible', 'pdp_profile', 'power_watts', 'battery_capacity', 'panel_power', 'light_source', 'lamp_dimensions', 'color_temperature', 'light_color', 'material', 'charging_time', 'lighting_time', 'waterproof_rating', 'led_chip', 'lighting_area', 'installation_height', 'panel_dimensions', 'carton_quantity', 'carton_dimensions', 'weight', 'warranty', 'package_contents', 'additional_specs'];
+    }
+
+    public function publicPath(?string $slug = null): ?string
+    {
+        return '/san-pham/'.($slug ?? $this->slug);
     }
 }

@@ -4,8 +4,7 @@ namespace App\Filament\Support;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Post;
-use App\Rules\FreePublicSlug;
-use Closure;
+use App\Support\Slugs;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -27,8 +26,6 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Shared screen for the four kinds of post (article, solution, project, policy). Each kind is its
@@ -70,7 +67,9 @@ abstract class PostResource extends Resource
             Hidden::make('kind')->default($kind),
             Section::make()->columns(2)->schema(array_values(array_filter([
                 Fields::title('title', 'Tiêu đề'),
-                Fields::slug()->rules([fn (?Model $record) => self::slugRule($kind, $record)]),
+                Fields::slug('title', fn (?Model $record) => in_array($kind, ['article', 'project'], true)
+                    ? Slugs::publicScope('posts', $record?->getKey())
+                    : Slugs::scope('posts', ['kind' => $kind], $record?->getKey())),
                 $kind === 'solution' ? TextInput::make('nav_title')->label('Tên ngắn trên menu') : null,
                 in_array($kind, ['article', 'project', 'solution'], true)
                     ? Select::make('category_id')->label('Nhóm')->relationship('category', 'name', fn (Builder $query) => $query->where('kind', $kind))->preload()
@@ -78,8 +77,8 @@ abstract class PostResource extends Resource
                 Textarea::make('summary')->label('Mô tả ngắn')->rows(3)->columnSpanFull(),
             ]))),
             $kind === 'project' ? Section::make('Thông tin công trình')->columns(2)->schema([
-                TextInput::make('client_name')->label('Chủ đầu tư / khách hàng'),
-                TextInput::make('address')->label('Địa điểm'),
+                TextInput::make('client_name')->label('Chủ đầu tư / khách hàng')->columnSpanFull(),
+                ...Fields::location(),
                 DatePicker::make('started_on')->label('Khởi công'),
                 DatePicker::make('finished_on')->label('Hoàn thành'),
             ]) : null,
@@ -112,9 +111,7 @@ abstract class PostResource extends Resource
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
                 Fields::sort(),
-                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())
-                    ->formatStateUsing(fn ($state) => is_numeric($state) ? Carbon::createFromTimestamp((int) $state)->toDateTimeString() : $state)
-                    ->dehydrateStateUsing(fn ($state) => $state ? Carbon::parse($state)->timestamp : null),
+                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now()),
             ]))),
             Fields::seo('news'),
         ])));
@@ -129,29 +126,12 @@ abstract class PostResource extends Resource
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->sortable()->limit(70),
                 TextColumn::make('category.name')->label('Nhóm')->toggleable()->visible(static::$kind !== 'policy'),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
-                TextColumn::make('published_at')->label('Ngày đăng')->sortable()
-                    ->formatStateUsing(fn ($state) => $state ? Carbon::createFromTimestamp((int) $state)->format('d/m/Y') : ''),
+                TextColumn::make('published_at')->label('Ngày đăng')->sortable()->date('d/m/Y'),
             ])
             ->filters(array_values(array_filter([
                 static::$kind !== 'policy' ? SelectFilter::make('category_id')->label('Nhóm')->relationship('category', 'name', fn (Builder $query) => $query->where('kind', static::$kind)) : null,
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
             ])))
             ->recordActions([EditAction::make()]);
-    }
-
-    /** Articles and projects answer on "/<slug>"; solutions and policies only need a slug free in their kind. */
-    private static function slugRule(string $kind, ?Model $record): Closure|FreePublicSlug
-    {
-        if (in_array($kind, ['article', 'project'], true)) {
-            return new FreePublicSlug('posts', $record?->getKey());
-        }
-
-        return function (string $attribute, mixed $value, Closure $fail) use ($kind, $record) {
-            $taken = DB::table('posts')->where('kind', $kind)->where('slug', $value)
-                ->when($record, fn ($q) => $q->where('id', '!=', $record->getKey()))->exists();
-            if ($taken) {
-                $fail('Đã có trang khác dùng đường dẫn này.');
-            }
-        };
     }
 }

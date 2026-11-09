@@ -100,7 +100,7 @@ class HomeAssembler
             'process' => $process,
             'dealer' => ['title' => 'Đăng ký đại lý', 'description' => 'Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.', 'href' => '/dai-ly/'],
             'about' => $this->about(),
-            'contact' => ['hotline' => self::text($options['hotline'] ?? ''), 'email' => self::text($options['email'] ?? ''), 'address' => self::text($options['address'] ?? ''), 'workingHours' => self::text($options['thoigianlamviec'] ?? '')],
+            'contact' => ['hotline' => self::text($options['hotline'] ?? ''), 'email' => self::text($options['email'] ?? ''), 'address' => self::text($options['address'] ?? ''), 'workingHours' => self::text($options['working_hours'] ?? '')],
             'productGroups' => $productGroups,
             'popup' => $this->popup($popup),
             'energyChain' => $this->energyChain(),
