@@ -355,19 +355,23 @@ class Shop
 
             return $notFound;
         }
-        $order = DB::selectOne('select code, customer_name as fullname, total as total_price from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
+        $order = DB::selectOne('select id, code, customer_name as fullname, total as total_price, payment_code, payment_status from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
         if (! $order || empty($order->code)) {
             unset($all[$token]);
             $this->session->put('order_thanks', $all);
 
             return $notFound;
         }
-        $fire = ! empty($entry['conversion_pending']);
+        $paymentState = $order->payment_code === 'manual' ? 'accepted' : ($order->payment_status === 'paid' ? 'paid' :
+            (DB::table('payment_transactions')->where('order_id', $order->id)->where('provider', 'vnpay')->value('status') === 'failed' ? 'failed' : 'pending'));
+        $consumed = array_key_exists('conversion_consumed', $entry) ? (bool) $entry['conversion_consumed'] : empty($entry['conversion_pending']);
+        $fire = ! $consumed && in_array($paymentState, ['accepted', 'paid'], true);
+        $all[$token]['conversion_consumed'] = $consumed || $fire;
         $all[$token]['conversion_pending'] = false;
         $this->session->put('order_thanks', $all);
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'order' => ['code' => trim((string) $order->code), 'customerName' => trim(strip_tags((string) $order->fullname)),
-            'totalPrice' => max(0, (int) round((float) $order->total_price))], 'conversionPending' => $fire]];
+            'totalPrice' => max(0, (int) round((float) $order->total_price))], 'paymentState' => $paymentState, 'conversionPending' => $fire]];
     }
 
     /**
@@ -416,6 +420,10 @@ class Shop
         if (! Payments::vnpayVerify($input)) {
             return $ipn ? $ipnReply('97', 'Invalid signature') : [400, 'Invalid signature'];
         }
+        $terminal = trim((string) config('commerce.vnpay.tmn_code'));
+        if ($terminal !== '' && ! hash_equals($terminal, (string) ($input['vnp_TmnCode'] ?? ''))) {
+            return $ipn ? $ipnReply('97', 'Invalid terminal') : [400, 'Invalid terminal'];
+        }
         $code = trim((string) ($input['vnp_TxnRef'] ?? ''));
         $db = DB::connection();
         $order = $code !== '' ? $db->selectOne('select id, total as total_price, payment_code from orders where code = ? limit 1', [$code]) : null;
@@ -429,11 +437,12 @@ class Shop
         if (abs((float) $order->total_price - $amount) > 0.01) {
             return $ipn ? $ipnReply('04', 'Invalid amount') : [400, 'Invalid order or amount'];
         }
-        $status = ($input['vnp_ResponseCode'] ?? '') === '00' ? 'paid' : 'failed';
+        $status = ($input['vnp_ResponseCode'] ?? '') === '00' && ($input['vnp_TransactionStatus'] ?? '') === '00' ? 'paid' : 'failed';
         $transaction = trim((string) ($input['vnp_TransactionNo'] ?? ''));
         $payload = (string) json_encode($input, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $alreadyPaid = false;
-        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount, &$alreadyPaid) {
+        $becamePaid = false;
+        $db->transaction(function () use ($db, $order, $code, $status, $transaction, $payload, $amount, &$alreadyPaid, &$becamePaid) {
             $locked = $db->table('orders')->where('id', $order->id)->lockForUpdate()->first(['payment_status']);
             if ($locked?->payment_status === 'paid') {
                 $alreadyPaid = true;
@@ -449,8 +458,13 @@ class Shop
             }
             if ($status === 'paid') {
                 $db->table('orders')->where('id', $order->id)->update(['payment_status' => 'paid', 'payment_code' => 'vnpay', 'payment_reference' => $transaction, 'updated_at' => now()]);
+                $becamePaid = true;
             }
         });
+        // Only the unpaid-to-paid transition sends mail; return and IPN may arrive in either order.
+        if ($becamePaid) {
+            $this->sendPaidOrderMails((int) $order->id);
+        }
         if ($ipn && $alreadyPaid) {
             return $ipnReply('02', 'Order already confirmed');
         }
@@ -515,13 +529,38 @@ class Shop
     private function finish(int $orderId, string $code, ?string $paymentUrl = null): array
     {
         $all = array_filter((array) $this->session->get('order_thanks', []), fn ($entry) => is_array($entry) && time() - (int) ($entry['created_at'] ?? 0) <= self::THANKS_TTL);
-        $token = bin2hex(random_bytes(24));
-        $all[$token] = ['id' => $orderId, 'code' => $code, 'created_at' => time(), 'conversion_pending' => true];
+        $token = null;
+        foreach ($all as $key => $entry) {
+            if ((int) ($entry['id'] ?? 0) === $orderId && ($entry['code'] ?? '') === $code) {
+                $token = (string) $key;
+                break;
+            }
+        }
+        if ($token === null) {
+            $token = bin2hex(random_bytes(24));
+            $all[$token] = ['id' => $orderId, 'code' => $code, 'created_at' => time(),
+                'conversion_pending' => $paymentUrl === null, 'conversion_consumed' => false];
+        }
         $this->session->put('order_thanks', $all);
         $this->session->forget('checkout_token');
         $this->cart->clear();
 
         return ['ok' => true, 'orderCode' => $code, 'thanksToken' => $token, 'redirect' => $paymentUrl ?? '/cam-on/?token='.rawurlencode($token)];
+    }
+
+    private function sendPaidOrderMails(int $orderId): void
+    {
+        $order = DB::table('orders')->where('id', $orderId)->first();
+        if (! $order || $order->payment_code !== 'vnpay' || $order->payment_status !== 'paid') {
+            return;
+        }
+        $items = DB::table('order_items')->where('order_id', $orderId)->orderBy('id')->get()->map(function ($item) {
+            $price = (float) ($item->sale_price ?: $item->regular_price);
+
+            return ['name' => $item->name, 'option' => implode(' - ', array_filter([$item->color, $item->size])),
+                'quantity' => (int) $item->quantity, 'price' => $price, 'total' => $price * (int) $item->quantity];
+        })->all();
+        $this->sendOrderMails((array) $order, $items, 'Thanh toán online qua VNPay');
     }
 
     private function sendOrderMails(array $order, array $items, string $paymentName): void

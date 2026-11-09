@@ -40,3 +40,36 @@ it('stores up to three real photos and rejects a renamed non-image', function ()
     $fake = UploadedFile::fake()->createWithContent('c.jpg', 'not an image');
     $this->post('/api/v1/review', review(['review-file-photo' => [$fake]]), ['Content-Type' => 'multipart/form-data'])->assertStatus(422);
 });
+
+it('rejects a renamed video and stores only a validated video with its poster', function () {
+    $poster = UploadedFile::fake()->image('cover.jpg');
+    $fake = UploadedFile::fake()->createWithContent('clip.mp4', 'not a video');
+    $this->post('/api/v1/review', review(['review-file-video' => $fake, 'review-poster-video' => $poster]), ['Content-Type' => 'multipart/form-data'])->assertStatus(422);
+    expect(Storage::disk('uploads')->allFiles())->toBe([]);
+
+    $box = fn (string $type, string $data) => pack('N', 8 + strlen($data)).$type.$data;
+    $content = $box('ftyp', 'isom'.pack('N', 0).'isomiso2').$box('moov', 'movie-metadata').$box('mdat', 'media-data');
+    $video = UploadedFile::fake()->createWithContent('clip.mp4', $content);
+    $this->post('/api/v1/review', review(['review-file-video' => $video, 'review-poster-video' => $poster]), ['Content-Type' => 'multipart/form-data'])->assertOk();
+    $id = DB::table('reviews')->max('id');
+    $media = DB::table('review_media')->where('review_id', $id)->first();
+    expect($media->kind)->toBe('video')->and($media->path)->not->toBe('')->and($media->poster)->not->toBeNull();
+    Storage::disk('uploads')->assertExists('video/'.$media->path);
+    Storage::disk('uploads')->assertExists('photo/'.$media->poster);
+    expect(Storage::disk('uploads')->allFiles('.review-staging'))->toBe([]);
+});
+
+it('removes staged and promoted files when saving review media rolls back', function () {
+    $before = DB::table('reviews')->count();
+    DB::connection()->beforeExecuting(function (string $query): void {
+        if (preg_match('/insert into [`"]?review_media/i', $query)) {
+            throw new RuntimeException('Injected media insert failure');
+        }
+    });
+    $photo = UploadedFile::fake()->image('rollback.jpg');
+    $this->post('/api/v1/review', review(['review-file-photo' => [$photo]]), ['Content-Type' => 'multipart/form-data'])->assertStatus(500);
+
+    expect(DB::table('reviews')->count())->toBe($before)
+        ->and(Storage::disk('uploads')->allFiles('photo'))->toBe([])
+        ->and(Storage::disk('uploads')->allFiles('.review-staging'))->toBe([]);
+});

@@ -21,9 +21,9 @@ use Throwable;
  */
 class ReviewSubmission
 {
-    private const PHOTO_TYPES = ['jpg', 'jpeg', 'png'];
-
     private const VIDEO_TYPES = ['mp4', 'mkv'];
+
+    private const PHOTO_MAX_BYTES = 30 * 1024 * 1024;
 
     private const VIDEO_MAX_BYTES = 100 * 1024 * 1024;
 
@@ -60,7 +60,7 @@ class ReviewSubmission
         $data = ['title' => $text('title', 180), 'content' => $text('content', 5000), 'fullname' => $text('fullname', 100), 'phone' => $text('phone', 20), 'email' => $text('email', 150)];
         $orderCode = $text('orderCode', 40);
         $requireOrder = (string) ($this->settings->options()['review_require_order_code'] ?? '') === '1';
-        $photos = array_slice(array_values(array_filter((array) $request->file('review-file-photo', []), fn ($f) => $f instanceof UploadedFile && $f->isValid())), 0, 4);
+        $photos = array_values((array) $request->file('review-file-photo', []));
         $video = $request->file('review-file-video');
         $poster = $request->file('review-poster-video');
 
@@ -103,8 +103,8 @@ class ReviewSubmission
             $errors[] = 'Hình ảnh không được vượt quá 3 hình';
         }
         foreach ($photos as $photo) {
-            if (! self::isImage($photo)) {
-                $errors[] = 'Hình ảnh chỉ nhận định dạng JPG hoặc PNG';
+            if (! $photo instanceof UploadedFile || ! $photo->isValid() || ! self::isImage($photo)) {
+                $errors[] = 'Hình ảnh phải là JPG/PNG hợp lệ, tối đa 30 MB mỗi tệp';
                 break;
             }
         }
@@ -116,14 +116,11 @@ class ReviewSubmission
         if (! $hasVideo && $hasPoster) {
             $errors[] = 'Tập tin video không được trống';
         }
-        if ($hasVideo && ! in_array(strtolower($video->getClientOriginalExtension()), self::VIDEO_TYPES, true)) {
-            $errors[] = 'Chi cho phép tập tin video với định dạng: '.implode(',', self::VIDEO_TYPES);
+        if ($video !== null && (! $hasVideo || ! self::isVideo($video))) {
+            $errors[] = 'Video phải là MP4/MKV hợp lệ và không vượt quá 100 MB';
         }
-        if ($hasVideo && $video->getSize() > self::VIDEO_MAX_BYTES) {
-            $errors[] = 'Tập tin video không được vượt quá 100 MB';
-        }
-        if ($hasPoster && ! self::isImage($poster)) {
-            $errors[] = 'Hình đại diện video chỉ nhận định dạng JPG hoặc PNG';
+        if ($poster !== null && (! $hasPoster || ! self::isImage($poster))) {
+            $errors[] = 'Hình đại diện video phải là JPG/PNG hợp lệ, tối đa 30 MB';
         }
         if ($errors) {
             return [422, ['errors' => $errors]];
@@ -132,23 +129,44 @@ class ReviewSubmission
         // Waits for Admin approval before it shows on the product page.
         $row = ['product_id' => $productId, 'stars' => $star, 'title' => strip_tags($data['title']), 'content' => strip_tags($data['content']), 'name' => strip_tags($data['fullname']),
             'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'verified_purchase' => $verified, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()];
+        $uploads = Storage::disk('uploads');
+        $batch = '.review-staging/'.bin2hex(random_bytes(12));
+        $staged = [];
+        $media = [];
+        $promoted = [];
         try {
-            $db->transaction(function () use ($db, $row, $photos, $hasVideo, $video, $poster) {
+            foreach ($photos as $photo) {
+                $file = self::stage($photo, 'photo', $batch);
+                $staged[] = $file;
+                $media[] = ['kind' => 'photo', 'path' => $file['name'], 'poster' => null];
+            }
+            if ($hasVideo) {
+                $clip = self::stage($video, 'video', $batch);
+                $staged[] = $clip;
+                $cover = self::stage($poster, 'photo', $batch);
+                $staged[] = $cover;
+                $media[] = ['kind' => 'video', 'path' => $clip['name'], 'poster' => $cover['name']];
+            }
+            $db->transaction(function () use ($db, $row, $uploads, $batch, $staged, $media, &$promoted) {
                 $id = (int) $db->table('reviews')->insertGetId($row);
-                foreach ($photos as $photo) {
-                    if (($name = self::store($photo, 'photo')) !== null) {
-                        $db->table('review_media')->insert(['review_id' => $id, 'kind' => 'photo', 'path' => $name, 'created_at' => now(), 'updated_at' => now()]);
+                foreach ($staged as $file) {
+                    if ($uploads->exists($file['target']) || ! $uploads->move($batch.'/'.$file['name'], $file['target'])) {
+                        throw new \RuntimeException('Review media promotion failed');
                     }
+                    $promoted[] = $file['target'];
                 }
-                if ($hasVideo) {
-                    $db->table('review_media')->insert(['review_id' => $id, 'kind' => 'video', 'path' => self::store($video, 'video') ?? '', 'poster' => self::store($poster, 'photo'), 'created_at' => now(), 'updated_at' => now()]);
+                foreach ($media as $file) {
+                    $db->table('review_media')->insert($file + ['review_id' => $id, 'created_at' => now(), 'updated_at' => now()]);
                 }
             });
         } catch (Throwable $e) {
-            Log::error('Review save failed', ['error' => $e->getMessage()]);
+            $uploads->delete($promoted);
+            $uploads->deleteDirectory($batch);
+            Log::error('Review save failed', ['type' => $e::class]);
 
             return [500, ['errors' => ['Gửi đánh giá thất bại. Vui lòng thử lại sau.']]];
         }
+        $uploads->deleteDirectory($batch);
 
         return [200, ['ok' => true, 'message' => 'Đã nhận đánh giá. Nội dung sẽ hiển thị sau khi được duyệt.']];
     }
@@ -156,17 +174,95 @@ class ReviewSubmission
     /** Real JPEG or PNG content, whatever the file name claims. */
     private static function isImage(UploadedFile $file): bool
     {
+        if ($file->getSize() <= 0 || $file->getSize() > self::PHOTO_MAX_BYTES) {
+            return false;
+        }
         $info = @getimagesize($file->getRealPath());
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mime = $file->getMimeType();
 
-        return is_array($info) && in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG], true) && in_array(strtolower($file->getClientOriginalExtension()), self::PHOTO_TYPES, true);
+        return is_array($info) && $info[0] > 0 && $info[1] > 0 && $info[0] * $info[1] <= 40_000_000
+            && (($info[2] === IMAGETYPE_JPEG && $mime === 'image/jpeg' && in_array($extension, ['jpg', 'jpeg'], true))
+                || ($info[2] === IMAGETYPE_PNG && $mime === 'image/png' && $extension === 'png'));
     }
 
-    /** Saves under upload/<folder>/ with the PHP naming (slug of the name, dash, 4 digits). */
-    private static function store(UploadedFile $file, string $folder): ?string
+    /** Fileinfo plus container header rejects a text file renamed to .mp4 or .mkv. */
+    private static function isVideo(UploadedFile $file): bool
     {
-        $name = Text::changeTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
-        $name .= '-'.random_int(1000, 9999).'.'.strtolower($file->getClientOriginalExtension());
+        if ($file->getSize() < 16 || $file->getSize() > self::VIDEO_MAX_BYTES) {
+            return false;
+        }
+        $extension = strtolower($file->getClientOriginalExtension());
+        if (! in_array($extension, self::VIDEO_TYPES, true)) {
+            return false;
+        }
+        $handle = @fopen($file->getRealPath(), 'rb');
+        if ($handle === false) {
+            return false;
+        }
+        try {
+            $header = (string) fread($handle, 4096);
+            if ($extension === 'mkv') {
+                return in_array($file->getMimeType(), ['video/x-matroska', 'application/x-matroska'], true)
+                    && str_starts_with($header, "\x1a\x45\xdf\xa3") && str_contains($header, 'matroska') && str_contains($header, "\x18\x53\x80\x67");
+            }
+            if (! in_array($file->getMimeType(), ['video/mp4', 'application/mp4'], true) || substr($header, 4, 4) !== 'ftyp') {
+                return false;
+            }
 
-        return Storage::disk('uploads')->putFileAs($folder, $file, $name) ? $name : null;
+            return self::hasMp4MediaBoxes($handle, (int) $file->getSize());
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    /** Read box headers without loading a 100 MB video into PHP memory. */
+    private static function hasMp4MediaBoxes($handle, int $size): bool
+    {
+        $offset = 0;
+        $hasMovie = $hasMedia = false;
+        while ($offset + 8 <= $size) {
+            if (fseek($handle, $offset) !== 0) {
+                return false;
+            }
+            $box = (string) fread($handle, 16);
+            if (strlen($box) < 8) {
+                return false;
+            }
+            $length = (int) unpack('N', substr($box, 0, 4))[1];
+            $type = substr($box, 4, 4);
+            if ($offset === 0 && ($type !== 'ftyp' || $length < 16)) {
+                return false;
+            }
+            if ($length === 1) {
+                if (strlen($box) < 16) {
+                    return false;
+                }
+                $parts = unpack('N2', substr($box, 8, 8));
+                $length = ((int) $parts[1] << 32) | (int) $parts[2];
+            } elseif ($length === 0) {
+                $length = $size - $offset;
+            }
+            if ($length < 8 || $offset + $length > $size) {
+                return false;
+            }
+            $hasMovie = $hasMovie || $type === 'moov';
+            $hasMedia = $hasMedia || $type === 'mdat';
+            $offset += $length;
+        }
+
+        return $offset === $size && $hasMovie && $hasMedia;
+    }
+
+    /** Keep uncommitted review uploads outside public paths until the DB transaction can save them. */
+    private static function stage(UploadedFile $file, string $folder, string $batch): array
+    {
+        $name = mb_substr(Text::changeTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file', 0, 70);
+        $name .= '-'.bin2hex(random_bytes(8)).'.'.strtolower($file->getClientOriginalExtension());
+        if (! Storage::disk('uploads')->putFileAs($batch, $file, $name)) {
+            throw new \RuntimeException('Review media staging failed');
+        }
+
+        return ['name' => $name, 'target' => $folder.'/'.$name];
     }
 }

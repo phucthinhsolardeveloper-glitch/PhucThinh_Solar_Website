@@ -37,6 +37,7 @@ export interface PublicOrderThanksPayload {
   schemaVersion: 1
   locale: 'vi'
   order: { code: string; customerName: string; totalPrice: number }
+  paymentState: 'accepted' | 'pending' | 'paid' | 'failed'
   conversionPending: boolean
 }
 
@@ -78,7 +79,10 @@ export function isPublicCheckoutNoticePayload(value: unknown): value is PublicCh
     && ['city', 'ward', 'payments'].every((key) => form[key] === undefined || /^-?\d{1,12}$/.test(form[key] as string))
 }
 export function isPublicOrderThanksPayload(value: unknown): value is PublicOrderThanksPayload {
-  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.order) || typeof value.conversionPending !== 'boolean') return false
+  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.order)
+    || !['accepted', 'pending', 'paid', 'failed'].includes(String(value.paymentState))
+    || typeof value.conversionPending !== 'boolean') return false
+  if (value.conversionPending && !['accepted', 'paid'].includes(String(value.paymentState))) return false
   return text(value.order.code) && text(value.order.customerName) && typeof value.order.totalPrice === 'number'
     && Number.isSafeInteger(value.order.totalPrice) && value.order.totalPrice >= 0
 }

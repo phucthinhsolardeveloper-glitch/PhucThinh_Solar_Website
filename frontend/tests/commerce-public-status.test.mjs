@@ -27,7 +27,7 @@ test('public order confirmation matches PHP generic success without exposing ses
   assert.match(page, /setResponseStatus\(502, 'Bad Gateway'\)/)
   assert.match(page, /payload\?\.order\.customerName \|\| 'bạn'/)
   assert.match(page, /usePublicSocialMeta\(\{[\s\S]*canonicalPath: ORDER_SUCCESS_PUBLIC_PATH/)
-  assert.match(page, /<SiteBreadcrumb :items="\[\{ label: 'Đặt hàng thành công' \}\]" \/>/)
+  assert.match(page, /<SiteBreadcrumb :items="\[\{ label: confirmationTitle \}\]" \/>/)
   assert.match(page, /Mã đơn hàng:/)
   assert.match(page, /Tiếp tục mua sắm/)
   assert.match(page, /conversionPending/)

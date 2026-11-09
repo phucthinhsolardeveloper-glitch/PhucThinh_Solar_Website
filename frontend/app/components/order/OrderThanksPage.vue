@@ -16,11 +16,15 @@ const { data, error, pending } = await useAsyncData<unknown>(
   { default: () => null },
 )
 const payload = computed<PublicOrderThanksPayload | null>(() => isPublicOrderThanksPayload(data.value) ? data.value : null)
+const paymentState = computed(() => payload.value?.paymentState ?? 'accepted')
+const paymentConfirmed = computed(() => paymentState.value === 'accepted' || paymentState.value === 'paid')
+const confirmationTitle = computed(() => paymentState.value === 'failed' ? 'Thanh toán chưa thành công'
+  : paymentState.value === 'pending' ? 'Đang chờ xác nhận thanh toán' : 'Đặt hàng thành công')
 const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 usePublicSocialMeta({
   enabled: isPublicRoute,
-  title: 'Đặt hàng thành công | Phúc Thịnh Solar',
+  title: computed(() => `${confirmationTitle.value} | Phúc Thịnh Solar`),
   description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
   canonicalPath: ORDER_SUCCESS_PUBLIC_PATH,
   image: computed(() => site.value.brand.logo),
@@ -35,7 +39,8 @@ const trackedConversions = new Set<string>()
 function trackOrderConversion() {
   const current = payload.value
   const currentToken = token.value
-  if (!import.meta.client || !current?.conversionPending || !/^[a-f0-9]{48}$/.test(currentToken) || trackedConversions.has(currentToken)) return
+  if (!import.meta.client || !current?.conversionPending || !['accepted', 'paid'].includes(current.paymentState)
+    || !/^[a-f0-9]{48}$/.test(currentToken) || trackedConversions.has(currentToken)) return
   const browserWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> }
   const dataLayer = browserWindow.dataLayer ??= []
   dataLayer.push({
@@ -55,7 +60,7 @@ watch([payload, token], trackOrderConversion)
   <div class="min-h-screen bg-white text-navy-800">
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
-        <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
+        <SiteBreadcrumb :items="[{ label: confirmationTitle }]" />
       </div>
     </div>
     <main class="pts-container py-[60px] text-center">
@@ -66,12 +71,15 @@ watch([payload, token], trackOrderConversion)
         <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
       <div v-else class="mx-auto max-w-[900px]">
-        <svg class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <svg v-if="paymentConfirmed" class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
           <circle cx="32" cy="32" r="30" fill="currentColor" />
           <path d="m17 32 10 10 21-22" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" />
         </svg>
-        <h1 class="mb-4 mt-5 text-[clamp(28px,4vw,38px)] font-black tracking-tight text-navy-800">Đặt hàng thành công!</h1>
-        <p class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
+        <UIcon v-else :name="paymentState === 'failed' ? 'i-lucide-circle-alert' : 'i-lucide-clock-3'" class="mx-auto mb-4 h-16 w-16 text-gold-600" aria-hidden="true" />
+        <h1 class="mb-4 mt-5 text-[clamp(28px,4vw,38px)] font-black tracking-tight text-navy-800">{{ confirmationTitle }}{{ paymentConfirmed ? '!' : '' }}</h1>
+        <p v-if="paymentState === 'pending'" class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Đơn hàng đã được tạo và đang chờ xác nhận thanh toán VNPay. Vui lòng kiểm tra lại trạng thái sau khi hoàn tất giao dịch.</p>
+        <p v-else-if="paymentState === 'failed'" class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Giao dịch VNPay chưa thành công. Đơn hàng chưa được xác nhận thanh toán; vui lòng liên hệ Phúc Thịnh Solar nếu cần hỗ trợ.</p>
+        <p v-else class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
         <p v-if="payload" class="mt-3 text-base text-slate-700">Mã đơn hàng: <strong class="text-navy-800">{{ payload.order.code }}</strong></p>
         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
           <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center gap-2 rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400">
@@ -88,7 +96,7 @@ watch([payload, token], trackOrderConversion)
           </button>
         </div>
 
-        <div class="mt-12 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-10 text-left sm:grid-cols-3">
+        <div v-if="paymentConfirmed" class="mt-12 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-10 text-left sm:grid-cols-3">
           <div class="rounded-btn border-t-2 border-gold-500 bg-slate-50 p-5">
             <span class="tabular-nums text-xs font-extrabold text-gold-700">01</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Xác nhận đơn hàng</h2>

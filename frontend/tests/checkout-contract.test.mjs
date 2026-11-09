@@ -25,6 +25,7 @@ test('rejects malformed tokens and mismatched payment code', () => {
 test('validates wards and session-bound thank-you DTO', () => {
   assert.equal(isPublicCheckoutWardsPayload({ schemaVersion: 1, locale: 'vi', cityId: 1, wards: [{ id: 2, name: 'Phường thật' }] }), true)
   assert.equal(isPublicCheckoutWardsPayload({ schemaVersion: 1, locale: 'vi', cityId: 0, wards: [] }), false)
-  assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách hàng', totalPrice: 500000 }, conversionPending: true }), true)
-  assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: '', customerName: 'Khách hàng', totalPrice: -1 }, conversionPending: false }), false)
+  assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách hàng', totalPrice: 500000 }, paymentState: 'paid', conversionPending: true }), true)
+  assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách hàng', totalPrice: 500000 }, paymentState: 'failed', conversionPending: true }), false)
+  assert.equal(isPublicOrderThanksPayload({ schemaVersion: 1, locale: 'vi', order: { code: '', customerName: 'Khách hàng', totalPrice: -1 }, paymentState: 'accepted', conversionPending: false }), false)
 })

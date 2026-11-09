@@ -13,6 +13,10 @@ Caddy → Nuxt/Laravel chạy local, `site-audit` 0 lỗi trên 19 route × 4 vi
 Candidate deployment: [../../deploy/laravel13/README.md](../../deploy/laravel13/README.md).
 **Production/master chưa chuyển Laravel.**
 
+Correctness P0 của VNPay conversion/mail và review media đã được xử lý trên
+nhánh migration; chi tiết hành vi, test và giới hạn còn lại ở
+[commerce-media-correctness-2026-11-09.md](commerce-media-correctness-2026-11-09.md).
+
 Admin sản phẩm hiện có CSV cập nhật **giá bán, giá khuyến mãi, chỉ báo giá và
 hiển thị**: tại `/admin/products`, xuất mẫu, sửa file UTF-8, nhập để xem trước,
 tải báo cáo từng dòng rồi xác nhận áp dụng trong 15 phút. ID/mã/tên dùng để đối
