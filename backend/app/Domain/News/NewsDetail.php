@@ -11,13 +11,12 @@ use App\Support\RichText;
 use App\Support\SiteSettings;
 use App\Support\Text;
 
-/**
- * Article pages: knowledge articles (api/pts_v1_news_detail.php) and support/policy pages
- * (api/pts_v1_policy_detail.php). Body HTML goes through the RichText sanitiser.
- */
+/** Knowledge articles and support/policy pages. Body HTML goes through the RichText sanitiser. */
 class NewsDetail extends PageSupport
 {
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
+
+    private const ARTICLE_FIELDS = ['id', 'category_id', 'author_id', 'title', 'slug', 'image', 'summary', 'body', 'extra_body', 'published_at', 'updated_at'];
 
     public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
@@ -35,12 +34,9 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
-        $row = $this->row("select id, category_id as id_list, author_id as id_user, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, coalesce(extra_body,'') as content1vi, published_at as date_created, updated_at, 'hienthi' as status, 'tin-tuc' as type from posts where slug=? and kind='article' and is_visible=1 limit 1", [$slug]);
-        if (! $row) {
-            return $notFound;
-        }
+        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'article')->where('is_visible', true)->first(self::ARTICLE_FIELDS);
 
-        return $this->renderArticle($row);
+        return $row ? $this->renderArticle((array) $row) : $notFound;
     }
 
     /** The signed preview renders the draft through the same presenter as the public article. */
@@ -52,20 +48,19 @@ class NewsDetail extends PageSupport
         }
         $payload = $revision->payload;
         $row = [
-            'id' => $post->id, 'id_list' => $payload['category_id'] ?? $post->category_id,
-            'id_user' => $post->author_id, 'namevi' => $payload['title'] ?? $post->title,
-            'slugvi' => $payload['slug'] ?? $post->slug, 'photo' => $payload['image'] ?? $post->image,
-            'descvi' => $payload['summary'] ?? '', 'contentvi' => $payload['body'] ?? '',
-            'content1vi' => $payload['extra_body'] ?? '',
-            'date_created' => $payload['published_at'] ?? $post->published_at,
+            'id' => $post->id, 'category_id' => $payload['category_id'] ?? $post->category_id,
+            'author_id' => $post->author_id, 'title' => $payload['title'] ?? $post->title,
+            'slug' => $payload['slug'] ?? $post->slug, 'image' => $payload['image'] ?? $post->image,
+            'summary' => $payload['summary'] ?? '', 'body' => $payload['body'] ?? '',
+            'extra_body' => $payload['extra_body'] ?? '',
+            'published_at' => $payload['published_at'] ?? $post->published_at,
             'updated_at' => $revision->updated_at?->toDateTimeString() ?? now()->toDateTimeString(),
-            'status' => 'hienthi', 'type' => 'tin-tuc',
         ];
         $seo = $payload['seo'] ?? [];
 
         return $this->renderArticle($row, [
-            'titlevi' => $seo['title'] ?? '', 'descriptionvi' => $seo['description'] ?? '',
-            'keywordsvi' => $seo['keywords'] ?? '',
+            'title' => (string) ($seo['title'] ?? ''), 'description' => (string) ($seo['description'] ?? ''),
+            'keywords' => (string) ($seo['keywords'] ?? ''),
         ], $payload['products'] ?? null);
     }
 
@@ -73,40 +68,39 @@ class NewsDetail extends PageSupport
     {
         $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
         $id = (int) $row['id'];
-        $title = self::text($row['namevi']);
-        $articleSlug = Text::slug($row['slugvi']);
-        if (! self::visible($row) || $id <= 0 || $title === '' || $articleSlug === '') {
+        $title = self::text($row['title']);
+        $articleSlug = Text::slug($row['slug']);
+        if ($title === '' || $articleSlug === '') {
             return $notFound;
         }
+        $categoryId = (int) $row['category_id'];
         $category = [];
-        if ((int) $row['id_list'] > 0) {
-            $list = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, 'hienthi' as status from post_categories where id=? and kind='article' and is_visible=1 limit 1", [(int) $row['id_list']]);
-            if ($list && ($listSlug = Text::slug($list['slugvi'])) !== '') {
-                $category = ['id' => (int) $list['id'], 'name' => self::text($list['namevi']), 'slug' => $listSlug, 'url' => '/'.$listSlug.'/'];
-            }
+        $list = $categoryId > 0 ? $this->db->table('post_categories')->where('id', $categoryId)->where('kind', 'article')->where('is_visible', true)->first(['id', 'name', 'slug']) : null;
+        if ($list && ($listSlug = Text::slug($list->slug)) !== '') {
+            $category = ['id' => (int) $list->id, 'name' => self::text($list->name), 'slug' => $listSlug, 'url' => '/'.$listSlug.'/'];
         }
         $media = ['gallery' => [], 'videos' => []];
-        foreach ($this->rows("select coalesce(path,'') as photo, coalesce(caption,'') as namevi from post_media where post_id=? and kind='image' and is_visible=1 order by sort_order,id desc", [$id]) as $photo) {
-            if (($image = NewsListing::media($photo['photo'])) !== '') {
-                $media['gallery'][] = ['image' => $image, 'alt' => self::text($photo['namevi'])];
+        $items = $this->db->table('post_media')->where('post_id', $id)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get();
+        foreach ($items->where('kind', 'image') as $photo) {
+            if (($image = NewsListing::media((string) $photo->path)) !== '') {
+                $media['gallery'][] = ['image' => $image, 'alt' => self::text($photo->caption)];
             }
         }
-        foreach ($this->rows("select coalesce(caption,'') as namevi, coalesce(video_url,'') as link_video from post_media where post_id=? and kind='video' and is_visible=1 order by sort_order,id desc", [$id]) as $video) {
-            if (($url = self::videoUrl($video['link_video'])) !== '') {
-                $media['videos'][] = ['url' => $url, 'title' => self::text($video['namevi'])];
+        foreach ($items->where('kind', 'video') as $video) {
+            if (($url = self::videoUrl($video->video_url)) !== '') {
+                $media['videos'][] = ['url' => $url, 'title' => self::text($video->caption)];
             }
         }
-        $related = $this->rows("select n.id, n.title as namevi, n.slug as slugvi, coalesce(n.image,'') as photo, coalesce(n.summary,'') as descvi, n.published_at as date_created, 'hienthi' as status, u.name as author"
-            ." from posts n left join users u on u.id=n.author_id where n.id<>? and n.category_id <=> ? and n.kind='article' and n.is_visible=1 and n.slug<>'' order by n.sort_order,n.id desc limit 12", [$id, $row['id_list']]);
+        $related = $this->siblings($id, 'article', $row['category_id']);
         $seo = $seoOverride ?? $this->seoOf($id);
-        $seoTitle = self::text($seo['titlevi'] ?? '') ?: $title;
+        $seoTitle = self::text($seo['title']) ?: $title;
         if (stripos($seoTitle, 'phúc thịnh s') === false) {
             $seoTitle .= ' | Phúc Thịnh Solar';
         }
-        $description = self::text($row['descvi']);
-        $cover = NewsListing::media($this->photo($row['photo']));
-        $quote = RichText::sanitize($row['content1vi']);
-        $published = self::date($row['date_created']);
+        $description = self::text($row['summary']);
+        $cover = NewsListing::media($this->photo($row['image']));
+        $quote = RichText::sanitize((string) $row['extra_body']);
+        $published = self::date($row['published_at']);
         $linkedRows = $draftProductIds === null
             ? $this->rows("select p.id, p.name, p.slug, coalesce(p.image,'') as image from post_products pp inner join products p on p.id=pp.product_id"
                 .' where pp.post_id=? and pp.is_visible=1 and p.is_visible=1 order by pp.sort_order,pp.id limit 4', [$id])
@@ -134,16 +128,16 @@ class NewsDetail extends PageSupport
             'canonical' => '/'.$articleSlug.'/',
             'date' => $published,
             'datePublished' => $published,
-            'dateModified' => self::date(strtotime((string) $row['updated_at']) ?: $row['date_created']),
-            'author' => ['name' => $this->author($row['id_user'])],
+            'dateModified' => self::date(strtotime((string) $row['updated_at']) ?: $row['published_at']),
+            'author' => ['name' => $this->author($row['author_id'])],
             'description' => $description,
             'cover' => $cover,
-            'showCover' => $cover !== '' && ! self::contentRepeatsCover($row['contentvi'], (string) $row['photo']),
-            'content' => RichText::dto(RichText::sanitize($row['contentvi'])),
+            'showCover' => $cover !== '' && ! self::contentRepeatsCover($row['body'], (string) $row['image']),
+            'content' => RichText::dto(RichText::sanitize((string) $row['body'])),
             'quote' => $quote !== '' ? RichText::dto($quote) : null,
             'category' => $category,
             'media' => $media,
-            'seo' => ['title' => $seoTitle, 'description' => self::text($seo['descriptionvi'] ?? '') ?: $description, 'keywords' => self::text($seo['keywordsvi'] ?? ''), 'canonical' => '/'.$articleSlug],
+            'seo' => ['title' => $seoTitle, 'description' => self::text($seo['description']) ?: $description, 'keywords' => self::text($seo['keywords']), 'canonical' => '/'.$articleSlug],
         ];
         if ($linkedProducts !== []) {
             $article['linkedProducts'] = $linkedProducts;
@@ -164,50 +158,59 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'POLICY_NOT_FOUND']]];
-        $row = $this->row("select id, category_id as id_list, author_id as id_user, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, published_at as date_created, 'hienthi' as status from posts where slug=? and kind='policy' and is_visible=1 limit 1", [$slug]);
+        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'policy')->where('is_visible', true)->first(self::ARTICLE_FIELDS);
         $plain = fn ($v) => trim((string) preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode(is_scalar($v) ? (string) $v : '', ENT_QUOTES, 'UTF-8'))));
-        if (! $row || ($title = $plain($row['namevi'])) === '') {
+        if (! $row || ($title = $plain($row->title)) === '') {
             return $notFound;
         }
-        $description = $plain($row['descvi'] ?? '');
-        $related = $this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, published_at as date_created, 'hienthi' as status from posts"
-            ." where id<>? and category_id <=> ? and kind='policy' and is_visible=1 and slug<>'' order by sort_order,id desc limit 12", [(int) $row['id'], $row['id_list']]);
-        $seo = $this->seoOf((int) $row['id']);
+        $description = $plain($row->summary);
+        $related = $this->siblings((int) $row->id, 'policy', $row->category_id, withAuthor: false);
+        $seo = $this->seoOf((int) $row->id);
 
         return [200, [
             'schemaVersion' => 1,
             'locale' => 'vi',
-            'id' => (int) $row['id'],
+            'id' => (int) $row->id,
             'title' => $title,
             'slug' => $slug,
             'canonical' => '/ho-tro/'.$slug.'/',
             'description' => $description,
-            'cover' => NewsListing::media($this->photo($row['photo'])),
-            'date' => ! empty($row['date_created']) ? date('Y-m-d', (int) $row['date_created']) : '',
-            'author' => ['name' => $this->author($row['id_user'])],
-            'content' => RichText::dto(RichText::sanitize($row['contentvi'] ?? '')),
+            'cover' => NewsListing::media($this->photo($row->image)),
+            'date' => self::date($row->published_at),
+            'author' => ['name' => $this->author($row->author_id)],
+            'content' => RichText::dto(RichText::sanitize((string) $row->body)),
             'related' => $this->related($related),
             'seo' => [
-                'title' => $plain($seo['titlevi'] ?? '') ?: $title,
-                'description' => $plain($seo['descriptionvi'] ?? '') ?: $description,
-                'keywords' => $plain($seo['keywordsvi'] ?? ''),
+                'title' => $plain($seo['title']) ?: $title,
+                'description' => $plain($seo['description']) ?: $description,
+                'keywords' => $plain($seo['keywords']),
                 'canonical' => '/ho-tro/'.$slug.'/',
             ],
         ]];
+    }
+
+    /** Up to 12 other published posts of the same kind and group, in Admin order. */
+    private function siblings(int $id, string $kind, mixed $categoryId, bool $withAuthor = true): array
+    {
+        return $this->db->table('posts as n')->where('n.id', '<>', $id)->where('n.kind', $kind)->where('n.is_visible', true)->where('n.slug', '<>', '')
+            ->when($categoryId, fn ($q) => $q->where('n.category_id', $categoryId), fn ($q) => $q->whereNull('n.category_id'))
+            ->when($withAuthor, fn ($q) => $q->leftJoin('users as u', 'u.id', '=', 'n.author_id')->addSelect('u.name as author'))
+            ->addSelect(['n.id', 'n.title', 'n.slug', 'n.image', 'n.summary', 'n.published_at'])
+            ->orderBy('n.sort_order')->orderByDesc('n.id')->limit(12)->get()->map(fn ($row) => (array) $row)->all();
     }
 
     private function related(array $rows): array
     {
         $out = [];
         foreach ($rows as $row) {
-            $slug = Text::slug($row['slugvi']);
-            $title = self::text($row['namevi']);
-            if (! self::visible($row) || (int) $row['id'] <= 0 || $slug === '' || $title === '') {
+            $slug = Text::slug($row['slug']);
+            $title = self::text($row['title']);
+            if ($slug === '' || $title === '') {
                 continue;
             }
             $out[] = ['id' => (int) $row['id'], 'title' => $title, 'slug' => $slug, 'canonical' => '/'.$slug.'/',
-                'date' => ! empty($row['date_created']) ? date('Y-m-d', (int) $row['date_created']) : '',
-                'author' => self::authorName($row['author'] ?? ''), 'description' => self::text($row['descvi']), 'image' => NewsListing::media($this->photo($row['photo']))];
+                'date' => self::date($row['published_at']),
+                'author' => self::authorName($row['author'] ?? ''), 'description' => self::text($row['summary']), 'image' => NewsListing::media($this->photo($row['image']))];
         }
 
         return $out;
@@ -216,14 +219,8 @@ class NewsDetail extends PageSupport
     /** Admin "news-cta": hidden on purpose returns null; never configured falls back to the standard invitation. */
     private function cta(): ?array
     {
-        $rows = $this->items('news.cta');
-        $cta = [];
-        foreach ($rows as $row) {
-            if (self::visible($row)) {
-                $cta = $row;
-                break;
-            }
-        }
+        $rows = $this->section('news.cta');
+        $cta = collect($rows)->firstWhere('is_visible', true) ?? [];
         if ($rows && ! $cta) {
             return null;
         }
@@ -231,25 +228,25 @@ class NewsDetail extends PageSupport
         $tel = (string) preg_replace('/[^0-9+]/', '', $hotline);
 
         return [
-            'title' => self::text($cta['namevi'] ?? '') ?: 'Đội ngũ Phúc Thịnh Solar luôn sẵn sàng hỗ trợ',
-            'description' => self::text($cta['descvi'] ?? '') ?: 'Liên hệ ngay để được tư vấn và cập nhật những thông tin mới nhất.',
-            'buttonLabel' => self::text($cta['content1vi'] ?? '') ?: 'Nhận tư vấn ngay',
-            'image' => NewsListing::media($this->photo($cta['photo'] ?? '')),
+            'title' => self::text($cta['title'] ?? '') ?: 'Đội ngũ Phúc Thịnh Solar luôn sẵn sàng hỗ trợ',
+            'description' => self::text($cta['summary'] ?? '') ?: 'Liên hệ ngay để được tư vấn và cập nhật những thông tin mới nhất.',
+            'buttonLabel' => self::text($cta['extra'] ?? '') ?: 'Nhận tư vấn ngay',
+            'image' => NewsListing::media($this->photo($cta['image'] ?? '')),
             'hotline' => $hotline !== '' && $tel !== '' ? ['label' => 'Gọi ngay hotline', 'text' => self::text($hotline), 'tel' => $tel] : null,
         ];
     }
 
-    /** @return array<string, string> SEO fields of a post */
+    /** @return array{title: string, description: string, keywords: string} SEO fields of a post */
     private function seoOf(int $postId): array
     {
-        return $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Post::class, $postId]);
+        $seo = $this->db->table('seo_metas')->where('owner_type', Post::class)->where('owner_id', $postId)->first(['title', 'description', 'keywords']);
+
+        return ['title' => (string) $seo?->title, 'description' => (string) $seo?->description, 'keywords' => (string) $seo?->keywords];
     }
 
     private function author(mixed $userId): string
     {
-        $name = (int) $userId > 0 ? ($this->row('select name as fullname from users where id=? limit 1', [(int) $userId])['fullname'] ?? '') : '';
-
-        return self::authorName($name);
+        return self::authorName((int) $userId > 0 ? (string) $this->db->table('users')->where('id', (int) $userId)->value('name') : '');
     }
 
     private static function authorName(mixed $value): string
@@ -263,7 +260,7 @@ class NewsDetail extends PageSupport
         return is_scalar($photo) && (string) $photo !== '' && ! str_contains((string) $photo, '..') && $this->urls->exists('upload/news/'.$photo) ? (string) $photo : '';
     }
 
-    /** Article text keeping line breaks from block tags (ptsNewsDetailText). */
+    /** Article text keeping line breaks from block tags. */
     private static function text(mixed $value): string
     {
         if (! is_scalar($value)) {

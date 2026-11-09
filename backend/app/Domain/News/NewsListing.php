@@ -9,9 +9,9 @@ use App\Support\SiteSettings;
 use App\Support\Text;
 
 /**
- * Knowledge hub (api/pts_v1_news.php): six articles a page, newest first, optional search and category
- * path (list/cat/item/sub). Without filters the first page shows up to three featured articles
- * (those ticked "newshub", else the top of the manual order) that are then left out of the list.
+ * Knowledge hub: six articles a page, newest first, optional search and category path
+ * (list/cat/item/sub). Without filters the first page shows up to three featured articles
+ * (those marked for the hub, else the top of the manual order) that are then left out of the list.
  */
 class NewsListing extends PageSupport
 {
@@ -19,7 +19,7 @@ class NewsListing extends PageSupport
 
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 
-    private const FIELDS = "id, category_id as id_list, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, published_at as date_created, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'newshub',null)) as status";
+    private const FIELDS = ['id', 'category_id', 'title', 'slug', 'image', 'summary', 'body', 'published_at'];
 
     public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
@@ -63,12 +63,10 @@ class NewsListing extends PageSupport
             }
         }
 
-        $categories = [];
-        foreach ($this->rows("select c.id, c.name as namevi, coalesce(c.summary,'') as descvi, c.slug as slugvi, coalesce(c.image,'') as photo, 'hienthi' as status from post_categories c"
-            ." where c.kind='article' and c.depth=1 and c.is_visible=1 and exists(select 1 from posts p where p.category_id=c.id and p.kind='article' and p.is_visible=1 and p.slug<>'') order by c.sort_order,c.id desc") as $row) {
-            $row['_photo'] = $this->newsPhotoExists($row['photo']) ? $row['photo'] : '';
-            $categories[] = $row;
-        }
+        // Top groups that hold at least one published article.
+        $categories = $this->db->table('post_categories as c')->where('c.kind', 'article')->where('c.depth', 1)->where('c.is_visible', true)
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where('p.is_visible', true)->where('p.slug', '<>', ''))
+            ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.summary', 'c.slug', 'c.image'])->map(fn ($row) => (array) $row)->all();
         $selected = null;
         $field = null;
         if ($slug !== '') {
@@ -77,62 +75,50 @@ class NewsListing extends PageSupport
                 return [404, ['error' => ['code' => 'CATEGORY_NOT_FOUND']]];
             }
             [$selected, $field] = $resolved;
-            $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
-            $selected['_meta'] = ['type' => 'tin-tuc', 'level' => $type, 'path' => implode('/', $segments), 'seo' => [
-                'title' => Text::flat($seoRow['titlevi'] ?? ''),
-                'description' => Text::flat($seoRow['descriptionvi'] ?? ''),
-                'keywords' => Text::flat($seoRow['keywordsvi'] ?? ''),
-                'image' => $this->urls->visual($selected['photo'] ?? '', 'upload/news/'),
+            $seoRow = $this->db->table('seo_metas')->where('owner_type', PostCategory::class)->where('owner_id', $selected['id'])->first(['title', 'description', 'keywords']);
+            $selectedMeta = ['type' => 'tin-tuc', 'level' => $type, 'path' => implode('/', $segments), 'seo' => [
+                'title' => Text::flat((string) $seoRow?->title),
+                'description' => Text::flat((string) $seoRow?->description),
+                'keywords' => Text::flat((string) $seoRow?->keywords),
+                'image' => $this->urls->visual((string) $selected['image'], 'upload/news/'),
             ]];
         }
 
-        $where = "kind=? and is_visible=1 and slug<>''";
-        $params = ['article'];
-        $introRows = $this->items('news.intro');
-        $intro = [];
-        foreach ($introRows as $row) {
-            if (self::visible($row)) {
-                $intro = $row;
-                break;
-            }
-        }
-        $heroEnabled = ! $introRows || self::flag($intro['status'] ?? '', 'hero');
+        $published = fn () => $this->db->table('posts')->where('kind', 'article')->where('is_visible', true)->where('slug', '<>', '');
+        $introRows = $this->section('news.intro');
+        $intro = collect($introRows)->firstWhere('is_visible', true) ?? [];
+        $heroEnabled = ! $introRows || in_array('hero', $intro['flags'] ?? [], true);
         $featuredRows = [];
         if ($slug === '' && $query === '' && $heroEnabled) {
-            $hub = (int) ($this->row("select count(*) as num from posts where kind='article' and in_hub=1")['num'] ?? 0) > 0;
-            $featuredRows = $this->rows('select '.self::FIELDS.' from posts where '.$where.($hub ? ' and in_hub=1' : '').' order by sort_order,published_at desc,id desc limit 3', $params);
-            if ($featuredRows) {
-                $where .= ' and id not in ('.implode(',', array_fill(0, count($featuredRows), '?')).')';
-                array_push($params, ...array_map(fn ($row) => (int) $row['id'], $featuredRows));
-            }
+            $hub = $this->db->table('posts')->where('kind', 'article')->where('in_hub', true)->exists();
+            $featuredRows = $published()->when($hub, fn ($q) => $q->where('in_hub', true))
+                ->orderBy('sort_order')->orderByDesc('published_at')->orderByDesc('id')->limit(3)->get(self::FIELDS)->map(fn ($row) => (array) $row)->all();
         }
-        if ($selected) {
-            $where .= ' and category_id in ('.implode(',', array_fill(0, count($field), '?')).')';
-            array_push($params, ...$field);
-        }
+        $listed = $published()
+            ->when($featuredRows, fn ($q) => $q->whereNotIn('id', array_column($featuredRows, 'id')))
+            ->when($selected, fn ($q) => $q->whereIn('category_id', $field));
         if ($query !== '') {
             $pattern = '%'.strtr($query, ['!' => '!!', '%' => '!%', '_' => '!_']).'%';
-            $where .= " and (title like ? escape '!' or summary like ? escape '!' or body like ? escape '!')";
-            array_push($params, $pattern, $pattern, $pattern);
+            $listed->where(fn ($q) => $q->whereRaw("title like ? escape '!'", [$pattern])->orWhereRaw("summary like ? escape '!'", [$pattern])->orWhereRaw("body like ? escape '!'", [$pattern]));
         }
-        $total = (int) ($this->row('select count(*) as num from posts where '.$where, $params)['num'] ?? 0);
+        $total = (clone $listed)->count();
         $page = min($page, max(1, (int) ceil($total / self::PER_PAGE)));
-        $rows = $this->rows('select '.self::FIELDS.' from posts where '.$where.' order by published_at desc,id desc limit '.(($page - 1) * self::PER_PAGE).','.self::PER_PAGE, $params);
-        $ctaRows = $this->items('news.cta');
+        $rows = $listed->orderByDesc('published_at')->orderByDesc('id')->forPage($page, self::PER_PAGE)->get(self::FIELDS)->map(fn ($row) => (array) $row)->all();
+        $ctaRows = $this->section('news.cta');
 
         $categoryMap = [];
         $categoryDtos = [];
         foreach ($categories as $row) {
-            if ($dto = $this->categoryDto($row)) {
+            if ($dto = $this->categoryDto($row, $this->newsPhotoExists($row['image']) ? (string) $row['image'] : '')) {
                 $categoryMap[(int) $row['id']] = $dto;
                 $categoryDtos[] = $dto;
             }
         }
-        $category = $selected ? $this->categoryDto($selected + ['_photo' => $selected['photo'] ?? ''], $selected['_meta']) : null;
-        $article = fn (array $row, bool $featured) => $this->articleDto($row + ['_photo' => $this->newsPhotoExists($row['photo']) ? $row['photo'] : ''], $categoryMap, $featured);
+        $category = $selected ? $this->categoryDto($selected, (string) $selected['image'], $selectedMeta) : null;
+        $article = fn (array $row, bool $featured) => $this->articleDto($row, $categoryMap, $featured);
         $hotline = is_scalar($this->settings->options()['hotline'] ?? null) ? trim((string) $this->settings->options()['hotline']) : '';
-        $introTitle = Text::cms($intro['namevi'] ?? '');
-        $introDescription = Text::cms($intro['descvi'] ?? '');
+        $introTitle = Text::cms($intro['title'] ?? '');
+        $introDescription = Text::cms($intro['summary'] ?? '');
         $defaultDescription = 'Kiến thức năng lượng mặt trời, thông tin sản phẩm và câu chuyện từ Phúc Thịnh Solar.';
 
         return [200, [
@@ -160,63 +146,61 @@ class NewsListing extends PageSupport
         if (count($segments) !== $depth) {
             return null;
         }
-        $row = [];
-        $parentId = 0;
+        $row = null;
+        $parentId = null;
         foreach ($segments as $i => $segment) {
-            $row = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, coalesce(image,'') as photo, 'hienthi' as status from post_categories"
-                ." where kind='article' and slug=? and depth=? and ".($i ? 'parent_id=?' : 'parent_id is null').' and is_visible=1 limit 1', $i ? [$segment, $i + 1, $parentId] : [$segment, 1]);
-            if (! $row || (int) $row['id'] <= 0 || ! self::visible($row) || Text::slug($row['slugvi']) !== $segment) {
+            $row = $this->db->table('post_categories')->where('kind', 'article')->where('slug', $segment)->where('depth', $i + 1)
+                ->where('parent_id', $parentId)->where('is_visible', true)->first(['id', 'name', 'summary', 'slug', 'image']);
+            if (! $row || Text::slug($row->slug) !== $segment) {
                 return null;
             }
-            $parentId = (int) $row['id'];
+            $parentId = (int) $row->id;
         }
 
         // Articles of this category and of every category below it.
         $ids = [$parentId];
         for ($level = [$parentId]; $level;) {
-            $level = array_map('intval', array_column($this->rows('select id from post_categories where parent_id in ('.implode(',', $level).')'), 'id'));
+            $level = $this->db->table('post_categories')->whereIn('parent_id', $level)->pluck('id')->map(fn ($id) => (int) $id)->all();
             array_push($ids, ...$level);
         }
 
-        return [$row, $ids];
+        return [(array) $row, $ids];
     }
 
-    private function categoryDto(array $row, array $meta = []): ?array
+    private function categoryDto(array $row, string $photo, array $meta = []): ?array
     {
-        $id = (int) ($row['id'] ?? 0);
-        $name = Text::cms($row['namevi'] ?? '');
-        $slug = Text::slug($row['slugvi'] ?? '');
-        if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
+        $name = Text::cms($row['name']);
+        $slug = Text::slug($row['slug']);
+        if ($name === '' || $slug === '') {
             return null;
         }
 
-        return ['id' => $id, 'name' => $name, 'description' => Text::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/'.$slug.'/', 'canonicalPath' => '/'.$slug,
-            'image' => self::media($row['_photo'] ?? '')] + array_intersect_key($meta, array_flip(['type', 'level', 'path', 'seo']));
+        return ['id' => (int) $row['id'], 'name' => $name, 'description' => Text::cms((string) $row['summary']), 'slug' => $slug, 'url' => '/'.$slug.'/', 'canonicalPath' => '/'.$slug,
+            'image' => self::media($photo)] + $meta;
     }
 
     private function articleDto(array $row, array $categories, bool $featured): ?array
     {
-        $id = (int) ($row['id'] ?? 0);
-        $title = Text::cms($row['namevi'] ?? '');
-        $slug = Text::slug($row['slugvi'] ?? '');
-        if (! self::visible($row) || $id <= 0 || $title === '' || $slug === '') {
+        $title = Text::cms($row['title']);
+        $slug = Text::slug($row['slug']);
+        if ($title === '' || $slug === '') {
             return null;
         }
-        $content = Text::cms($row['contentvi'] ?? '');
-        $description = Text::cms($row['descvi'] ?? '') ?: $content;
+        $content = Text::cms((string) $row['body']);
+        $description = Text::cms((string) $row['summary']) ?: $content;
         if (mb_strlen($description) > 180) {
             $description = mb_substr($description, 0, 177).'…';
         }
-        $categoryId = (int) ($row['id_list'] ?? 0);
+        $categoryId = (int) $row['category_id'];
 
         return [
-            'id' => $id,
+            'id' => (int) $row['id'],
             'title' => $title,
             'slug' => $slug,
             'url' => '/'.$slug.'/',
             'description' => $description,
-            'date' => ! empty($row['date_created']) ? date('Y-m-d', (int) $row['date_created']) : '',
-            'image' => self::media($row['_photo']),
+            'date' => ! empty($row['published_at']) ? date('Y-m-d', (int) $row['published_at']) : '',
+            'image' => self::media($this->newsPhotoExists($row['image']) ? $row['image'] : ''),
             'readingMinutes' => self::readingMinutes($content),
             'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null,
             'featured' => $featured,
@@ -229,18 +213,18 @@ class NewsListing extends PageSupport
         $phone = $hotline === '' ? null : ['label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline)];
         $anyVisible = false;
         foreach ($rows as $row) {
-            if (! self::visible($row)) {
+            if (! $row['is_visible']) {
                 continue;
             }
             $anyVisible = true;
-            $title = Text::cms($row['namevi']);
-            $description = Text::cms($row['descvi']);
+            $title = Text::cms($row['title']);
+            $description = Text::cms($row['summary']);
             if ($title === '' && $description === '') {
                 continue;
             }
 
-            return ['title' => $title, 'description' => $description, 'buttonLabel' => Text::cms($row['content1vi']),
-                'image' => self::media($this->newsPhotoExists($row['photo']) ? $row['photo'] : ''), 'hotline' => $phone];
+            return ['title' => $title, 'description' => $description, 'buttonLabel' => Text::cms($row['extra']),
+                'image' => self::media($this->newsPhotoExists($row['image']) ? $row['image'] : ''), 'hotline' => $phone];
         }
         if ($anyVisible || ! $rows) {
             return ['title' => 'Đội ngũ Phúc Thịnh Solar luôn sẵn sàng hỗ trợ', 'description' => 'Liên hệ ngay để được tư vấn và cập nhật những thông tin mới nhất.', 'buttonLabel' => 'Nhận tư vấn ngay', 'image' => '', 'hotline' => $phone];
@@ -258,7 +242,7 @@ class NewsListing extends PageSupport
         return max(1, (int) ceil(count(preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: []) / 220));
     }
 
-    /** /upload/news/<file> for a safe name; existence is checked by the caller (ptsNewsMedia). */
+    /** /upload/news/<file> for a safe name; existence is checked by the caller. */
     public static function media(mixed $value): string
     {
         $value = is_scalar($value) ? ltrim(trim((string) $value), '/') : '';
@@ -269,10 +253,5 @@ class NewsListing extends PageSupport
     private function newsPhotoExists(mixed $photo): bool
     {
         return is_scalar($photo) && (string) $photo !== '' && ! str_contains((string) $photo, '..') && $this->urls->exists('upload/news/'.$photo);
-    }
-
-    private static function flag(mixed $status, string $flag): bool
-    {
-        return in_array($flag, array_filter(array_map('trim', explode(',', (string) $status))), true);
     }
 }
