@@ -109,8 +109,9 @@ khi mở Admin. File `.env` được loại khỏi Docker build context.
    trong clone. Giữ VNPay ở sandbox và
    `VNPAY_ACTIVE=0` cho đến khi callback test đạt. Giữ `RECAPTCHA_ACTIVE=false`
    chỉ trên staging; production phải có key và gate kiểm hoạt động. Mail dùng
-   `log`/hộp thử, không gửi khách thật. 4 hãng vận chuyển chỉ có config/readiness,
-   chưa có adapter tính giá hay tạo vận đơn.
+   `log`/hộp thử, không gửi khách thật. Vận chuyển chỉ còn Nhất Tín: giữ `NTL_MODE=mock`
+   (trên `APP_ENV=production` checkout dùng bảng phí khu vực, Admin không tạo vận đơn MOCK),
+   lên sandbox khi có tài khoản và đã đối chiếu mã tỉnh/phường.
 3. Chép upload và một dump legacy **vào thư mục staging riêng**, đối chiếu
    checksum. Dump MariaDB nên dùng `--single-transaction --quick`, không chứa
    `CREATE DATABASE`/`USE` để nạp vào DB candidate. Chỉ dùng dữ liệu được phép
