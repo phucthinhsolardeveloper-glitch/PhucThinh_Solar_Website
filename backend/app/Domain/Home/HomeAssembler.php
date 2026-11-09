@@ -307,13 +307,13 @@ class HomeAssembler
         return $this->urls->exists($folder.$file) ? '/'.$folder.$file : '';
     }
 
-    /** @return Collection<int, object> pictures of one placement in Admin order */
+    /** @return Collection<int, \stdClass> pictures of one placement in Admin order */
     private function banners(string $placement): Collection
     {
         return $this->db->table('banners')->where('placement', $placement)->orderBy('sort_order')->orderByDesc('id')->get();
     }
 
-    /** @return Collection<int, object> items of one page section in Admin order */
+    /** @return Collection<int, \stdClass> items of one page section in Admin order */
     private function items(string $section): Collection
     {
         return $this->db->table('page_items')->where('section', $section)->orderBy('sort_order')->orderByDesc('id')->get();
