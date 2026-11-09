@@ -96,6 +96,8 @@ class ProductResource extends Resource
                     TextInput::make('regular_price')->label('Giá bán (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only')),
                     TextInput::make('sale_price')->label('Giá khuyến mãi (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only'))
                         ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
+                    TextInput::make('weight_kg')->label('Cân nặng khi đóng gói (kg)')->numeric()->minValue(0.01)->maxValue(5000)
+                        ->helperText('Dùng để tính phí Nhất Tín lúc khách đặt hàng. Để trống thì nhân viên báo phí giao hàng sau.'),
                 ]),
                 Tab::make('Ảnh & video')->schema([
                     Grid::make(2)->schema([

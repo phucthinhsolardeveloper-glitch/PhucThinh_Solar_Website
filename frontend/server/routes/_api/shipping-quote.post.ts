@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: response.status === 422 ? 422 : 502, statusMessage: error })
   }
 
-  if (typeof data.priced !== 'boolean' || !record(data.selected) || data.selected.provider !== 'local'
+  if (typeof data.priced !== 'boolean' || !record(data.selected) || (data.selected.provider !== 'local' && data.selected.provider !== 'nhattin')
     || data.selected.currency !== 'VND' || !record(data.selected.place)
     || data.selected.place.city_id !== city || data.selected.place.ward_id !== ward) {
     throw createError({ statusCode: 502, statusMessage: 'Invalid shipping quote contract' })
@@ -54,7 +54,8 @@ export default defineEventHandler(async (event) => {
     priced: data.priced,
     subtotal,
     selected: {
-      provider: 'local',
+      provider: data.selected.provider,
+      note: typeof data.selected.note === 'string' ? data.selected.note.slice(0, 200) : '',
       label: typeof data.selected.label === 'string' ? data.selected.label : 'Phí vận chuyển',
       amount,
       currency: 'VND',

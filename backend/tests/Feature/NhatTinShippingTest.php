@@ -1,5 +1,7 @@
 <?php
 
+use App\Domain\Commerce\Shipping;
+use App\Domain\Shipping\CheckoutFee;
 use App\Domain\Shipping\NhatTin\NtlClient;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\Shipments;
@@ -101,4 +103,22 @@ it('accepts status pushes only with the token, ignores repeats and never moves a
 
     $this->postJson('/api/integrations/ntl/webhook', ['bill_no' => $shipment->bill_code, 'status_id' => 13, 'status_time' => now()->timestamp - 60], ['Authorization' => 'secret-token'])->assertOk();
     expect($shipment->fresh()->status)->toBe('delivered')->and($order->fresh()->payment_status)->toBe('unpaid');
+});
+
+it('prices delivery with Nhất Tín at checkout, marks a mock price and sends bulky or unknown parcels to staff', function () {
+    config(['shipping.nhattin.mode' => 'mock']);
+    $ward = DB::table('wards')->whereNotNull('tax_code')->first();
+    $fee = app(CheckoutFee::class);
+
+    $quote = app(Shipping::class)->quote((int) $ward->province_id, (int) $ward->id, 1000000, ['kg' => 3, 'known' => true]);
+    expect($quote['priced'])->toBeTrue()->and($quote['selected']['provider'])->toBe('nhattin')->and($quote['selected']['amount'])->toBeGreaterThan(0)
+        ->and($quote['selected']['label'])->toContain('mô phỏng')->and($quote['selected']['note'])->toContain('không phải báo giá');
+
+    expect($fee->quote((int) $ward->id, ['kg' => 80, 'known' => true], 1)['priced'])->toBeFalse()
+        ->and($fee->quote((int) $ward->id, ['kg' => 80, 'known' => true], 1)['note'])->toContain('cồng kềnh');
+
+    config(['shipping.nhattin.mode' => 'sandbox', 'shipping.nhattin.username' => 'u', 'shipping.nhattin.password' => 'p', 'shipping.nhattin.partner_id' => '1', 'shipping.nhattin.locations_verified' => true]);
+    expect($fee->quote((int) $ward->id, ['kg' => 0, 'known' => false], 1)['note'])->toContain('xác nhận kiện hàng');
+    config(['shipping.nhattin.locations_verified' => false]);
+    expect($fee->quote((int) $ward->id, ['kg' => 2, 'known' => true], 1))->toBeNull();
 });

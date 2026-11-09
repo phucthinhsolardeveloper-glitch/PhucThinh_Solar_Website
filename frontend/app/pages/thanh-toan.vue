@@ -50,6 +50,8 @@ const shippingAmount = ref<number | null>(null)
 const shippingPending = ref(false)
 const shippingLoading = ref(false)
 const shippingError = ref('')
+const shippingNote = ref('')
+const shippingLabel = ref('')
 const restoringDraft = ref(false)
 const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
 let wardsRequestId = 0
@@ -133,6 +135,8 @@ async function quoteShipping() {
   shippingPending.value = false
   shippingLoading.value = false
   shippingError.value = ''
+  shippingNote.value = ''
+  shippingLabel.value = ''
   const city = form.city
   const ward = form.ward
   if (!city || !ward || !checkout.value?.shippingEnabled) return
@@ -147,6 +151,8 @@ async function quoteShipping() {
       signal: controller.signal,
     })
     if (requestId !== shippingRequestId || form.city !== city || form.ward !== ward) return
+    shippingNote.value = typeof payload?.selected?.note === 'string' ? payload.selected.note : ''
+    shippingLabel.value = payload?.priced && typeof payload?.selected?.label === 'string' && payload.selected.provider === 'nhattin' ? payload.selected.label : ''
     if (payload?.ok && payload?.priced && typeof payload?.selected?.amount === 'number') shippingAmount.value = Math.max(0, Math.round(payload.selected.amount))
     else shippingPending.value = true
   } catch {
@@ -372,6 +378,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 <span class="min-w-0 flex-1">
                   <strong class="block">{{ payment.name }}</strong>
                   <small v-if="payment.description" class="mt-1 block whitespace-pre-line leading-relaxed text-slate-500">{{ payment.description }}</small>
+                  <small v-if="payment.transfer && form.payment === payment.id" class="mt-1 block leading-relaxed text-slate-600">Mã QR, số tài khoản, số tiền và nội dung chuyển khoản hiện ngay sau khi bấm Đặt hàng.</small>
                 </span>
                 <span class="checkout-pay__radio" aria-hidden="true" />
               </label>
@@ -406,6 +413,9 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
             </div>
           </dl>
           <p v-if="shippingError" class="m-0 mt-2 text-sm text-amber-200" role="status">{{ shippingError }}</p>
+          <p v-else-if="shippingNote && !shippingLoading" class="m-0 mt-2 text-xs leading-snug text-blue-100/80" role="status">
+            <template v-if="shippingLabel">{{ shippingLabel }}. </template>{{ shippingNote }}
+          </p>
           <div class="checkout-summary__total">
             <span>Tổng dự kiến</span>
             <strong><AnimatedMoney :value="orderTotal" empty="Chờ xác nhận" /></strong>

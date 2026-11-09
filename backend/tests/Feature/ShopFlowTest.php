@@ -66,6 +66,7 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
 });
 
 it('quotes the ward delivery fee and rejects a ward from another province', function () {
+    config(['shipping.nhattin.checkout_quotes' => false]);
     $ward = DB::table('wards')->where('is_visible', true)->select('id', 'province_id as id_city')->first();
     shop('POST', '/api/v1/shipping-quote', ['city' => $ward->id_city, 'ward' => $ward->id])->assertOk()->assertJsonPath('selected.provider', 'local');
     shop('POST', '/api/v1/shipping-quote', ['city' => $ward->id_city + 1000, 'ward' => $ward->id])->assertStatus(422);

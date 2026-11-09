@@ -90,6 +90,20 @@ class Cart
         return $id > 0 ? (string) (DB::table('product_options')->where('kind', $kind)->where('id', $id)->value('name') ?? '') : '';
     }
 
+    /** @return array{kg: float, known: bool} packed weight of the cart; known is false when a product has no weight */
+    public function parcel(): array
+    {
+        $kg = 0.0;
+        $known = true;
+        foreach ($this->lines() as $line) {
+            $weight = (float) DB::table('products')->where('id', (int) $line['product_id'])->value('weight_kg');
+            $known = $known && $weight > 0;
+            $kg += $weight * (int) $line['quantity'];
+        }
+
+        return ['kg' => round($kg, 2), 'known' => $known && $kg > 0];
+    }
+
     /** Sale price when set, else list price, times quantity. */
     public function total(): float
     {

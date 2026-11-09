@@ -139,7 +139,7 @@ class Shop
             $name = Text::plain($row['name']);
             if ($id !== 0 && $name !== '') {
                 $payments[] = ['id' => $id, 'name' => $name, 'description' => Text::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['description'])),
-                    'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'manual'];
+                    'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'manual', 'transfer' => ($row['kind'] ?? '') === 'bank_transfer'];
             }
         }
         $pricesVisible = $this->settings->productPricesVisible();
@@ -162,7 +162,7 @@ class Shop
     {
         $city = is_array($body) && is_scalar($body['city'] ?? null) ? (int) $body['city'] : 0;
         $ward = is_array($body) && is_scalar($body['ward'] ?? null) ? (int) $body['ward'] : 0;
-        $result = $this->shipping->quote($city, $ward, $this->cart->total());
+        $result = $this->shipping->quote($city, $ward, $this->cart->total(), $this->cart->parcel());
 
         return [$result['ok'] ? 200 : 422, $result];
     }
@@ -260,7 +260,7 @@ class Shop
         $shipPrice = 0.0;
         $requirements = $value('requirements');
         if (config('site.order_shipping')) {
-            $quote = $this->shipping->quote($cityId, $wardId, $subtotal);
+            $quote = $this->shipping->quote($cityId, $wardId, $subtotal, $this->cart->parcel());
             $shipPrice = ! empty($quote['priced']) ? (float) $quote['selected']['amount'] : 0.0;
             if (empty($quote['priced'])) {
                 $notice = 'Phí vận chuyển: chờ xác nhận trước khi chốt đơn.';

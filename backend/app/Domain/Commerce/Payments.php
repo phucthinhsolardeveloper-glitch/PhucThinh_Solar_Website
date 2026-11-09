@@ -11,15 +11,15 @@ class Payments
 
     private const VNPAY = ['id' => self::VNPAY_ID, 'name' => 'Thanh toán online qua VNPay', 'description' => 'Thanh toán qua ứng dụng ngân hàng, thẻ hoặc ví được VNPay hỗ trợ.'];
 
-    /** @return list<array{id: int, name: string, description: string}> offered methods, VNPay last when configured */
+    /** @return list<array{id: int, name: string, description: string, kind?: string}> offered methods, VNPay last when configured */
     public function visible(): array
     {
         $bankReady = app(BankTransfer::class)->ready();
         $methods = DB::table('payment_methods')->where('is_visible', true)
             // Bank transfer is offered only once the owner has set the receiving account.
             ->when(! $bankReady, fn ($q) => $q->where('kind', '!=', 'bank_transfer'))
-            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'description'])
-            ->map(fn ($row) => ['id' => (int) $row->id, 'name' => (string) $row->name, 'description' => (string) $row->description])->all();
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'description', 'kind'])
+            ->map(fn ($row) => ['id' => (int) $row->id, 'name' => (string) $row->name, 'description' => (string) $row->description, 'kind' => (string) $row->kind])->all();
         if (self::vnpayConfigured()) {
             $methods[] = self::VNPAY;
         }

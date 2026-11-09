@@ -32,6 +32,7 @@ final class BulkColumns
             'power_watts' => ['label' => 'Công suất (W)', 'kind' => 'decimal', 'field' => 'power_watts', 'old' => ['cong_suat']],
             'regular_price' => ['label' => 'Giá gốc', 'kind' => 'money', 'field' => 'regular_price', 'old' => ['Giá bán']],
             'sale_price' => ['label' => 'Giá khuyến mãi', 'kind' => 'money', 'field' => 'sale_price', 'old' => ['Giá bán/khuyến mãi']],
+            'weight_kg' => ['label' => 'Cân nặng đóng gói (kg)', 'kind' => 'decimal', 'field' => 'weight_kg', 'old' => ['can_nang']],
             'status' => ['label' => 'Tình trạng website', 'kind' => 'control', 'import_only' => true],
             'is_visible' => ['label' => 'Hiển thị (1/0)', 'kind' => 'flag', 'field' => 'is_visible'],
             'is_bestseller' => ['label' => 'Bán chạy (1/0)', 'kind' => 'flag', 'field' => 'is_bestseller', 'old' => ['is_featured']],

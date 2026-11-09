@@ -79,7 +79,7 @@ class Product extends Model
     /** Attributes whose changes are written to the audit log; deletions are always logged. */
     public static function auditedAttributes(): array
     {
-        return ['name', 'slug', 'code', 'category_id', 'brand_id', 'regular_price', 'sale_price', 'quote_only', 'is_visible', 'pdp_profile', 'power_watts', 'battery_capacity', 'panel_power', 'light_source', 'lamp_dimensions', 'color_temperature', 'light_color', 'material', 'charging_time', 'lighting_time', 'waterproof_rating', 'led_chip', 'lighting_area', 'installation_height', 'panel_dimensions', 'carton_quantity', 'carton_dimensions', 'weight', 'warranty', 'package_contents', 'additional_specs'];
+        return ['name', 'slug', 'code', 'category_id', 'brand_id', 'regular_price', 'sale_price', 'weight_kg', 'quote_only', 'is_visible', 'pdp_profile', 'power_watts', 'battery_capacity', 'panel_power', 'light_source', 'lamp_dimensions', 'color_temperature', 'light_color', 'material', 'charging_time', 'lighting_time', 'waterproof_rating', 'led_chip', 'lighting_area', 'installation_height', 'panel_dimensions', 'carton_quantity', 'carton_dimensions', 'weight', 'warranty', 'package_contents', 'additional_specs'];
     }
 
     public function publicPath(?string $slug = null): ?string
