@@ -60,7 +60,8 @@ Backend 148 test/1.054 assertions, PHPStan 0, Pint 264 file. Backend image
 `5cc09fc7-candidate` và Nuxt image `967315c0-candidate` còn để rollback;
 production và upload dùng chung không đổi.
 
-Mốc `152c868a`: build lại backend và Nuxt candidate, cả hai healthy; Caddy
+Mốc `728541ef` (gồm sửa P0 từ `152c868a`): build lại backend và Nuxt candidate,
+cả hai healthy; Caddy
 trả 200 cho trang chủ, `/cam-on/`, Admin, API và health. PHP image nhận
 `upload_max_filesize=100M`, `post_max_size=384M`; API snapshot 1.754/1.754
 không lệch. VNPay chỉ ghi conversion/gửi mail ở lần chuyển sang `paid`, trang
