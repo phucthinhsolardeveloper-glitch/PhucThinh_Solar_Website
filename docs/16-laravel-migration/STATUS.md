@@ -17,6 +17,7 @@ Không có việc dở.
 | Màu/cỡ, tags, đa ngôn ngữ | Bản cũ đã tắt trong cấu hình hoặc 0 dữ liệu |
 | Thành viên, OneSignal | 0 dữ liệu |
 | Chứng nhận sản phẩm | 0 dữ liệu, trang công khai không đọc |
+| Xuất/nhập JSON khối mô tả, chuyển HTML thành khối (bản cũ có) | Bỏ ngày 09/11 theo yêu cầu rà dư thừa: 49 khối thương hiệu/danh mục sửa thẳng trong form, khối sản phẩm đã có Excel; `body` sản phẩm nay là ghi chú tìm kiếm, không phải nội dung trang |
 
 ## CHỐT
 | Phần | Commit | Ghi chú |
@@ -36,5 +37,5 @@ Không có việc dở.
 | Kéo-thả thứ tự sản phẩm, bài viết | d3a24116 | |
 | Khung khuyến mãi theo chiến dịch | 225b2b21 | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
 | Logo thương hiệu quản lý trong Admin | 553ebb8f | `pts:brand-logos` tự chạy trong `pts:import-legacy`; DB dev chưa chạy vì kho upload local chỉ đọc |
-| Khối mô tả: danh sách, độ phủ, lịch sử, khôi phục, JSON, HTML→khối | e7b7ecea | Đã đối chiếu `content_section.php`, `productLegacyHtmlToBlocks` |
+| Khối mô tả: danh sách, độ phủ, lịch sử, khôi phục | e7b7ecea | Đã đối chiếu `content_section.php`, `productLegacyHtmlToBlocks` |
 | Mã tỉnh (BNV) và mã phường/xã (TMS) từ `Danh-muc-Phuong-xa_moi.xlsx` | e09127f8 | 3.321/3.321 phường, 34/34 tỉnh; mã phường là mã thuế 8 số, khác mã Nhất Tín trong ví dụ, phải đối chiếu khi có sandbox |

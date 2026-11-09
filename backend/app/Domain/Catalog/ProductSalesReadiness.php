@@ -19,7 +19,7 @@ class ProductSalesReadiness
     /** Data worth completing, but not counted as a sales gap on each row. */
     public const DATA_FILTERS = [
         'feed' => 'Thiếu ảnh Google Shopping',
-        'content' => 'Thiếu nội dung chi tiết',
+        'content' => 'Chưa có khối mô tả riêng',
         'specs' => 'Thiếu thông số kỹ thuật',
         'power' => 'Thiếu công suất',
         'shipping' => 'Thiếu kích thước đóng gói',
@@ -76,8 +76,7 @@ class ProductSalesReadiness
                 ->where(fn (Builder $price) => $price->whereNull('products.regular_price')->orWhere('products.regular_price', '<=', 0)),
             'article' => $query->whereDoesntHave('visibleArticles'),
             'feed' => $query->whereRaw("TRIM(COALESCE(products.feed_image, '')) = ''"),
-            'content' => $query->whereRaw("TRIM(COALESCE(products.body, '')) = ''")
-                ->whereDoesntHave('contentSection', fn (Builder $section) => $section->where('is_visible', true)->whereNotNull('blocks')->where('blocks', '!=', '[]')),
+            'content' => $query->whereDoesntHave('contentSection', fn (Builder $section) => $section->where('is_visible', true)->whereNotNull('blocks')->where('blocks', '!=', '[]')),
             'specs' => $query->whereRaw("TRIM(COALESCE(products.specs_html, '')) = ''")->whereRaw("TRIM(COALESCE(products.additional_specs, '')) IN ('', '[]')"),
             'power' => $query->where(fn (Builder $power) => $power->whereNull('products.power_watts')->orWhere('products.power_watts', '<=', 0)),
             'shipping' => $query->where(fn (Builder $box) => $box->whereRaw("TRIM(COALESCE(products.carton_dimensions, '')) = ''")->orWhereRaw("TRIM(COALESCE(products.weight, '')) IN ('', '0')")),

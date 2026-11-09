@@ -38,7 +38,7 @@ final class BulkColumns
             'quote_only' => ['label' => 'Liên hệ báo giá (1/0)', 'kind' => 'flag', 'field' => 'quote_only', 'old' => ['requires_quote']],
             'sort_order' => ['label' => 'Thứ tự', 'kind' => 'integer', 'field' => 'sort_order', 'old' => ['numb']],
             'summary' => ['label' => 'Mô tả ngắn', 'kind' => 'multiline', 'field' => 'summary', 'max' => 2000, 'wide' => true, 'old' => ['descvi']],
-            'body' => ['label' => 'Nội dung', 'kind' => 'html', 'field' => 'body', 'wide' => true, 'old' => ['contentvi']],
+            'body' => ['label' => 'Ghi chú tư vấn (không hiện trên trang)', 'kind' => 'html', 'field' => 'body', 'wide' => true, 'old' => ['contentvi', 'Nội dung']],
             'highlights' => ['label' => 'Điểm nổi bật (Tiêu đề | Giải thích)', 'kind' => 'pairs', 'field' => 'highlights', 'limit' => 6, 'wide' => true, 'old' => ['highlightsvi']],
             'applications' => ['label' => 'Ứng dụng phù hợp (mỗi dòng một ý)', 'kind' => 'lines', 'field' => 'applications', 'limit' => 8, 'wide' => true, 'old' => ['applicationsvi']],
             'installation' => ['label' => 'Bộ sản phẩm / hướng dẫn (mỗi dòng một ý)', 'kind' => 'lines', 'field' => 'installation', 'limit' => 10, 'wide' => true, 'old' => ['installationvi']],
