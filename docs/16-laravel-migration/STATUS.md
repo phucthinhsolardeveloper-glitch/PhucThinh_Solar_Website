@@ -41,4 +41,4 @@ Không có việc dở.
 | Mã tỉnh (BNV) và mã phường/xã (TMS) từ `Danh-muc-Phuong-xa_moi.xlsx` | e09127f8 | 3.321/3.321 phường, 34/34 tỉnh; mã phường là mã thuế 8 số, khác mã Nhất Tín trong ví dụ, phải đối chiếu khi có sandbox |
 | Chuyển khoản VietQR theo đơn, xác nhận thủ công đối chiếu số tiền | 5b35487a | Tài khoản nhận khai ở Thông tin website (chỉ chủ website). **Chưa khai thì checkout ẩn mục Chuyển khoản**: phải khai trước khi chuyển hệ thống |
 | Nhất Tín: báo giá, tạo vận đơn nháp (một đơn một vận đơn), hành trình, hủy, webhook có token; bỏ GHN/GHTK/Viettel Post | 7559dd58 | MOCK. Sandbox cần tài khoản thử + đối chiếu mã tỉnh/phường (`NTL_LOCATION_CODES_VERIFIED`). Production khóa |
-| Bảng điều khiển: biểu đồ truy cập, đơn–doanh số, liên hệ, nguồn khách, trang xem nhiều, sản phẩm bán chạy; khối Cần xử lý thay các ô số | commit kế tiếp | Lượt truy cập tự đếm (không cookie, không lưu IP, bỏ bot), giữ 400 ngày |
+| Bảng điều khiển: biểu đồ truy cập, đơn–doanh số, liên hệ, nguồn khách, trang xem nhiều, sản phẩm bán chạy; khối Cần xử lý thay các ô số | 94f8e267 | Lượt truy cập tự đếm (không cookie, không lưu IP, bỏ bot), giữ 400 ngày |
