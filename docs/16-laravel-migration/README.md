@@ -3,6 +3,8 @@
 Tài liệu đặc tả gốc: [../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md](../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md).
 Thư mục này ghi trạng thái thật của quá trình chuyển đổi.
 
+**Làm tiếp từ đâu:** [`HANDOFF.md`](HANDOFF.md) và [`STATUS.md`](STATUS.md) là trạng thái mới nhất (2026-11-09); các mốc bên dưới là nhật ký.
+
 **Cập nhật 2026-11-08:** HEAD bàn giao `7265b9ad`; các mục Phase 1–4 bên dưới
 là nhật ký từng mốc và có đường dẫn/tên DB cũ. Runtime hiện tại dùng Laravel
 13/PHP 8.4/Filament 5 ở `/admin`, DB `pts_app`, Nuxt chỉ đọc Laravel. Kiểm
@@ -20,20 +22,12 @@ Bộ snapshot API chuẩn hiện được version hóa tại `backend/resources/
 và đóng vào image. Gate deploy tại `deploy/laravel13/verify-candidate.sh` kiểm
 image ID, migration, snapshot và route trước cutover.
 
-Admin sản phẩm hiện có CSV cập nhật **giá bán, giá khuyến mãi, chỉ báo giá và
-hiển thị**: tại `/admin/products`, xuất mẫu, sửa file UTF-8, nhập để xem trước,
-tải báo cáo từng dòng rồi xác nhận áp dụng trong 15 phút. ID/mã/tên dùng để đối
-chiếu; ô trống giữ nguyên; `XÓA` trong giá khuyến mãi xóa giá đó. Tệp tối đa 2 MB
-và 5.000 dòng. Một lỗi chặn toàn bộ file; nhập thiếu sản phẩm không xóa sản phẩm.
-Luồng CSV giá không thêm sản phẩm hoặc thay ảnh.
-
-Admin sản phẩm còn có **Excel nội dung & SEO** (`.xlsx`, hoặc CSV UTF-8 theo
-cùng mẫu): xuất mẫu từ dữ liệu hiện tại, sửa mô tả ngắn, danh mục/thương hiệu,
-công suất, thông số và title/description/keywords SEO, xem trước từng dòng,
-tải báo cáo rồi áp dụng trong 15 phút. ID/mã/tên phải khớp sản phẩm đã có;
-luồng này không tạo sản phẩm, không sửa giá, ảnh hay URL. Ô trống giữ nguyên;
-`XÓA` bỏ giá trị trừ danh mục. Tệp tối đa 5 MB/5.000 sản phẩm, lỗi một dòng
-chặn toàn bộ; editor cần `catalog_bulk`. Mẫu xuất ra nhập lại không đổi dữ liệu.
+**Nhập/xuất sản phẩm** (`/admin/nhap-xuat-san-pham`, cần `catalog_bulk`) là một bảng tính duy nhất thay
+cho ba công cụ CSV trước đây: 50 cột gồm giá, nội dung, FAQ, thông số, ảnh, thư viện, SEO; nhận cả tệp đã phát
+hành từ site PHP. Ô trống giữ nguyên, `__CLEAR__` xóa; xung đột so với lúc xuất được báo từng ô. Xem trước rồi
+áp dụng trong 30 phút, trong một transaction, kiểm lại khi áp dụng. Tối đa 10 MB/5.000 dòng. Cùng màn có thêm ảnh
+từ ZIP (`MA-01.jpg`), tải nhiều ảnh và feed Google Shopping. Danh sách sản phẩm có thao tác hàng loạt và kéo-thả thứ tự.
+Trạng thái và việc còn lại: [`STATUS.md`](STATUS.md); bàn giao: [`HANDOFF.md`](HANDOFF.md).
 
 Danh sách sản phẩm Filament có cột và bộ lọc **Cần cải thiện** cho sản phẩm
 đang hiển thị: thiếu ảnh chính, SEO riêng chưa đủ tiêu đề/mô tả, thiếu mô tả
@@ -41,15 +35,6 @@ ngắn, chưa có giá hoặc chế độ báo giá, và chưa liên kết bài 
 Đây là hàng đợi biên tập cho SEO/bán hàng, không phải điểm xếp hạng tìm kiếm;
 sản phẩm đang ẩn không bị coi là lỗi public.
 
-CSV **Sản phẩm & ảnh** là luồng riêng tại `/admin/products`: trước tiên dùng
-**Tải nhiều ảnh sản phẩm** (tối đa 20 ảnh/lần) để tải file vào `upload/product`
-và tải CSV tên file đã lưu. Sau đó xuất mẫu gồm ID,
-mã, tên, slug, ID danh mục và các ảnh. Dòng có ID chỉ sửa ảnh; ô trống giữ
-nguyên, `XÓA` bỏ ảnh hoặc thư viện ảnh. Dòng không ID tạo sản phẩm **ẩn**, cần
-tên và ID danh mục; slug để trống sẽ tự sinh từ tên. Ảnh phải có sẵn dưới
-`upload/product`, chỉ nhập tên file; thư viện ngăn cách bằng `|`. Admin xem trước,
-tải báo cáo từng dòng và xác nhận trong 15 phút. Một lỗi chặn cả file, không
-xóa file ảnh vật lý khi bỏ quan hệ. Tệp tối đa 2 MB và 5.000 dòng.
 Form sản phẩm và album đã được kiểm với upload file thật, đổi thứ tự và xóa ảnh
 khỏi thư viện; xóa quan hệ giữ file vật lý vì file có thể được nhiều bản ghi dùng.
 

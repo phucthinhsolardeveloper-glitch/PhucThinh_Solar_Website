@@ -47,7 +47,7 @@ nhận một lần, callback lặp, duplicate checkout và transaction status sa
 chuyển file; sau lỗi không còn row review hoặc file public/staging. Hai luồng
 được chạy với Mail fake và DB test; không có giao dịch VNPay production.
 
-Gate còn lại trước cutover: outbox/database queue, staging VPS với VNPay và mail
+Gate còn lại trước cutover: staging VPS với VNPay và mail
 sandbox, restore/rollback qua Caddy. Điểm rollback code trước đợt sửa:
 `d296b187`; image candidate cũ giữ theo `49dbf3dc-candidate` (backend) và
 `967315c0-candidate` (Nuxt).

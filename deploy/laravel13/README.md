@@ -71,7 +71,7 @@ file nếu DB rollback. Bằng chứng và giới hạn còn lại:
 Backend 150 test/1.093 assertions, PHPStan 0, Pint 264 file; Nuxt 478 test,
 typecheck/build pass. Image rollback gần nhất: backend `49dbf3dc-candidate`,
 Nuxt `967315c0-candidate`. Chưa thử thanh toán VNPay sandbox hoặc SMTP thật;
-outbox/database queue vẫn là gate tiếp theo. Production không đổi.
+outbox/database queue đã xong ở `bff35f79` (compose có service `worker` và `scheduler`). Production không đổi.
 
 ## Runtime và quyết định tạm thời
 

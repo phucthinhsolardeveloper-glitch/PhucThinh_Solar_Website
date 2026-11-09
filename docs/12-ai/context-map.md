@@ -8,7 +8,7 @@ Mọi task            -> SO-TAY.md -> AGENTS.md -> fact-map/status
 Hiểu code / tìm file-> 01-architecture/codebase-guide.md -> sources/templates/libraries
 Giao diện public    -> 02-development/nuxt-storefront-guide.md -> 15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md
 Chọn model/effort     -> 12-ai/model-routing.md
-Trạng thái Laravel    -> 16-laravel-migration/STATUS.md
+Trạng thái Laravel    -> 16-laravel-migration/HANDOFF.md -> 16-laravel-migration/STATUS.md
 Chuyển đổi Laravel 13 -> 16-laravel-migration/README.md -> 12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md
 Phản hồi chủ website-> 11-workflows/owner-feedback-loop.md -> tools/visual-tests/audit/README.md
 UX contract (dữ liệu/IA/SEO) -> 02-development/public-ui-ux-design-system.md -> ADR 0007

@@ -1,5 +1,7 @@
 # Đối chiếu Admin legacy → Filament tại `7265b9ad`
 
+> Bản ghi tại thời điểm 2026-11-08, đã cũ ở phần bulk sản phẩm, bản nháp và media. Trạng thái hiện tại xem [`STATUS.md`](STATUS.md).
+
 Ngày kiểm 2026-11-08, trên clone local. Nguồn legacy:
 [`phase-0/admin-capabilities.md`](phase-0/admin-capabilities.md). `PASS` chỉ ghi
 khi có kiểm runtime/test tương ứng; `GAP` gồm cả chức năng đã có code nhưng chưa
