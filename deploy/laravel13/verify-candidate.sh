@@ -10,6 +10,7 @@ compose=(docker compose --env-file "$env_file")
 [[ -f "$manifest" ]] || { echo 'Missing release manifest.' >&2; exit 1; }
 "${compose[@]}" config --format json | python3 -c '
 import json, re, sys
+from urllib.parse import urlparse
 config = json.load(sys.stdin)
 services = config["services"]
 backend, db, proxy = (services[name] for name in ("backend", "db", "proxy"))
@@ -17,6 +18,19 @@ env = backend["environment"]
 assert env["DB_HOST"] == "db" and env["LEGACY_DB_HOST"] == "db", "DB must stay inside the candidate stack"
 assert env["DB_DATABASE"] == env["LEGACY_DB_DATABASE"], "Import and runtime DB differ"
 assert re.search(r"(?:candidate|staging|rehearsal)", env["DB_DATABASE"]), "DB name is not isolated"
+assert len(env.get("APP_KEY", "")) >= 32, "APP_KEY is missing"
+assert env.get("APP_TIMEZONE") == "Asia/Ho_Chi_Minh" and env.get("APP_LOCALE") == "vi", "Locale or timezone drift"
+assert env.get("APP_DEBUG") == "false" and env.get("APP_ENV") == "production", "Unsafe Laravel runtime flags"
+assert env.get("SESSION_DRIVER") == "database" and env.get("CACHE_STORE") == "database", "Session or cache contract drift"
+assert env.get("UPLOAD_PATH") == "/srv/upload" and env.get("ASSETS_PATH") == "/srv/assets", "Media paths differ from mounts"
+url = urlparse(env.get("APP_URL", ""))
+assert url.scheme in ("http", "https") and url.hostname, "APP_URL is invalid"
+if url.scheme == "https":
+    assert env.get("SESSION_SECURE_COOKIE") == "true", "HTTPS requires secure session cookies"
+if env.get("MAIL_MAILER") == "smtp":
+    assert all(env.get(key) for key in ("MAIL_HOST", "MAIL_PORT", "MAIL_FROM_ADDRESS", "MAIL_ADMIN_TO")), "SMTP contract incomplete"
+if env.get("VNPAY_ACTIVE") in ("1", "true"):
+    assert all(env.get(key) for key in ("VNPAY_TMN_CODE", "VNPAY_HASH_SECRET", "VNPAY_RETURN_URL", "VNPAY_IPN_URL")), "VNPay contract incomplete"
 assert not db.get("ports"), "Candidate DB must not publish a port"
 assert len(proxy["ports"]) == 1 and proxy["ports"][0]["host_ip"] == "127.0.0.1", "Candidate proxy must bind loopback"
 print("Isolated DB and loopback proxy: OK")
@@ -70,6 +84,9 @@ for service in ("db", "backend", "nuxt"):
     assert len(matches) == 1 and matches[0]["State"] == "running" and matches[0]["Health"] == "healthy", f"{service} is not healthy"
 print("DB, backend and Nuxt: healthy")
 '
+
+"${compose[@]}" exec -T -u www-data backend sh -c 'test -w /srv/upload && test -w /var/www/html/storage'
+echo 'Upload and app storage writable by www-data'
 
 status="$("${compose[@]}" exec -T backend php artisan migrate:status --no-ansi)"
 if [[ "$status" != *' Ran'* || "$status" == *' Pending'* ]]; then

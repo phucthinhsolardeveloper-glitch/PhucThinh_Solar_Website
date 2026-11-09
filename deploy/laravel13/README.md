@@ -133,8 +133,10 @@ khi mở Admin. File `.env` được loại khỏi Docker build context.
 6. `docker compose --env-file runtime/stack.env up -d backend nuxt proxy`.
    Chạy `./verify-candidate.sh runtime/stack.env runtime/release-manifest.json`:
    gate so image ID của **container đang chạy** với manifest, DB chỉ nằm trong
-   stack tách biệt, migration không pending, snapshot API khớp, route chính 200
-   và candidate noindex. Nếu fail thì giữ route cũ; chẩn đoán DB/image/config
+   stack tách biệt, env contract (APP_KEY/URL/timezone/session/mail/VNPay),
+   quyền ghi upload/storage của `www-data`, migration không pending, snapshot
+   API khớp, route chính 200 và candidate noindex. Nếu fail thì giữ route cũ;
+   chẩn đoán DB/image/config
    trước khi thử lại. Kiểm thêm `/upload/*`, `/thumbs/*` và response 404. Chạy
    `site-audit`, `shop-flow`, `admin-screens`, bảo mật và benchmark trên origin
    staging. Script Admin chỉ mở màn; CRUD/RBAC/save phải có kiểm riêng.
