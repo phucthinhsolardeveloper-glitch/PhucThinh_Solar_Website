@@ -4,6 +4,7 @@ namespace App\Domain\Leads;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductSpecs;
+use App\Domain\Outbox\Outbox;
 use App\Mail\AdminNotification;
 use App\Mail\MailTemplates;
 use App\Support\FormToken;
@@ -213,24 +214,31 @@ class LeadSubmission
         return is_array($result) && (float) ($result['score'] ?? 0) >= 0.5 && ($result['action'] ?? '') === $action;
     }
 
-    /** A mail failure never loses the lead: the row is already saved and Admin lists it. */
+    /** Queues the Admin alert for the lead just saved; the mail is sent by the queue worker with retries. */
     private function notify(string $template, array $values, array $fields, string $replyEmail, string $replyName): void
     {
         $to = (string) config('mail.admin_to');
-        if ($to === '') {
+        if ($to === '' || $this->leadId === null) {
             return;
         }
         try {
-            Mail::to($to)->send(new AdminNotification($this->templates->copy($template, $values), $fields, $replyEmail, $replyName));
+            Outbox::queue('lead:'.$this->leadId.':'.$template, $template, $to,
+                new AdminNotification($this->templates->copy($template, $values), $fields, $replyEmail, $replyName));
         } catch (Throwable $e) {
-            Log::warning('Lead notification email failed', ['template' => $template]);
+            // The lead row is saved and listed in Admin even if the alert cannot be queued.
+            Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
         }
     }
+
+    /** Id of the lead saved by the current submission, used as the alert's dedupe key. */
+    private ?int $leadId = null;
 
     private function insert(array $row): bool
     {
         try {
-            return DB::table('leads')->insert($row + ['status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
+            $this->leadId = (int) DB::table('leads')->insertGetId($row + ['status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
+
+            return true;
         } catch (Throwable $e) {
             Log::error('Lead insert failed', ['error' => $e->getMessage()]);
 

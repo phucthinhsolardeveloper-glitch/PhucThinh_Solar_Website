@@ -81,6 +81,59 @@ services:
     pids_limit: 300
     logging: *bounded_logging
 
+  # Sends outbox mail with retries/backoff. Same image and settings as backend, no web server.
+  worker:
+    image: ${PTS_BACKEND_IMAGE:?Set an immutable backend image tag}
+    restart: unless-stopped
+    container_name: pts-laravel13-worker
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--max-time=3600"]
+    user: www-data
+    env_file:
+      - path: ${PTS_BACKEND_ENV:-./runtime/backend.env}
+        required: true
+    environment: &backend_env_runtime
+      DB_CONNECTION: mariadb
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE:?Set candidate database name}
+      DB_USERNAME: ${DB_USERNAME:?Set candidate database user}
+      DB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
+      DB_PREFIX: ""
+      APP_ENV: production
+      APP_DEBUG: "false"
+      UPLOAD_PATH: /srv/upload
+      ASSETS_PATH: /srv/assets
+    volumes:
+      - ${PTS_UPLOAD_DIR:?Set an isolated upload directory}:/srv/upload
+      - ../../frontend/public/assets:/srv/assets:ro
+      - app_storage:/var/www/html/storage
+    healthcheck: {disable: true}
+    networks: [data]
+    depends_on:
+      backend: {condition: service_healthy}
+    mem_limit: 512m
+    logging: *bounded_logging
+
+  # Runs Laravel's schedule (outbox sweep every five minutes).
+  scheduler:
+    image: ${PTS_BACKEND_IMAGE:?Set an immutable backend image tag}
+    restart: unless-stopped
+    container_name: pts-laravel13-scheduler
+    command: ["php", "artisan", "schedule:work"]
+    user: www-data
+    env_file:
+      - path: ${PTS_BACKEND_ENV:-./runtime/backend.env}
+        required: true
+    environment: *backend_env_runtime
+    volumes:
+      - app_storage:/var/www/html/storage
+    healthcheck: {disable: true}
+    networks: [data]
+    depends_on:
+      backend: {condition: service_healthy}
+    mem_limit: 256m
+    logging: *bounded_logging
+
   db:
     image: mariadb:10.11
     restart: unless-stopped

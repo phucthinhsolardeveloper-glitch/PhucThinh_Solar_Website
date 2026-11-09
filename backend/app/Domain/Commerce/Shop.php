@@ -6,6 +6,7 @@ use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
+use App\Domain\Outbox\Outbox;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
@@ -312,6 +313,9 @@ class Shop
                 if ((int) $payment['id'] === Payments::VNPAY_ID) {
                     $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total,
                         'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
+                } else {
+                    // Mail is written with the order, so a saved order always gets its notification.
+                    $this->queueOrderMails(['id' => $orderId] + $order, $items, (string) ($payment['namevi'] ?? ''));
                 }
 
                 return [$orderId, $items];
@@ -333,8 +337,6 @@ class Shop
 
             return [200, $this->finish($orderId, $order['code'], $url)];
         }
-
-        $this->sendOrderMails($order, $items, (string) ($payment['namevi'] ?? ''));
 
         return [200, $this->finish($orderId, $order['code'])];
     }
@@ -459,12 +461,9 @@ class Shop
             if ($status === 'paid') {
                 $db->table('orders')->where('id', $order->id)->update(['payment_status' => 'paid', 'payment_code' => 'vnpay', 'payment_reference' => $transaction, 'updated_at' => now()]);
                 $becamePaid = true;
+                $this->queuePaidOrderMails((int) $order->id);
             }
         });
-        // Only the unpaid-to-paid transition sends mail; return and IPN may arrive in either order.
-        if ($becamePaid) {
-            $this->sendPaidOrderMails((int) $order->id);
-        }
         if ($ipn && $alreadyPaid) {
             return $ipnReply('02', 'Order already confirmed');
         }
@@ -548,7 +547,8 @@ class Shop
         return ['ok' => true, 'orderCode' => $code, 'thanksToken' => $token, 'redirect' => $paymentUrl ?? '/cam-on/?token='.rawurlencode($token)];
     }
 
-    private function sendPaidOrderMails(int $orderId): void
+    /** Only the unpaid-to-paid transition queues mail; return and IPN may arrive in either order. */
+    private function queuePaidOrderMails(int $orderId): void
     {
         $order = DB::table('orders')->where('id', $orderId)->first();
         if (! $order || $order->payment_code !== 'vnpay' || $order->payment_status !== 'paid') {
@@ -560,26 +560,24 @@ class Shop
             return ['name' => $item->name, 'option' => implode(' - ', array_filter([$item->color, $item->size])),
                 'quantity' => (int) $item->quantity, 'price' => $price, 'total' => $price * (int) $item->quantity];
         })->all();
-        $this->sendOrderMails((array) $order, $items, 'Thanh toán online qua VNPay');
+        $this->queueOrderMails((array) $order, $items, 'Thanh toán online qua VNPay');
     }
 
-    private function sendOrderMails(array $order, array $items, string $paymentName): void
+    /** Admin and customer confirmations, at most once per order (dedupe keys). */
+    private function queueOrderMails(array $order, array $items, string $paymentName): void
     {
         $values = ['order_code' => $order['code'], 'customer_name' => $order['customer_name'], 'customer_phone' => $order['phone']];
         $fields = ['Mã đơn hàng' => $order['code'], 'Họ tên' => $order['customer_name'], 'Điện thoại' => $order['phone'], 'Email' => $order['email'], 'Địa chỉ' => $order['address'],
             'Thanh toán' => $paymentName, 'Yêu cầu thêm' => $order['requirements']];
         $totals = ['subtotal' => (float) $order['subtotal'], 'shipping' => (float) $order['shipping_fee'], 'total' => (float) $order['total']];
         $email = (string) $order['email'];
-        try {
-            if (($admin = (string) config('mail.admin_to')) !== '') {
-                Mail::to($admin)->send(new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name']));
-            }
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($email)->send(new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals));
-            }
-        } catch (Throwable $e) {
-            // The order is saved; a mail outage must not cost the customer their confirmation page.
-            Log::warning('Order email failed', ['order' => $order['code']]);
+        if (($admin = (string) config('mail.admin_to')) !== '') {
+            Outbox::queue('order:'.$order['id'].':admin', 'order_admin', $admin,
+                new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name']));
+        }
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Outbox::queue('order:'.$order['id'].':customer', 'order_customer', $email,
+                new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals));
         }
     }
 }
