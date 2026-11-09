@@ -4,15 +4,17 @@ namespace App\Domain\Site;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Solutions\SolutionHub;
 use App\Support\RichText;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Shared chrome of every page (api/pts_v1_site.php): brand, header menus, product category tree,
- * footer, catalog benefits and quick searches. Only published rows, only safe links and files.
+ * Shared chrome of every page: brand, header menus, product category tree, footer, catalog benefits
+ * and quick searches. Only published rows, only safe links and files.
  */
 class SiteAssembler
 {
@@ -42,8 +44,11 @@ class SiteAssembler
 
     private Connection $db;
 
-    /** @var array<string, array<int, array<string, mixed>>> */
-    private array $index = [];
+    /** @var array<int, object{id: int, parent_id: ?int, name: string, slug: string}> visible categories holding visible products */
+    private array $shown = [];
+
+    /** @var array<int, list<object>> parent id (0 = top) => shown children in Admin order */
+    private array $children = [];
 
     public function __construct(private readonly ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly CategoryTree $categories)
     {
@@ -53,33 +58,24 @@ class SiteAssembler
     /** @return array<string, mixed> */
     public function build(): array
     {
-        // Visible categories that hold visible products, per depth, in Admin order.
-        $level = fn (int $depth, string $parentKey) => array_values(array_map(
-            fn ($row) => ['id' => (int) $row->id, 'namevi' => $row->name, 'slugvi' => $row->slug, $parentKey => (int) $row->parent_id],
-            array_filter(DB::table('categories')->where('depth', $depth)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get()->all(),
-                fn ($row) => $this->categories->hasVisibleProducts((int) $row->id))));
-        $lists = $level(1, 'parent');
-        $cats = $level(2, 'id_list');
-        $items = $level(3, 'id_cat');
-        $subs = $level(4, 'id_item');
-        foreach (['list' => $lists, 'cat' => $cats, 'item' => $items, 'sub' => $subs] as $level => $rows) {
-            foreach ($rows as $row) {
-                if ((int) $row['id'] > 0) {
-                    $this->index[$level][(int) $row['id']] = $row;
-                }
+        foreach ($this->db->table('categories')->where('is_visible', true)->orderBy('depth')->orderBy('sort_order')->orderByDesc('id')->get(['id', 'parent_id', 'name', 'slug']) as $row) {
+            if ($this->categories->hasVisibleProducts((int) $row->id)) {
+                $this->shown[(int) $row->id] = $row;
+                $this->children[(int) $row->parent_id][] = $row;
             }
         }
+        $tops = $this->children[0] ?? [];
 
         $options = $this->settings->options();
-        $photo = fn (string $placement, bool $published) => (array) ($this->db->selectOne(
-            'select image as photo, link from banners where placement=?'.($published ? ' and is_visible=1' : '').' order by sort_order, id desc limit 1', [$placement]) ?? []);
-        $badge = $photo('bct', true);
+        $picture = fn (string $placement, bool $published) => $this->db->table('banners')->where('placement', $placement)
+            ->when($published, fn ($q) => $q->where('is_visible', true))->orderBy('sort_order')->orderByDesc('id')->first(['image', 'link']);
+        $badge = $picture('bct', true);
 
         $brand = [
             'name' => Text::flat($this->settings->siteName()) ?: 'Phúc Thịnh Solar',
             'hotline' => Text::flat($options['hotline'] ?? ''),
-            'logo' => $this->asset($photo('logo', false)['photo'] ?? ''),
-            'logoFooter' => $this->asset($photo('logo-footer', false)['photo'] ?? ''),
+            'logo' => $this->asset($picture('logo', false)?->image),
+            'logoFooter' => $this->asset($picture('logo-footer', false)?->image),
         ];
         $zalo = (string) preg_replace('/[^0-9]/', '', is_scalar($options['zalo'] ?? null) ? trim((string) $options['zalo']) : '');
         if (strlen($zalo) >= 8 && strlen($zalo) <= 15) {
@@ -89,17 +85,17 @@ class SiteAssembler
         if ($technical !== '') {
             $brand['technicalHotline'] = $technical;
         }
-        $favicon = $this->asset($photo('favicon', true)['photo'] ?? '');
+        $favicon = $this->asset($picture('favicon', true)?->image);
         if ($favicon !== '') {
             $brand['favicon'] = $favicon;
         }
 
         $categories = [];
-        foreach ($lists as $row) {
-            $label = trim((string) $row['namevi']);
-            $slug = trim((string) $row['slugvi'], '/');
-            if ((int) $row['id'] > 0 && $label !== '' && $slug !== '') {
-                $categories[] = ['id' => (int) $row['id'], 'name' => $label, 'slug' => $slug, 'url' => '/danh-muc-san-pham/'.rawurlencode($slug).'/'];
+        foreach ($tops as $row) {
+            $label = trim((string) $row->name);
+            $slug = self::slug($row);
+            if ($label !== '' && $slug !== '') {
+                $categories[] = ['id' => (int) $row->id, 'name' => $label, 'slug' => $slug, 'url' => '/danh-muc-san-pham/'.rawurlencode($slug).'/'];
             }
         }
 
@@ -110,14 +106,18 @@ class SiteAssembler
             'navigationSchemaVersion' => 1,
             'locale' => 'vi',
             'navigation' => $this->navigation(),
-            'catalog' => $this->catalogMenu($lists, $cats, $items),
-            'productCategoryTree' => $this->tree($lists, $cats, $items, $subs),
+            'catalog' => $this->catalogMenu($tops),
+            'productCategoryTree' => array_values(array_filter(array_map(fn ($row) => $this->node($row), $tops))),
             'footer' => $this->footer($options, $badge),
-            'catalogBenefits' => array_map(fn ($row) => ['title' => Text::excerpt($row['namevi'], 60), 'description' => Text::excerpt($row['descvi'], 90)],
-                $this->rows("select title as namevi, summary as descvi from page_items where section='catalog.benefits' and is_visible=1 order by sort_order,id desc limit 0,4")),
-            'quickSearches' => array_values(array_filter(array_map(fn ($row) => Text::excerpt($row['namevi'], 48),
-                $this->rows("select title as namevi from page_items where section='search.suggestions' and is_visible=1 order by sort_order,id desc limit 0,7")))),
+            'catalogBenefits' => $this->sectionTitles('catalog.benefits', 4)->map(fn ($row) => ['title' => Text::excerpt($row->title, 60), 'description' => Text::excerpt($row->summary, 90)])->all(),
+            'quickSearches' => $this->sectionTitles('search.suggestions', 7)->map(fn ($row) => Text::excerpt($row->title, 48))->filter()->values()->all(),
         ];
+    }
+
+    /** @return Collection<int, \stdClass> */
+    private function sectionTitles(string $section, int $limit): Collection
+    {
+        return $this->db->table('page_items')->where('section', $section)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->limit($limit)->get(['title', 'summary']);
     }
 
     /** @return list<array<string, mixed>> */
@@ -136,63 +136,47 @@ class SiteAssembler
             ['label' => 'Hợp tác', 'href' => '/dai-ly/', 'children' => []],
         ];
 
-        // Solutions: those ticked for the hub menu, or all published ones when none is ticked.
-        $solutions = $this->rows("select id, title as namevi, nav_title as title_indexvi, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'solutionhub',null)) as status from posts where kind='solution' order by sort_order,id desc");
-        $flags = fn ($row) => explode(',', is_scalar($row['status']) ? trim((string) $row['status']) : '');
-        $hubOnly = (bool) array_filter($solutions, fn ($row) => in_array('solutionhub', $flags($row), true));
+        // Solutions marked for the hub, or every published one when none is marked.
         $links = [self::link('Tất cả giải pháp', '/giai-phap/')];
-        foreach ($solutions as $row) {
-            if (! in_array('hienthi', $flags($row), true) || ($hubOnly && ! in_array('solutionhub', $flags($row), true))) {
-                continue;
-            }
-            $label = Text::flat(($row['title_indexvi'] ?? '') !== '' ? $row['title_indexvi'] : $row['namevi']);
-            $links[] = self::link($label, 'giai-phap/'.self::slug($row).'/');
+        foreach (SolutionHub::select(SolutionHub::solutions($this->db), true) as $row) {
+            $links[] = self::link(Text::flat($row['nav_title'] !== '' ? $row['nav_title'] : $row['title']), 'giai-phap/'.trim($row['slug'], '/').'/');
         }
         $nav[2]['children'] = array_values(array_filter($links));
 
-        $newsLists = $this->rows("select c.name as namevi, c.slug as slugvi, c.id from post_categories c where c.kind='article' and c.depth=1 and c.is_visible=1"
-            ." and exists (select 1 from posts p where p.category_id=c.id and p.kind='article' and p.is_visible=1) order by c.sort_order,c.id desc");
-        $level = fn (int $depth, string $parent) => $this->rows("select name as namevi, slug as slugvi, id, parent_id as {$parent} from post_categories where kind in ('article','solution') and depth={$depth} and is_visible=1 order by sort_order,id desc");
-        $newsCats = $level(2, 'id_list');
-        $newsItems = $level(3, 'id_cat');
-        $newsSubs = $level(4, 'id_item');
+        // Knowledge menu: article groups with published articles, then their sub-groups.
+        $groups = $this->db->table('post_categories as c')->where('c.kind', 'article')->where('c.depth', 1)->where('c.is_visible', true)
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where('p.is_visible', true))
+            ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.slug']);
+        $subGroups = $this->db->table('post_categories')->whereIn('kind', ['article', 'solution'])->where('depth', '>', 1)->where('is_visible', true)
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'parent_id', 'name', 'slug'])->groupBy('parent_id');
+        $branch = function (object $group, string $href) use (&$branch, $subGroups): array {
+            $link = self::link($group->name, $href);
+            if (! $link) {
+                return [];
+            }
+            $link['children'] = [];
+            foreach ($subGroups->get($group->id, []) as $child) {
+                if ($childLink = $branch($child, self::slug($child))) {
+                    $link['children'][] = $childLink;
+                }
+            }
+
+            return $link;
+        };
         $children = [self::link('Tất cả bài viết', '/tin-tuc/')];
-        foreach ($newsLists as $list) {
-            $listLink = self::link($list['namevi'], 'category/'.self::slug($list).'/');
-            if (! $listLink) {
-                continue;
-            }
-            $listLink['children'] = [];
-            foreach ($newsCats as $cat) {
-                if ((int) $cat['id_list'] !== (int) $list['id'] || ! ($catLink = self::link($cat['namevi'], self::slug($cat)))) {
-                    continue;
-                }
-                $catLink['children'] = [];
-                foreach ($newsItems as $item) {
-                    if ((int) $item['id_cat'] !== (int) $cat['id'] || ! ($itemLink = self::link($item['namevi'], self::slug($item)))) {
-                        continue;
-                    }
-                    $itemLink['children'] = [];
-                    foreach ($newsSubs as $sub) {
-                        if ((int) $sub['id_item'] === (int) $item['id'] && ($subLink = self::link($sub['namevi'], self::slug($sub)))) {
-                            $itemLink['children'][] = $subLink;
-                        }
-                    }
-                    $catLink['children'][] = $itemLink;
-                }
-                $listLink['children'][] = $catLink;
-            }
-            $children[] = $listLink;
+        foreach ($groups as $group) {
+            $children[] = $branch($group, 'category/'.self::slug($group).'/');
         }
         $nav[4]['children'] = array_values(array_filter($children));
 
         return $nav;
     }
 
-    private function catalogMenu(array $lists, array $cats, array $items): array
+    /** Header catalog menu: fixed slots pointing at shown categories. */
+    private function catalogMenu(array $tops): array
     {
         $bySlug = [];
-        foreach ($lists as $row) {
+        foreach ($tops as $row) {
             $bySlug[self::slug($row)] = $row;
         }
         $menu = [
@@ -205,25 +189,20 @@ class SiteAssembler
                 continue;
             }
             $list = $bySlug[$listSlug];
-            $href = $catSlug !== null ? '' : $this->path($list, 'list');
+            $href = $catSlug !== null ? '' : $this->path($list);
             $children = [];
-            foreach ($cats as $cat) {
-                if ((int) $cat['id_list'] !== (int) $list['id']) {
-                    continue;
-                }
+            foreach ($this->children[(int) $list->id] ?? [] as $cat) {
                 if ($catSlug !== null) {
                     if (self::slug($cat) !== $catSlug) {
                         continue;
                     }
-                    $href = $this->path($cat, 'cat');
-                    foreach ($items as $item) {
-                        if ((int) $item['id_cat'] === (int) $cat['id']) {
-                            $children[] = self::link($item['namevi'], $this->path($item, 'item'));
-                        }
+                    $href = $this->path($cat);
+                    foreach ($this->children[(int) $cat->id] ?? [] as $item) {
+                        $children[] = self::link($item->name, $this->path($item));
                     }
                     break;
                 }
-                $children[] = self::link($cat['namevi'], $this->path($cat, 'cat'));
+                $children[] = self::link($cat->name, $this->path($cat));
             }
             if ($href === '') {
                 continue;
@@ -235,69 +214,39 @@ class SiteAssembler
         return $menu;
     }
 
-    private function tree(array $lists, array $cats, array $items, array $subs): array
+    /** One category of the product tree with its shown descendants; null when it has no name or slug. */
+    private function node(object $row): ?array
     {
-        $group = function (array $rows, string $parent) {
-            $out = [];
-            foreach ($rows as $row) {
-                $out[(int) $row[$parent]][] = $row;
+        $node = ['id' => (int) $row->id, 'name' => Text::flat($row->name), 'slug' => self::slug($row), 'url' => self::url($this->path($row)), 'children' => []];
+        if ($node['name'] === '' || $node['slug'] === '') {
+            return null;
+        }
+        foreach ($this->children[(int) $row->id] ?? [] as $child) {
+            if ($childNode = $this->node($child)) {
+                $node['children'][] = $childNode;
             }
-
-            return $out;
-        };
-        $byList = $group($cats, 'id_list');
-        $byCat = $group($items, 'id_cat');
-        $byItem = $group($subs, 'id_item');
-        $node = fn (array $row, string $level) => ['id' => (int) $row['id'], 'name' => Text::flat($row['namevi']), 'slug' => self::slug($row), 'url' => self::url($this->path($row, $level)), 'children' => []];
-        $valid = fn (array $n) => $n['id'] > 0 && $n['name'] !== '' && $n['slug'] !== '';
-        $tree = [];
-        foreach ($lists as $list) {
-            $listNode = $node($list, 'list');
-            if (! $valid($listNode)) {
-                continue;
-            }
-            foreach ($byList[$listNode['id']] ?? [] as $cat) {
-                $catNode = $node($cat, 'cat');
-                if (! $valid($catNode)) {
-                    continue;
-                }
-                foreach ($byCat[$catNode['id']] ?? [] as $item) {
-                    $itemNode = $node($item, 'item');
-                    if (! $valid($itemNode)) {
-                        continue;
-                    }
-                    foreach ($byItem[$itemNode['id']] ?? [] as $sub) {
-                        $subNode = $node($sub, 'sub');
-                        if ($valid($subNode)) {
-                            $itemNode['children'][] = $subNode;
-                        }
-                    }
-                    $catNode['children'][] = $itemNode;
-                }
-                $listNode['children'][] = $catNode;
-            }
-            $tree[] = $listNode;
         }
 
-        return $tree;
+        return $node;
     }
 
-    private function footer(array $options, array $badge): array
+    private function footer(array $options, ?object $badge): array
     {
-        $footer = (array) ($this->db->selectOne("select title as namevi, body as contentvi from page_items where section='site.footer' and is_visible=1 limit 0,1") ?? []);
+        $footer = $this->db->table('page_items')->where('section', 'site.footer')->where('is_visible', true)->first(['title', 'body']);
         $policies = [];
-        foreach ($this->rows("select title as namevi, slug as slugvi, id from posts where kind='policy' and is_visible=1 order by sort_order,id desc") as $row) {
-            if ($link = self::link($row['namevi'], 'ho-tro/'.self::slug($row).'/')) {
+        foreach ($this->db->table('posts')->where('kind', 'policy')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $row) {
+            if ($link = self::link($row->title, 'ho-tro/'.self::slug($row).'/')) {
                 $policies[] = $link;
             }
         }
         $locations = [];
-        foreach ($this->rows('select name as namevi, address, id, map_url as ggmap from store_locations where is_visible=1'
-            ." order by case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end,sort_order,id desc") as $row) {
-            $name = Text::flat($row['namevi']);
-            $address = Text::flat($row['address']);
+        $branches = $this->db->table('store_locations')->where('is_visible', true)
+            ->orderByRaw("case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end")->orderBy('sort_order')->orderByDesc('id')->get(['name', 'address', 'map_url']);
+        foreach ($branches as $row) {
+            $name = Text::flat($row->name);
+            $address = Text::flat($row->address);
             if ($name !== '' && $address !== '') {
-                $locations[] = ['name' => $name, 'address' => $address, 'mapUrl' => self::url($row['ggmap'])];
+                $locations[] = ['name' => $name, 'address' => $address, 'mapUrl' => self::url($row->map_url)];
             }
         }
         $social = [];
@@ -308,18 +257,18 @@ class SiteAssembler
             }
         }
         // The contact cards show the hotlines, so tel: links and the tax-code line are taken out of the CMS text.
-        $content = RichText::sanitize($footer['contentvi'] ?? '');
+        $content = RichText::sanitize((string) $footer?->body);
         $content = (string) preg_replace('/MST:\s*5901151081\b.*?(?:<br\s*\/?>|$)/iu', '', $content, 1);
         $content = (string) preg_replace('~<a\b(?=[^>]*\bhref="tel:)[^>]*>.*?</a>~is', '', $content);
         $dto = [
-            'companyName' => Text::flat($footer['namevi'] ?? ''),
+            'companyName' => Text::flat((string) $footer?->title),
             'contactText' => RichText::dto($content),
             'policies' => $policies,
             'locations' => $locations,
             'socialLinks' => $social,
         ];
-        $image = self::url($this->asset($badge['photo'] ?? ''));
-        $href = self::url(self::url($badge['link'] ?? ''));
+        $image = self::url($this->asset($badge?->image));
+        $href = self::url(self::url($badge?->link));
         if ($image !== '' && $href !== '') {
             $dto['trustBadge'] = ['image' => $image, 'href' => $href];
         }
@@ -327,43 +276,25 @@ class SiteAssembler
         return $dto;
     }
 
-    /** danh-muc-san-pham/<list>/<cat>/... through published ancestors only (ptsPublicNavProductPath). */
-    private function path(array $row, string $level): string
+    /** danh-muc-san-pham/<top>/<child>/... through shown ancestors only; '' when one is hidden or empty. */
+    private function path(object $row): string
     {
-        $id = (int) $row['id'];
-        if (! isset($this->index[$level][$id])) {
-            return '';
-        }
-        $parents = ['list' => null, 'cat' => ['list', 'id_list'], 'item' => ['cat', 'id_cat'], 'sub' => ['item', 'id_item']];
-        $chain = [];
-        $current = $this->index[$level][$id];
-        $currentLevel = $level;
-        while (true) {
-            array_unshift($chain, $current);
-            if ($parents[$currentLevel] === null) {
-                break;
-            }
-            [$parentLevel, $column] = $parents[$currentLevel];
-            $parentId = (int) ($current[$column] ?? 0);
-            if (! isset($this->index[$parentLevel][$parentId])) {
-                return '';
-            }
-            $current = $this->index[$parentLevel][$parentId];
-            $currentLevel = $parentLevel;
-        }
-        $parts = ['danh-muc-san-pham'];
-        foreach ($chain as $ancestor) {
-            $slug = self::slug($ancestor);
+        $parts = [];
+        for ($node = $row; $node; $node = $node->parent_id ? ($this->shown[(int) $node->parent_id] ?? false) : null) {
+            $slug = self::slug($node);
             if ($slug === '') {
                 return '';
             }
-            $parts[] = $slug;
+            array_unshift($parts, $slug);
+        }
+        if ($node === false) {
+            return '';
         }
 
-        return implode('/', $parts).'/';
+        return 'danh-muc-san-pham/'.implode('/', $parts).'/';
     }
 
-    /** A file name under upload/photo with an image extension that exists (ptsPublicNavAsset). */
+    /** A file name under upload/photo with an image extension that exists. */
     private function asset(mixed $value): string
     {
         $value = is_scalar($value) ? trim((string) $value) : '';
@@ -374,18 +305,12 @@ class SiteAssembler
         return $this->urls->exists('upload/photo/'.$value) ? '/upload/photo/'.$value : '';
     }
 
-    /** @return list<array<string, mixed>> */
-    private function rows(string $sql): array
+    private static function slug(object $row): string
     {
-        return array_map(fn ($row) => (array) $row, $this->db->select($sql));
+        return trim(trim((string) $row->slug), '/');
     }
 
-    private static function slug(array $row): string
-    {
-        return trim(is_scalar($row['slugvi'] ?? null) ? trim((string) $row['slugvi']) : '', '/');
-    }
-
-    /** Site-relative or http(s) link; anything else becomes the fallback (ptsPublicNavUrl). */
+    /** Site-relative or http(s) link; anything else becomes the fallback. */
     public static function url(mixed $value, string $fallback = ''): string
     {
         $value = is_scalar($value) ? trim((string) $value) : '';
