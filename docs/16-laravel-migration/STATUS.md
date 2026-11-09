@@ -4,15 +4,13 @@
 Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commit → xóa file tạm của phần đó.
 
 ## Đang làm
-- [ ] Kiểm tra giao diện màn Nhập / xuất Excel bằng tệp thật
+Không có việc dở.
 
 ## Chưa làm (theo thứ tự)
-- [ ] Xuất đơn hàng: danh sách Excel, từng đơn Excel/Word (`excel.php`, `excelAll.php`, `word.php`)
 - [ ] Chiến dịch khung khuyến mãi (`product_campaign`, hiện trên thẻ sản phẩm; dữ liệu hiện 0)
 - [ ] Logo thương hiệu: 19/22 chưa có trong DB, đang ghi cứng trong Nuxt (`partnerBrands.ts`), Admin không quản lý được
 - [ ] Nhập/xuất, khôi phục khối nội dung (`content_section.php`)
 - [ ] Thử thật: upload banner/video/ảnh trong editor, quyền theo từng thao tác (GAP trong `admin-capability-audit-2026-11-08.md`)
-- [ ] Kéo-thả thứ tự sản phẩm và bài viết
 - [ ] Xem trước trên Nuxt cho Giải pháp / Dự án / Chính sách
 - [ ] Task 5: chỉnh trang theo khối (Home + About POC)
 
@@ -37,3 +35,5 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 | Thao tác hàng loạt sản phẩm, bộ lọc dữ liệu | 2aee5a9f | |
 | Nút phễu cạnh ô tìm kiếm, logo ngang, thanh cuộn sidebar | bec398ee, 78338e37 | |
 | Nhập/xuất Excel hợp nhất, ảnh ZIP, feed Google | b52f3366 | Đã đối chiếu xong `product_bulk.php`; không đọc lại |
+| Xuất đơn hàng Excel, phiếu in, lọc ngày/tỉnh | c373035a | Phiếu in thay file Word; có thể lưu PDF |
+| Kéo-thả thứ tự sản phẩm, bài viết | commit kế tiếp | |

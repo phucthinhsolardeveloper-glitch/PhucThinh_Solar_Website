@@ -106,11 +106,10 @@ abstract class PostResource extends Resource
                     ->maxItems($kind === 'article' ? 4 : null)
                     ->helperText($kind === 'article' ? 'Chọn sản phẩm phù hợp để liên kết trực tiếp từ bài viết tới trang bán hàng. Tối đa 4 sản phẩm sẽ hiện trên bài.' : null),
             ]) : null,
-            Section::make()->columns(4)->schema(array_values(array_filter([
+            Section::make()->columns(3)->schema(array_values(array_filter([
                 Fields::visible()->default($kind !== 'article'),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
-                Fields::sort(),
                 DateTimePicker::make('published_at')->label('Ngày đăng')->default(now()),
             ]))),
             Fields::seo('news'),
@@ -121,6 +120,7 @@ abstract class PostResource extends Resource
     {
         return $table
             ->defaultSort('id', 'desc')
+            ->reorderable('sort_order', fn () => AdminActor::current()->canPerform('content_publish'))->paginatedWhileReordering(false)
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(44),
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->sortable()->limit(70),

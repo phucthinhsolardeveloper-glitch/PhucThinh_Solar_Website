@@ -157,7 +157,7 @@ class ProductBulkPage extends Page
                 ], 10 * 1024)])
                 ->action(fn (array $data) => $this->previewFile($data)),
             Action::make('apply')->label('Áp dụng')->icon(Heroicon::OutlinedCheckCircle)->color('success')
-                ->visible(fn () => $this->token !== null && ($this->plan()['errors'] ?? 1) === 0)
+                ->visible(fn () => $this->token !== null && ($this->plan()['errors'] ?? 1) === 0 && $this->hasWork())
                 ->requiresConfirmation()->modalHeading('Áp dụng thay đổi')
                 ->modalDescription(fn () => $this->applySummary())
                 ->schema(fn () => $this->hiddenCount() > 0 ? [Toggle::make('hidden_ok')->label('Tôi xác nhận '.$this->hiddenCount().' sản phẩm sẽ ở trạng thái ẩn')->accepted()->required()] : [])
@@ -278,6 +278,13 @@ class ProductBulkPage extends Page
     private function choices(): array
     {
         return ['overwrite' => array_filter($this->overwrite), 'brands' => array_filter($this->brandChoices), 'products' => array_filter($this->productChoices)];
+    }
+
+    private function hasWork(): bool
+    {
+        $counts = $this->plan()['counts'] ?? [];
+
+        return (int) ($counts['create'] ?? 0) + (int) ($counts['update'] ?? 0) + (int) ($counts['archive'] ?? 0) > 0;
     }
 
     private function hiddenCount(): int

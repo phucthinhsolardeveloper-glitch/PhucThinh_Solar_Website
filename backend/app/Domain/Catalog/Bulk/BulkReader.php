@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\Bulk;
 
 use Illuminate\Validation\ValidationException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Throwable;
 
 /** Reads an uploaded XLSX, XLS or CSV into rows keyed by column, plus the hidden snapshot taken at export. */
@@ -68,12 +69,14 @@ final class BulkReader
         try {
             $reader = IOFactory::createReaderForFile($path);
             $reader->setReadDataOnly(true);
+            $reader->setReadEmptyCells(false);
+            @ini_set('memory_limit', '768M');
             $book = $reader->load($path);
-            $grid = ($book->getSheetByName('SanPham') ?? $book->getSheet(0))->toArray(null, false, false, false);
+            $grid = self::grid($book->getSheetByName('SanPham') ?? $book->getSheet(0));
             $baseline = [];
             $system = $book->getSheetByName('_HeThong');
             if ($system) {
-                $cells = $system->toArray(null, false, false, false);
+                $cells = self::grid($system);
                 $keys = array_map(fn ($key) => trim((string) $key), (array) array_shift($cells));
                 foreach ($cells as $row) {
                     $values = [];
@@ -93,6 +96,12 @@ final class BulkReader
         } catch (Throwable) {
             self::fail('Không đọc được tệp Excel. Hãy mở và lưu lại, hoặc xuất mẫu mới từ Admin.');
         }
+    }
+
+    /** Only the cells holding data; the template formats thousands of empty rows. @return list<list<mixed>> */
+    private static function grid(Worksheet $sheet): array
+    {
+        return $sheet->rangeToArray('A1:'.$sheet->getHighestDataColumn().$sheet->getHighestDataRow(), null, false, false, false);
     }
 
     /** @param list<list<mixed>> $grid @return list<array<string, string>> */

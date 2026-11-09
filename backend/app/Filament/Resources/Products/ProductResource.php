@@ -89,7 +89,6 @@ class ProductResource extends Resource
                     Grid::make(4)->columnSpanFull()->schema([
                         Fields::visible(),
                         Toggle::make('is_bestseller')->label('Bán chạy'),
-                        Fields::sort(),
                     ]),
                 ]),
                 Tab::make('Giá')->columns(2)->schema([
@@ -167,6 +166,7 @@ class ProductResource extends Resource
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['seo', 'category', 'brand'])->withCount('visibleArticles'))
             ->defaultSort('id', 'desc')
+            ->reorderable('sort_order', fn () => self::canBulkImport())->paginatedWhileReordering(false)
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->square()->height(48),
                 TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
