@@ -67,7 +67,7 @@ không lệch. VNPay chỉ ghi conversion/gửi mail ở lần chuyển sang `pa
 cảm ơn phân biệt pending/failed; review upload có kiểm MIME/container và dọn
 file nếu DB rollback. Bằng chứng và giới hạn còn lại:
 `docs/16-laravel-migration/commerce-media-correctness-2026-11-09.md`.
-Backend 150 test/1.091 assertions, PHPStan 0, Pint 264 file; Nuxt 478 test,
+Backend 150 test/1.093 assertions, PHPStan 0, Pint 264 file; Nuxt 478 test,
 typecheck/build pass. Image rollback gần nhất: backend `49dbf3dc-candidate`,
 Nuxt `967315c0-candidate`. Chưa thử thanh toán VNPay sandbox hoặc SMTP thật;
 outbox/database queue vẫn là gate tiếp theo. Production không đổi.

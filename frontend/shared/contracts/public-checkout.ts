@@ -80,9 +80,9 @@ export function isPublicCheckoutNoticePayload(value: unknown): value is PublicCh
 }
 export function isPublicOrderThanksPayload(value: unknown): value is PublicOrderThanksPayload {
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.order)
-    || !['accepted', 'pending', 'paid', 'failed'].includes(String(value.paymentState))
+    || typeof value.paymentState !== 'string' || !['accepted', 'pending', 'paid', 'failed'].includes(value.paymentState)
     || typeof value.conversionPending !== 'boolean') return false
-  if (value.conversionPending && !['accepted', 'paid'].includes(String(value.paymentState))) return false
+  if (value.conversionPending && !['accepted', 'paid'].includes(value.paymentState)) return false
   return text(value.order.code) && text(value.order.customerName) && typeof value.order.totalPrice === 'number'
     && Number.isSafeInteger(value.order.totalPrice) && value.order.totalPrice >= 0
 }

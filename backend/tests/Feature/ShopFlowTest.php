@@ -161,6 +161,9 @@ it('retries a pending VNPay checkout with the same order and payment redirect', 
     shop('GET', $thanks)->assertJsonPath('conversionPending', false);
     shop('GET', $signed('00', '00'))->assertRedirect('/cam-on/?token='.$first->json('thanksToken'));
     Mail::assertSent(OrderNotification::class, 2);
+    $ipn = str_replace('/api/v1/payment/vnpay?', '/api/v1/payment/vnpay?mode=ipn&', $signed('00', '00'));
+    shop('GET', $ipn)->assertJsonPath('RspCode', '02');
+    Mail::assertSent(OrderNotification::class, 2);
 });
 
 it('accepts the classic checkout form and sends errors back to the cart as a one-time notice', function () {

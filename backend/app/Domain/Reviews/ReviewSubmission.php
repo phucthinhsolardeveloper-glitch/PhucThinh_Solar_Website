@@ -220,8 +220,12 @@ class ReviewSubmission
     private static function hasMp4MediaBoxes($handle, int $size): bool
     {
         $offset = 0;
+        $boxes = 0;
         $hasMovie = $hasMedia = false;
         while ($offset + 8 <= $size) {
+            if (++$boxes > 1024) {
+                return false;
+            }
             if (fseek($handle, $offset) !== 0) {
                 return false;
             }
@@ -231,7 +235,7 @@ class ReviewSubmission
             }
             $length = (int) unpack('N', substr($box, 0, 4))[1];
             $type = substr($box, 4, 4);
-            if ($offset === 0 && ($type !== 'ftyp' || $length < 16)) {
+            if ($offset === 0 && $type !== 'ftyp') {
                 return false;
             }
             if ($length === 1) {
@@ -243,7 +247,7 @@ class ReviewSubmission
             } elseif ($length === 0) {
                 $length = $size - $offset;
             }
-            if ($length < 8 || $offset + $length > $size) {
+            if ($length < ($offset === 0 ? 16 : 8) || $offset + $length > $size) {
                 return false;
             }
             $hasMovie = $hasMovie || $type === 'moov';
