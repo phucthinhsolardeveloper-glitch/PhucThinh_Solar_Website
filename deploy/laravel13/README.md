@@ -60,6 +60,18 @@ Backend 148 test/1.054 assertions, PHPStan 0, Pint 264 file. Backend image
 `5cc09fc7-candidate` và Nuxt image `967315c0-candidate` còn để rollback;
 production và upload dùng chung không đổi.
 
+Mốc `152c868a`: build lại backend và Nuxt candidate, cả hai healthy; Caddy
+trả 200 cho trang chủ, `/cam-on/`, Admin, API và health. PHP image nhận
+`upload_max_filesize=100M`, `post_max_size=384M`; API snapshot 1.754/1.754
+không lệch. VNPay chỉ ghi conversion/gửi mail ở lần chuyển sang `paid`, trang
+cảm ơn phân biệt pending/failed; review upload có kiểm MIME/container và dọn
+file nếu DB rollback. Bằng chứng và giới hạn còn lại:
+`docs/16-laravel-migration/commerce-media-correctness-2026-11-09.md`.
+Backend 150 test/1.091 assertions, PHPStan 0, Pint 264 file; Nuxt 478 test,
+typecheck/build pass. Image rollback gần nhất: backend `49dbf3dc-candidate`,
+Nuxt `967315c0-candidate`. Chưa thử thanh toán VNPay sandbox hoặc SMTP thật;
+outbox/database queue vẫn là gate tiếp theo. Production không đổi.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
