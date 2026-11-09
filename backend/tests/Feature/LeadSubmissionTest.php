@@ -99,7 +99,7 @@ it('saves a product consultation with the profile the product page sent', functi
     RateLimiter::clear('form:newsletter-consulting|127.0.0.1');
     $product = DB::table('products')->where('is_visible', true)->whereNotNull('category_id')->first();
     $root = app(CategoryTree::class)->atDepth((int) $product->category_id, 1);
-    $profile = app(ProductSpecs::class)->profileKey(['pdp_profile' => $product->pdp_profile], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slugvi' => $root['slug'] ?? '']);
+    $profile = app(ProductSpecs::class)->profileKey(['pdp_profile' => $product->pdp_profile], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slug' => $root['slug'] ?? '']);
     $data = ['fullname' => 'Khách thử', 'phone' => '0912345678', 'product_id' => (string) $product->id, 'profile_key' => $profile,
         'source_url' => '/san-pham/'.$product->slug];
 

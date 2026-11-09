@@ -240,19 +240,19 @@ class ProductApplications
         return $defaults ? $defaults[$index % count($defaults)]['photo'] : '';
     }
 
-    /** Which stock picture set fits this product (productPdpUseCaseVariant). */
+    /** Which stock picture set fits this product. */
     private function variant(array $row, array $list, string $profileKey): string
     {
-        $name = htmlspecialchars_decode((string) ($row['namevi'] ?? ''), ENT_QUOTES);
-        $listSlug = (string) ($list['slugvi'] ?? '');
+        $name = htmlspecialchars_decode((string) ($row['name'] ?? ''), ENT_QUOTES);
+        $listSlug = (string) ($list['slug'] ?? '');
         $context = '';
-        foreach (['applicationsvi', 'installationvi', 'highlightsvi', 'descvi'] as $field) {
+        foreach (['applications', 'installation', 'highlights', 'summary'] as $field) {
             if (isset($row[$field]) && trim((string) $row[$field]) !== '') {
                 $context .= ' '.htmlspecialchars_decode(strip_tags((string) $row[$field]), ENT_QUOTES);
             }
         }
         $context = mb_strtolower($context);
-        $identity = mb_strtolower(trim($name.' '.($row['slugvi'] ?? '').' '.$listSlug));
+        $identity = mb_strtolower(trim($name.' '.($row['slug'] ?? '').' '.$listSlug));
         $haystack = mb_strtolower(trim($identity.' '.$context));
         $in = fn (string $subject, string ...$needles) => array_any($needles, fn ($n) => str_contains($subject, $n));
 

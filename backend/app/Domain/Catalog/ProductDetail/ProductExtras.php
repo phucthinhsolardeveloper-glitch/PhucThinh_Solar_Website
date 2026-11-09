@@ -62,15 +62,15 @@ class ProductExtras extends PageSupport
         }
         $row = ProductRecord::from($product, $this->tree);
         $id = (int) $row['id'];
-        $root = $row['id_list'] ? $this->tree->get($row['id_list']) : null;
-        $list = $root ? ['id' => $root['id'], 'slugvi' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
+        $root = $row['top_category_id'] ? $this->tree->get($row['top_category_id']) : null;
+        $list = $root ? ['id' => $root['id'], 'slug' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
         $profileKey = $this->specs->profileKey($row, $list);
         $profile = $this->specs->profile($profileKey);
         $pricesVisible = $this->settings->productPricesVisible();
 
         $pricing = new PricingPolicy($pricesVisible);
         $related = [];
-        $siblings = $row['id_list'] ? $this->tree->descendantIds($row['id_list']) : [0];
+        $siblings = $row['top_category_id'] ? $this->tree->descendantIds($row['top_category_id']) : [0];
         foreach ($this->rows('select '.CatalogFilters::CARD_BASE.' from products p where p.id<>? and p.is_visible=1 and p.category_id in ('.implode(',', array_fill(0, count($siblings), '?')).')'
             .' order by '.CatalogFilters::defaultOrder().' limit 8', [$id, ...$siblings]) as $product) {
             if ($dto = $this->cards->dto($product, $pricing)) {
@@ -78,12 +78,12 @@ class ProductExtras extends PageSupport
             }
         }
 
-        $override = Text::plain($row['chinhsachmuahangvi'] ?? '');
+        $override = Text::plain($row['purchase_policy']);
         $policies = [];
         if ($override === '') {
-            foreach ($this->rows("select title as namevi, slug as slugvi, 'hienthi' as status from posts where kind='policy' and is_visible=1 order by sort_order,id desc") as $policy) {
-                $name = Text::plain($policy['namevi']);
-                $policySlug = preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', (string) $policy['slugvi']) ? $policy['slugvi'] : '';
+            foreach ($this->db->table('posts')->where('kind', 'policy')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $policy) {
+                $name = Text::plain($policy->title);
+                $policySlug = preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', (string) $policy->slug) ? $policy->slug : '';
                 if ($name !== '' && $policySlug !== '' && mb_stripos($name, 'bảo hành') !== false) {
                     $policies[] = ['label' => $name, 'href' => '/ho-tro/'.$policySlug.'/'];
                 }
@@ -100,11 +100,11 @@ class ProductExtras extends PageSupport
             }
         }
         $reviews = [];
-        foreach ($this->rows("select id, coalesce(title,'') as title, content, name as fullname, stars as star, if(verified_purchase,'hienthi,verified-purchase','hienthi') as status, created_at as date_posted from reviews where parent_id is null and {$visibleReview} order by created_at desc, id desc limit {$reviewOffset},10", [$id]) as $review) {
+        foreach ($this->rows("select id, coalesce(title,'') as title, content, name, stars, verified_purchase, created_at from reviews where parent_id is null and {$visibleReview} order by created_at desc, id desc limit {$reviewOffset},10", [$id]) as $review) {
             $reviewId = (int) $review['id'];
             $photos = [];
-            foreach ($this->rows("select path as photo from review_media where review_id=? and kind='photo' order by id limit 3", [$reviewId]) as $photo) {
-                if (($url = $this->photo($photo['photo'])) !== '') {
+            foreach ($this->rows("select path from review_media where review_id=? and kind='photo' order by id limit 3", [$reviewId]) as $photo) {
+                if (($url = $this->photo($photo['path'])) !== '') {
                     $photos[] = $url;
                 }
             }
@@ -112,12 +112,12 @@ class ProductExtras extends PageSupport
                 'id' => $reviewId,
                 'title' => Text::plain($review['title']),
                 'content' => Text::plain($review['content']),
-                'name' => Text::plain($review['fullname']),
-                'star' => max(1, min(5, (int) $review['star'])),
-                'verified' => str_contains(','.$review['status'].',', ',verified-purchase,'),
-                'date' => (int) strtotime((string) $review['date_posted']),
+                'name' => Text::plain($review['name']),
+                'star' => max(1, min(5, (int) $review['stars'])),
+                'verified' => (bool) $review['verified_purchase'],
+                'date' => (int) strtotime((string) $review['created_at']),
                 'photos' => $photos,
-                'video' => $this->reviewVideo($this->row("select coalesce(poster,'') as photo, path as video from review_media where review_id=? and kind='video' order by id limit 1", [$reviewId])),
+                'video' => $this->reviewVideo($this->row("select coalesce(poster,'') as poster, path from review_media where review_id=? and kind='video' order by id limit 1", [$reviewId])),
                 'replies' => $this->replies($reviewId, $id, 0),
                 'repliesTotal' => (int) ($this->row("select count(id) total from reviews where parent_id=? and {$visibleReview}", [$reviewId, $id])['total'] ?? 0),
             ];
@@ -134,10 +134,10 @@ class ProductExtras extends PageSupport
         }
 
         $commitments = [];
-        foreach ($this->items('product.commitments', 8, true) as $commitment) {
-            $name = Text::plain($commitment['namevi']);
+        foreach ($this->section('product.commitments', 8, true) as $commitment) {
+            $name = Text::plain($commitment['title']);
             if ($name !== '') {
-                $commitments[] = ['name' => $name, 'image' => $this->photo($commitment['photo'])];
+                $commitments[] = ['name' => $name, 'image' => $this->photo($commitment['image'])];
             }
         }
         $needs = [];
@@ -194,13 +194,13 @@ class ProductExtras extends PageSupport
         if (! $row) {
             return null;
         }
-        $file = is_scalar($row['video'] ?? null) ? basename(trim((string) $row['video'])) : '';
+        $file = is_scalar($row['path'] ?? null) ? basename(trim((string) $row['path'])) : '';
         if ($file === '' || ! preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $file) || ! in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::VIDEO_EXTENSIONS, true)
             || ! $this->urls->exists('upload/video/'.$file)) {
             return null;
         }
 
-        return ['url' => '/upload/video/'.$file, 'poster' => $this->photo($row['photo'] ?? '')];
+        return ['url' => '/upload/video/'.$file, 'poster' => $this->photo($row['poster'] ?? '')];
     }
 
     private function photo(mixed $value): string

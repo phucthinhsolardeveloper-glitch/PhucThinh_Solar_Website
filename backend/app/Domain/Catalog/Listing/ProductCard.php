@@ -4,7 +4,6 @@ namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Support\StatusFlags;
 use App\Support\Text;
 
 /** A product tile in lists (ptsCatalogProductDto): pictures, power, up to three quick specs, price. */
@@ -18,17 +17,17 @@ class ProductCard
     public function dto(array $row, PricingPolicy $pricing, array $gallery = []): ?array
     {
         $id = (int) ($row['id'] ?? 0);
-        $name = Text::plain($row['namevi'] ?? '');
-        $slug = Text::slug($row['slugvi'] ?? '');
-        if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || $slug === '') {
+        $name = Text::plain($row['name'] ?? '');
+        $slug = Text::slug($row['slug'] ?? '');
+        if (empty($row['is_visible']) || $id <= 0 || $name === '' || $slug === '') {
             return null;
         }
-        $media = [$this->urls->product($row['photo'] ?? '')];
+        $media = [$this->urls->product($row['image'] ?? '')];
         foreach ($gallery as $file) {
             $media[] = '/upload/product/'.$file;
         }
-        $media[] = $this->urls->product($row['photo2'] ?? '');
-        $power = is_numeric($row['cong_suat'] ?? null) && (float) $row['cong_suat'] > 0 && is_finite((float) $row['cong_suat']) ? (float) $row['cong_suat'] : null;
+        $media[] = $this->urls->product($row['image_secondary'] ?? '');
+        $power = is_numeric($row['power_watts'] ?? null) && (float) $row['power_watts'] > 0 && is_finite((float) $row['power_watts']) ? (float) $row['power_watts'] : null;
         $quick = $power !== null ? [(int) round($power).'W'] : [];
         foreach (['waterproof_rating', 'lighting_time'] as $field) {
             $value = Text::plain($row[$field] ?? '');

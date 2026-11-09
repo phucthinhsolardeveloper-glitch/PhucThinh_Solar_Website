@@ -14,7 +14,7 @@ class ProductSpecs
 {
     private const MISSING = '/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)\b[^\S\r\n]*(?:exact-model)?\.?$/iu';
 
-    /** @param array<string, mixed> $list the product's level-1 category (slugvi, pdp_profile) */
+    /** @param array<string, mixed> $list the product's top category (slug, pdp_profile) */
     public function profileKey(array $product, array $list = []): string
     {
         if (! empty($product['pdp_profile'])) {
@@ -24,7 +24,7 @@ class ProductSpecs
             return $this->normaliseProfile((string) $list['pdp_profile']);
         }
 
-        return config('pdp.list_slug_profiles')[trim((string) ($list['slugvi'] ?? ''), '/ ')] ?? 'general';
+        return config('pdp.list_slug_profiles')[trim((string) ($list['slug'] ?? ''), '/ ')] ?? 'general';
     }
 
     /** @return array<string, mixed> */
@@ -63,10 +63,14 @@ class ProductSpecs
         return $out;
     }
 
+    /** Spec keys of config/pdp.php that are stored under another column name. */
+    private const COLUMNS = ['cong_suat' => 'power_watts'];
+
     public function value(array $row, string $key): string
     {
-        if (isset($row[$key]) && trim((string) $row[$key]) !== '' && ! ($key === 'cong_suat' && (float) $row[$key] <= 0)) {
-            $value = trim((string) $row[$key]);
+        $column = self::COLUMNS[$key] ?? $key;
+        if (isset($row[$column]) && trim((string) $row[$column]) !== '' && ! ($key === 'cong_suat' && (float) $row[$column] <= 0)) {
+            $value = trim((string) $row[$column]);
             if ($this->valueIsMissing($value)) {
                 return '';
             }
@@ -201,7 +205,7 @@ class ProductSpecs
                 }
             }
         }
-        $useLegacy = $specs === [] || (! $additionalValid && ! empty($row['thongsokythuatvi']));
+        $useLegacy = $specs === [] || (! $additionalValid && ! empty($row['specs_html']));
 
         return $useLegacy ? [] : $specs;
     }

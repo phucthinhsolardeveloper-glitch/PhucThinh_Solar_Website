@@ -72,9 +72,9 @@ class CatalogHealth
             $chain = $product->category_id ? $this->tree->chain((int) $product->category_id) : [];
             $resolved = $this->content->resolve([
                 'id' => (int) $product->id,
-                'id_brand' => (int) $product->brand_id,
-                'id_list' => (int) ($chain[0]['id'] ?? 0),
-                'id_cat' => (int) ($chain[1]['id'] ?? 0),
+                'brand_id' => (int) $product->brand_id,
+                'top_category_id' => (int) ($chain[0]['id'] ?? 0),
+                'second_category_id' => (int) ($chain[1]['id'] ?? 0),
             ]);
             if ($resolved['blocks'] === [] && $resolved['source'] !== 'hide') {
                 $issues['no_description'][] = $ref;

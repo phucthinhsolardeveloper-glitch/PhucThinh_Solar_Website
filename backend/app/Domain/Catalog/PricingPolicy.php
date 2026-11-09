@@ -2,12 +2,10 @@
 
 namespace App\Domain\Catalog;
 
-use App\Support\StatusFlags;
-
 /**
  * Whether a product shows a price or asks for a quote. The PHP site computes this in three places
  * (catalog DTO, product page DTO, public_pricing.php); this is the single rule they share:
- * prices are on for the site, the product is not flagged "baogia", and it has a regular or sale price.
+ * prices are on for the site, the product is not quotation-only, and it has a regular or sale price.
  */
 final class PricingPolicy
 {
@@ -21,7 +19,7 @@ final class PricingPolicy
     {
         $regular = Money::fromLegacy($product['regular_price'] ?? null);
         $sale = Money::fromLegacy($product['sale_price'] ?? null);
-        $quoteOnly = (new StatusFlags($product['status'] ?? ''))->has('baogia');
+        $quoteOnly = (bool) ($product['quote_only'] ?? false);
         $mode = $this->pricesVisible && ! $quoteOnly && ($regular !== null || $sale !== null) ? 'price' : 'quote';
 
         return [

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 class ProductContentResolver
 {
     /**
-     * @param  array{id: int|string, id_brand?: int|string|null, id_cat?: int|string|null, id_list?: int|string|null}  $product  id_cat/id_list: the level-2 and top category ids
+     * @param  array{id: int|string, brand_id?: int|string|null, second_category_id?: int|string|null, top_category_id?: int|string|null}  $product
      * @return array{blocks: list<array<string, mixed>>, source: string}
      */
     public function resolve(array $product, string $lang = 'vi'): array
@@ -29,9 +29,9 @@ class ProductContentResolver
         }
         $owners = [
             'product' => [Product::class, (int) $product['id']],
-            'brand' => [Brand::class, (int) ($product['id_brand'] ?? 0)],
-            'cat' => [Category::class, (int) ($product['id_cat'] ?? 0)],
-            'list' => [Category::class, (int) ($product['id_list'] ?? 0)],
+            'brand' => [Brand::class, (int) ($product['brand_id'] ?? 0)],
+            'cat' => [Category::class, (int) ($product['second_category_id'] ?? 0)],
+            'list' => [Category::class, (int) ($product['top_category_id'] ?? 0)],
         ];
         $rows = collect();
         foreach ($owners as $scope => [$type, $id]) {

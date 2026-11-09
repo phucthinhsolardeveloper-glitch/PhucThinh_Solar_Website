@@ -7,7 +7,7 @@ beforeEach(fn () => $this->specs = app(ProductSpecs::class));
 it('falls back from product to category to slug map, and unknown profiles become general', function () {
     expect($this->specs->profileKey(['pdp_profile' => 'fan'], ['pdp_profile' => 'inverter']))->toBe('fan')
         ->and($this->specs->profileKey([], ['pdp_profile' => 'inverter']))->toBe('inverter')
-        ->and($this->specs->profileKey([], ['slugvi' => 'den-nlmt']))->toBe('lighting')
+        ->and($this->specs->profileKey([], ['slug' => 'den-nlmt']))->toBe('lighting')
         ->and($this->specs->profileKey(['pdp_profile' => 'made-up'], []))->toBe('general');
 });
 
@@ -18,7 +18,7 @@ it('normalises package lists glued together by spreadsheet exports', function ()
 
 it('treats placeholders as missing and formats wattage', function () {
     expect($this->specs->value(['warranty' => 'Đang cập nhật'], 'warranty'))->toBe('')
-        ->and($this->specs->value(['cong_suat' => '100.0'], 'cong_suat'))->toBe('100W');
+        ->and($this->specs->value(['power_watts' => '100.0'], 'cong_suat'))->toBe('100W');
 });
 
 it('reads aliased values from additional specs', function () {
@@ -27,7 +27,7 @@ it('reads aliased values from additional specs', function () {
 });
 
 it('keeps both PHP lookup orders: the table tries needles first, metrics walk specs first', function () {
-    $row = ['pdp_profile' => 'lighting', 'cong_suat' => '100', 'additional_specs' => json_encode([
+    $row = ['pdp_profile' => 'lighting', 'power_watts' => '100', 'additional_specs' => json_encode([
         ['label' => 'Lumen (đo thực tế)', 'value' => '12.000 - 12.800 LM'],
         ['label' => 'Quang thông', 'value' => '12.000-12.800 lm'],
     ])];

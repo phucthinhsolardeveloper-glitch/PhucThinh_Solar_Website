@@ -9,12 +9,15 @@ class Payments
 {
     public const VNPAY_ID = -1;
 
-    /** @return list<array{id: int, namevi: string, descvi: string, slugvi?: string}> */
+    private const VNPAY = ['id' => self::VNPAY_ID, 'name' => 'Thanh toán online qua VNPay', 'description' => 'Thanh toán qua ứng dụng ngân hàng, thẻ hoặc ví được VNPay hỗ trợ.'];
+
+    /** @return list<array{id: int, name: string, description: string}> offered methods, VNPay last when configured */
     public function visible(): array
     {
-        $methods = array_map(fn ($row) => (array) $row, DB::select("select name as namevi, coalesce(description,'') as descvi, id from payment_methods where is_visible = 1 order by sort_order,id desc"));
+        $methods = DB::table('payment_methods')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'description'])
+            ->map(fn ($row) => ['id' => (int) $row->id, 'name' => (string) $row->name, 'description' => (string) $row->description])->all();
         if (self::vnpayConfigured()) {
-            $methods[] = ['namevi' => 'Thanh toán online qua VNPay', 'descvi' => 'Thanh toán qua ứng dụng ngân hàng, thẻ hoặc ví được VNPay hỗ trợ.', 'id' => self::VNPAY_ID, 'slugvi' => 'vnpay'];
+            $methods[] = self::VNPAY;
         }
 
         return $methods;
@@ -24,10 +27,10 @@ class Payments
     public function find(int $id): array
     {
         if ($id === self::VNPAY_ID) {
-            return self::vnpayConfigured() ? ['id' => self::VNPAY_ID, 'namevi' => 'Thanh toán online qua VNPay', 'slugvi' => 'vnpay'] : [];
+            return self::vnpayConfigured() ? self::VNPAY : [];
         }
 
-        return $id > 0 ? (array) (DB::selectOne("select id, name as namevi, coalesce(slug,'') as slugvi from payment_methods where id = ? and is_visible = 1 limit 0,1", [$id]) ?? []) : [];
+        return $id > 0 ? (array) (DB::table('payment_methods')->where('id', $id)->where('is_visible', true)->first(['id', 'name', 'description']) ?? []) : [];
     }
 
     public static function vnpayConfigured(): bool

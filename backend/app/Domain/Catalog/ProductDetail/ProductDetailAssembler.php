@@ -6,7 +6,6 @@ use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
 use App\Models\Product;
 use App\Support\SiteSettings;
-use App\Support\StatusFlags;
 use App\Support\Text;
 use Illuminate\Support\Facades\DB;
 
@@ -40,16 +39,16 @@ class ProductDetailAssembler
         }
         $row = ProductRecord::from((array) $product, $this->tree);
         $id = (int) $row['id'];
-        $name = Text::plain($row['namevi'] ?? '');
-        $slug = Text::slug($row['slugvi'] ?? '');
-        if ($name === '' || $slug === '' || ! (new StatusFlags($row['status'] ?? ''))->visible()) {
+        $name = Text::plain($row['name']);
+        $slug = Text::slug($row['slug']);
+        if ($name === '' || $slug === '') {
             return null;
         }
 
-        $root = $row['id_list'] ? $this->tree->get($row['id_list']) : null;
-        $list = $root && $root['is_visible'] ? ['id' => $root['id'], 'slugvi' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
-        $brand = $row['id_brand'] > 0 ? $db->table('brands')->where('id', $row['id_brand'])->where('is_visible', true)->value('name') : '';
-        $seo = (array) ($db->table('seo_metas')->where('owner_type', Product::class)->where('owner_id', $id)->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi']) ?? []);
+        $root = $row['top_category_id'] ? $this->tree->get($row['top_category_id']) : null;
+        $list = $root && $root['is_visible'] ? ['id' => $root['id'], 'slug' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
+        $brand = $row['brand_id'] > 0 ? $db->table('brands')->where('id', $row['brand_id'])->where('is_visible', true)->value('name') : '';
+        $seo = (array) ($db->table('seo_metas')->where('owner_type', Product::class)->where('owner_id', $id)->first(['title', 'description', 'keywords']) ?? []);
 
         $profile = $this->specs->profileKey($row, $list);
         $sections = $this->contentResolver->resolve($row);
@@ -66,7 +65,7 @@ class ProductDetailAssembler
                 'slug' => $slug,
                 'url' => '/san-pham/'.$slug,
                 'code' => Text::plain($row['code'] ?? ''),
-                'summary' => Text::plain($row['descvi'] ?? ''),
+                'summary' => Text::plain($row['summary']),
                 'brand' => Text::plain($brand),
                 'profile' => $profile,
                 'media' => $this->media($row),
@@ -91,7 +90,7 @@ class ProductDetailAssembler
     private function media(array $row): array
     {
         $media = [];
-        foreach ([$row['photo'] ?? '', $row['photo2'] ?? ''] as $photo) {
+        foreach ([$row['image'], $row['image_secondary']] as $photo) {
             $media[] = $this->urls->product($photo);
         }
         $gallery = DB::table('product_images')->where('product_id', (int) $row['id'])->where('is_visible', true)
@@ -120,15 +119,15 @@ class ProductDetailAssembler
     /** @return array{title: string, description: string, keywords: string} */
     private function seo(string $name, array $seo): array
     {
-        $title = ! empty($seo['titlevi']) ? Text::seo($seo['titlevi']) : Text::seo($name);
+        $title = ! empty($seo['title']) ? Text::seo($seo['title']) : Text::seo($name);
         if ($title !== '' && mb_stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
 
         return [
             'title' => $title,
-            'description' => ! empty($seo['descriptionvi']) ? Text::seo($seo['descriptionvi']) : '',
-            'keywords' => ! empty($seo['keywordsvi']) ? Text::seo($seo['keywordsvi']) : '',
+            'description' => ! empty($seo['description']) ? Text::seo($seo['description']) : '',
+            'keywords' => ! empty($seo['keywords']) ? Text::seo($seo['keywords']) : '',
         ];
     }
 }

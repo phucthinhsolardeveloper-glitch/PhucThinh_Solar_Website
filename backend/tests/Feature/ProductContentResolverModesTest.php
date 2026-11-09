@@ -30,7 +30,7 @@ function block(string $text): array
 
 function resolveTest(): array
 {
-    return (new ProductContentResolver)->resolve(['id' => P, 'id_brand' => BRAND, 'id_cat' => CAT, 'id_list' => LIST_ID]);
+    return (new ProductContentResolver)->resolve(['id' => P, 'brand_id' => BRAND, 'second_category_id' => CAT, 'top_category_id' => LIST_ID]);
 }
 
 function texts(array $resolved): array

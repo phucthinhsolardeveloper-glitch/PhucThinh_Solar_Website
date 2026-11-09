@@ -4,7 +4,6 @@ namespace App\Domain\Commerce;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductRecord;
-use App\Support\StatusFlags;
 use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
@@ -104,10 +103,10 @@ class Cart
         return $sum;
     }
 
-    /** Quotation only: prices hidden site-wide, the product flagged "baogia", or no price at all (publicProductRequiresQuote). */
+    /** Quotation only: prices hidden site-wide, the product marked quotation-only, or no price at all. */
     public static function requiresQuote(array $product, bool $pricesVisible): bool
     {
-        return ! $pricesVisible || (new StatusFlags($product['status'] ?? ''))->has('baogia')
+        return ! $pricesVisible || ! empty($product['quote_only'])
             || ((float) ($product['regular_price'] ?? 0) <= 0 && (float) ($product['sale_price'] ?? 0) <= 0);
     }
 

@@ -101,13 +101,9 @@ class LeadSubmission
         $cityId = (int) $data['city_id'];
         $wardId = (int) $data['ward_id'];
         $db = DB::connection();
-        $product = $productId > 0 ? (array) ($db->selectOne("select id, name as namevi, coalesce(pdp_profile,'') as pdp_profile, category_id from products where id=? and is_visible=1 limit 1", [$productId]) ?? []) : [];
-        if ($product) {
-            $root = $product['category_id'] ? app(CategoryTree::class)->atDepth((int) $product['category_id'], 1) : null;
-            $product['list_slugvi'] = $root['slug'] ?? '';
-            $product['list_pdp_profile'] = $root['pdp_profile'] ?? '';
-        }
-        $profileKey = $product ? $this->specs->profileKey(['pdp_profile' => $product['pdp_profile']], ['pdp_profile' => $product['list_pdp_profile'], 'slugvi' => $product['list_slugvi']]) : 'general';
+        $product = $productId > 0 ? (array) ($db->table('products')->where('id', $productId)->where('is_visible', true)->first(['id', 'name', 'pdp_profile', 'category_id']) ?? []) : [];
+        $root = ! empty($product['category_id']) ? app(CategoryTree::class)->atDepth((int) $product['category_id'], 1) : null;
+        $profileKey = $product ? $this->specs->profileKey(['pdp_profile' => (string) $product['pdp_profile']], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slug' => $root['slug'] ?? '']) : 'general';
         $needs = (array) ($this->specs->profile($profileKey)['needs'] ?? []);
         $place = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne('select p.name city_name, w.name ward_name from wards w inner join provinces p on p.id=w.province_id where w.id=? and w.province_id=? and w.is_visible=1 and p.is_visible=1 limit 1', [$wardId, $cityId]) ?? []) : [];
 
@@ -145,7 +141,7 @@ class LeadSubmission
             return [500, ['error' => ['code' => 'SAVE_FAILED', 'message' => 'Đăng ký tư vấn thất bại. Vui lòng thử lại sau.']]];
         }
         $this->notify('consult_admin', ['customer_name' => $data['fullname'], 'customer_phone' => $data['phone']], [
-            'Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Đối tượng tư vấn' => $data['loaihinh'], 'Sản phẩm' => (string) $product['namevi'],
+            'Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Đối tượng tư vấn' => $data['loaihinh'], 'Sản phẩm' => (string) $product['name'],
             'Nhu cầu' => $needLabel, 'Số lượng dự kiến' => $data['congsuat'], 'Thông tin thêm' => $data['details'], 'Địa chỉ' => $address, 'Trang nguồn' => $source ?? '',
         ], $data['email'], $data['fullname']);
 

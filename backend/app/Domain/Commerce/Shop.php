@@ -11,7 +11,6 @@ use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
-use App\Support\StatusFlags;
 use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
@@ -50,12 +49,12 @@ class Shop
         $items = [];
         foreach ($this->cart->lines() as $line) {
             $product = $this->cart->product((int) $line['productid']);
-            if (! $product || ! (new StatusFlags($product['status'] ?? ''))->visible()) {
+            if (! $product || ! $product['is_visible']) {
                 continue;
             }
             $id = (int) $product['id'];
-            $slug = Text::slug($product['slugvi'] ?? '');
-            $name = Text::plain($product['namevi'] ?? '');
+            $slug = Text::slug($product['slug']);
+            $name = Text::plain($product['name']);
             $quantity = max(1, min(999, (int) $line['qty']));
             if ($id <= 0 || $slug === '' || $name === '' || ! preg_match(self::CODE, (string) $line['code'])) {
                 continue;
@@ -63,7 +62,7 @@ class Shop
             $price = $pricing->forProduct($product);
             $unit = $price['mode'] === 'price' ? (($price['salePrice'] ?? 0) > 0 ? $price['salePrice'] : $price['regularPrice']) : null;
             $items[] = ['code' => (string) $line['code'], 'productId' => $id, 'name' => $name, 'slug' => $slug, 'url' => '/san-pham/'.$slug,
-                'image' => $this->urls->product($product['photo'] ?? ''), 'quantity' => $quantity,
+                'image' => $this->urls->product($product['image']), 'quantity' => $quantity,
                 'color' => Text::plain($this->cart->optionLabel('color', (int) $line['color'])), 'size' => Text::plain($this->cart->optionLabel('size', (int) $line['size'])),
                 'pricing' => $price, 'unitPrice' => $unit, 'lineTotal' => $unit !== null ? $unit * $quantity : null];
             if (count($items) >= 100) {
@@ -104,7 +103,7 @@ class Shop
                 return $bad;
             }
             $product = $this->cart->product($id);
-            if (! $product || ($product['type'] ?? '') !== 'san-pham' || ! (new StatusFlags($product['status'] ?? ''))->visible()) {
+            if (! $product || ! $product['is_visible']) {
                 return [404, ['error' => ['code' => 'PRODUCT_NOT_FOUND']]];
             }
             if (Cart::requiresQuote($product, $pricesVisible)) {
@@ -138,9 +137,9 @@ class Shop
         $payments = [];
         foreach ($this->payments->visible() as $row) {
             $id = (int) $row['id'];
-            $name = Text::plain($row['namevi']);
+            $name = Text::plain($row['name']);
             if ($id !== 0 && $name !== '') {
-                $payments[] = ['id' => $id, 'name' => $name, 'description' => Text::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['descvi'])),
+                $payments[] = ['id' => $id, 'name' => $name, 'description' => Text::plain(str_replace(['<br>', '<br/>', '<br />'], "\n", $row['description'])),
                     'code' => $id === Payments::VNPAY_ID ? 'vnpay' : 'manual'];
             }
         }
@@ -304,18 +303,18 @@ class Shop
                     }
                     $color = $this->cart->optionLabel('color', (int) $line['color']);
                     $size = $this->cart->optionLabel('size', (int) $line['size']);
-                    $db->table('order_items')->insert(['order_id' => $orderId, 'product_id' => (int) $product['id'], 'name' => $product['namevi'], 'image' => $product['photo'] ?: null,
+                    $db->table('order_items')->insert(['order_id' => $orderId, 'product_id' => (int) $product['id'], 'name' => $product['name'], 'image' => $product['image'] ?: null,
                         'color' => $color ?: null, 'size' => $size ?: null, 'regular_price' => $product['regular_price'] ?: null, 'sale_price' => $product['sale_price'] ?: null, 'quantity' => $quantity,
                         'created_at' => now(), 'updated_at' => now()]);
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
-                    $items[] = ['name' => (string) $product['namevi'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
+                    $items[] = ['name' => (string) $product['name'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
                 }
                 if ((int) $payment['id'] === Payments::VNPAY_ID) {
                     $db->table('payment_transactions')->insert(['order_id' => $orderId, 'provider' => 'vnpay', 'reference' => $order['code'], 'amount' => $total,
                         'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
                 } else {
                     // Mail is written with the order, so a saved order always gets its notification.
-                    $this->queueOrderMails(['id' => $orderId] + $order, $items, (string) ($payment['namevi'] ?? ''));
+                    $this->queueOrderMails(['id' => $orderId] + $order, $items, (string) ($payment['name'] ?? ''));
                 }
 
                 return [$orderId, $items];

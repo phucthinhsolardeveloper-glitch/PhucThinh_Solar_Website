@@ -37,13 +37,12 @@ final class CatalogFilters
         ],
     ];
 
-    /** Card columns of a product row ("p"), named the way the card and price rules read them. */
+    /** Card columns of a product row ("p"); nullable text comes back as ''. */
     public const CARD_COLUMNS = self::CARD_BASE.", coalesce(p.waterproof_rating,'') as waterproof_rating, coalesce(p.lighting_time,'') as lighting_time";
 
     /** Cards on search, brand and related lists show the power only (no water rating or lighting time), as before. */
-    public const CARD_BASE = "p.id, p.name as namevi, p.slug as slugvi, coalesce(p.image,'') as photo, coalesce(p.image_secondary,'') as photo2,"
-        ." concat_ws(',', if(p.is_visible,'hienthi',null), if(p.quote_only,'baogia',null)) as status, coalesce(p.regular_price,0) as regular_price,"
-        ." coalesce(p.sale_price,0) as sale_price, coalesce(p.power_watts,'') as cong_suat";
+    public const CARD_BASE = "p.id, p.name, p.slug, coalesce(p.image,'') as image, coalesce(p.image_secondary,'') as image_secondary, p.is_visible, p.quote_only,"
+        ." coalesce(p.regular_price,0) as regular_price, coalesce(p.sale_price,0) as sale_price, coalesce(p.power_watts,'') as power_watts";
 
     /** @return array{0: string, 1: list<mixed>} price bands on the price the buyer pays; quotation-only products never match */
     public static function price(string $keys): array
