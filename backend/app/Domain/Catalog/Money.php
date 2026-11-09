@@ -11,7 +11,7 @@ final class Money
     private function __construct(public readonly int $dong) {}
 
     /** A positive, finite amount rounded to the dong; anything else is "no price" (ptsPdpMoney()). */
-    public static function fromLegacy(mixed $value): ?self
+    public static function fromStored(mixed $value): ?self
     {
         if (! is_scalar($value) || ! is_numeric($value)) {
             return null;

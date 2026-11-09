@@ -8,7 +8,6 @@ use App\Domain\Catalog\ProductDetail\ProductContentPresenter;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Models\Category;
 use App\Support\SiteSettings;
-use App\Support\StatusFlags;
 use App\Support\Text;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
@@ -47,15 +46,13 @@ class CatalogAssembler
             $ids = $this->tree->descendantIds($selectedId);
             $baseWhere .= ' and p.category_id in ('.implode(',', array_fill(0, count($ids), '?')).')';
             array_push($baseParams, ...$ids);
-            $node = $this->tree->get($selectedId);
-            $categoryRow = ['id' => $node['id'], 'namevi' => $node['name'], 'slugvi' => $node['slug'], 'status' => 'hienthi', 'photo' => $node['image'] ?? '',
-                'id_list' => $node['depth'] === 2 ? $node['parent_id'] : null, 'depth' => $node['depth']];
+            $categoryRow = $this->tree->get($selectedId) ?? [];
             $category = $this->categoryDto($categoryRow, $segments);
             if ($category === null) {
                 return null;
             }
             // Product-type checkboxes only make sense on a top category page.
-            if ((int) $node['depth'] === 1) {
+            if ((int) $categoryRow['depth'] === 1) {
                 $listId = $selectedId;
             }
         }
@@ -101,15 +98,15 @@ class CatalogAssembler
             if (! $node['is_visible'] || ! $this->tree->hasVisibleProducts((int) $node['id'])) {
                 continue;
             }
-            $dto = $this->categoryDto(['id' => $node['id'], 'namevi' => $node['name'], 'slugvi' => $node['slug'], 'status' => 'hienthi'], [(string) $node['slug']]);
+            $dto = $this->categoryDto($node, [(string) $node['slug']]);
             if ($dto !== null) {
                 $categories[] = $dto;
             }
         }
         // Brand choices follow the category only, so ticking a brand never empties the list of brands.
         $brands = [];
-        foreach ($db->select("select distinct b.id, b.name as namevi, b.sort_order from products p inner join brands b on b.id = p.brand_id and b.is_visible = 1 where {$baseWhere} order by b.sort_order, b.id desc", $baseParams) as $row) {
-            $name = Text::plain($row->namevi);
+        foreach ($db->select("select distinct b.id, b.name, b.sort_order from products p inner join brands b on b.id = p.brand_id and b.is_visible = 1 where {$baseWhere} order by b.sort_order, b.id desc", $baseParams) as $row) {
+            $name = Text::plain($row->name);
             if ((int) $row->id > 0 && $name !== '') {
                 $brands[] = ['id' => (int) $row->id, 'name' => $name];
             }
@@ -150,13 +147,16 @@ class CatalogAssembler
         ], (new CatalogLanding($db, $this->urls))->extras($request->categoryPath, $selectedId, $categoryRow, $category));
     }
 
-    /** @param list<string> $slugs */
-    private function categoryDto(array $row, array $slugs): ?array
+    /**
+     * @param  array<string, mixed>  $node  a CategoryTree node
+     * @param  list<string>  $slugs
+     */
+    private function categoryDto(array $node, array $slugs): ?array
     {
-        $id = (int) ($row['id'] ?? 0);
-        $name = Text::plain($row['namevi'] ?? '');
+        $id = (int) ($node['id'] ?? 0);
+        $name = Text::plain($node['name'] ?? '');
         $clean = array_map(fn ($slug) => Text::slug($slug), $slugs);
-        if (! (new StatusFlags($row['status'] ?? ''))->visible() || $id <= 0 || $name === '' || ! $clean || in_array('', $clean, true)) {
+        if (empty($node['is_visible']) || $id <= 0 || $name === '' || ! $clean || in_array('', $clean, true)) {
             return null;
         }
 

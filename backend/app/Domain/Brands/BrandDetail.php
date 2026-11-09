@@ -38,13 +38,13 @@ class BrandDetail extends PageSupport
             return $bad;
         }
         $notFound = [404, ['error' => ['code' => 'BRAND_NOT_FOUND']]];
-        $brand = $this->row("select id, name as namevi, slug as slugvi, 'hienthi' as status, coalesce(image,'') as photo from brands where slug = ? and is_visible = 1 limit 1", [$slug]);
-        $id = (int) ($brand['id'] ?? 0);
-        $name = Text::plain($brand['namevi'] ?? '');
-        $brandSlug = Text::slug($brand['slugvi'] ?? '');
-        if (! $brand || $id <= 0 || ! self::visible($brand) || $brandSlug === '' || $name === '') {
+        $brand = $this->db->table('brands')->where('slug', $slug)->where('is_visible', true)->first(['id', 'name', 'slug', 'image']);
+        $name = Text::plain((string) $brand?->name);
+        $brandSlug = Text::slug((string) $brand?->slug);
+        if (! $brand || $brandSlug === '' || $name === '') {
             return $notFound;
         }
+        $id = (int) $brand->id;
 
         $pricesVisible = $this->settings->productPricesVisible();
         $sort = in_array($get['sort'] ?? '', ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc'], true) ? $get['sort'] : 'default';
@@ -63,10 +63,10 @@ class BrandDetail extends PageSupport
         $gallery = [];
         $ids = array_values(array_unique(array_filter(array_map(fn ($row) => (int) $row['id'], $rows))));
         if ($ids) {
-            foreach ($this->rows("select product_id as id_parent, path as photo, 'hienthi' as status from product_images where product_id in (".implode(',', array_fill(0, count($ids), '?')).') and is_visible = 1 order by sort_order,id', $ids) as $photo) {
-                $file = trim((string) $photo['photo']);
-                $productId = (int) $photo['id_parent'];
-                if (! self::visible($photo) || $file === '' || $this->urls->product($file) === '' || in_array($file, $gallery[$productId] ?? [], true)) {
+            foreach ($this->db->table('product_images')->whereIn('product_id', $ids)->where('is_visible', true)->orderBy('sort_order')->orderBy('id')->get(['product_id', 'path']) as $photo) {
+                $file = trim((string) $photo->path);
+                $productId = (int) $photo->product_id;
+                if ($file === '' || $this->urls->product($file) === '' || in_array($file, $gallery[$productId] ?? [], true)) {
                     continue;
                 }
                 $gallery[$productId][] = $file;
@@ -80,15 +80,15 @@ class BrandDetail extends PageSupport
             }
         }
         $brandOptions = [];
-        foreach ($this->rows("select name as namevi, slug as slugvi, id, 'san-pham' as type, 'hienthi' as status from brands where is_visible = 1 order by sort_order,id desc") as $option) {
-            $optionName = Text::plain($option['namevi']);
-            $optionSlug = Text::slug($option['slugvi']);
-            if ((int) $option['id'] > 0 && $optionName !== '' && $optionSlug !== '' && self::visible($option)) {
-                $brandOptions[] = ['id' => (int) $option['id'], 'name' => $optionName, 'slug' => $optionSlug, 'url' => '/thuong-hieu/'.$optionSlug.'/'];
+        foreach ($this->db->table('brands')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'slug']) as $option) {
+            $optionName = Text::plain($option->name);
+            $optionSlug = Text::slug($option->slug);
+            if ($optionName !== '' && $optionSlug !== '') {
+                $brandOptions[] = ['id' => (int) $option->id, 'name' => $optionName, 'slug' => $optionSlug, 'url' => '/thuong-hieu/'.$optionSlug.'/'];
             }
         }
-        $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Brand::class, $id]);
-        $title = ! empty($seoRow['titlevi']) ? Text::seo($seoRow['titlevi']) : Text::seo($name);
+        $seoRow = $this->db->table('seo_metas')->where('owner_type', Brand::class)->where('owner_id', $id)->first(['title', 'description', 'keywords']);
+        $title = filled($seoRow?->title) ? Text::seo($seoRow->title) : Text::seo($name);
         if ($title !== '' && stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
@@ -98,8 +98,8 @@ class BrandDetail extends PageSupport
             'locale' => 'vi',
             'path' => '/thuong-hieu/'.$brandSlug.'/',
             'brand' => ['id' => $id, 'name' => $name, 'slug' => $brandSlug, 'url' => '/thuong-hieu/'.$brandSlug.'/'],
-            'seo' => ['title' => $title, 'description' => ! empty($seoRow['descriptionvi']) ? Text::seo($seoRow['descriptionvi']) : '',
-                'keywords' => ! empty($seoRow['keywordsvi']) ? Text::seo($seoRow['keywordsvi']) : '', 'image' => $this->urls->visual($brand['photo'], 'upload/product/')],
+            'seo' => ['title' => $title, 'description' => filled($seoRow?->description) ? Text::seo($seoRow->description) : '',
+                'keywords' => filled($seoRow?->keywords) ? Text::seo($seoRow->keywords) : '', 'image' => $this->urls->visual((string) $brand->image, 'upload/product/')],
             'products' => $products,
             'pagination' => ['page' => $page, 'perPage' => $perPage, 'total' => max(0, $total)],
             'filters' => ['brands' => $brandOptions, 'priceRanges' => $pricesVisible ? array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES) : []],

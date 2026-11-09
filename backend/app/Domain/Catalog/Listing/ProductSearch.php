@@ -95,8 +95,8 @@ class ProductSearch
             }
         }
         $brands = [];
-        foreach ($db->select('select id, name as namevi from brands where is_visible = 1 order by sort_order,id desc') as $row) {
-            $name = Text::plain($row->namevi);
+        foreach ($db->table('brands')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name']) as $row) {
+            $name = Text::plain($row->name);
             if ((int) $row->id > 0 && $name !== '') {
                 $brands[] = ['id' => (int) $row->id, 'name' => $name];
             }

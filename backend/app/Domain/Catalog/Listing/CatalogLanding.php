@@ -4,10 +4,8 @@ namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Models\Category;
-use App\Support\StatusFlags;
 use App\Support\Text;
 use Illuminate\Database\Connection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Category landing extras of the catalog payload (ptsCatalogPageExtrasDto): hero picture, "choose by
@@ -141,12 +139,12 @@ final class CatalogLanding
         }
         $parts = CatalogAssembler::sectionParts($this->db, (int) $categoryRow['id']);
         [$faq, $cards] = [$parts['faq'], $parts['cards']];
-        if ($depth === 2 && (! $faq || ! $cards) && ! empty($categoryRow['id_list'])) {
-            $parent = CatalogAssembler::sectionParts($this->db, (int) $categoryRow['id_list']);
+        if ($depth === 2 && (! $faq || ! $cards) && ! empty($categoryRow['parent_id'])) {
+            $parent = CatalogAssembler::sectionParts($this->db, (int) $categoryRow['parent_id']);
             $faq = $faq ?: $parent['faq'];
             $cards = $cards ?: $parent['cards'];
         }
-        if ($depth === 1 && ($categoryRow['slugvi'] ?? '') === 'den-nlmt' && (! $faq || ! $cards)) {
+        if ($depth === 1 && ($categoryRow['slug'] ?? '') === 'den-nlmt' && (! $faq || ! $cards)) {
             $faq = $faq ?: self::LIGHTING_FALLBACK['faq'];
             $cards = $cards ?: self::LIGHTING_FALLBACK['cards'];
         }
@@ -160,13 +158,13 @@ final class CatalogLanding
         $hero = null;
         $configured = false;
         foreach ($this->db->table('banners')->where('placement', 'product-category-hero')->orderBy('sort_order')->orderByDesc('id')
-            ->get(['title as namevi', 'link', 'image as photo', DB::raw("if(is_visible,'hienthi','') as status")]) as $row) {
-            if (trim((string) parse_url((string) ($row->link ?? ''), PHP_URL_PATH), '/') !== $currentPath) {
+            ->get(['title', 'link', 'image', 'is_visible']) as $row) {
+            if (trim((string) parse_url((string) $row->link, PHP_URL_PATH), '/') !== $currentPath) {
                 continue;
             }
             $configured = true;
-            if ((new StatusFlags($row->status ?? ''))->visible() && ! empty($row->photo)) {
-                $hero = ['photo' => $row->photo, 'upload' => 'upload/photo/', 'alt' => $row->namevi ?? ''];
+            if ($row->is_visible && filled($row->image)) {
+                $hero = ['photo' => $row->image, 'upload' => 'upload/photo/', 'alt' => (string) $row->title];
             }
             break;
         }
@@ -176,8 +174,8 @@ final class CatalogLanding
                 $hero = ['photo' => $file, 'upload' => 'assets/images/site-visuals/', 'alt' => $alt];
             }
         }
-        if ($hero === null && ! empty($categoryRow['photo'])) {
-            $hero = ['photo' => $categoryRow['photo'], 'upload' => 'upload/product/', 'alt' => $categoryRow['namevi'] ?? ''];
+        if ($hero === null && ! empty($categoryRow['image'])) {
+            $hero = ['photo' => $categoryRow['image'], 'upload' => 'upload/product/', 'alt' => $categoryRow['name'] ?? ''];
         }
         if ($hero === null && $categoryPath === '' && $this->urls->exists('assets/images/site-visuals/catalog-products-hero-20261007-v2.png')) {
             $hero = ['photo' => 'catalog-products-hero-20261007-v2.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'];
@@ -196,11 +194,11 @@ final class CatalogLanding
     private function support(): ?array
     {
         $rows = $this->db->table('banners')->where('placement', 'catalog-campaign')->orderBy('sort_order')->orderByDesc('id')
-            ->get(['title as namevi', 'summary as descvi', 'image as photo', 'link', DB::raw("if(is_visible,'hienthi','') as status")]);
+            ->get(['title', 'summary', 'image', 'link', 'is_visible']);
         $banner = null;
         foreach ($rows as $row) {
-            if (! empty($row->photo) && (new StatusFlags($row->status ?? ''))->visible()) {
-                $banner = ['name' => $row->namevi ?? '', 'desc' => $row->descvi ?? '', 'photo' => $row->photo, 'link' => $row->link ?? 'lien-he/'];
+            if ($row->is_visible && filled($row->image)) {
+                $banner = ['name' => (string) $row->title, 'desc' => (string) $row->summary, 'photo' => $row->image, 'link' => $row->link ?? 'lien-he/'];
                 break;
             }
         }
@@ -228,27 +226,27 @@ final class CatalogLanding
         if ($selectedId !== null) {
             if (! empty($categoryRow['id'])) {
                 $row = (array) ($this->db->table('seo_metas')->where('owner_type', Category::class)->where('owner_id', (int) $categoryRow['id'])
-                    ->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi']) ?? []);
-                $image = $this->urls->visual($categoryRow['photo'] ?? '', 'upload/product/');
+                    ->first(['title', 'description', 'keywords']) ?? []);
+                $image = $this->urls->visual($categoryRow['image'] ?? '', 'upload/product/');
             }
         } else {
-            $row = (array) ($this->db->table('seo_metas')->where('page', 'san-pham')->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi', 'image as photo']) ?? []);
-            $image = $this->urls->visual($row['photo'] ?? '', 'upload/seopage/');
+            $row = (array) ($this->db->table('seo_metas')->where('page', 'san-pham')->first(['title', 'description', 'keywords', 'image']) ?? []);
+            $image = $this->urls->visual($row['image'] ?? '', 'upload/seopage/');
         }
-        $title = ! empty($row['titlevi']) ? Text::seo($row['titlevi']) : Text::seo(($categoryRow['namevi'] ?? '') ?: 'Sản phẩm');
+        $title = ! empty($row['title']) ? Text::seo($row['title']) : Text::seo(($categoryRow['name'] ?? '') ?: 'Sản phẩm');
         if ($title !== '' && stripos($title, 'phúc thịnh s') === false) {
             $title .= ' | Phúc Thịnh Solar';
         }
 
         return [
             'title' => $title,
-            'description' => ! empty($row['descriptionvi']) ? Text::seo($row['descriptionvi']) : '',
-            'keywords' => ! empty($row['keywordsvi']) ? Text::seo($row['keywordsvi']) : '',
+            'description' => ! empty($row['description']) ? Text::seo($row['description']) : '',
+            'keywords' => ! empty($row['keywords']) ? Text::seo($row['keywords']) : '',
             'image' => $image,
         ];
     }
 
-    /** Site-relative link from Admin, refusing scripts, protocol-relative and traversal (ptsCatalogHref). */
+    /** Site-relative link from Admin, refusing scripts, protocol-relative and traversal. */
     private static function href(mixed $value): string
     {
         $value = is_scalar($value) ? trim((string) $value) : '';

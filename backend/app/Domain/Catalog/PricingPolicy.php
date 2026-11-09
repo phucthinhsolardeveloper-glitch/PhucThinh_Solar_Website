@@ -17,8 +17,8 @@ final class PricingPolicy
      */
     public function forProduct(array $product): array
     {
-        $regular = Money::fromLegacy($product['regular_price'] ?? null);
-        $sale = Money::fromLegacy($product['sale_price'] ?? null);
+        $regular = Money::fromStored($product['regular_price'] ?? null);
+        $sale = Money::fromStored($product['sale_price'] ?? null);
         $quoteOnly = (bool) ($product['quote_only'] ?? false);
         $mode = $this->pricesVisible && ! $quoteOnly && ($regular !== null || $sale !== null) ? 'price' : 'quote';
 

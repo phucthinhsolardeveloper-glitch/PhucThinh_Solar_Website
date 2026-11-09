@@ -98,35 +98,4 @@ abstract class PageSupport
             'is_featured' => (bool) $row->is_featured, 'options' => (array) json_decode((string) $row->options, true),
         ])->all();
     }
-
-    /**
-     * All items of a page section in Admin order with the columns the page builders read:
-     * namevi, title_indexvi, descvi, contentvi, content1vi, solieu, photo, link, status ("hienthi" plus flags).
-     *
-     * @return list<array<string, mixed>>
-     */
-    protected function items(string $section, int $limit = 0, bool $visibleOnly = false): array
-    {
-        $rows = $this->rows("select id, coalesce(title,'') as namevi, coalesce(subtitle,'') as title_indexvi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi,"
-            ." coalesce(extra,'') as content1vi, coalesce(figure,'') as solieu, coalesce(image,'') as photo, coalesce(link,'') as link, is_visible, flags from page_items where section=?"
-            .($visibleOnly ? ' and is_visible=1' : '').' order by sort_order,id desc'.($limit > 0 ? ' limit 0,'.$limit : ''), [$section]);
-
-        return array_map(function ($row) {
-            $flags = (array) json_decode((string) $row['flags'], true);
-            $row['status'] = implode(',', $row['is_visible'] ? array_merge(['hienthi'], $flags) : $flags);
-            unset($row['flags'], $row['is_visible']);
-
-            return $row;
-        }, $rows);
-    }
-
-    /** Native rows carry is_visible; rows still read through the older aliases carry a status list. */
-    protected static function visible(array $row): bool
-    {
-        if (array_key_exists('is_visible', $row)) {
-            return (bool) $row['is_visible'];
-        }
-
-        return in_array('hienthi', array_filter(array_map('trim', explode(',', (string) ($row['status'] ?? '')))), true);
-    }
 }
