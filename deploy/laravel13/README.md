@@ -52,6 +52,14 @@ file upload khác chưa có DB/source tham chiếu vẫn được giữ để tr
 media cũ. Laravel 146 test/1.042 assertions, PHPStan 0, Pint 263 file; Nuxt
 478 test, typecheck/build đều qua trước khi chốt candidate.
 
+Mốc `49dbf3dc`: backend candidate đã build lại và healthy. Route upload chặn
+thư mục ẩn của file manager cũ; kiểm qua Caddy: ảnh editor 200, ảnh quarantine
+404 (cả URL mã hóa dấu chấm), API snapshot không lệch. Lưu tar kèm SHA-256 rồi
+dọn 210 thumbnail cache CKFinder khỏi upload candidate; các media khác vẫn giữ.
+Backend 148 test/1.054 assertions, PHPStan 0, Pint 264 file. Backend image
+`5cc09fc7-candidate` và Nuxt image `967315c0-candidate` còn để rollback;
+production và upload dùng chung không đổi.
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho

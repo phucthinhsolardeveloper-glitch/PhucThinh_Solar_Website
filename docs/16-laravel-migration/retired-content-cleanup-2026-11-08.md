@@ -41,11 +41,28 @@ Laravel và release Nuxt/Laravel mới; website production/master không đổi.
 consumer. Không xóa file trong upload dùng chung với site PHP và nguồn import.
 Không xóa container, image, volume hay backup khác.
 
-Quét rộng upload clone còn khoảng 1.105 file (khoảng 251 MB) không được DB mới
-hoặc source runtime tham chiếu. Đây **chưa phải bằng chứng đủ để xóa**: URL media
-cũ có thể nằm trong backlink, chỉ mục tìm kiếm hoặc nội dung ngoài hệ thống.
-Giữ nguyên đến khi đối chiếu URL/public access và có phương án redirect hoặc
-giữ file phục vụ URL cũ.
+Quét rộng upload clone từng tìm khoảng 1.105 file (khoảng 251 MB) không được DB
+mới hoặc source runtime tham chiếu. Sau đó xác định 210 file `.tmb` là thumbnail
+cache của CKFinder cũ, không có consumer trong Laravel/Filament; đã lưu bản sao
+và xóa **chỉ trên candidate** (xem dưới). Các file còn lại **chưa đủ bằng chứng
+để xóa**: URL media cũ có thể nằm trong backlink, chỉ mục tìm kiếm hoặc nội dung
+ngoài hệ thống. Giữ chúng đến khi đối chiếu URL/public access và có phương án
+redirect hoặc tiếp tục phục vụ URL cũ.
+
+## Cache ẩn và đường phục vụ media (2026-11-09)
+
+Route `/upload/*` trước đây vẫn trả file ảnh trong thư mục ẩn của CKFinder
+(`.tmb`, `.trash`, `.quarantine`). Đã xác nhận HTTP 200 với một thumbnail cache
+thật trước khi sửa. Từ commit `49dbf3dc`, route trả 404 cho mọi path có thành
+phần bắt đầu bằng dấu chấm; `filemanager/editor` vẫn phục vụ ảnh công khai.
+Candidate `49dbf3dc-candidate` đã kiểm ảnh editor 200, ảnh quarantine 404,
+biến thể `%2E` 404; backend healthy và snapshot vẫn khớp.
+
+210 thumbnail `.tmb` (746.917 byte) đã lưu trong
+`deploy/laravel13/runtime/backups/legacy-ckfinder-thumbs-20261109.tar` cùng
+manifest `.json` SHA-256, mode 0600. Đã kiểm toàn bộ thành viên và checksum
+trong tar trước khi xóa từng file trên upload clone. Hai thư mục ẩn `.trash` và
+`.quarantine` không bị xóa; không đụng upload production.
 
 ## Vận hành và rollback
 
@@ -59,3 +76,5 @@ từ commit trước đợt dọn.
 21 ảnh candidate có thể khôi phục bằng tar nêu trên sau khi đối chiếu manifest
 SHA-256; không giải nén vào upload production. Image candidate trước đợt dọn
 được giữ với tag `b79645ba-candidate` cho cả backend và Nuxt.
+Cache CKFinder cũng có tar và manifest riêng; chỉ khôi phục vào candidate nếu
+cần điều tra, không mở lại đường công khai tới thư mục ẩn.
