@@ -32,6 +32,9 @@ const solutionContent = computed(() => editorial.value.contents[0] ?? props.data
 const solutionExtraContent = computed(() => editorial.value.contents[1] ?? props.data.solution.extraContent)
 
 const hotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
+// Rooftop and storage solutions point to the estimate page once the owner has switched it on.
+const { site: publicSite } = await usePublicSite()
+const showEstimator = computed(() => publicSite.value?.estimator === true && /^(dien-mat-troi|he-thong-luu-tru)/.test(props.data.solution.slug))
 const hotlineHref = computed(() => publicPhoneHref(props.data.campaignCta?.hotline?.tel || hotlineText.value))
 const hasContent = computed(() => Boolean(props.data.solution.content.html || props.data.solution.extraContent.html))
 
@@ -102,6 +105,7 @@ onBeforeUnmount(() => {
               <UIcon name="i-lucide-phone-call" class="size-5 text-gold-300" aria-hidden="true" />
               <span><small>Gọi hotline</small>{{ hotlineText }}</span>
             </a>
+            <NuxtLink v-if="showEstimator" class="solution-hero__more" to="/uoc-tinh-dien-mat-troi/">Ước tính chi phí <UIcon name="i-lucide-calculator" class="size-4" aria-hidden="true" /></NuxtLink>
             <a v-if="hasContent" class="solution-hero__more" href="#noi-dung-giai-phap">Tìm hiểu phương án <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" /></a>
           </div>
         </div>

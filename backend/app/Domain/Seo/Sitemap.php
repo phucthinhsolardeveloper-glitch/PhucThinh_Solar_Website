@@ -3,6 +3,7 @@
 namespace App\Domain\Seo;
 
 use App\Domain\Catalog\CategoryTree;
+use App\Domain\Solar\SolarEstimator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,9 @@ class Sitemap
         $entries = [['path' => '/', 'lastmod' => $now]];
         foreach (self::PAGES as $page) {
             $entries[] = ['path' => $page, 'lastmod' => $now];
+        }
+        if (app(SolarEstimator::class)->enabled()) {
+            $entries[] = ['path' => '/uoc-tinh-dien-mat-troi/', 'lastmod' => $now];
         }
 
         foreach (DB::table('categories')->where('is_visible', true)->orderBy('depth')->orderBy('sort_order')->orderBy('id')->get(['id', 'updated_at']) as $row) {

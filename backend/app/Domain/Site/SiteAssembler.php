@@ -4,6 +4,7 @@ namespace App\Domain\Site;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Solar\SolarEstimator;
 use App\Domain\Solutions\SolutionHub;
 use App\Support\RichText;
 use App\Support\SiteSettings;
@@ -111,6 +112,8 @@ class SiteAssembler
             'footer' => $this->footer($options, $badge),
             'catalogBenefits' => $this->sectionTitles('catalog.benefits', 4)->map(fn ($row) => ['title' => Text::excerpt($row->title, 60), 'description' => Text::excerpt($row->summary, 90)])->all(),
             'quickSearches' => $this->sectionTitles('search.suggestions', 7)->map(fn ($row) => Text::excerpt($row->title, 48))->filter()->values()->all(),
+            // Pages linking to /uoc-tinh-dien-mat-troi/ show the link only while the owner has it switched on.
+            'estimator' => app(SolarEstimator::class)->enabled(),
         ];
     }
 

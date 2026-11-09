@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\PagesController;
 use App\Http\Controllers\Api\V1\ProductDetailController;
 use App\Http\Controllers\Api\V1\ShopController;
 use App\Http\Controllers\Api\V1\SiteController;
+use App\Http\Controllers\Api\V1\SolarEstimatorController;
 use App\Http\Controllers\NtlWebhookController;
 use App\Http\Controllers\PageViewController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -34,6 +35,8 @@ Route::prefix('v1')->group(function () {
     Route::get('gallery', [PagesController::class, 'gallery']);
     Route::get('gallery-detail', [PagesController::class, 'galleryDetail']);
     Route::get('home', HomeController::class);
+    Route::get('solar-estimator', [SolarEstimatorController::class, 'form']);
+    Route::post('solar-estimate', [SolarEstimatorController::class, 'estimate'])->middleware('throttle:60,1');
     Route::get('lead-form', [PagesController::class, 'leadForm']);
     Route::post('lead-form', [PagesController::class, 'submitLead']);
     Route::get('news', [PagesController::class, 'news']);

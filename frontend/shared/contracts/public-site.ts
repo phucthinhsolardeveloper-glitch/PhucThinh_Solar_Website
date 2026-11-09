@@ -21,6 +21,8 @@ export interface PublicSitePayload {
   productCategoryTree?: PublicProductCategoryNode[]
   catalogBenefits?: Array<{ title: string; description: string }>
   quickSearches?: string[]
+  /** The solar estimate page is switched on in Admin. */
+  estimator?: boolean
   footer?: { companyName: string; contactText: PublicSanitizedRichText; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
@@ -60,6 +62,7 @@ export function isPublicSitePayload(value: unknown): value is PublicSitePayload 
   if (value.quickSearches !== undefined && (!Array.isArray(value.quickSearches) || value.quickSearches.length > 7 || !value.quickSearches.every((term) => isText(term)))) return false
   if (value.brand.technicalHotline !== undefined && !isText(value.brand.technicalHotline)) return false
   if (value.brand.zaloHref !== undefined && (typeof value.brand.zaloHref !== 'string' || !/^https:\/\/zalo\.me\/\d{8,15}$/.test(value.brand.zaloHref))) return false
+  if (value.estimator !== undefined && typeof value.estimator !== 'boolean') return false
   if (value.navigationSchemaVersion !== undefined && value.navigationSchemaVersion !== 1) return false
   if (value.locale !== undefined && !isText(value.locale)) return false
   if (!Array.isArray(value.productCategories) || !value.productCategories.every((row: unknown) => isRecord(row) && isId(row.id) && isText(row.name) && isText(row.slug) && isCategoryUrl(row.url))) return false
