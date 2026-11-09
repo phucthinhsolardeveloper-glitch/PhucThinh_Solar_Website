@@ -87,6 +87,25 @@ it('marks a sandbox create that timed out as unknown and never sends it twice', 
     expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'trước khi tạo lại');
     expect($order->shipments()->value('status'))->toBe('unknown');
     expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'đã có vận đơn');
+
+    // Staff settle it from the portal: not there → closed, and the order can be sent again.
+    $stuck = $order->shipments()->firstOrFail();
+    $closed = app(Shipments::class)->reconcile($stuck, '', ntlStaff());
+    expect($closed->status)->toBe('cancelled')->and($order->shipments()->whereIn('status', Shipments::ACTIVE)->exists())->toBeFalse();
+    expect(fn () => app(Shipments::class)->reconcile($closed, 'X', ntlStaff()))->toThrow(ValidationException::class, 'không ở trạng thái');
+});
+
+it('attaches the bill code staff found on the portal to a waybill whose create timed out', function () {
+    config(['shipping.nhattin.mode' => 'mock']);
+    $order = ntlOrder();
+    $other = app(Shipments::class)->create(ntlOrder(), ['weight_kg' => 1, 'service_id' => '91'], ntlStaff());
+    $stuck = $order->shipments()->create(['provider' => 'nhattin', 'environment' => 'mock', 'ref_code' => $order->code.'-1', 'status' => 'unknown',
+        'service_id' => '91', 'payer_id' => '10', 'weight_kg' => 1, 'cod_amount' => 0, 'cargo_value' => 0]);
+
+    expect(fn () => app(Shipments::class)->reconcile($stuck, $other->bill_code, ntlStaff()))->toThrow(ValidationException::class, 'đã gắn với đơn khác');
+    $attached = app(Shipments::class)->reconcile($stuck, 'MOCK123456', ntlStaff());
+    expect($attached->bill_code)->toBe('MOCK123456')->and($attached->status)->not->toBe('unknown')
+        ->and(DB::table('admin_audit_events')->where('action', 'shipment.reconcile')->count())->toBe(1);
 });
 
 it('accepts status pushes only with the token, ignores repeats and never moves a delivered waybill back', function () {
@@ -121,4 +140,17 @@ it('prices delivery with Nhất Tín at checkout, marks a mock price and sends b
     expect($fee->quote((int) $ward->id, ['kg' => 0, 'known' => false], 1)['note'])->toContain('xác nhận kiện hàng');
     config(['shipping.nhattin.locations_verified' => false]);
     expect($fee->quote((int) $ward->id, ['kg' => 2, 'known' => true], 1))->toBeNull();
+});
+
+it('never shows a mock price or makes a mock waybill on the live site', function () {
+    config(['shipping.nhattin.mode' => 'mock']);
+    $order = ntlOrder();
+    app()->detectEnvironment(fn () => 'production');
+    try {
+        expect(app(CheckoutFee::class)->quote((int) $order->ward_id, ['kg' => 2, 'known' => true], 1000000))->toBeNull();
+        expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'mô phỏng');
+        expect($order->shipments()->count())->toBe(0);
+    } finally {
+        app()->detectEnvironment(fn () => 'testing');
+    }
 });

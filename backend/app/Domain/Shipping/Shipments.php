@@ -46,6 +46,9 @@ final class Shipments
     public function create(Order $order, array $input, User $actor): Shipment
     {
         abort_unless($actor->hasPermission('orders'), 403);
+        if (app()->environment('production') && $this->client->mode() === 'mock') {
+            throw ValidationException::withMessages(['shipment' => 'Nhất Tín đang ở chế độ mô phỏng (NTL_MODE=mock): không tạo vận đơn giả cho đơn thật.']);
+        }
         [$sender, $receiver] = $this->places($order, codes: true);
         $shipment = DB::transaction(function () use ($order, $input, $actor) {
             $locked = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
@@ -111,6 +114,40 @@ final class Shipments
         $this->client->call('POST', '/v3/bill/destroy', ['bill_code' => [$shipment->bill_code]]);
         $shipment->update(['status' => 'cancelled', 'status_raw' => '6']);
         Audit::record('shipment.cancel', 'Order', $shipment->order_id, null, ['bill_code' => $shipment->bill_code]);
+    }
+
+    /**
+     * Settles a create whose outcome is not known (timeout, or a request left half-way). Staff look the
+     * ref code up on the Nhất Tín portal: with the bill code found there the waybill is attached and
+     * followed as usual; without one it is closed so the order can be sent again.
+     */
+    public function reconcile(Shipment $shipment, ?string $billCode, User $actor): Shipment
+    {
+        abort_unless($actor->hasPermission('orders'), 403);
+        $stuck = $shipment->bill_code === null && ($shipment->status === 'unknown'
+            || ($shipment->status === 'create_pending' && $shipment->updated_at?->lt(now()->subMinutes(2))));
+        if (! $stuck) {
+            throw ValidationException::withMessages(['shipment' => 'Vận đơn này không ở trạng thái chưa rõ kết quả.']);
+        }
+        $billCode = trim((string) $billCode);
+        if ($billCode === '') {
+            $shipment->update(['status' => 'cancelled', 'error' => 'Đối chiếu: không có trên Nhất Tín']);
+            Audit::record('shipment.reconcile', 'Order', $shipment->order_id, null, ['ref_code' => $shipment->ref_code, 'found' => false]);
+
+            return $shipment->refresh();
+        }
+        if (! preg_match('/^[A-Za-z0-9-]{4,40}$/', $billCode) || Shipment::query()->where('bill_code', $billCode)->where('environment', $shipment->environment)->exists()) {
+            throw ValidationException::withMessages(['shipment' => 'Mã vận đơn không hợp lệ hoặc đã gắn với đơn khác.']);
+        }
+        $shipment->update(['bill_code' => $billCode, 'status' => 'draft', 'error' => null]);
+        Audit::record('shipment.reconcile', 'Order', $shipment->order_id, null, ['ref_code' => $shipment->ref_code, 'bill_code' => $billCode, 'found' => true]);
+        try {
+            $this->refresh($shipment);
+        } catch (NtlException) {
+            // Attached anyway; the journey is fetched again with "Cập nhật hành trình".
+        }
+
+        return $shipment->refresh();
     }
 
     /** A status pushed by Nhất Tín. Repeats are ignored; a finished shipment is not moved back. */

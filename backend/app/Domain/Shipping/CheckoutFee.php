@@ -29,7 +29,8 @@ final class CheckoutFee
     public function quote(int $wardId, array $parcel, float $subtotal): ?array
     {
         $mode = $this->client->mode();
-        if (! config('shipping.nhattin.checkout_quotes')) {
+        // Real customers only ever see a real Nhất Tín price; otherwise the area table applies.
+        if (! config('shipping.nhattin.checkout_quotes') || (app()->environment('production') && $mode !== 'production')) {
             return null;
         }
         if (! $this->client->readiness()['ready'] || ($mode !== 'mock' && ! config('shipping.nhattin.locations_verified'))) {

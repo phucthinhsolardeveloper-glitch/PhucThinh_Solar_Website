@@ -96,6 +96,18 @@ class EditOrder extends EditRecord
                         }
                         $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
                     }),
+                Action::make('ntlReconcile')->label('Đối chiếu vận đơn chưa rõ')->icon('heroicon-o-question-mark-circle')->color('warning')
+                    ->visible(fn (Order $record) => $record->shipments()->whereNull('bill_code')->whereIn('status', ['unknown', 'create_pending'])->exists())
+                    ->modalDescription(fn (Order $record) => 'Nhất Tín không trả lời kịp nên chưa biết vận đơn đã được tạo hay chưa. Tìm mã tham chiếu '
+                        .$record->shipments()->whereNull('bill_code')->whereIn('status', ['unknown', 'create_pending'])->value('ref_code')
+                        .' trên cổng Nhất Tín. Có vận đơn: nhập mã vận đơn. Không có: để trống để đóng lại và tạo vận đơn mới.')
+                    ->schema([TextInput::make('bill_code')->label('Mã vận đơn trên cổng Nhất Tín')->maxLength(40)])
+                    ->action(function (Order $record, array $data): void {
+                        $shipment = app(Shipments::class)->reconcile($record->shipments()->whereNull('bill_code')->whereIn('status', ['unknown', 'create_pending'])->firstOrFail(),
+                            $data['bill_code'] ?? null, AdminActor::current());
+                        Notification::make()->success()->title($shipment->bill_code ? 'Đã gắn vận đơn '.$shipment->bill_code : 'Đã đóng yêu cầu, có thể tạo vận đơn mới')->send();
+                        $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
+                    }),
                 Action::make('ntlCancel')->label('Hủy vận đơn')->icon('heroicon-o-x-circle')->color('danger')->requiresConfirmation()
                     ->visible(fn (Order $record) => $record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->exists())
                     ->action(function (Order $record): void {
