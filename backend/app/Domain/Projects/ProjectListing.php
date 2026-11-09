@@ -10,8 +10,8 @@ use App\Support\SiteSettings;
 use App\Support\Text;
 
 /**
- * Completed projects (api/pts_v1_projects.php). The first page without a category lifts one project
- * into the "featured" slot: the first one ticked "projecthub", else the first on the page.
+ * Completed projects. The first page without a category lifts one project into the "featured"
+ * slot: the first one marked for the hub (in_hub), else the first on the page.
  */
 class ProjectListing extends PageSupport
 {
@@ -42,10 +42,11 @@ class ProjectListing extends PageSupport
             return $bad;
         }
 
-        $categoryRows = $this->rows("select id, name as namevi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, slug as slugvi, 'hienthi' as status from post_categories where kind='project' and depth=1 and is_visible=1 order by sort_order,id desc");
+        $categoryRows = $this->db->table('post_categories')->where('kind', 'project')->where('depth', 1)->where('is_visible', true)
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'summary', 'image', 'slug'])->map(fn ($row) => (array) $row)->all();
         $selected = null;
         foreach ($categoryRows as $row) {
-            if ($slug !== '' && (string) $row['slugvi'] === $slug) {
+            if ($slug !== '' && (string) $row['slug'] === $slug) {
                 $selected = $row;
             }
         }
@@ -54,24 +55,25 @@ class ProjectListing extends PageSupport
         }
         $category = null;
         if ($selected !== null) {
-            $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
-            // As in PHP, the selected category carries no picture of its own (its row is taken before pictures are checked).
-            $category = $this->categoryDto($selected + ['_photo' => ''], [
-                'title' => Text::cms(Text::flat($seoRow['titlevi'] ?? '')),
-                'description' => Text::cms(Text::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => Text::cms(Text::flat($seoRow['keywordsvi'] ?? '')),
-                'image' => $this->urls->visual($selected['photo'] ?? '', 'upload/news/'),
+            $seoRow = $this->db->table('seo_metas')->where('owner_type', PostCategory::class)->where('owner_id', $selected['id'])->first(['title', 'description', 'keywords']);
+            // The selected category's picture is its SEO share image; the card itself shows none.
+            $category = $this->categoryDto($selected, '', [
+                'title' => Text::cms(Text::flat((string) $seoRow?->title)),
+                'description' => Text::cms(Text::flat((string) $seoRow?->description)),
+                'keywords' => Text::cms(Text::flat((string) $seoRow?->keywords)),
+                'image' => $this->urls->visual((string) $selected['image'], 'upload/news/'),
             ]);
         }
 
-        $where = "kind='project' and is_visible=1".($selected !== null ? ' and category_id=?' : '');
-        $params = $selected !== null ? [(int) $selected['id']] : [];
-        $total = (int) ($this->row("select count(*) as total from posts where {$where}", $params)['total'] ?? 0);
-        $rows = $this->rows("select id, category_id as id_list, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(address,'') as address, concat_ws(',', 'hienthi', if(in_hub,'projecthub',null)) as status from posts where {$where} order by sort_order,id desc limit ".(($page - 1) * $perPage).', '.$perPage, $params);
+        $listed = $this->db->table('posts')->where('kind', 'project')->where('is_visible', true)
+            ->when($selected !== null, fn ($q) => $q->where('category_id', $selected['id']));
+        $total = (clone $listed)->count();
+        $rows = $listed->orderBy('sort_order')->orderByDesc('id')->forPage($page, $perPage)
+            ->get(['id', 'category_id', 'title', 'slug', 'image', 'summary', 'address', 'in_hub'])->map(fn ($row) => (array) $row)->all();
         $featuredRow = [];
         if ($page === 1 && $selected === null && $rows) {
             foreach ($rows as $index => $row) {
-                if (self::visible($row) && in_array('projecthub', array_map('trim', explode(',', (string) $row['status'])), true)) {
+                if ($row['in_hub']) {
                     $featuredRow = $row;
                     unset($rows[$index]);
                     break;
@@ -86,13 +88,13 @@ class ProjectListing extends PageSupport
         $categoryMap = [];
         $categoryDtos = [];
         foreach ($categoryRows as $row) {
-            if ($dto = $this->categoryDto($row + ['_photo' => $this->photo($row['photo'])])) {
+            if ($dto = $this->categoryDto($row, $this->photo($row['image']))) {
                 $categoryMap[(int) $row['id']] = $dto;
                 $categoryDtos[] = $dto;
             }
         }
         $project = fn (array $row, bool $featured) => $this->projectDto($row, $categoryMap, $featured);
-        $introRows = $this->items('projects.intro');
+        $introRows = $this->section('projects.intro');
 
         return [200, [
             'schemaVersion' => 1,
@@ -112,16 +114,16 @@ class ProjectListing extends PageSupport
         ]];
     }
 
-    private function categoryDto(array $row, ?array $seo = null): ?array
+    private function categoryDto(array $row, string $photo, ?array $seo = null): ?array
     {
-        $id = (int) ($row['id'] ?? 0);
-        $name = Text::cms($row['namevi'] ?? '');
-        $slug = Text::slug($row['slugvi'] ?? '');
-        if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
+        $id = (int) $row['id'];
+        $name = Text::cms($row['name']);
+        $slug = Text::slug($row['slug']);
+        if ($name === '' || $slug === '') {
             return null;
         }
-        $dto = ['id' => $id, 'name' => $name, 'description' => Text::cms($row['descvi'] ?? ''), 'slug' => $slug, 'url' => '/danh-muc-du-an/'.$slug.'/',
-            'canonicalPath' => '/'.$slug, 'image' => NewsListing::media($row['_photo'])];
+        $dto = ['id' => $id, 'name' => $name, 'description' => Text::cms((string) $row['summary']), 'slug' => $slug, 'url' => '/danh-muc-du-an/'.$slug.'/',
+            'canonicalPath' => '/'.$slug, 'image' => NewsListing::media($photo)];
         if ($seo !== null) {
             $dto['seo'] = $seo;
         }
@@ -131,32 +133,31 @@ class ProjectListing extends PageSupport
 
     private function projectDto(array $row, array $categories, bool $featured): ?array
     {
-        $id = (int) $row['id'];
-        $name = Text::cms($row['namevi']);
-        $slug = Text::slug($row['slugvi']);
-        if (! self::visible($row) || $id <= 0 || $name === '' || $slug === '') {
+        $name = Text::cms($row['title']);
+        $slug = Text::slug($row['slug']);
+        if ($name === '' || $slug === '') {
             return null;
         }
-        $categoryId = (int) ($row['id_list'] ?? 0);
+        $categoryId = (int) $row['category_id'];
 
-        return ['id' => $id, 'title' => $name, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms($row['descvi']), 'address' => Text::cms($row['address']),
-            'image' => NewsListing::media($this->photo($row['photo'])), 'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null, 'featured' => $featured];
+        return ['id' => (int) $row['id'], 'title' => $name, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms((string) $row['summary']), 'address' => Text::cms((string) $row['address']),
+            'image' => NewsListing::media($this->photo($row['image'])), 'category' => $categoryId > 0 ? ($categories[$categoryId] ?? null) : null, 'featured' => $featured];
     }
 
     private function intro(array $rows, ?array $category): array
     {
         $intro = [];
         foreach ($rows as $row) {
-            if (self::visible($row)) {
+            if ($row['is_visible']) {
                 $intro = $row;
                 break;
             }
         }
-        $introDescription = Text::cms($intro['descvi'] ?? '');
+        $introDescription = Text::cms($intro['summary'] ?? '');
 
         return [
             'visible' => $category !== null || ! $rows || $intro !== [],
-            'title' => Text::cms($category['name'] ?? '') ?: (Text::cms($intro['namevi'] ?? '') ?: 'Dự án đã thực hiện'),
+            'title' => Text::cms($category['name'] ?? '') ?: (Text::cms($intro['title'] ?? '') ?: 'Dự án đã thực hiện'),
             'description' => Text::cms($category['description'] ?? '') ?: ($introDescription ?: 'Phúc Thịnh Solar tự hào đồng hành cùng khách hàng kiến tạo những công trình năng lượng sạch, bền vững cho tương lai.'),
         ];
     }
@@ -164,10 +165,10 @@ class ProjectListing extends PageSupport
     private function benefits(): array
     {
         $items = [];
-        foreach ($this->items('projects.benefits', 3, true) as $row) {
-            $label = Text::cms($row['namevi']);
-            if (self::visible($row) && $label !== '') {
-                $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo']))];
+        foreach ($this->section('projects.benefits', 3, true) as $row) {
+            $label = Text::cms($row['title']);
+            if ($label !== '') {
+                $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['image']))];
             }
         }
 
@@ -181,22 +182,22 @@ class ProjectListing extends PageSupport
     private function cta(): ?array
     {
         $fallbackPhoto = $this->photo(self::FALLBACK_CTA_PHOTO);
-        $rows = $this->items('projects.cta') ?: [[
-            'title_indexvi' => '', 'namevi' => 'Bạn có công trình cần tư vấn?', 'descvi' => 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
-            'content1vi' => 'Nhận tư vấn miễn phí', 'status' => 'hienthi', 'photo' => '',
+        $rows = $this->section('projects.cta') ?: [[
+            'subtitle' => '', 'title' => 'Bạn có công trình cần tư vấn?', 'summary' => 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+            'extra' => 'Nhận tư vấn miễn phí', 'is_visible' => true, 'image' => '',
         ]];
         $hotline = is_scalar($this->settings->options()['hotline'] ?? null) ? trim((string) $this->settings->options()['hotline']) : '';
         foreach ($rows as $row) {
-            if (! self::visible($row)) {
+            if (! $row['is_visible']) {
                 continue;
             }
 
             return [
-                'eyebrow' => Text::cms($row['title_indexvi']) ?: 'Đồng hành cùng năng lượng sạch',
-                'title' => Text::cms($row['namevi']) ?: 'Bạn có công trình cần tư vấn?',
-                'description' => Text::cms($row['descvi']) ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
-                'buttonLabel' => Text::cms(trim((string) $row['content1vi']) !== '' ? $row['content1vi'] : 'Nhận tư vấn miễn phí'),
-                'image' => NewsListing::media($this->photo($row['photo']) ?: $fallbackPhoto),
+                'eyebrow' => Text::cms($row['subtitle']) ?: 'Đồng hành cùng năng lượng sạch',
+                'title' => Text::cms($row['title']) ?: 'Bạn có công trình cần tư vấn?',
+                'description' => Text::cms($row['summary']) ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+                'buttonLabel' => Text::cms(trim($row['extra']) !== '' ? $row['extra'] : 'Nhận tư vấn miễn phí'),
+                'image' => NewsListing::media($this->photo($row['image']) ?: $fallbackPhoto),
                 'trust' => $this->trust(),
                 'hotline' => $hotline === '' ? null : ['label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline)],
             ];
@@ -209,10 +210,10 @@ class ProjectListing extends PageSupport
     {
         $icons = ['headset', 'cogs', 'shield'];
         $items = [];
-        foreach ($this->items('projects.trust', 3, true) as $index => $row) {
-            $label = Text::cms($row['namevi']);
-            if (self::visible($row) && $label !== '') {
-                $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['photo'])), 'icon' => $icons[min($index, 2)]];
+        foreach ($this->section('projects.trust', 3, true) as $index => $row) {
+            $label = Text::cms($row['title']);
+            if ($label !== '') {
+                $items[] = ['label' => $label, 'image' => NewsListing::media($this->photo($row['image'])), 'icon' => $icons[min($index, 2)]];
             }
         }
 

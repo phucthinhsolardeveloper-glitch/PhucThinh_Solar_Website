@@ -3,12 +3,11 @@
 namespace App\Domain\Projects;
 
 use App\Domain\Pages\PageSupport;
-use App\Domain\Solutions\SolutionHub;
 use App\Models\Post;
 use App\Support\RichText;
 use App\Support\Text;
 
-/** One completed project (api/pts_v1_project_detail.php): story, gallery, equipment used, nearby projects. */
+/** One completed project: story, gallery, equipment used, nearby projects. */
 class ProjectDetail extends PageSupport
 {
     /** @return array{0: int, 1: array<string, mixed>} */
@@ -22,54 +21,53 @@ class ProjectDetail extends PageSupport
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
             return $bad;
         }
-        $row = $this->row("select id, category_id as id_list, title as namevi, slug as slugvi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, coalesce(image,'') as photo, coalesce(address,'') as address,"
-            ." coalesce(client_name,'') as tenkhachhang, coalesce(started_on,'') as project_start_date, coalesce(finished_on,'') as project_end_date, 'hienthi' as status, 'du-an' as type"
-            ." from posts where slug = ? and kind = 'project' and is_visible = 1 limit 1", [$slug]);
-        if (! $row) {
+        $post = $this->db->table('posts')->where('slug', $slug)->where('kind', 'project')->where('is_visible', true)->first();
+        if (! $post) {
             return [404, ['error' => ['code' => 'PROJECT_NOT_FOUND']]];
         }
-        $id = (int) $row['id'];
-        $projectSlug = Text::slug($row['slugvi']);
-        $title = Text::cms($row['namevi']);
-        $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 0,1", [Post::class, $id]);
-        $categoryRow = $this->row("select id, name as namevi, slug as slugvi, 'hienthi' as status from post_categories where id = ? and kind = 'project' and is_visible = 1 limit 1", [(int) $row['id_list']]);
-        $categoryName = Text::cms($categoryRow['namevi'] ?? '');
-        $categorySlug = Text::slug($categoryRow['slugvi'] ?? '');
-        $category = (int) ($categoryRow['id'] ?? 0) > 0 && $categoryName !== '' && $categorySlug !== ''
-            ? ['id' => (int) $categoryRow['id'], 'name' => $categoryName, 'slug' => $categorySlug, 'url' => '/danh-muc-du-an/'.$categorySlug.'/'] : null;
+        $id = (int) $post->id;
+        $projectSlug = Text::slug($post->slug);
+        $title = Text::cms($post->title);
+        $seoRow = $this->db->table('seo_metas')->where('owner_type', Post::class)->where('owner_id', $id)->first(['title', 'description', 'keywords']);
+        $categoryRow = $post->category_id ? $this->db->table('post_categories')->where('id', $post->category_id)->where('kind', 'project')->where('is_visible', true)->first(['id', 'name', 'slug']) : null;
+        $categoryName = Text::cms((string) $categoryRow?->name);
+        $categorySlug = Text::slug((string) $categoryRow?->slug);
+        $category = $categoryRow && $categoryName !== '' && $categorySlug !== ''
+            ? ['id' => (int) $categoryRow->id, 'name' => $categoryName, 'slug' => $categorySlug, 'url' => '/danh-muc-du-an/'.$categorySlug.'/'] : null;
 
         $gallery = [];
-        foreach ($this->rows("select coalesce(path,'') as photo, coalesce(caption,'') as namevi, coalesce(video_url,'') as link_video, 'man' as kind, if(kind='video','video','du-an') as val, 'hienthi' as status"
-            .' from post_media where post_id = ? and is_visible = 1 order by sort_order,id desc', [$id]) as $item) {
-            if (! self::visible($item) || $item['kind'] !== 'man') {
-                continue;
-            }
-            $caption = Text::cms($item['namevi']);
-            $image = $this->strictImage($item['photo'], 'upload/news/');
-            if ($item['val'] === 'du-an' && $image !== '') {
+        foreach ($this->db->table('post_media')->where('post_id', $id)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get() as $item) {
+            $caption = Text::cms((string) $item->caption);
+            $image = $this->strictImage((string) $item->path, 'upload/news/');
+            if ($item->kind !== 'video' && $image !== '') {
                 $gallery[] = ['type' => 'image', 'src' => $image, 'caption' => $caption];
-            } elseif ($item['val'] === 'video' && ($href = self::externalUrl($item['link_video'])) !== '') {
+            } elseif ($item->kind === 'video' && ($href = self::externalUrl($item->video_url)) !== '') {
                 $gallery[] = ['type' => 'video', 'src' => $image, 'href' => $href, 'caption' => $caption];
             }
         }
         $equipment = [];
-        foreach ($this->rows("select p.id, p.name as namevi, p.slug as slugvi, coalesce(p.image,'') as photo, coalesce(p.code,'') as code, 'hienthi' as status from post_products pp inner join products p on p.id = pp.product_id"
-            .' where pp.post_id = ? and pp.is_visible = 1 and p.is_visible = 1 order by pp.sort_order,pp.id', [$id]) as $product) {
-            $name = Text::cms($product['namevi']);
-            $productSlug = Text::slug($product['slugvi']);
-            if (self::visible($product) && (int) $product['id'] > 0 && $name !== '' && $productSlug !== '') {
-                $equipment[] = ['id' => (int) $product['id'], 'name' => $name, 'slug' => $productSlug, 'url' => '/san-pham/'.$productSlug, 'code' => Text::cms($product['code']), 'image' => $this->strictImage($product['photo'], 'upload/product/')];
+        $products = $this->db->table('post_products as pp')->join('products as p', 'p.id', '=', 'pp.product_id')
+            ->where('pp.post_id', $id)->where('pp.is_visible', true)->where('p.is_visible', true)
+            ->orderBy('pp.sort_order')->orderBy('pp.id')->get(['p.id', 'p.name', 'p.slug', 'p.image', 'p.code']);
+        foreach ($products as $product) {
+            $name = Text::cms($product->name);
+            $productSlug = Text::slug($product->slug);
+            if ($name !== '' && $productSlug !== '') {
+                $equipment[] = ['id' => (int) $product->id, 'name' => $name, 'slug' => $productSlug, 'url' => '/san-pham/'.$productSlug, 'code' => Text::cms((string) $product->code), 'image' => $this->strictImage((string) $product->image, 'upload/product/')];
             }
         }
         $nearby = [];
-        foreach ($this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(address,'') as address, 'hienthi' as status from posts where id<>? and category_id <=> ? and kind='project' and is_visible=1 order by sort_order,id desc limit 0,3", [$id, $row['id_list']]) as $other) {
-            $otherSlug = Text::slug($other['slugvi']);
-            $otherTitle = Text::cms($other['namevi']);
-            if (self::visible($other) && (int) $other['id'] > 0 && $otherSlug !== '' && $otherTitle !== '') {
-                $nearby[] = ['id' => (int) $other['id'], 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => Text::cms($other['address']), 'image' => $this->strictImage($other['photo'], 'upload/news/')];
+        $others = $this->db->table('posts')->where('id', '<>', $id)->where('kind', 'project')->where('is_visible', true)
+            ->when($post->category_id, fn ($q) => $q->where('category_id', $post->category_id), fn ($q) => $q->whereNull('category_id'))
+            ->orderBy('sort_order')->orderByDesc('id')->limit(3)->get(['id', 'title', 'slug', 'image', 'address']);
+        foreach ($others as $other) {
+            $otherSlug = Text::slug($other->slug);
+            $otherTitle = Text::cms($other->title);
+            if ($otherSlug !== '' && $otherTitle !== '') {
+                $nearby[] = ['id' => (int) $other->id, 'title' => $otherTitle, 'slug' => $otherSlug, 'url' => '/'.$otherSlug.'/', 'address' => Text::cms((string) $other->address), 'image' => $this->strictImage((string) $other->image, 'upload/news/')];
             }
         }
-        $seoTitle = ! empty($seoRow['titlevi']) ? Text::cms($seoRow['titlevi']) : $title;
+        $seoTitle = filled($seoRow?->title) ? Text::cms($seoRow->title) : $title;
         if ($seoTitle !== '' && stripos($seoTitle, 'phúc thịnh s') === false) {
             $seoTitle .= ' | Phúc Thịnh Solar';
         }
@@ -82,57 +80,54 @@ class ProjectDetail extends PageSupport
                 'title' => $title,
                 'slug' => $projectSlug,
                 'url' => '/'.$projectSlug.'/',
-                'summary' => Text::cms($row['descvi']),
-                'coverImage' => $this->strictImage($row['photo'], 'upload/news/'),
+                'summary' => Text::cms((string) $post->summary),
+                'coverImage' => $this->strictImage((string) $post->image, 'upload/news/'),
                 'category' => $category,
-                'client' => Text::cms($row['tenkhachhang']),
-                'address' => Text::cms($row['address']),
-                'startDate' => self::date($row['project_start_date']),
-                'endDate' => self::date($row['project_end_date']),
+                'client' => Text::cms((string) $post->client_name),
+                'address' => Text::cms((string) $post->address),
+                'startDate' => self::date($post->started_on),
+                'endDate' => self::date($post->finished_on),
                 'gallery' => $gallery,
                 'relatedEquipment' => $equipment,
                 'relatedProjects' => $nearby,
                 'cta' => $this->cta(),
             ],
-            'content' => RichText::dto(RichText::sanitize($row['contentvi'])),
+            'content' => RichText::dto(RichText::sanitize((string) $post->body)),
             'seo' => [
                 'title' => $seoTitle,
-                'description' => ! empty($seoRow['descriptionvi']) ? Text::cms($seoRow['descriptionvi']) : '',
-                'keywords' => ! empty($seoRow['keywordsvi']) ? Text::cms($seoRow['keywordsvi']) : '',
+                'description' => Text::cms((string) $seoRow?->description),
+                'keywords' => Text::cms((string) $seoRow?->keywords),
             ],
             'canonical' => ['url' => '/'.$projectSlug],
         ]];
     }
 
-    /**
-     * Admin "project-cta" block. The PHP endpoint never loads the site settings, so its hotline is always
-     * empty; kept identical here (Nuxt takes the hotline from the site API).
-     */
+    /** Admin "projects.cta" block; the hotline comes from the site API on the Nuxt side. */
     private function cta(): ?array
     {
-        $rows = $this->items('projects.cta');
-        $visible = SolutionHub::select($rows, '', 1);
-        if ($rows && ! $visible) {
+        $rows = $this->section('projects.cta');
+        $row = collect($rows)->firstWhere('is_visible', true);
+        if ($rows && ! $row) {
             return null;
         }
-        $row = $visible[0] ?? [];
-        $image = $this->strictImage($row['photo'] ?? '', 'upload/news/');
+        $row ??= ['title' => '', 'subtitle' => '', 'summary' => '', 'extra' => '', 'image' => ''];
+        $image = $this->strictImage($row['image'], 'upload/news/');
         if ($image === '' && $this->urls->exists('upload/news/anh-quan-gl-4-9449.jpg')) {
             $image = '/upload/news/anh-quan-gl-4-9449.jpg';
         }
         $trust = [];
-        foreach ($this->items('projects.trust', 3, true) as $item) {
-            $label = Text::cms($item['namevi']);
-            if (self::visible($item) && $label !== '') {
-                $trust[] = ['label' => $label, 'icon' => $this->strictImage($item['photo'], 'upload/news/'), 'faIcon' => 'fa-check'];
+        foreach ($this->section('projects.trust', 3, true) as $item) {
+            $label = Text::cms($item['title']);
+            if ($label !== '') {
+                $trust[] = ['label' => $label, 'icon' => $this->strictImage($item['image'], 'upload/news/'), 'faIcon' => 'fa-check'];
             }
         }
 
         return [
-            'eyebrow' => SolutionHub::field($row, 'title_index') ?: 'Đồng hành cùng năng lượng sạch',
-            'title' => SolutionHub::field($row, 'name') ?: 'Bạn có công trình cần tư vấn?',
-            'description' => SolutionHub::field($row, 'desc') ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
-            'buttonLabel' => SolutionHub::field($row, 'content1') ?: 'Nhận tư vấn miễn phí',
+            'eyebrow' => Text::cms($row['subtitle']) ?: 'Đồng hành cùng năng lượng sạch',
+            'title' => Text::cms($row['title']) ?: 'Bạn có công trình cần tư vấn?',
+            'description' => Text::cms($row['summary']) ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+            'buttonLabel' => Text::cms($row['extra']) ?: 'Nhận tư vấn miễn phí',
             'image' => $image,
             'hotline' => '',
             'trust' => $trust ?: [

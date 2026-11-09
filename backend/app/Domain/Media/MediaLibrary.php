@@ -8,6 +8,7 @@ use App\Models\AlbumImage;
 use App\Models\SeoMeta;
 use App\Models\Video;
 use App\Support\Text;
+use Illuminate\Support\Collection;
 
 /** Photo albums with their pictures, and YouTube videos. */
 class MediaLibrary extends PageSupport
@@ -43,12 +44,14 @@ class MediaLibrary extends PageSupport
         if ($album === null) {
             return [404, ['error' => ['code' => 'GALLERY_NOT_FOUND']]];
         }
-        $images = $model->images()->where('is_visible', true)->get()
-            ->map(fn (AlbumImage $image) => ['id' => (int) $image->id, 'image' => $this->productImage($image->path), 'caption' => Text::cms((string) $image->caption)])
+        /** @var Collection<int, AlbumImage> $pictures */
+        $pictures = $model->images()->where('is_visible', true)->get();
+        $images = $pictures
+            ->map(fn ($image) => ['id' => (int) $image->id, 'image' => $this->productImage($image->path), 'caption' => Text::cms((string) $image->caption)])
             ->filter(fn ($image) => $image['image'] !== '')->take(120)->values()->all();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'album' => $album, 'images' => $images,
-            'seo' => self::seo($model->seo, $album['title'], $album['description'], '/'.$album['slug'].'/')]];
+            'seo' => self::seo($model->seo()->first(), $album['title'], $album['description'], '/'.$album['slug'].'/')]];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */
