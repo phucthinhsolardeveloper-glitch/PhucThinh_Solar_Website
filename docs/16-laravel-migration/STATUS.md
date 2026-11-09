@@ -7,7 +7,6 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 Không có việc dở.
 
 ## Chưa làm (theo thứ tự)
-- [ ] Nhập/xuất, khôi phục khối nội dung (`content_section.php`)
 - [ ] Thử thật: upload banner/video/ảnh trong editor, quyền theo từng thao tác (GAP trong `admin-capability-audit-2026-11-08.md`)
 - [ ] Xem trước trên Nuxt cho Giải pháp / Dự án / Chính sách
 - [ ] Task 5: chỉnh trang theo khối (Home + About POC)
@@ -37,3 +36,4 @@ Không có việc dở.
 | Kéo-thả thứ tự sản phẩm, bài viết | d3a24116 | |
 | Khung khuyến mãi theo chiến dịch | 225b2b21 | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
 | Logo thương hiệu quản lý trong Admin | 553ebb8f | `pts:brand-logos` tự chạy trong `pts:import-legacy`; DB dev chưa chạy vì kho upload local chỉ đọc |
+| Khối mô tả: danh sách, độ phủ, lịch sử, khôi phục, JSON, HTML→khối | commit kế tiếp | Đã đối chiếu `content_section.php`, `productLegacyHtmlToBlocks` |

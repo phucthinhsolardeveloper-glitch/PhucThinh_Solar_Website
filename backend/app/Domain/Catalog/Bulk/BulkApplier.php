@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\Bulk;
 
 use App\Domain\Audit\Audit;
 use App\Models\Brand;
+use App\Models\ContentSection;
 use App\Models\Product;
 use App\Support\Slugs;
 use Illuminate\Support\Facades\DB;
@@ -98,15 +99,16 @@ final class BulkApplier
 
     private function writeSections(Product $product, string $value): void
     {
-        $key = ['owner_type' => Product::class, 'owner_id' => $product->id];
-        $current = DB::table('content_sections')->where($key)->first();
-        $old = json_decode((string) ($current->blocks ?? '[]'), true) ?: [];
+        $section = ContentSection::query()->firstOrNew(['owner_type' => Product::class, 'owner_id' => $product->id]);
+        $old = json_decode((string) ($section->getRawOriginal('blocks') ?: '[]'), true) ?: [];
         [$mode, $blocks] = match ($value) {
             BulkColumns::HIDE_SECTIONS, '[an]' => ['hide', $old],
             BulkColumns::CLEAR => ['inherit', []],
             default => ['own', [...BulkText::markdownToBlocks($value), ...array_values(array_filter($old, fn ($block) => ($block['type'] ?? '') === 'cards'))]],
         };
-        DB::table('content_sections')->updateOrInsert($key, ['mode' => $mode, 'blocks' => json_encode($blocks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            'is_visible' => true, 'updated_at' => now(), 'created_at' => $current->created_at ?? now()]);
+        $section->historyReason = 'import';
+        $section->setRawAttributes(array_merge($section->getAttributes(), ['owner_type' => Product::class, 'owner_id' => $product->id, 'mode' => $mode,
+            'blocks' => json_encode($blocks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 'is_visible' => true]));
+        $section->save();
     }
 }
