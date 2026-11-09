@@ -94,19 +94,20 @@ class LeadResource extends Resource
     {
         return $table
             ->defaultSort('id', 'desc')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['assignee', 'product']))
             ->columns([
                 TextColumn::make('created_at')->label('Gửi lúc')->dateTime('H:i d/m/Y')->sortable(),
                 TextColumn::make('kind')->label('Loại')->badge()->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state),
                 TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])->description(fn (Lead $record) => $record->phone),
                 TextColumn::make('product.name')->label('Sản phẩm')->placeholder('—')->toggleable()
                     ->url(fn (Lead $record) => $record->product?->is_visible ? url('/san-pham/'.$record->product->slug) : null, true),
-                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(45)->toggleable()->searchable()
+                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(40)->toggleable()->searchable()
                     ->formatStateUsing(fn ($state) => LeadSource::normalize($state) ?? '—')
                     ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
                 TextColumn::make('message')->label('Nội dung')->limit(60)->placeholder('—')->toggleable(),
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray')),
-                TextColumn::make('assignee.name')->label('Phụ trách')->placeholder('Chưa phân công')->toggleable(),
+                    ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
+                    ->description(fn (Lead $record) => data_get($record, 'assignee.name') ?? 'Chưa phân công'),
                 TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('H:i d/m/Y')->sortable()->placeholder('—'),
             ])
             ->filters([
@@ -117,6 +118,7 @@ class LeadResource extends Resource
                 Filter::make('overdue')->label('Quá hạn theo dõi')->query(fn (Builder $query) => $query
                     ->whereNotIn('status', ['done', 'spam'])->where('follow_up_at', '<', now())),
             ])
+            ->recordAction('edit')
             ->recordActions([
                 EditAction::make()->label('Xem / xử lý')
                     ->using(fn (Lead $record, array $data) => app(LeadTriage::class)->update($record, $data, AdminActor::current())),

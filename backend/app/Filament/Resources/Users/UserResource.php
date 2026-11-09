@@ -93,7 +93,9 @@ class UserResource extends Resource
                 TextColumn::make('username')->label('Tên đăng nhập')->searchable(),
                 TextColumn::make('role')->label('Vai trò')->badge()->formatStateUsing(fn ($state) => $state === User::ROLE_OWNER ? 'Chủ website' : 'Biên tập viên'),
                 TextColumn::make('permissions')->label('Được quản lý')->badge()->separator(',')
-                    ->formatStateUsing(fn ($state) => User::PERMISSIONS[$state] ?? $state)->toggleable(),
+                    ->state(fn (User $record) => $record->isOwner() ? ['Toàn quyền'] : $record->permissions)
+                    ->formatStateUsing(fn ($state) => User::PERMISSIONS[$state] ?? $state)
+                    ->limitList(3)->expandableLimitedList()->toggleable(),
                 IconColumn::make('is_active')->label('Hoạt động')->boolean(),
             ])
             ->recordActions([EditAction::make()]);

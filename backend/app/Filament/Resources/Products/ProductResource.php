@@ -168,14 +168,14 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('seo')->withCount('visibleArticles'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['seo', 'category', 'brand'])->withCount('visibleArticles'))
             ->defaultSort('id', 'desc')
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->square()->height(48),
                 TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
                     ->description(fn (Product $record) => $record->code),
-                TextColumn::make('category.name')->label('Danh mục')->toggleable(),
-                TextColumn::make('brand.name')->label('Thương hiệu')->toggleable(),
+                TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
+                    ->description(fn (Product $record) => data_get($record, 'brand.name')),
                 TextColumn::make('price')->label('Giá')
                     ->state(fn (Product $record) => match (true) {
                         $record->quote_only => 'Báo giá',
@@ -193,7 +193,7 @@ class ProductResource extends Resource
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
                     })->wrap()->toggleable(),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
-                TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(),
+                TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable(),
