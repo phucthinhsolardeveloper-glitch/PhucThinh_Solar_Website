@@ -83,13 +83,30 @@ export function publicBreadcrumbStructuredData(
   }).replace(/</g, '\\u003c')
 }
 
+/** Share pictures are 1200×630 (1.91:1), the size Zalo and Facebook show without cropping. */
+export const PUBLIC_SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 } as const
+// Same sources the /thumbs route accepts. Product shots and logos are fitted on white; photos are cropped to fill.
+const SOCIAL_THUMB_SOURCE = /^\/(upload\/(?:news|photo|product|seopage)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
+
+function socialThumb(path: string): string {
+  if (!SOCIAL_THUMB_SOURCE.test(path)) return path
+  const fit = path.startsWith('/upload/product/') || /\/logo[^/]*$/i.test(path)
+  return `/thumbs/${PUBLIC_SOCIAL_IMAGE_SIZE.width}x${PUBLIC_SOCIAL_IMAGE_SIZE.height}x${fit ? 2 : 1}${path}`
+}
+
+/** True when the share picture is served at exactly PUBLIC_SOCIAL_IMAGE_SIZE. */
+export function isSizedSocialImage(url: string | null): boolean {
+  return !!url && url.includes(`/thumbs/${PUBLIC_SOCIAL_IMAGE_SIZE.width}x${PUBLIC_SOCIAL_IMAGE_SIZE.height}x`)
+}
+
 export function publicSocialImageUrl(originValue: unknown, imageValue: unknown): string | null {
   const origin = canonicalPublicOrigin(originValue)
   if (!origin) return null
-  if (typeof imageValue !== 'string' || imageValue === '') return `${origin}${PUBLIC_SEO_FALLBACK_IMAGE}`
-  if (isSafePublicPath(imageValue)) return `${origin}${imageValue}`
+  if (typeof imageValue !== 'string' || imageValue === '') return `${origin}${socialThumb(PUBLIC_SEO_FALLBACK_IMAGE)}`
+  if (isSafePublicPath(imageValue)) return `${origin}${socialThumb(imageValue)}`
   const url = canonicalPublicUrl(origin, imageValue)
-  return url
+  if (!url) return null
+  return `${origin}${socialThumb(new URL(url).pathname)}`
 }
 
 function publicAssetUrl(origin: string, value: string | undefined): string | null {
@@ -141,13 +158,27 @@ export function publicSiteStructuredData(originValue: unknown, pathname: unknown
   if (site.brand.hotline.trim()) organization.telephone = site.brand.hotline.trim()
 
   const headOffice = site.footer?.locations.find((location) => /^trụ sở/i.test(location.name.trim()) && location.address.trim())
+  const mapLink = (href: string) => /^https:\/\/(maps\.app\.goo\.gl|(www\.)?google\.[a-z.]+\/maps)\//.test(href.trim()) ? href.trim() : undefined
   if (headOffice) {
+    // With a real head office the company is also a LocalBusiness; the other footer places are its branches.
+    organization['@type'] = ['Organization', 'LocalBusiness']
+    if (logo) organization.image = logo
     organization.address = {
       '@type': 'PostalAddress',
       streetAddress: headOffice.address.trim(),
       addressRegion: 'Gia Lai',
       addressCountry: 'VN',
     }
+    if (mapLink(headOffice.mapUrl ?? '')) organization.hasMap = mapLink(headOffice.mapUrl ?? '')
+    const branches = (site.footer?.locations ?? []).filter((location) => location !== headOffice && location.name.trim() && location.address.trim())
+      .map((location) => ({
+        '@type': 'LocalBusiness',
+        name: `${PUBLIC_SEO_SITE_NAME} – ${location.name.trim()}`,
+        address: { '@type': 'PostalAddress', streetAddress: location.address.trim(), addressCountry: 'VN' },
+        ...(mapLink(location.mapUrl ?? '') ? { hasMap: mapLink(location.mapUrl ?? '') } : {}),
+        ...(site.brand.hotline.trim() ? { telephone: site.brand.hotline.trim() } : {}),
+      }))
+    if (branches.length) organization.department = branches
   }
 
   const sameAs = publicSocialUrls(site)

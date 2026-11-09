@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicBreadcrumbStructuredData, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
+import { isSizedSocialImage, canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicBreadcrumbStructuredData, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '../shared/editorial-public-route.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
@@ -28,9 +28,12 @@ test('canonical URL contains only a safe route path and never request-supplied o
   assert.equal(canonicalPublicUrl('https://evil.example', '/safe/'), null)
 })
 
-test('social image uses an approved site URL and falls back to the PHP public logo', () => {
-  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/upload/news/story.jpg'), 'https://phucthinhsolar.com/upload/news/story.jpg')
-  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', ''), 'https://phucthinhsolar.com/upload/photo/logo-phucthinh-solar-wordmark-2026.png')
+test('social image uses an approved site URL at 1200x630 and falls back to the logo fitted on white', () => {
+  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/upload/news/story.jpg'), 'https://phucthinhsolar.com/thumbs/1200x630x1/upload/news/story.jpg')
+  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/upload/product/den.png'), 'https://phucthinhsolar.com/thumbs/1200x630x2/upload/product/den.png')
+  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/assets/other/a.svg'), 'https://phucthinhsolar.com/assets/other/a.svg')
+  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', ''), 'https://phucthinhsolar.com/thumbs/1200x630x2/upload/photo/logo-phucthinh-solar-wordmark-2026.png')
+  assert.equal(isSizedSocialImage(publicSocialImageUrl('https://phucthinhsolar.com', '')), true)
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', 'https://evil.example/image.jpg'), null)
 })
 
@@ -100,12 +103,16 @@ test('Organization and homepage WebSite JSON-LD use only the canonical host and 
       companyName: '',
       contactText: { format: 'sanitized-html', html: '', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 },
       policies: [],
-      locations: [{ name: 'Trụ sở chính', address: 'Gia Lai', mapUrl: '' }],
+      locations: [{ name: 'Trụ sở chính', address: 'Gia Lai', mapUrl: 'https://maps.app.goo.gl/abc' }, { name: 'Kho TP.HCM', address: '387 Trần Xuân Soạn', mapUrl: 'javascript:alert(1)' }],
       socialLinks: [{ label: 'Facebook', href: 'https://facebook.com/pts' }, { label: 'Google', href: 'https://google.com' }],
     },
   }
   const about = JSON.parse(publicSiteStructuredData('https://phucthinhsolar.com', '/gioi-thieu/', site))
-  assert.equal(about['@type'], 'Organization')
+  assert.deepEqual(about['@type'], ['Organization', 'LocalBusiness'])
+  assert.equal(about.hasMap, 'https://maps.app.goo.gl/abc')
+  assert.equal(about.image, 'https://phucthinhsolar.com/upload/photo/logo.webp')
+  assert.deepEqual(about.department.map((branch) => [branch.name, branch.address.streetAddress, 'hasMap' in branch]), [['Phúc Thịnh Solar – Kho TP.HCM', '387 Trần Xuân Soạn', false]])
+  assert.equal('openingHoursSpecification' in about, false)
   assert.equal(about['@id'], 'https://phucthinhsolar.com/#organization')
   assert.equal(about.legalName, 'CÔNG TY TNHH CÔNG NGHỆ - THƯƠNG MẠI VÀ DỊCH VỤ PHÚC THỊNH SOLAR')
   assert.equal(about.logo.url, 'https://phucthinhsolar.com/upload/photo/logo.webp')
@@ -117,7 +124,7 @@ test('Organization and homepage WebSite JSON-LD use only the canonical host and 
 
   const homeJson = publicSiteStructuredData('https://phucthinhsolar.com', '/', site)
   const home = JSON.parse(homeJson)
-  assert.deepEqual(home['@graph'].map((node) => node['@type']), ['Organization', 'WebSite'])
+  assert.deepEqual(home['@graph'].map((node) => node['@type']), [['Organization', 'LocalBusiness'], 'WebSite'])
   assert.equal(home['@graph'][1].publisher['@id'], 'https://phucthinhsolar.com/#organization')
   assert.equal(publicSiteStructuredData('https://evil.example', '/', site), null)
   const dangerousCmsText = publicSiteStructuredData('https://phucthinhsolar.com', '/gioi-thieu/', {
@@ -187,7 +194,8 @@ test('SEO image fallbacks use the Admin SEO photo before the shared logo fallbac
   assert.match(read('app/components/catalog/CatalogPage.vue'), /image: computed\(\(\) => catalogData\.value\?\.seo\.image \|\| \(route\.path === '\/thuong-hieu\/' \? undefined : catalogData\.value\?\.categoryHero\?\.image\)\)/)
   assert.match(read('app/components/views/ProjectsView.vue'), /image: computed\(\(\) => projects\.value\?\.seo\?\.image \|\| undefined\)/)
   assert.match(read('app/components/views/NewsView.vue'), /image: computed\(\(\) => news\.value\?\.seo\?\.image \|\| undefined\)/)
-  assert.match(read('app/components/views/SolutionDetailView.vue'), /image: computed\(\(\) => data\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/views/SolutionDetailView.vue'), /image: computed\(\(\) => data\.value\?\.seo\?\.image \|\| data\.value\?\.solution\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/home/HomePageContent.vue'), /image: computed\(\(\) => home\.value\?\.seo\.image \|\| home\.value\?\.hero\?\.\[0\]\?\.image \|\| undefined\)/)
 })
 
 test('public editorial metadata hides filtered, empty, and failed pages from indexing', () => {

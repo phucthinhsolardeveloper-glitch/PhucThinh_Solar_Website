@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { canonicalPublicUrl, PUBLIC_SEO_SITE_NAME, publicSocialImageUrl } from '#shared/public-seo'
+import { canonicalPublicUrl, isSizedSocialImage, PUBLIC_SEO_SITE_NAME, PUBLIC_SOCIAL_IMAGE_SIZE, publicSocialImageUrl } from '#shared/public-seo'
 
 type SocialMetaInput = {
   enabled?: MaybeRefOrGetter<boolean>
@@ -36,6 +36,9 @@ export function usePublicSocialMeta(input: SocialMetaInput): void {
     ogDescription: computed(() => enabled.value ? description.value : undefined),
     ogUrl: computed(() => canonical.value ?? undefined),
     ogImage: computed(() => absoluteImage.value ?? undefined),
+    ogImageWidth: computed(() => isSizedSocialImage(absoluteImage.value) ? PUBLIC_SOCIAL_IMAGE_SIZE.width : undefined),
+    ogImageHeight: computed(() => isSizedSocialImage(absoluteImage.value) ? PUBLIC_SOCIAL_IMAGE_SIZE.height : undefined),
+    ogImageAlt: computed(() => absoluteImage.value ? title.value : undefined),
     twitterCard: computed(() => enabled.value ? 'summary_large_image' : undefined),
     twitterTitle: computed(() => enabled.value ? title.value : undefined),
     twitterDescription: computed(() => enabled.value ? description.value : undefined),

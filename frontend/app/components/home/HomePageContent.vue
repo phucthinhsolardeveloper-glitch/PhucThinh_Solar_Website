@@ -45,7 +45,8 @@ usePublicSocialMeta({
   title: computed(() => home.value?.seo.title || fallbackTitle.value),
   description: computed(() => home.value?.seo.description || fallbackDescription),
   canonicalPath: '/',
-  image: computed(() => home.value?.seo.image || undefined),
+  // Without an SEO picture, links shared on Zalo/Facebook show the first banner rather than the logo.
+  image: computed(() => home.value?.seo.image || home.value?.hero?.[0]?.image || undefined),
 })
 </script>
 

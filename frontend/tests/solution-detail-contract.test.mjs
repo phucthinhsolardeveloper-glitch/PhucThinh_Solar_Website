@@ -51,7 +51,7 @@ test('solution detail renders its Admin controlled campaign CTA after related eq
 test('solution detail reads the legacy news SEO key and applies Admin metadata with content fallbacks', () => {
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.title\s*\|\|\s*data\.value\?\.solution\.title/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.description\s*\|\|\s*data\.value\?\.solution\.summary/)
-  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*undefined/)
+  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*data\.value\?\.solution\?\.image\s*\|\|\s*undefined/)
 })
 test('solution hub parent renders nested public detail page and scopes hub status and metadata to the hub path', () => {
   assert.match(solutionHubPage, /<NuxtPage v-if="!isHubRoute" \/>/)

@@ -95,7 +95,9 @@ class ProjectDetail extends PageSupport
             'content' => RichText::dto(RichText::sanitize((string) $post->body)),
             'seo' => [
                 'title' => $seoTitle,
-                'description' => Text::cms((string) $seoRow?->description),
+                // Search results and shared links never get an empty snippet: SEO text, else summary, else the story.
+                'description' => Text::cms((string) $seoRow?->description) ?: Text::excerpt((string) $post->summary, 160) ?: Text::excerpt((string) $post->body, 160)
+                    ?: Text::excerpt($title.(Text::cms(ProjectLocation::label($post->address, $post->province_id, $post->ward_id)) !== '' ? ' tại '.Text::cms(ProjectLocation::label($post->address, $post->province_id, $post->ward_id)) : '').'. Công trình do Phúc Thịnh Solar thực hiện.', 160),
                 'keywords' => Text::cms((string) $seoRow?->keywords),
             ],
             'canonical' => ['url' => '/'.$projectSlug],

@@ -102,6 +102,7 @@ watch(() => props.locations, (locations) => {
             :key="selected.id"
             :src="selected.mapUrl"
             :title="'Bản đồ ' + selected.name"
+            loading="lazy"
             class="c-loc-map h-[340px] w-full border-0 bg-slate-200 tb:h-[420px]"
             referrerpolicy="no-referrer-when-downgrade"
             allowfullscreen

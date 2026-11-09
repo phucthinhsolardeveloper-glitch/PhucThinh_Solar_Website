@@ -125,7 +125,7 @@ test('homepage Admin SEO fields use the legacy setting row and logo for OG image
   assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/logo.avif' } }), true)
   assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/../secret.jpg' } }), false)
   assert.match(homePreview, /home\.value\?\.seo\.title \|\| fallbackTitle\.value/)
-  assert.match(homePreview, /home\.value\?\.seo\.image \|\| undefined/)
+  assert.match(homePreview, /home\.value\?\.seo\.image \|\| home\.value\?\.hero\?\.\[0\]\?\.image \|\| undefined/)
   assert.ok(homePreview.includes("name: 'keywords', content: pageKeywords.value"))
 })
 
