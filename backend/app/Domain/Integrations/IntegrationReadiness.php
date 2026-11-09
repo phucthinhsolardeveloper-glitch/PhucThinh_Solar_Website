@@ -3,6 +3,7 @@
 namespace App\Domain\Integrations;
 
 use App\Domain\Commerce\Payments;
+use App\Domain\Shipping\NhatTin\NtlClient;
 
 final class IntegrationReadiness
 {
@@ -31,17 +32,11 @@ final class IntegrationReadiness
                     ? 'Đã có địa chỉ gửi và nhận; cần gửi thử vào mailbox staging.' : 'Thiếu: '.implode(', ', $mailMissing).'.')],
         ];
 
-        foreach ((array) config('commerce.carriers', []) as $carrier) {
-            $active = (bool) ($carrier['active'] ?? false);
-            $missing = $this->missing((array) ($carrier['required'] ?? []), array_keys((array) ($carrier['required'] ?? [])));
-            $items[] = [
-                'label' => (string) ($carrier['label'] ?? 'Hãng vận chuyển'),
-                'state' => ! $active ? 'Tắt' : ($missing === [] ? 'Cần mapping' : 'Thiếu cấu hình'),
-                'detail' => ! $active ? 'Chưa bật hãng vận chuyển.' : ($missing === []
-                    ? 'Đã có credential; chưa có kho gửi, mã dịch vụ, quy cách kiện hàng và adapter tính phí.'
-                    : 'Thiếu: '.implode(', ', $missing).'. Chưa thể gọi API hãng.'),
-            ];
-        }
+        $ntl = app(NtlClient::class);
+        $ready = $ntl->readiness();
+        $items[] = ['label' => 'Nhất Tín', 'state' => ['mock' => 'Mô phỏng', 'sandbox' => 'Sandbox', 'production' => 'Production'][$ntl->mode()].($ready['ready'] ? '' : ' · chưa sẵn sàng'),
+            'detail' => $ready['reason'].(config('shipping.nhattin.locations_verified') ? '' : ' Mã tỉnh/phường chưa đối chiếu với Nhất Tín.')
+                .(trim((string) config('shipping.nhattin.webhook_token')) === '' ? ' Webhook chưa có token.' : '')];
 
         return $items;
     }

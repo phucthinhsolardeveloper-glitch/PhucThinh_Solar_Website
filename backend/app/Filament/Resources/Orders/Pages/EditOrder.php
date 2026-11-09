@@ -5,12 +5,20 @@ namespace App\Filament\Resources\Orders\Pages;
 use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\ManualPayment;
 use App\Domain\Commerce\OrderLifecycle;
+use App\Domain\Shipping\NhatTin\NtlClient;
+use App\Domain\Shipping\NhatTin\NtlException;
+use App\Domain\Shipping\NhatTin\NtlStatus;
+use App\Domain\Shipping\Shipments;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Support\AdminActor;
 use App\Models\Order;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Components\Grid;
 use Illuminate\Database\Eloquent\Model;
 
 class EditOrder extends EditRecord
@@ -45,6 +53,57 @@ class EditOrder extends EditRecord
                     app(ManualPayment::class)->confirm($record, AdminActor::current(), $data['reference'], (int) $data['amount']);
                     $this->refreshFormData(['payment_status', 'payment_reference']);
                 }),
+            ActionGroup::make([
+                Action::make('ntlQuote')->label('Báo giá Nhất Tín')->icon('heroicon-o-calculator')
+                    ->schema(fn () => self::parcelFields())
+                    ->modalSubmitActionLabel('Xem cước')
+                    ->action(function (Order $record, array $data): void {
+                        try {
+                            $quotes = app(Shipments::class)->quote($record, $data);
+                        } catch (NtlException $error) {
+                            Notification::make()->danger()->title('Chưa báo giá được')->body($error->getMessage())->persistent()->send();
+
+                            return;
+                        }
+                        $mode = app(NtlClient::class)->mode();
+                        Notification::make()->info()->persistent()->title('Cước Nhất Tín'.($mode === 'mock' ? ' (mô phỏng, không phải giá thật)' : ''))
+                            ->body(collect($quotes)->map(fn ($q) => $q['service'].': '.number_format($q['fee'], 0, ',', '.').'đ'.($q['lead_time'] ? ' · '.$q['lead_time'] : ''))->implode("\n") ?: 'Không có phương án.')->send();
+                    }),
+                Action::make('ntlCreate')->label('Tạo vận đơn Nhất Tín')->icon('heroicon-o-truck')
+                    ->visible(fn (Order $record) => ! $record->shipments()->whereIn('status', Shipments::ACTIVE)->exists())
+                    ->modalDescription(fn (Order $record) => (app(NtlClient::class)->mode() === 'mock' ? 'Chế độ mô phỏng: không gửi sang Nhất Tín. ' : '')
+                        .'Tạo vận đơn nháp cho đơn '.$record->code.'. Kiểm tra cân nặng, kích thước và tiền thu hộ trước khi gửi.')
+                    ->schema(fn (Order $record) => [
+                        ...self::parcelFields(),
+                        Select::make('service_id')->label('Dịch vụ')->required()->default('91')->options(config('shipping.nhattin.services')),
+                        TextInput::make('cod_amount')->label('Tiền thu hộ (đ)')->numeric()->minValue(0)->default(fn () => app(Shipments::class)->codFor($record))
+                            ->helperText('Đơn thu tiền khi nhận hàng và chưa thanh toán: thu đúng tổng đơn. Đơn đã chuyển khoản: 0.'),
+                        TextInput::make('note')->label('Ghi chú cho bưu tá')->maxLength(200),
+                    ])
+                    ->action(function (Order $record, array $data): void {
+                        app(Shipments::class)->create($record, $data, AdminActor::current());
+                        Notification::make()->success()->title('Đã tạo vận đơn')->send();
+                        $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
+                    }),
+                Action::make('ntlTrack')->label('Cập nhật hành trình')->icon('heroicon-o-arrow-path')
+                    ->visible(fn (Order $record) => $record->shipments()->whereNotNull('bill_code')->exists())
+                    ->action(function (Order $record): void {
+                        try {
+                            $shipment = app(Shipments::class)->refresh($record->shipments()->whereNotNull('bill_code')->firstOrFail());
+                            Notification::make()->success()->title(NtlStatus::LABELS[$shipment->status] ?? $shipment->status)->send();
+                        } catch (NtlException $error) {
+                            Notification::make()->danger()->title('Chưa lấy được hành trình')->body($error->getMessage())->send();
+                        }
+                        $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
+                    }),
+                Action::make('ntlCancel')->label('Hủy vận đơn')->icon('heroicon-o-x-circle')->color('danger')->requiresConfirmation()
+                    ->visible(fn (Order $record) => $record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->exists())
+                    ->action(function (Order $record): void {
+                        app(Shipments::class)->cancel($record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->firstOrFail(), AdminActor::current());
+                        Notification::make()->success()->title('Đã hủy vận đơn')->send();
+                        $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
+                    }),
+            ])->label('Vận chuyển')->icon('heroicon-o-truck')->button()->color('gray'),
             Action::make('recordManualRefund')->label('Ghi nhận đã hoàn tiền')->icon('heroicon-o-arrow-uturn-left')
                 ->color('warning')
                 ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'paid'
@@ -56,6 +115,20 @@ class EditOrder extends EditRecord
                     app(ManualPayment::class)->recordRefund($record, AdminActor::current(), $data['reference']);
                     $this->refreshFormData(['payment_status']);
                 }),
+        ];
+    }
+
+    /** @return array<int, mixed> */
+    private static function parcelFields(): array
+    {
+        return [
+            TextInput::make('weight_kg')->label('Cân nặng (kg)')->numeric()->required()->minValue(0.1)->maxValue(1000)->default(1),
+            Grid::make(3)->schema([
+                TextInput::make('length_cm')->label('Dài (cm)')->numeric()->minValue(0)->default(0),
+                TextInput::make('width_cm')->label('Rộng (cm)')->numeric()->minValue(0)->default(0),
+                TextInput::make('height_cm')->label('Cao (cm)')->numeric()->minValue(0)->default(0),
+            ]),
+            Select::make('payer_id')->label('Ai trả cước')->required()->default('10')->options(config('shipping.nhattin.payers')),
         ];
     }
 }

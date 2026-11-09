@@ -26,6 +26,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    /** @return HasMany<Shipment, $this> */
+    public function shipments(): HasMany
+    {
+        return $this->hasMany(Shipment::class)->orderByDesc('id');
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(PaymentTransaction::class);

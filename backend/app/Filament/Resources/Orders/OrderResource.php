@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders;
 use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
+use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Order;
 use BackedEnum;
@@ -119,6 +120,19 @@ class OrderResource extends Resource
                     ])->columns(6),
                 TextInput::make('totals')->label('Tạm tính · phí giao · tổng cộng')->disabled()->dehydrated(false)
                     ->formatStateUsing(fn (?Order $record) => $record ? self::money($record->subtotal).' · '.self::money($record->shipping_fee).' · '.self::money($record->total) : ''),
+            ]),
+            Section::make('Vận chuyển')->columnSpanFull()->visible(fn (?Order $record) => $record?->shipments()->exists() ?? false)->schema([
+                Repeater::make('shipments')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)
+                    ->schema([
+                        TextInput::make('bill_code')->label('Mã vận đơn')->formatStateUsing(fn ($state, $record) => ($state ?: '—').($record?->environment === 'mock' ? ' (mô phỏng)' : '')),
+                        TextInput::make('status')->label('Trạng thái')->formatStateUsing(fn ($state) => NtlStatus::LABELS[$state] ?? $state),
+                        TextInput::make('fee')->label('Cước (đ)')->formatStateUsing(fn ($state) => $state === null ? '—' : self::money($state)),
+                        TextInput::make('cod_amount')->label('Thu hộ (đ)')->formatStateUsing(fn ($state) => self::money($state)),
+                        TextInput::make('ref_code')->label('Mã tham chiếu'),
+                        TextInput::make('error')->label('Lỗi')->visible(fn ($state) => filled($state))->columnSpanFull(),
+                        TextInput::make('history')->label('Hành trình')->columnSpanFull()->dehydrated(false)
+                            ->formatStateUsing(fn ($record) => $record ? $record->events()->limit(5)->get()->map(fn ($e) => ($e->happened_at?->format('H:i d/m') ?? '').' '.$e->status_name)->implode(' · ') : ''),
+                    ])->columns(5),
             ]),
             Section::make('Lịch sử thanh toán')->columnSpanFull()->collapsed()->schema([
                 Repeater::make('payments')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)

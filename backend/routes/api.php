@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\PagesController;
 use App\Http\Controllers\Api\V1\ProductDetailController;
 use App\Http\Controllers\Api\V1\ShopController;
 use App\Http\Controllers\Api\V1\SiteController;
+use App\Http\Controllers\NtlWebhookController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Session\Middleware\StartSession;
@@ -57,3 +58,6 @@ Route::prefix('v1')->group(function () {
         Route::get('payment/vnpay', [ShopController::class, 'vnpay']);
     });
 });
+
+// Nhất Tín pushes waybill status here (token set in their portal).
+Route::post('integrations/ntl/webhook', NtlWebhookController::class)->middleware('throttle:120,1');

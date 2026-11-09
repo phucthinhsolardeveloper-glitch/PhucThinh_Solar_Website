@@ -4,7 +4,9 @@ namespace App\Filament\Pages;
 
 use App\Domain\Audit\Audit;
 use App\Domain\Commerce\VietQr;
+use App\Models\Province;
 use App\Models\User;
+use App\Models\Ward;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -43,7 +45,7 @@ class SiteSettingsPage extends Page
 
     /** Keys this page edits; anything else in the table is left alone. */
     public const TEXT_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours', 'fanpage', 'youtube',
-        'bank_bin', 'bank_account_no', 'bank_account_name'];
+        'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
 
     /** Only the owner may change where customers send money. */
     public const OWNER_KEYS = ['bank_bin', 'bank_account_no', 'bank_account_name'];
@@ -77,6 +79,7 @@ class SiteSettingsPage extends Page
         foreach (self::SWITCH_KEYS as $key) {
             $data[$key] = (string) ($values[$key] ?? '') === '1';
         }
+        $data['shipping_sender_province'] = Ward::query()->whereKey((int) ($data['shipping_sender_ward_id'] ?? 0))->value('province_id');
         $this->form->fill($data);
     }
 
@@ -105,6 +108,17 @@ class SiteSettingsPage extends Page
                     Select::make('bank_bin')->label('Ngân hàng')->searchable()->options(VietQr::BANKS),
                     TextInput::make('bank_account_no')->label('Số tài khoản')->regex('/^[0-9A-Za-z ]{4,23}$/'),
                     TextInput::make('bank_account_name')->label('Tên chủ tài khoản')->maxLength(60)->helperText('Viết như trên thẻ ngân hàng, không dấu cũng được.'),
+                ]),
+            Section::make('Kho gửi hàng (Nhất Tín)')->columns(2)->collapsed()
+                ->description('Thông tin người gửi trên vận đơn. Để trống tên, điện thoại, địa chỉ thì dùng thông tin công ty.')
+                ->schema([
+                    TextInput::make('shipping_sender_name')->label('Tên người gửi'),
+                    TextInput::make('shipping_sender_phone')->label('Điện thoại người gửi')->tel(),
+                    TextInput::make('shipping_sender_address')->label('Số nhà, đường')->columnSpanFull(),
+                    Select::make('shipping_sender_province')->label('Tỉnh / thành')->searchable()->live()->dehydrated(false)
+                        ->options(fn () => Province::query()->where('is_visible', true)->orderBy('name')->pluck('name', 'id')->all()),
+                    Select::make('shipping_sender_ward_id')->label('Phường / xã')->searchable()
+                        ->options(fn ($get) => $get('shipping_sender_province') ? Ward::query()->where('province_id', $get('shipping_sender_province'))->orderBy('name')->pluck('name', 'id')->all() : []),
                 ]),
             Section::make('Bán hàng')->columns(2)->schema([
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
