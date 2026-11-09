@@ -36,4 +36,4 @@ Không có việc dở.
 | Nút phễu cạnh ô tìm kiếm, logo ngang, thanh cuộn sidebar | bec398ee, 78338e37 | |
 | Nhập/xuất Excel hợp nhất, ảnh ZIP, feed Google | b52f3366 | Đã đối chiếu xong `product_bulk.php`; không đọc lại |
 | Xuất đơn hàng Excel, phiếu in, lọc ngày/tỉnh | c373035a | Phiếu in thay file Word; có thể lưu PDF |
-| Kéo-thả thứ tự sản phẩm, bài viết | commit kế tiếp | |
+| Kéo-thả thứ tự sản phẩm, bài viết | d3a24116 | |
