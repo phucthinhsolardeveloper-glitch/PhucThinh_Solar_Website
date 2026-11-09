@@ -2,13 +2,17 @@
 
 namespace App\Filament\Support;
 
-use App\Domain\Content\PostWorkflow;
-use App\Filament\Resources\PostDrafts\PostDraftResource;
+use App\Domain\Content\PostRevisions;
+use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Edit screen of a post: publishers may save the public page directly (each save is kept as a
+ * version); content-only editors work through a draft. Shared by articles, solutions, projects and policies.
+ */
 trait ManagesPostPublication
 {
     protected function handleRecordUpdate(Model $record, array $data): Model
@@ -20,8 +24,20 @@ trait ManagesPostPublication
         if (! $publisher) {
             $data['is_visible'] = false;
         }
+        if ($record instanceof Post) {
+            app(PostRevisions::class)->beforeDirectSave($record);
+        }
 
         return parent::handleRecordUpdate($record, $data);
+    }
+
+    /** Runs after the SEO, gallery and product relations are saved, so the version is complete. */
+    protected function afterSave(): void
+    {
+        $record = $this->getRecord();
+        if ($record instanceof Post) {
+            app(PostRevisions::class)->afterDirectSave($record, AdminActor::current());
+        }
     }
 
     public function getSubheading(): ?string
@@ -29,8 +45,11 @@ trait ManagesPostPublication
         if (! AdminActor::current()->canPerform('content_publish') && $this->isPublished()) {
             return 'Nội dung đã xuất bản chỉ được sửa qua bản nháp. Chọn “Soạn bản nháp” để đề xuất thay đổi.';
         }
+        if ($this->isPublished()) {
+            return 'Lưu tại đây cập nhật trang công khai ngay và giữ lại bản cũ trong lịch sử. Dùng “Soạn bản nháp” để chuẩn bị thay đổi trước khi xuất bản.';
+        }
 
-        return 'Lưu tại đây cập nhật nội dung công khai ngay. Dùng “Soạn bản nháp” để lưu lịch sử và duyệt trước khi xuất bản.';
+        return null;
     }
 
     protected function getSaveFormAction(): Action
@@ -41,13 +60,20 @@ trait ManagesPostPublication
 
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('draft')->label('Soạn bản nháp')->icon('heroicon-o-document-duplicate')
-                ->action(function (Post $record) {
-                    $draft = app(PostWorkflow::class)->draft($record, AdminActor::current());
+        $record = $this->getRecord();
+        $draft = $record instanceof Post ? $record->revisions()->where('state', 'draft')->first() : null;
 
-                    return redirect(PostDraftResource::getUrl('edit', ['record' => $draft]));
+        return [
+            Action::make('draft')->label($draft ? 'Mở bản nháp' : 'Soạn bản nháp')->icon('heroicon-o-document-duplicate')
+                ->color($draft ? 'warning' : 'primary')
+                ->action(function (Post $record) {
+                    $draft = app(PostRevisions::class)->draft($record, AdminActor::current());
+
+                    return redirect(PostRevisionResource::getUrl('edit', ['record' => $draft]));
                 }),
+            Action::make('history')->label('Lịch sử')->icon('heroicon-o-clock')->color('gray')
+                ->visible(fn () => $record instanceof Post && $record->revisions()->exists())
+                ->url(fn () => PostRevisionResource::getUrl('index', ['tableFilters' => ['post_id' => ['value' => $record->getKey()]]])),
             DeleteAction::make(),
         ];
     }

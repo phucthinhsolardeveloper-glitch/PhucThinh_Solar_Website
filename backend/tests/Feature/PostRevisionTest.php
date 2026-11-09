@@ -1,10 +1,11 @@
 <?php
 
-use App\Domain\Content\PostWorkflow;
+use App\Domain\Content\PostRevisions;
 use App\Filament\Resources\Policies\Pages\CreatePolicy;
 use App\Filament\Resources\Policies\Pages\EditPolicy;
 use App\Filament\Resources\Policies\PolicyResource;
-use App\Filament\Resources\PostDrafts\Pages\EditPostDraft;
+use App\Filament\Resources\PostRevisions\Pages\EditPostRevision;
+use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\ProjectResource;
@@ -31,7 +32,7 @@ it('keeps each public post unchanged until an authorized publish and can restore
     $publisher = postWorkflowActor(['content', 'content_publish']);
     $post = Post::query()->where('kind', $kind)->where('is_visible', true)->firstOrFail();
     $original = $post->title;
-    $workflow = app(PostWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $editor);
     expect($workflow->draft($post, $editor)->id)->toBe($draft->id);
     $input = [
@@ -76,7 +77,7 @@ it('blocks stale drafts and direct public edits by content-only editors', functi
     $editor = postWorkflowActor(['content']);
     $publisher = postWorkflowActor(['content', 'content_publish']);
     $post = Post::query()->where('kind', $kind)->where('is_visible', true)->firstOrFail();
-    $workflow = app(PostWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $editor);
 
     $this->actingAs($editor, 'admin');
@@ -85,7 +86,7 @@ it('blocks stale drafts and direct public edits by content-only editors', functi
         ->assertActionExists('draft')->fillForm(['title' => 'Sửa public trái quyền'])
         ->call('save')->assertForbidden();
     expect($post->fresh()->title)->not->toBe('Sửa public trái quyền');
-    Livewire\Livewire::test(EditPostDraft::class, ['record' => $draft->id])
+    Livewire\Livewire::test(EditPostRevision::class, ['record' => $draft->id])
         ->assertActionHidden('publish')->call('save')->assertHasNoFormErrors();
 
     $post->update(['title' => 'Sửa trực tiếp sau khi tạo nháp']);
@@ -113,26 +114,26 @@ it('creates solution, project and policy hidden for an editor without publish pe
 it('keeps draft HTML and SEO intact on an unchanged save', function (string $kind) {
     $editor = postWorkflowActor(['content']);
     $post = Post::query()->where('kind', $kind)->whereNotNull('body')->firstOrFail();
-    $draft = app(PostWorkflow::class)->draft($post, $editor);
+    $draft = app(PostRevisions::class)->draft($post, $editor);
     $before = $draft->payload;
 
     $this->actingAs($editor, 'admin');
-    $this->get('/admin/post-drafts')->assertOk();
-    $this->get('/admin/post-drafts/'.$draft->id.'/edit')->assertOk();
-    Livewire\Livewire::test(EditPostDraft::class, ['record' => $draft->id])
+    $this->get('/admin/ban-nhap')->assertOk();
+    $this->get('/admin/ban-nhap/'.$draft->id.'/edit')->assertOk();
+    Livewire\Livewire::test(EditPostRevision::class, ['record' => $draft->id])
         ->call('save')->assertHasNoFormErrors();
     expect($draft->fresh()->payload)->toBe($before);
 
     $this->flushSession();
     $this->actingAs(postWorkflowActor(['catalog']), 'admin');
-    $this->get('/admin/post-drafts')->assertForbidden();
+    $this->get('/admin/ban-nhap')->assertForbidden();
 })->with(['solution', 'project', 'policy']);
 
 it('publishes and restores project product links with the draft', function () {
     $publisher = postWorkflowActor(['content', 'content_publish']);
     $post = Post::query()->where('kind', 'project')->where('is_visible', true)->firstOrFail();
     $product = Product::query()->where('is_visible', true)->firstOrFail();
-    $workflow = app(PostWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $publisher);
     $original = $post->products()->pluck('products.id')->all();
     $workflow->save($draft, [
@@ -146,4 +147,61 @@ it('publishes and restores project product links with the draft', function () {
     $baseline = $post->revisions()->where('version', 0)->firstOrFail();
     $workflow->publish($workflow->restoreAsDraft($baseline, $publisher), $publisher);
     expect($post->products()->pluck('products.id')->all())->toBe($original);
+});
+
+it('keeps every direct save of a public page in the history so it can be rolled back', function () {
+    $publisher = postWorkflowActor(['content', 'content_publish']);
+    $this->actingAs($publisher, 'admin');
+    $post = Post::query()->where('kind', 'solution')->where('is_visible', true)->firstOrFail();
+    $original = $post->title;
+
+    Livewire\Livewire::test(EditSolution::class, ['record' => $post->id])
+        ->fillForm(['title' => 'Sửa trực tiếp lần 1'])->call('save')->assertHasNoFormErrors();
+    Livewire\Livewire::test(EditSolution::class, ['record' => $post->id])
+        ->call('save')->assertHasNoFormErrors();
+
+    $versions = $post->revisions()->where('state', 'published')->orderBy('version')->get();
+    expect($versions)->toHaveCount(2)
+        ->and($versions[0]->payload['title'])->toBe($original)
+        ->and($versions[1]->payload['title'])->toBe('Sửa trực tiếp lần 1')
+        ->and($versions[1]->published_by)->toBe($publisher->id);
+
+    $workflow = app(PostRevisions::class);
+    $restored = $workflow->restoreAsDraft($versions[0], $publisher);
+    expect(collect(PostRevisionResource::describeChanges($restored))->pluck('label')->all())->toBe(['Tiêu đề']);
+    $workflow->publish($restored, $publisher);
+    expect($post->fresh()->title)->toBe($original);
+});
+
+it('drafts, publishes and restores the gallery and SEO picture', function () {
+    $publisher = postWorkflowActor(['content', 'content_publish']);
+    $post = Post::query()->where('kind', 'project')->where('is_visible', true)->firstOrFail();
+    $before = $post->media()->count();
+    $workflow = app(PostRevisions::class);
+    $draft = $workflow->draft($post, $publisher);
+    $workflow->save($draft, ['title' => $post->title, 'body' => $post->body, 'seo' => ['image' => 'chia-se.jpg'], 'media' => [
+        ['kind' => 'image', 'path' => 'cong-trinh-1.jpg', 'caption' => 'Mái nhà', 'is_visible' => true],
+        ['kind' => 'video', 'path' => 'bia.jpg', 'video_url' => 'https://www.youtube.com/watch?v=abc', 'is_visible' => false],
+        ['kind' => 'image', 'path' => null],
+    ]], $publisher);
+    expect($post->media()->count())->toBe($before);
+
+    $workflow->publish($draft, $publisher);
+    $media = $post->media()->orderBy('sort_order')->get();
+    expect($media->pluck('path')->all())->toBe(['cong-trinh-1.jpg', 'bia.jpg'])
+        ->and($media[1]->is_visible)->toBeFalse()
+        ->and($post->seo()->value('image'))->toBe('chia-se.jpg');
+
+    $baseline = $post->revisions()->where('version', 0)->firstOrFail();
+    $workflow->publish($workflow->restoreAsDraft($baseline, $publisher), $publisher);
+    expect($post->media()->count())->toBe($before);
+});
+
+it('refuses gallery paths that climb out of the upload folder', function () {
+    $editor = postWorkflowActor(['content']);
+    $post = Post::query()->where('kind', 'project')->where('is_visible', true)->firstOrFail();
+    $workflow = app(PostRevisions::class);
+    $draft = $workflow->draft($post, $editor);
+    expect(fn () => $workflow->save($draft, ['title' => 'x', 'media' => [['kind' => 'image', 'path' => '../../.env']]], $editor))
+        ->toThrow(ValidationException::class);
 });

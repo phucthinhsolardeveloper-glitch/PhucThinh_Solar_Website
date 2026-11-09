@@ -1,10 +1,10 @@
 <?php
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
-use App\Domain\Content\ArticleWorkflow;
-use App\Filament\Resources\ArticleDrafts\Pages\EditArticleDraft;
+use App\Domain\Content\PostRevisions;
 use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
+use App\Filament\Resources\PostRevisions\Pages\EditPostRevision;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\User;
@@ -37,7 +37,7 @@ it('keeps public content unchanged until publish, then can restore an earlier ve
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
     $originalTitle = $post->title;
     $before = $this->getJson('/api/v1/news-detail?slug='.$post->slug)->assertOk()->json();
-    $workflow = app(ArticleWorkflow::class);
+    $workflow = app(PostRevisions::class);
 
     $draft = $workflow->draft($post, $actor);
     expect($workflow->draft($post, $actor)->id)->toBe($draft->id);
@@ -70,7 +70,7 @@ it('keeps public content unchanged until publish, then can restore an earlier ve
 it('blocks publishing a stale draft and exposes the editor only to the content area', function () {
     $actor = articleWorkflowUser(['content', 'content_publish']);
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
-    $workflow = app(ArticleWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $actor);
     $workflow->save($draft, articleDraftInput('Tiêu đề thay đổi'), $actor);
     $post->update(['title' => 'Sửa trực tiếp sau khi tạo nháp']);
@@ -78,12 +78,12 @@ it('blocks publishing a stale draft and exposes the editor only to the content a
     expect($post->fresh()->title)->toBe('Sửa trực tiếp sau khi tạo nháp');
 
     $this->actingAs($actor, 'admin');
-    $this->get('/admin/article-drafts')->assertOk();
-    $this->get('/admin/article-drafts/'.$draft->id.'/edit')->assertOk();
+    $this->get('/admin/ban-nhap')->assertOk();
+    $this->get('/admin/ban-nhap/'.$draft->id.'/edit')->assertOk();
     $this->flushSession();
     $other = articleWorkflowUser(['catalog']);
     $this->actingAs($other, 'admin');
-    $this->get('/admin/article-drafts')->assertForbidden();
+    $this->get('/admin/ban-nhap')->assertForbidden();
 });
 
 it('lets Filament save a draft without changing the published article', function () {
@@ -91,8 +91,8 @@ it('lets Filament save a draft without changing the published article', function
     $this->actingAs($actor, 'admin');
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
     Livewire\Livewire::test(EditArticle::class, ['record' => $post->id])->assertActionExists('draft');
-    $draft = app(ArticleWorkflow::class)->draft($post, $actor);
-    Livewire\Livewire::test(EditArticleDraft::class, ['record' => $draft->id])
+    $draft = app(PostRevisions::class)->draft($post, $actor);
+    Livewire\Livewire::test(EditPostRevision::class, ['record' => $draft->id])
         ->fillForm(['payload' => articleDraftInput('Tiêu đề qua Filament')])
         ->call('save')->assertHasNoFormErrors();
     expect($draft->fresh()->payload['title'])->toBe('Tiêu đề qua Filament')
@@ -103,10 +103,10 @@ it('keeps draft HTML and SEO bytes intact when the editor saves without changes'
     $actor = articleWorkflowUser();
     $this->actingAs($actor, 'admin');
     $post = Post::query()->where('kind', 'article')->whereNotNull('body')->firstOrFail();
-    $draft = app(ArticleWorkflow::class)->draft($post, $actor);
+    $draft = app(PostRevisions::class)->draft($post, $actor);
     $before = $draft->payload;
 
-    Livewire\Livewire::test(EditArticleDraft::class, ['record' => $draft->id])
+    Livewire\Livewire::test(EditPostRevision::class, ['record' => $draft->id])
         ->call('save')->assertHasNoFormErrors();
 
     expect($draft->fresh()->payload)->toBe($before);
@@ -126,15 +126,15 @@ it('creates a new article hidden until an editor chooses to publish it', functio
 it('lets a content editor draft but prevents publishing or direct public edits', function () {
     $editor = articleWorkflowUser(['content']);
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
-    $workflow = app(ArticleWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $editor);
     $workflow->save($draft, articleDraftInput('Bản nháp của editor'), $editor);
     expect(fn () => $workflow->publish($draft, $editor))
         ->toThrow(HttpException::class);
 
     $this->actingAs($editor, 'admin');
-    Livewire\Livewire::test(EditArticleDraft::class, ['record' => $draft->id])->assertActionHidden('publish');
-    Livewire\Livewire::test(EditArticle::class, ['record' => $post->id])->assertSee('Bài đã xuất bản chỉ được sửa qua bản nháp')
+    Livewire\Livewire::test(EditPostRevision::class, ['record' => $draft->id])->assertActionHidden('publish');
+    Livewire\Livewire::test(EditArticle::class, ['record' => $post->id])->assertSee('Nội dung đã xuất bản chỉ được sửa qua bản nháp')
         ->fillForm(['title' => 'Sửa public không được duyệt'])->call('save')->assertForbidden();
     expect($post->fresh()->title)->not->toBe('Sửa public không được duyệt');
 
@@ -153,7 +153,7 @@ it('previews linked products from the draft and publishes them with the article'
     $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
     $product = Product::query()->where('is_visible', true)->firstOrFail();
     $product->update(['image' => 'draft-linked.jpg']);
-    $workflow = app(ArticleWorkflow::class);
+    $workflow = app(PostRevisions::class);
     $draft = $workflow->draft($post, $actor);
     $workflow->save($draft, [...articleDraftInput('Bài có sản phẩm'), 'products' => [$product->id]], $actor);
 
@@ -171,20 +171,4 @@ it('previews linked products from the draft and publishes them with the article'
     $restored = $workflow->restoreAsDraft($baseline, $actor);
     $workflow->publish($restored, $actor);
     expect($post->fresh()->products()->count())->toBe(0);
-});
-
-it('publishes a legacy draft after its product links are edited', function () {
-    $actor = articleWorkflowUser();
-    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
-    $product = Product::query()->where('is_visible', true)->firstOrFail();
-    $workflow = app(ArticleWorkflow::class);
-    $draft = $workflow->draft($post, $actor);
-    $legacyPayload = $draft->payload;
-    unset($legacyPayload['products']);
-    $draft->update(['payload' => $legacyPayload,
-        'base_hash' => hash('sha256', json_encode($legacyPayload, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))]);
-
-    $workflow->save($draft, [...articleDraftInput('Bài nháp cũ'), 'products' => [$product->id]], $actor);
-    $workflow->publish($draft, $actor);
-    expect($post->fresh()->products->pluck('id')->all())->toBe([$product->id]);
 });

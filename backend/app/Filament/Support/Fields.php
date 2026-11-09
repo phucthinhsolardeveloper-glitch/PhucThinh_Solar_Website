@@ -105,8 +105,11 @@ final class Fields
                     return $original;
                 }
                 $out = is_string($state) ? $state : $html($state);
+                if (trim(strip_tags($out, '<img><iframe><table>')) === '') {
+                    return $original === '' ? '' : null; // empty stays as it was stored
+                }
 
-                return trim(strip_tags($out, '<img><iframe><table>')) === '' ? null : $out;
+                return $out;
             });
     }
 
