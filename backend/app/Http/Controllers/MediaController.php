@@ -18,6 +18,10 @@ class MediaController extends Controller
 
     public function file(string $path, ProductMediaUrls $urls): BinaryFileResponse
     {
+        // Legacy file managers left caches, trash and quarantine under the upload mount.
+        // None of their dot-prefixed paths are public media, even when the file type is valid.
+        abort_if(preg_match('~(?:^|/)\.[^/]*(?:/|$)~', $path) === 1, 404);
+
         $public = 'upload/'.$path;
         $type = self::TYPES[strtolower(pathinfo($path, PATHINFO_EXTENSION))] ?? null;
         abort_unless($type !== null && $urls->exists($public), 404);
