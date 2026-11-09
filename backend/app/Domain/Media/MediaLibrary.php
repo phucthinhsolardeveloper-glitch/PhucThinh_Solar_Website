@@ -51,7 +51,7 @@ class MediaLibrary extends PageSupport
             ->filter(fn ($image) => $image['image'] !== '')->take(120)->values()->all();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'album' => $album, 'images' => $images,
-            'seo' => self::seo($model->seo()->first(), $album['title'], $album['description'], '/'.$album['slug'].'/')]];
+            'seo' => self::seo(SeoMeta::query()->where('owner_type', Album::class)->where('owner_id', $model->id)->first(), $album['title'], $album['description'], '/'.$album['slug'].'/')]];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */

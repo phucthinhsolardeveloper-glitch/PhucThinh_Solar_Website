@@ -2,28 +2,56 @@
 
 namespace App\Domain\Solutions;
 
-use App\Support\Text;
+use Illuminate\Database\Connection;
 
-/** Selection rules shared by the solution and project pages (libraries/solution_hub.php). */
+/**
+ * Rows the solution pages choose from, and the selection rule they share: published rows, and when
+ * any row is marked featured, only featured ones. A hidden featured row still counts as a selection,
+ * so hiding the last chosen item never brings back unrelated content.
+ */
 final class SolutionHub
 {
-    public static function has(array $row, string $flag): bool
+    /**
+     * Every solution post in Admin order, hidden ones included.
+     *
+     * @return list<array{id: int, category_id: int, title: string, nav_title: string, summary: string, image: string, cover_image: string, slug: string, is_visible: bool, featured: bool}>
+     */
+    public static function solutions(Connection $db): array
     {
-        return in_array($flag, explode(',', (string) ($row['status'] ?? '')), true);
+        return $db->table('posts')->where('kind', 'solution')->orderBy('sort_order')->orderByDesc('id')
+            ->get(['id', 'category_id', 'title', 'nav_title', 'summary', 'image', 'cover_image', 'slug', 'is_visible', 'in_hub'])
+            ->map(fn ($row) => [
+                'id' => (int) $row->id, 'category_id' => (int) $row->category_id, 'title' => (string) $row->title, 'nav_title' => (string) $row->nav_title,
+                'summary' => (string) $row->summary, 'image' => (string) $row->image, 'cover_image' => (string) $row->cover_image, 'slug' => (string) $row->slug,
+                'is_visible' => (bool) $row->is_visible, 'featured' => (bool) $row->in_hub,
+            ])->all();
     }
 
     /**
-     * Published rows; when any row carries $flag, only flagged ones. A hidden flagged row still counts
-     * as a selection, so hiding the last chosen item never brings back unrelated content.
+     * Top product categories offered as equipment shortcuts, hidden ones included.
      *
+     * @return list<array{id: int, name: string, summary: string, image: string, slug: string, is_visible: bool, featured: bool}>
+     */
+    public static function productGroups(Connection $db): array
+    {
+        return $db->table('categories')->where('depth', 1)->orderBy('sort_order')->orderByDesc('id')
+            ->get(['id', 'name', 'summary', 'image', 'slug', 'is_visible', 'in_solution_hub'])
+            ->map(fn ($row) => [
+                'id' => (int) $row->id, 'name' => (string) $row->name, 'summary' => (string) $row->summary, 'image' => (string) $row->image,
+                'slug' => (string) $row->slug, 'is_visible' => (bool) $row->is_visible, 'featured' => (bool) $row->in_solution_hub,
+            ])->all();
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows  each with is_visible, optionally featured
      * @return list<array<string, mixed>>
      */
-    public static function select(array $rows, string $flag = '', int $limit = 0): array
+    public static function select(array $rows, bool $featuredOnly = false, int $limit = 0): array
     {
-        $hasSelection = $flag !== '' && array_any($rows, fn ($row) => self::has($row, $flag));
+        $narrow = $featuredOnly && array_any($rows, fn ($row) => ! empty($row['featured']));
         $selected = [];
         foreach ($rows as $row) {
-            if (! self::has($row, 'hienthi') || ($hasSelection && ! self::has($row, $flag))) {
+            if (! $row['is_visible'] || ($narrow && empty($row['featured']))) {
                 continue;
             }
             $selected[] = $row;
@@ -33,22 +61,5 @@ final class SolutionHub
         }
 
         return $selected;
-    }
-
-    public static function field(array $row, string $field): string
-    {
-        return isset($row[$field.'vi']) ? Text::cms($row[$field.'vi']) : '';
-    }
-
-    public static function navName(array $row): string
-    {
-        return self::field($row, 'title_index') ?: self::field($row, 'name');
-    }
-
-    public static function publicPath(array $row): string
-    {
-        $slug = self::field($row, 'slug');
-
-        return $slug !== '' ? 'giai-phap/'.$slug.'/' : 'giai-phap/';
     }
 }

@@ -10,8 +10,8 @@ use App\Support\SiteSettings;
 use App\Support\Text;
 
 /**
- * Solutions hub (api/pts_v1_solutions.php): intro, solution cards ticked "solutionhub", equipment
- * shortcuts, CTA, editorial text with a table of contents, and an optional category view.
+ * Solutions hub: intro, featured solution cards, equipment shortcuts, CTA, editorial text with a
+ * table of contents, and an optional category view.
  */
 class SolutionsListing extends PageSupport
 {
@@ -49,25 +49,25 @@ class SolutionsListing extends PageSupport
         if (array_diff(array_keys($get), ['category']) || (isset($get['category']) && (! is_string($get['category']) || ! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $get['category'])))) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $solutions = $this->withImages($this->rows("select id, category_id as id_list, title as namevi, coalesce(nav_title,'') as title_indexvi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, coalesce(cover_image,'') as photo1, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'solutionhub',null)) as status from posts where kind='solution' order by sort_order,id desc"));
-        $introRows = $this->withImages($this->items('solutions.intro'));
-        $ctaRows = $this->withImages($this->items('solutions.cta'));
-        $products = array_map(fn ($row) => $row + ['_photo' => $this->image($row['photo'], 'upload/product/')],
-            $this->rows("select id, name as namevi, coalesce(summary,'') as descvi, coalesce(image,'') as photo, slug as slugvi, concat_ws(',', if(is_visible,'hienthi',null), if(in_solution_hub,'solutionhub',null)) as status from categories where depth=1 order by sort_order,id desc"));
-        $groups = $this->rows("select c.id, c.name as namevi, coalesce(c.summary,'') as descvi, c.slug as slugvi, coalesce(c.image,'') as photo, 'hienthi' as status from post_categories c where c.kind='solution' and c.is_visible=1"
-            ." and exists(select 1 from posts p where p.category_id=c.id and p.kind='solution' and p.is_visible=1 and p.slug<>'') order by c.sort_order,c.id desc");
+        $solutions = $this->withImages(SolutionHub::solutions($this->db));
+        $introRows = $this->withImages($this->section('solutions.intro'));
+        $ctaRows = $this->withImages($this->section('solutions.cta'));
+        $products = array_map(fn ($row) => $row + ['_image' => $this->looseImage($row['image'], 'upload/product/')], SolutionHub::productGroups($this->db));
+        $groups = $this->db->table('post_categories as c')->where('c.kind', 'solution')->where('c.is_visible', true)
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'solution')->where('p.is_visible', true)->where('p.slug', '<>', ''))
+            ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.summary', 'c.slug', 'c.image'])->map(fn ($row) => (array) $row)->all();
 
         $data = $this->payload($solutions, $introRows, $ctaRows, $products);
         if (isset($get['category'])) {
-            $group = array_values(array_filter($groups, fn ($g) => $g['slugvi'] === $get['category']))[0] ?? null;
+            $group = collect($groups)->firstWhere('slug', $get['category']);
             $category = null;
             if ($group) {
-                $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $group['id']]);
+                $seoRow = $this->db->table('seo_metas')->where('owner_type', PostCategory::class)->where('owner_id', $group['id'])->first(['title', 'description', 'keywords']);
                 $category = $this->category($group, $groups, $solutions, [
-                    'title' => Text::flat($seoRow['titlevi'] ?? ''),
-                    'description' => Text::flat($seoRow['descriptionvi'] ?? ''),
-                    'keywords' => Text::flat($seoRow['keywordsvi'] ?? ''),
-                    'image' => $this->urls->visual($group['photo'] ?? '', 'upload/news/'),
+                    'title' => Text::flat((string) $seoRow?->title),
+                    'description' => Text::flat((string) $seoRow?->description),
+                    'keywords' => Text::flat((string) $seoRow?->keywords),
+                    'image' => $this->urls->visual((string) $group['image'], 'upload/news/'),
                 ]);
             }
             if ($category === null) {
@@ -82,60 +82,60 @@ class SolutionsListing extends PageSupport
     private function payload(array $solutions, array $introRows, array $ctaRows, array $products): array
     {
         $ui = self::UI;
-        $featured = SolutionHub::select($solutions, 'solutionhub');
+        $featured = SolutionHub::select($solutions, true);
         $cards = [];
         foreach ($featured as $row) {
-            $slug = SolutionHub::field($row, 'slug');
+            $slug = Text::cms($row['slug']);
             if ($slug === '') {
                 continue;
             }
-            $cards[] = ['title' => SolutionHub::navName($row), 'description' => SolutionHub::field($row, 'desc'), 'slug' => $slug, 'url' => '/giai-phap/'.$slug.'/',
-                'image' => self::path($row['_photo1']) ?: (self::path($row['_photo']) ?: self::path($this->fallbackImage($slug))), 'actionLabel' => $ui['choice']];
+            $cards[] = ['title' => Text::cms($row['nav_title']) ?: Text::cms($row['title']), 'description' => Text::cms($row['summary']), 'slug' => $slug, 'url' => '/giai-phap/'.$slug.'/',
+                'image' => self::path($row['_cover']) ?: (self::path($row['_image']) ?: self::path($this->fallbackImage($slug))), 'actionLabel' => $ui['choice']];
         }
 
-        $visibleIntro = SolutionHub::select($introRows, '', 1);
-        $editorial = self::editorialToc($visibleIntro ? RichText::sanitize($visibleIntro[0]['contentvi'] ?? '') : '');
+        $introRow = SolutionHub::select($introRows, false, 1)[0] ?? null;
+        $editorial = self::editorialToc($introRow ? RichText::sanitize($introRow['body']) : '');
         $intro = null;
         $title = $ui['title'];
-        if (! $introRows || $visibleIntro) {
-            $row = $visibleIntro[0] ?? [];
-            $title = SolutionHub::field($row, 'name') ?: $ui['title'];
-            $hero = self::path($row['_photo'] ?? '');
+        if (! $introRows || $introRow) {
+            $row = $introRow ?? ['title' => '', 'subtitle' => '', 'summary' => '', '_image' => ''];
+            $title = Text::cms($row['title']) ?: $ui['title'];
+            $hero = self::path($row['_image']);
             if (! $introRows && $hero === '') {
                 foreach ($featured as $candidate) {
-                    if (SolutionHub::field($candidate, 'slug') !== '' && ($hero = self::path($candidate['_photo1']) ?: self::path($candidate['_photo'])) !== '') {
+                    if (Text::cms($candidate['slug']) !== '' && ($hero = self::path($candidate['_cover']) ?: self::path($candidate['_image'])) !== '') {
                         break;
                     }
                 }
             }
             $intro = [
-                'eyebrow' => SolutionHub::field($row, 'title_index') ?: $ui['eyebrow'],
+                'eyebrow' => Text::cms($row['subtitle']) ?: $ui['eyebrow'],
                 'title' => $title,
-                'description' => SolutionHub::field($row, 'desc') ?: $ui['intro'],
+                'description' => Text::cms($row['summary']) ?: $ui['intro'],
                 'image' => $hero,
                 'links' => ['consult' => ['label' => $ui['consult'], 'href' => '#ptsContactModal'], 'explore' => ['label' => $ui['choices'], 'href' => '/giai-phap/#cac-giai-phap']],
             ];
         }
 
         $equipment = [];
-        foreach (SolutionHub::select($products, 'solutionhub', 4) as $row) {
-            $slug = trim((string) ($row['slugvi'] ?? ''), '/');
-            $equipment[] = ['name' => SolutionHub::field($row, 'name'), 'description' => SolutionHub::field($row, 'desc'),
-                'url' => '/danh-muc-san-pham/'.($slug !== '' ? $slug.'/' : ''), 'image' => self::path($row['_photo'])];
+        foreach (SolutionHub::select($products, true, 4) as $row) {
+            $slug = trim($row['slug'], '/');
+            $equipment[] = ['name' => Text::cms($row['name']), 'description' => Text::cms($row['summary']),
+                'url' => '/danh-muc-san-pham/'.($slug !== '' ? $slug.'/' : ''), 'image' => self::path($row['_image'])];
         }
 
         $cta = null;
-        $visibleCta = SolutionHub::select($ctaRows, '', 1);
-        if (! $ctaRows || $visibleCta) {
-            $row = $visibleCta[0] ?? [];
+        $ctaRow = SolutionHub::select($ctaRows, false, 1)[0] ?? null;
+        if (! $ctaRows || $ctaRow) {
+            $row = $ctaRow ?? ['title' => '', 'subtitle' => '', 'summary' => '', '_image' => ''];
             $hotline = is_scalar($this->settings->options()['hotline'] ?? null) ? trim((string) $this->settings->options()['hotline']) : '';
             $tel = (string) preg_replace('/[^0-9+]/', '', $hotline);
-            $button = SolutionHub::field($row, 'title_index') ?: $ui['consult'];
+            $button = Text::cms($row['subtitle']) ?: $ui['consult'];
             $cta = [
-                'title' => SolutionHub::field($row, 'name') ?: $ui['contact'],
-                'description' => SolutionHub::field($row, 'desc') ?: $ui['contact_desc'],
+                'title' => Text::cms($row['title']) ?: $ui['contact'],
+                'description' => Text::cms($row['summary']) ?: $ui['contact_desc'],
                 'buttonLabel' => $button,
-                'image' => self::path($row['_photo'] ?? '') ?: self::path(self::CTA_FALLBACK_IMAGE),
+                'image' => self::path($row['_image']) ?: self::path(self::CTA_FALLBACK_IMAGE),
                 'links' => ['consult' => ['label' => $button, 'href' => '#ptsContactModal']],
                 'hotline' => $tel === '' ? null : ['label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => $tel],
             ];
@@ -161,37 +161,37 @@ class SolutionsListing extends PageSupport
     private function category(array $group, array $groups, array $solutions, array $seo): ?array
     {
         $id = (int) $group['id'];
-        $slug = Text::slug($group['slugvi']);
-        $name = Text::cms($group['namevi']);
-        if ($id <= 0 || $slug === '' || $name === '') {
+        $slug = Text::slug($group['slug']);
+        $name = Text::cms($group['name']);
+        if ($slug === '' || $name === '') {
             return null;
         }
         $cards = [];
         foreach (SolutionHub::select($solutions) as $row) {
-            $itemSlug = Text::slug(SolutionHub::field($row, 'slug'));
-            if ((int) $row['id_list'] !== $id || $itemSlug === '') {
+            $itemSlug = Text::slug($row['slug']);
+            if ($row['category_id'] !== $id || $itemSlug === '') {
                 continue;
             }
-            $cards[] = ['title' => SolutionHub::field($row, 'name'), 'description' => SolutionHub::field($row, 'desc'), 'slug' => $itemSlug, 'url' => '/giai-phap/'.$itemSlug.'/',
-                'image' => self::path($row['_photo']), 'actionLabel' => 'Xem giải pháp'];
+            $cards[] = ['title' => Text::cms($row['title']), 'description' => Text::cms($row['summary']), 'slug' => $itemSlug, 'url' => '/giai-phap/'.$itemSlug.'/',
+                'image' => self::path($row['_image']), 'actionLabel' => 'Xem giải pháp'];
         }
         if (! $cards) {
             return null;
         }
         // Each group links to its featured solution when it has one, else to its category page.
-        $featured = SolutionHub::select($solutions, 'solutionhub');
+        $featured = SolutionHub::select($solutions, true);
         $navigation = [];
         foreach ($groups as $nav) {
-            $navSlug = Text::slug($nav['slugvi']);
+            $navSlug = Text::slug($nav['slug']);
             $navId = (int) $nav['id'];
-            $navName = Text::cms($nav['namevi']);
-            if ($navId <= 0 || $navSlug === '' || $navName === '') {
+            $navName = Text::cms($nav['name']);
+            if ($navSlug === '' || $navName === '') {
                 continue;
             }
             $url = '/danh-muc-giai-phap/'.$navSlug.'/';
             foreach ($featured as $row) {
-                if ((int) $row['id_list'] === $navId) {
-                    $representative = Text::slug(SolutionHub::field($row, 'slug'));
+                if ($row['category_id'] === $navId) {
+                    $representative = Text::slug($row['slug']);
                     if ($representative !== '') {
                         $url = '/giai-phap/'.$representative.'/';
                     }
@@ -204,7 +204,7 @@ class SolutionsListing extends PageSupport
         return [
             'id' => $id,
             'name' => $name,
-            'description' => Text::cms($group['descvi']) ?: 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
+            'description' => Text::cms((string) $group['summary']) ?: 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
             'seo' => self::seo($seo),
             'slug' => $slug,
             'canonicalPath' => '/'.$slug,
@@ -246,7 +246,7 @@ class SolutionsListing extends PageSupport
         return ['title' => $text($seo['title'] ?? ''), 'description' => $text($seo['description'] ?? ''), 'keywords' => $text($seo['keywords'] ?? ''), 'image' => self::path($seo['image'] ?? '')];
     }
 
-    /** Public upload/ or assets/ path only (ptsPublicSolutionsPath). */
+    /** Public upload/ or assets/ path only. */
     public static function path(mixed $path): string
     {
         $path = is_scalar($path) ? trim((string) $path) : '';
@@ -264,13 +264,9 @@ class SolutionsListing extends PageSupport
         return $path !== '' && $this->urls->exists($path) ? $path : '';
     }
 
+    /** Adds the existing upload/news path of the picture (_image) and cover (_cover). */
     private function withImages(array $rows): array
     {
-        return array_map(fn ($row) => $row + ['_photo' => $this->image($row['photo'] ?? '', 'upload/news/'), '_photo1' => $this->image($row['photo1'] ?? '', 'upload/news/')], $rows);
-    }
-
-    private function image(mixed $file, string $folder): string
-    {
-        return $this->looseImage($file, $folder);
+        return array_map(fn ($row) => $row + ['_image' => $this->looseImage($row['image'] ?? '', 'upload/news/'), '_cover' => $this->looseImage($row['cover_image'] ?? '', 'upload/news/')], $rows);
     }
 }
