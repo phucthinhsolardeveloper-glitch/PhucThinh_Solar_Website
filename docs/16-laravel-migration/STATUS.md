@@ -36,4 +36,4 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 | Ảnh Shopping (`feed_image`) | 8d4fef78 | |
 | Thao tác hàng loạt sản phẩm, bộ lọc dữ liệu | 2aee5a9f | |
 | Nút phễu cạnh ô tìm kiếm, logo ngang, thanh cuộn sidebar | bec398ee, 78338e37 | |
-| Nhập/xuất Excel hợp nhất, ảnh ZIP, feed Google | commit kế tiếp | Đã đối chiếu xong `product_bulk.php`; không đọc lại |
+| Nhập/xuất Excel hợp nhất, ảnh ZIP, feed Google | b52f3366 | Đã đối chiếu xong `product_bulk.php`; không đọc lại |
