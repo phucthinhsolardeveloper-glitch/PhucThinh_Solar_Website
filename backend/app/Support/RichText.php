@@ -8,7 +8,7 @@ use DOMNode;
 use DOMXPath;
 
 /**
- * Sanitiser for CKEditor HTML leaving the CMS (pts_public_richtext.php, sanitizer version 1).
+ * Sanitiser for CKEditor HTML leaving the CMS.
  * Fails closed: unknown tags are unwrapped, dangerous ones dropped, links and images normalised to
  * site paths or safe absolute URLs, every other attribute checked against a per-tag list.
  */

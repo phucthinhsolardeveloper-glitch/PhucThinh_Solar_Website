@@ -47,14 +47,14 @@ class Shop
         $pricing = new PricingPolicy($this->settings->productPricesVisible());
         $items = [];
         foreach ($this->cart->lines() as $line) {
-            $product = $this->cart->product((int) $line['productid']);
+            $product = $this->cart->product((int) $line['product_id']);
             if (! $product || ! $product['is_visible']) {
                 continue;
             }
             $id = (int) $product['id'];
             $slug = Text::slug($product['slug']);
             $name = Text::plain($product['name']);
-            $quantity = max(1, min(999, (int) $line['qty']));
+            $quantity = max(1, min(999, (int) $line['quantity']));
             if ($id <= 0 || $slug === '' || $name === '' || ! preg_match(self::CODE, (string) $line['code'])) {
                 continue;
             }
@@ -145,7 +145,7 @@ class Shop
         $pricesVisible = $this->settings->productPricesVisible();
         $ready = $this->cart->lines() !== [] && $pricesVisible;
         foreach ($ready ? $this->cart->lines() : [] as $line) {
-            $product = $this->cart->product((int) $line['productid']);
+            $product = $this->cart->product((int) $line['product_id']);
             if (! $product || Cart::requiresQuote($product, $pricesVisible)) {
                 $ready = false;
                 break;
@@ -200,7 +200,7 @@ class Shop
         }
         $pricesVisible = $this->settings->productPricesVisible();
         foreach ($lines as $line) {
-            $product = $this->cart->product((int) $line['productid']);
+            $product = $this->cart->product((int) $line['product_id']);
             if (! $product || Cart::requiresQuote($product, $pricesVisible)) {
                 return [409, ['error' => ['code' => 'QUOTE_ONLY', 'message' => 'Giỏ hàng có sản phẩm đã chuyển sang liên hệ báo giá. Vui lòng gửi yêu cầu tư vấn.']]];
             }
@@ -295,8 +295,8 @@ class Shop
                 $orderId = (int) $db->table('orders')->insertGetId($order);
                 $items = [];
                 foreach ($lines as $line) {
-                    $product = $this->cart->product((int) $line['productid']);
-                    $quantity = (int) $line['qty'];
+                    $product = $this->cart->product((int) $line['product_id']);
+                    $quantity = (int) $line['quantity'];
                     if (! $product || $quantity <= 0) {
                         throw new \RuntimeException('Cart product missing');
                     }

@@ -5,7 +5,7 @@ namespace App\Domain\Catalog\Listing;
 use App\Domain\Catalog\CategoryTree;
 use App\Support\Text;
 
-/** SQL fragments for the catalog filters and orderings, kept parameterised (product_price_filter.php, product_need_filter.php, product_sort.php). */
+/** SQL fragments for the catalog filters and orderings, kept parameterised. */
 final class CatalogFilters
 {
     /** key => [min, max|null, label] */
