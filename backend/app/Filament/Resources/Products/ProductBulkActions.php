@@ -2,9 +2,12 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Domain\Catalog\Bulk\BulkCatalog;
+use App\Domain\Catalog\Bulk\BulkExporter;
 use App\Domain\Catalog\ProductBulkUpdate;
 use App\Filament\Support\Options;
 use App\Models\Brand;
+use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -54,6 +57,8 @@ final class ProductBulkActions
                 self::base('setBrand', 'Đổi thương hiệu', Heroicon::OutlinedTag)
                     ->schema([Select::make('brand_id')->label('Thương hiệu')->options(fn () => Brand::query()->orderBy('name')->pluck('name', 'id')->all())->searchable()->placeholder('Bỏ thương hiệu')])
                     ->action(fn (Collection $records, array $data) => self::changed(app(ProductBulkUpdate::class)->set($records, ['brand_id' => $data['brand_id'] ?: null]))),
+                self::base('exportSelected', 'Xuất Excel các sản phẩm đã chọn', Heroicon::OutlinedArrowDownTray)
+                    ->action(fn (Collection $records) => app(BulkExporter::class)->xlsx(new BulkCatalog(Product::query()->with(['seo', 'images', 'contentSection'])->whereKey($records->pluck('id'))->orderBy('id')->get()), 'san-pham-da-chon-'.date('Ymd-His'))),
                 self::base('deleteMany', 'Xóa sản phẩm', Heroicon::OutlinedTrash)->color('danger')->requiresConfirmation()
                     ->modalDescription('Sản phẩm đã có đánh giá hoặc đơn hàng được giữ lại. Nên dùng Ẩn nếu còn muốn xem lại sau.')
                     ->action(function (Collection $records): void {

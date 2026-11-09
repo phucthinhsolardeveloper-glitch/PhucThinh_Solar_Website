@@ -65,6 +65,27 @@ final class Slugs
         return false;
     }
 
+    /** @return array<string, list<array{table: string, id: int}>> every slug of the shared space and who holds it */
+    public static function owners(): array
+    {
+        $owners = [];
+        foreach (self::PUBLIC_SPACE as $table => $where) {
+            $query = DB::table($table)->whereNotNull('slug')->where('slug', '!=', '');
+            foreach ($where as $column => $expected) {
+                match (true) {
+                    $expected === null => $query->whereNull($column),
+                    is_array($expected) => $query->whereIn($column, $expected),
+                    default => $query->where($column, $expected),
+                };
+            }
+            foreach ($query->get(['id', 'slug']) as $row) {
+                $owners[strtolower((string) $row->slug)][] = ['table' => $table, 'id' => (int) $row->id];
+            }
+        }
+
+        return $owners;
+    }
+
     /** @return Closure(string): bool */
     public static function publicScope(string $table, ?int $ignoreId = null): Closure
     {
