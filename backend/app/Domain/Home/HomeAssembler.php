@@ -7,12 +7,10 @@ use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Homepage data (api/pts_v1_home.php + pts_public_home_api.php). Each block reads its Admin rows and
- * falls back to fixed copy and stock pictures only where the PHP page did.
- */
+/** Homepage data. Each block reads its Admin rows and falls back to fixed copy and stock pictures. */
 class HomeAssembler
 {
     private const CATEGORY_FALLBACKS = ['den-nlmt' => 'home-street-lighting-v2.png', 'tam-pin' => 'category-panels-user-2026.jpg', 'bien-tan' => 'category-inverter-user-2026.jpg',
@@ -57,23 +55,22 @@ class HomeAssembler
     /** @return array<string, mixed> */
     public function build(): array
     {
-        $categories = array_values(array_filter(
-            $this->rows("select id, name as namevi, slug as slugvi, concat_ws(',', 'hienthi', 'noibat', if(is_major,'major',null)) as status, image as photo from categories"
-                .' where depth=1 and is_featured=1 and is_visible=1 order by sort_order,id desc'),
-            fn ($row) => $this->categories->hasVisibleProducts((int) $row['id'])));
-        $isMajor = fn ($row) => str_contains(','.$row['status'].',', ',major,');
-        $categories = array_merge(array_values(array_filter($categories, $isMajor)), array_values(array_filter($categories, fn ($row) => ! $isMajor($row))));
+        // Featured top categories with products to show; the major ones come first.
+        $categories = $this->db->table('categories')->where('depth', 1)->where('is_featured', true)->where('is_visible', true)
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'slug', 'image', 'is_major'])->map(fn ($row) => (array) $row)
+            ->filter(fn ($row) => $this->categories->hasVisibleProducts((int) $row['id']))
+            ->sortBy(fn ($row) => $row['is_major'] ? 0 : 1, SORT_REGULAR, false)->values()->all();
 
         $hero = $this->hero();
         $categoryOut = $this->categories($categories);
-        $campaignRows = $this->rows("select title as namevi, summary as descvi, image as photo, link, if(is_visible,'hienthi','') as status from banners where placement='home-campaign' order by sort_order,id desc");
+        $campaignRows = $this->banners('home-campaign');
         $campaigns = [];
         foreach ($campaignRows as $row) {
-            $image = self::visible($row) && ! empty($row['photo']) ? $this->path($row['photo'], 'upload/photo/') : '';
+            $image = $row->is_visible ? $this->path($row->image, 'upload/photo/') : '';
             if ($image === '') {
                 continue;
             }
-            $campaigns[] = ['name' => self::text($row['namevi']) ?: 'Giải pháp năng lượng', 'description' => self::text($row['descvi']), 'image' => $image, 'href' => self::url($row['link'], '/san-pham/')];
+            $campaigns[] = ['name' => self::text($row->title) ?: 'Giải pháp năng lượng', 'description' => self::text($row->summary), 'image' => $image, 'href' => self::url($row->link, '/san-pham/')];
             if (count($campaigns) >= 3) {
                 break;
             }
@@ -82,19 +79,19 @@ class HomeAssembler
         $process = $this->process();
         $productGroups = $this->productGroups($categories);
         $options = $this->settings->options();
-        $seoRow = (array) ($this->db->selectOne("select title as titlevi, description as descriptionvi, keywords as keywordsvi from seo_metas where page='home' limit 1") ?? []);
-        $logo = $this->db->selectOne("select image as photo from banners where placement='logo' order by sort_order,id desc limit 0,1");
-        $popup = (array) ($this->db->selectOne("select id, updated_at, title as namevi, image as photo, link from banners where placement='popup' and is_visible=1 order by sort_order,id desc limit 0,1") ?? []);
+        $seoRow = $this->db->table('seo_metas')->where('page', 'home')->first(['title', 'description', 'keywords']);
+        $logo = $this->banners('logo')->first();
+        $popup = $this->banners('popup')->firstWhere('is_visible', true);
 
         return [
             'schemaVersion' => 1,
             'locale' => 'vi',
             'path' => '/',
             'seo' => [
-                'title' => self::text(Text::flat($seoRow['titlevi'] ?? '')),
-                'description' => self::text(Text::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => self::text(Text::flat($seoRow['keywordsvi'] ?? '')),
-                'image' => self::text($this->urls->visual($logo->photo ?? '', 'upload/photo/')),
+                'title' => self::text(Text::flat((string) $seoRow?->title)),
+                'description' => self::text(Text::flat((string) $seoRow?->description)),
+                'keywords' => self::text(Text::flat((string) $seoRow?->keywords)),
+                'image' => self::text($this->urls->visual((string) $logo?->image, 'upload/photo/')),
             ],
             'hero' => $hero,
             'categories' => $categoryOut,
@@ -111,7 +108,7 @@ class HomeAssembler
                 'hero' => count($hero),
                 'categories' => count($categoryOut),
                 'campaigns' => count($campaigns),
-                'campaignsConfigured' => $campaignRows ? 1 : 0,
+                'campaignsConfigured' => $campaignRows->isNotEmpty() ? 1 : 0,
                 'solutions' => count($solutions),
                 'process' => count($process),
                 'productGroups' => count($productGroups),
@@ -122,26 +119,26 @@ class HomeAssembler
     /** Admin slides replace the stock ones position by position; once Admin has any slide, stock ones are not mixed in. */
     private function hero(): array
     {
-        $rows = $this->rows("select title as namevi, summary as descvi, image as photo, link, if(is_visible,'hienthi','') as status, options from banners where placement='hero-carousel' order by sort_order,id desc");
-        $enabled = array_values(array_filter($rows, fn ($row) => self::visible($row) && ! empty($row['photo'])));
+        $rows = $this->banners('hero-carousel');
+        $enabled = $rows->filter(fn ($row) => $row->is_visible && filled($row->image))->values();
         $hero = [];
         foreach (self::HERO_DEFAULTS as $i => [$key, $name, $description, $photo]) {
-            $row = $enabled[$i] ?? [];
-            if ($rows && ! $row) {
+            $row = $enabled->get($i);
+            if ($rows->isNotEmpty() && ! $row) {
                 continue;
             }
-            $image = $row ? $this->path($row['photo'], 'upload/photo/') : $this->path($photo, 'assets/images/site-visuals/');
+            $image = $row ? $this->path($row->image, 'upload/photo/') : $this->path($photo, 'assets/images/site-visuals/');
             if ($image === '') {
                 continue;
             }
-            $options = ! empty($row['options']) ? json_decode((string) $row['options'], true) : [];
-            $secondLine = is_array($options) ? self::text($options['titleLine2'] ?? '') : '';
+            $options = (array) json_decode((string) $row?->options, true);
+            $secondLine = self::text($options['titleLine2'] ?? '');
             $hero[] = [
                 'key' => $key,
-                'name' => trim((self::text($row['namevi'] ?? '') ?: $name).' '.$secondLine),
-                'description' => self::text($row['descvi'] ?? '') ?: $description,
+                'name' => trim((self::text($row?->title) ?: $name).' '.$secondLine),
+                'description' => self::text($row?->summary) ?: $description,
                 'image' => $image,
-                'href' => self::url($row['link'] ?? '', '/san-pham/'),
+                'href' => self::url($row?->link, '/san-pham/'),
             ];
         }
 
@@ -152,11 +149,11 @@ class HomeAssembler
     {
         $out = [];
         foreach ($categories as $row) {
-            $slug = self::text($row['slugvi']);
+            $slug = self::text($row['slug']);
             if ($slug === '') {
                 continue;
             }
-            $image = $this->path($row['photo'], 'upload/product/');
+            $image = $this->path($row['image'], 'upload/product/');
             if ($image === '') {
                 foreach (self::CATEGORY_FALLBACKS as $needle => $file) {
                     if (str_contains($slug, $needle)) {
@@ -165,8 +162,8 @@ class HomeAssembler
                     }
                 }
             }
-            $out[] = ['id' => (int) $row['id'], 'name' => self::text($row['namevi']), 'slug' => $slug, 'url' => '/danh-muc-san-pham/'.$slug.'/',
-                'major' => str_contains(','.$row['status'].',', ',major,'), 'image' => $image];
+            $out[] = ['id' => (int) $row['id'], 'name' => self::text($row['name']), 'slug' => $slug, 'url' => '/danh-muc-san-pham/'.$slug.'/',
+                'major' => (bool) $row['is_major'], 'image' => $image];
         }
 
         return $out;
@@ -175,12 +172,13 @@ class HomeAssembler
     /** Four fixed solution slots, each filled by the first featured solution whose name matches the slot. */
     private function solutions(): array
     {
-        $rows = $this->rows("select title as namevi, nav_title as title_indexvi, slug as slugvi, summary as descvi, cover_image as photo1 from posts where kind='solution' and is_featured=1 and is_visible=1 order by sort_order,id desc");
+        $rows = $this->db->table('posts')->where('kind', 'solution')->where('is_featured', true)->where('is_visible', true)
+            ->orderBy('sort_order')->orderByDesc('id')->get(['title', 'nav_title', 'slug', 'summary', 'cover_image'])->map(fn ($row) => (array) $row)->all();
         $solutions = [];
         foreach (self::SOLUTION_SLOTS as $i => $slot) {
             $row = [];
             foreach ($rows as $candidate) {
-                $search = mb_strtolower(self::text(($candidate['namevi'] ?? '').' '.($candidate['title_indexvi'] ?? '')));
+                $search = mb_strtolower(self::text($candidate['title'].' '.$candidate['nav_title']));
                 foreach ($slot['needles'] as $needle) {
                     if (str_contains($search, mb_strtolower($needle))) {
                         $row = $candidate;
@@ -188,13 +186,13 @@ class HomeAssembler
                     }
                 }
             }
-            $image = $i === 2 ? $this->path($slot['image'], 'assets/images/site-visuals/') : $this->path($row['photo1'] ?? '', 'upload/news/');
+            $image = $i === 2 ? $this->path($slot['image'], 'assets/images/site-visuals/') : $this->path($row['cover_image'] ?? '', 'upload/news/');
             $image = $image ?: $this->path($slot['image'], 'assets/images/site-visuals/');
             if ($image === '') {
                 continue;
             }
-            $solutions[] = ['label' => $slot['label'], 'name' => self::text($row['namevi'] ?? '') ?: $slot['name'], 'description' => self::text($row['descvi'] ?? '') ?: $slot['description'],
-                'image' => $image, 'href' => self::url(($row['slugvi'] ?? '') ? 'giai-phap/'.$row['slugvi'].'/' : $slot['href'])];
+            $solutions[] = ['label' => $slot['label'], 'name' => self::text($row['title'] ?? '') ?: $slot['name'], 'description' => self::text($row['summary'] ?? '') ?: $slot['description'],
+                'image' => $image, 'href' => self::url(($row['slug'] ?? '') ? 'giai-phap/'.$row['slug'].'/' : $slot['href'])];
         }
 
         return $solutions;
@@ -202,11 +200,11 @@ class HomeAssembler
 
     private function process(): array
     {
-        $rows = $this->rows("select title as namevi, figure as solieu, summary as descvi from page_items where section='home.process' and is_visible=1 order by sort_order,id desc limit 0,5");
+        $rows = $this->items('home.process')->where('is_visible', true)->take(5)->values();
         $out = [];
         foreach (self::PROCESS_DEFAULTS as $i => [$number, $name, $description]) {
-            $row = $rows[$i] ?? [];
-            $out[] = ['number' => self::text($row['solieu'] ?? '') ?: $number, 'name' => self::text($row['namevi'] ?? '') ?: $name, 'description' => self::text($row['descvi'] ?? '') ?: $description];
+            $row = $rows->get($i);
+            $out[] = ['number' => self::text($row?->figure) ?: $number, 'name' => self::text($row?->title) ?: $name, 'description' => self::text($row?->summary) ?: $description];
         }
 
         return $out;
@@ -214,33 +212,24 @@ class HomeAssembler
 
     private function about(): array
     {
-        $rows = $this->rows("select title as namevi, summary as descvi, extra as content1vi, if(is_visible,'hienthi','') as status from page_items where section='home.about' order by sort_order,id desc");
-        $row = [];
-        foreach ($rows as $candidate) {
-            if (self::visible($candidate)) {
-                $row = $candidate;
-                break;
-            }
-        }
+        $rows = $this->items('home.about');
+        $row = $rows->firstWhere('is_visible', true);
         $points = [];
-        foreach ($this->rows("select title as namevi, summary as descvi, image as photo, if(is_visible,'hienthi','') as status from page_items where section='home.about_points' order by sort_order,id desc") as $point) {
-            if (! self::visible($point) || count($points) >= 4) {
-                continue;
-            }
+        foreach ($this->items('home.about_points')->where('is_visible', true)->take(4) as $point) {
             $fallback = self::ABOUT_POINTS[count($points)];
-            $points[] = ['label' => self::text($point['namevi']), 'description' => self::text($point['descvi']) ?: $fallback['description'], 'image' => $this->path($point['photo'], 'upload/news/')];
+            $points[] = ['label' => self::text($point->title), 'description' => self::text($point->summary) ?: $fallback['description'], 'image' => $this->path($point->image, 'upload/news/')];
         }
         if (! $points) {
             $points = array_map(fn ($point) => $point + ['image' => ''], self::ABOUT_POINTS);
         }
 
         return [
-            'configured' => count($rows) > 0,
-            'visible' => ! empty($row),
-            'title' => self::text($row['namevi'] ?? '') ?: 'Về Phúc Thịnh Solar',
-            'description' => self::text($row['descvi'] ?? '') ?: 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước.',
+            'configured' => $rows->isNotEmpty(),
+            'visible' => $row !== null,
+            'title' => self::text($row?->title) ?: 'Về Phúc Thịnh Solar',
+            'description' => self::text($row?->summary) ?: 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước.',
             'href' => '/gioi-thieu/',
-            'action' => self::text($row['content1vi'] ?? '') ?: 'Tìm hiểu về Phúc Thịnh Solar',
+            'action' => self::text($row?->extra) ?: 'Tìm hiểu về Phúc Thịnh Solar',
             'points' => $points,
         ];
     }
@@ -254,16 +243,17 @@ class HomeAssembler
                 break;
             }
             $products = [];
-            $ids = $this->categories->descendantIds((int) $category['id']);
-            foreach ($this->db->select('select id, name as namevi, slug as slugvi, image as photo from products where is_visible=1 and image is not null and image<>\'\' and category_id in ('
-                .implode(',', array_fill(0, count($ids), '?')).') order by sort_order,id desc limit 0,10', $ids) as $row) {
-                $image = $this->path($row->photo, 'upload/product/');
+            $pictured = $this->db->table('products')->where('is_visible', true)->whereNotNull('image')->where('image', '<>', '')
+                ->whereIn('category_id', $this->categories->descendantIds((int) $category['id']))
+                ->orderBy('sort_order')->orderByDesc('id')->limit(10)->get(['id', 'name', 'slug', 'image']);
+            foreach ($pictured as $row) {
+                $image = $this->path($row->image, 'upload/product/');
                 if ($image !== '') {
-                    $products[] = ['id' => (int) $row->id, 'name' => self::text($row->namevi), 'slug' => self::text($row->slugvi), 'href' => self::url('san-pham/'.$row->slugvi.'/', '/san-pham/'), 'image' => $image];
+                    $products[] = ['id' => (int) $row->id, 'name' => self::text($row->name), 'slug' => self::text($row->slug), 'href' => self::url('san-pham/'.$row->slug.'/', '/san-pham/'), 'image' => $image];
                 }
             }
             if ($products) {
-                $groups[] = ['categoryId' => (int) $category['id'], 'categoryName' => self::text($category['namevi']), 'categoryUrl' => '/danh-muc-san-pham/'.self::text($category['slugvi']).'/', 'products' => $products];
+                $groups[] = ['categoryId' => (int) $category['id'], 'categoryName' => self::text($category['name']), 'categoryUrl' => '/danh-muc-san-pham/'.self::text($category['slug']).'/', 'products' => $products];
             }
         }
 
@@ -271,18 +261,18 @@ class HomeAssembler
     }
 
     /** The key changes whenever the popup record, picture or edit time changes, so an edited campaign shows again. */
-    private function popup(array $row): ?array
+    private function popup(?object $row): ?array
     {
-        $image = $row ? $this->path($row['photo'] ?? '', 'upload/photo/') : '';
+        $image = $row ? $this->path($row->image, 'upload/photo/') : '';
         if ($image === '') {
             return null;
         }
 
         return [
-            'key' => substr(hash('sha256', ($row['id'] ?? '').'|'.(isset($row['updated_at']) ? strtotime((string) $row['updated_at']) : '').'|'.($row['photo'] ?? '')), 0, 20),
+            'key' => substr(hash('sha256', $row->id.'|'.($row->updated_at ? strtotime((string) $row->updated_at) : '').'|'.$row->image), 0, 20),
             'image' => $image,
-            'title' => self::text($row['namevi'] ?? ''),
-            'href' => self::url($row['link'] ?? ''),
+            'title' => self::text($row->title),
+            'href' => self::url($row->link),
         ];
     }
 
@@ -290,20 +280,20 @@ class HomeAssembler
     private function energyChain(): array
     {
         $chain = [];
-        foreach ($this->rows("select title as namevi, subtitle as title_indexvi, summary as descvi, figure as solieu, image as photo from page_items where section='home.energy_chain' and is_visible=1 order by sort_order,id desc limit 0,5") as $row) {
+        foreach ($this->items('home.energy_chain')->where('is_visible', true)->take(5) as $row) {
             $chain[] = [
-                'name' => self::cut(self::text($row['namevi']), 80),
-                'stage' => self::cut(self::text($row['title_indexvi']), 28),
-                'description' => self::cut(self::text($row['descvi']), 220),
-                'action' => self::cut(self::text($row['solieu']), 40),
-                'image' => $this->path($row['photo'], 'upload/news/'),
+                'name' => self::cut(self::text($row->title), 80),
+                'stage' => self::cut(self::text($row->subtitle), 28),
+                'description' => self::cut(self::text($row->summary), 220),
+                'action' => self::cut(self::text($row->figure), 40),
+                'image' => $this->path($row->image, 'upload/news/'),
             ];
         }
 
         return $chain;
     }
 
-    /** A bare file name with an image extension that exists in the folder (ptsHomePath). */
+    /** A bare file name with an image extension that exists in the folder. */
     private function path(mixed $file, string $folder): string
     {
         if (! is_scalar($file) || basename((string) $file) !== (string) $file) {
@@ -317,15 +307,16 @@ class HomeAssembler
         return $this->urls->exists($folder.$file) ? '/'.$folder.$file : '';
     }
 
-    /** @return list<array<string, mixed>> */
-    private function rows(string $sql): array
+    /** @return Collection<int, object> pictures of one placement in Admin order */
+    private function banners(string $placement): Collection
     {
-        return array_map(fn ($row) => (array) $row, $this->db->select($sql));
+        return $this->db->table('banners')->where('placement', $placement)->orderBy('sort_order')->orderByDesc('id')->get();
     }
 
-    private static function visible(array $row): bool
+    /** @return Collection<int, object> items of one page section in Admin order */
+    private function items(string $section): Collection
     {
-        return str_contains(','.($row['status'] ?? '').',', ',hienthi,');
+        return $this->db->table('page_items')->where('section', $section)->orderBy('sort_order')->orderByDesc('id')->get();
     }
 
     private static function text(mixed $value): string

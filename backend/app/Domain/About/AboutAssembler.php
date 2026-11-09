@@ -9,8 +9,8 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * About page (api/pts_v1_about.php, schema 2). History items stay empty on purpose: the history is
- * written in the storefront (AboutHistory.vue) because the old CMS timeline said 2019.
+ * About page (schema 2). History items stay empty on purpose: the history is written in the
+ * storefront (AboutHistory.vue) because the CMS timeline carried a wrong founding year.
  */
 class AboutAssembler
 {
@@ -55,16 +55,16 @@ class AboutAssembler
     public function build(): array
     {
         $l = self::LABELS;
-        $history = $this->news('lich-su', 8);
-        $compassRows = $this->news('su-menh', 6);
-        $trustRows = $this->news('ly-do-chon-chung-toi');
-        $team = $this->news('about-team', 1);
-        $principleRows = $this->news('about-principle', 3);
+        $history = $this->section('about.history', 8);
+        $compassRows = $this->section('about.compass', 6);
+        $trustRows = $this->section('about.reasons');
+        $team = $this->section('about.team', 1);
+        $principleRows = $this->section('about.principles', 3);
 
         $story = self::find($history, ['ve chung toi']) ?: ($history[0] ?? []);
         $historyRecord = self::find($history, ['lich su', 'hinh thanh']) ?: $story;
-        $intro = self::text($story['descvi'] ?? '') ?: self::sentences($story['contentvi'] ?? '', 2);
-        $body = self::sentences($story['contentvi'] ?? '', 4);
+        $intro = self::text($story['summary'] ?? '') ?: self::sentences($story['body'] ?? '', 2);
+        $body = self::sentences($story['body'] ?? '', 4);
         if ($intro !== '' && str_starts_with($body, $intro)) {
             $body = trim(substr($body, strlen($intro)));
         }
@@ -79,29 +79,28 @@ class AboutAssembler
         $coreReason = self::find($compassRows, ['gia tri cot loi', 'core value']);
 
         $people = $team[0] ?? [];
-        $peopleImage = $this->image($people['photo'] ?? '', 'upload/news/');
+        $peopleImage = $this->image($people['image'] ?? '', 'upload/news/');
         if ($peopleImage === '') {
-            foreach ($this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo from banners where placement='adv' order by sort_order,id desc") as $adv) {
-                if (($adv['link'] ?? '') === '#ptsContactModal' && ($peopleImage = $this->image($adv['photo'], 'upload/photo/')) !== '') {
-                    break;
-                }
-            }
+            // The promotional picture that opens the contact form doubles as the team picture.
+            $adv = $this->db->table('banners')->where('placement', 'adv')->where('link', '#ptsContactModal')->orderBy('sort_order')->orderByDesc('id')->pluck('image')
+                ->map(fn ($image) => $this->image($image, 'upload/photo/'))->first(fn ($image) => $image !== '');
+            $peopleImage = (string) $adv;
         }
 
         $card = fn (array $row, string $fallbackDescription) => [
-            'title' => self::text($row['title_indexvi'] ?? $row['namevi'] ?? ''),
-            'description' => self::text($row['descvi'] ?? '') ?: $fallbackDescription,
-            'image' => $this->image($row['photo'] ?? '', 'upload/news/'),
+            'title' => self::text($row['subtitle']) ?: self::text($row['title']),
+            'description' => self::text($row['summary']) ?: $fallbackDescription,
+            'image' => $this->image($row['image'], 'upload/news/'),
         ];
-        $principles = array_map(fn ($row) => $card($row, self::sentences($row['contentvi'] ?? '', 1)), $principleRows);
+        $principles = array_map(fn ($row) => $card($row, self::sentences($row['body'], 1)), $principleRows);
         if (! $principles) {
             foreach ([[$teamReason, 'principleExpertise'], [$supportReason, 'principleSupport'], [$coreReason, 'principleCustomer']] as [$row, $key]) {
-                $principles[] = ['title' => $l[$key], 'description' => self::text($row['descvi'] ?? '') ?: $l[$key.'Description'], 'image' => $this->image($row['photo'] ?? '', 'upload/news/')];
+                $principles[] = ['title' => $l[$key], 'description' => self::text($row['summary'] ?? '') ?: $l[$key.'Description'], 'image' => $this->image($row['image'] ?? '', 'upload/news/')];
             }
         }
 
-        // Reasons ticked "about" in Admin, else the four classic reasons found by name.
-        $selected = array_values(array_filter($trustRows, fn ($row) => ! empty($row['status']) && in_array('about', explode(',', $row['status']), true)));
+        // Reasons flagged "about" in Admin, else the four classic reasons found by name.
+        $selected = array_values(array_filter($trustRows, fn ($row) => in_array('about', $row['flags'], true)));
         if (! $selected) {
             foreach ([$authenticReason, $teamReason, $supportReason, $warrantyReason] as $row) {
                 if (! empty($row['id'])) {
@@ -111,7 +110,7 @@ class AboutAssembler
         }
         $trust = [];
         foreach (array_slice(array_values($selected), 0, 4) as $row) {
-            $name = self::normalise($row['namevi'] ?? '');
+            $name = self::normalise($row['title']);
             $has = fn (string ...$needles) => array_any($needles, fn ($n) => str_contains($name, $n));
             $fallback = match (true) {
                 $has('chinh hang', 'genuine', 'authentic') => $l['trustAuthentic'],
@@ -122,16 +121,16 @@ class AboutAssembler
             };
             $trust[] = $card($row, $fallback);
         }
-        $compass = array_map(fn ($row) => $card($row, self::sentences($row['contentvi'] ?? '', 1)), array_slice($compassRows, 0, 3));
+        $compass = array_map(fn ($row) => $card($row, self::sentences($row['body'], 1)), array_slice($compassRows, 0, 3));
 
-        $cta = $this->rows("select coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, 'hienthi' as status from banners where placement='about-cta' and is_visible=1 order by sort_order,id desc limit 0,1")[0] ?? [];
-        $seoRow = (array) ($this->db->selectOne("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='gioi-thieu' limit 0,1") ?? []);
+        $cta = $this->firstBanner('about-cta');
+        $seoRow = $this->db->table('seo_metas')->where('page', 'gioi-thieu')->first(['title', 'description', 'keywords', 'image']);
         $options = $this->settings->options();
         $hotline = is_scalar($options['hotline'] ?? null) ? trim((string) $options['hotline']) : '';
         $zaloValue = is_scalar($options['zalo'] ?? null) ? (string) $options['zalo'] : '';
         $zalo = ! empty($zaloValue) ? (string) preg_replace('/[^0-9]/', '', $zaloValue) : '';
         $zalo = trim($zalo);
-        $showroom = $this->db->selectOne("select image as photo from banners where placement='about-showroom' and is_visible=1 order by sort_order,id desc limit 0,1");
+        $showroom = $this->firstBanner('about-showroom');
 
         return [
             'schemaVersion' => 2,
@@ -139,18 +138,18 @@ class AboutAssembler
             'path' => '/gioi-thieu/',
             'title' => 'Giới thiệu Phúc Thịnh Solar',
             'seo' => [
-                'title' => self::text(Text::flat($seoRow['titlevi'] ?? '')),
-                'description' => self::text(Text::flat($seoRow['descriptionvi'] ?? '')),
-                'keywords' => self::text(Text::flat($seoRow['keywordsvi'] ?? '')),
-                'image' => $this->urls->visual($seoRow['photo'] ?? '', 'upload/seopage/'),
+                'title' => self::text(Text::flat((string) $seoRow?->title)),
+                'description' => self::text(Text::flat((string) $seoRow?->description)),
+                'keywords' => self::text(Text::flat((string) $seoRow?->keywords)),
+                'image' => $this->urls->visual((string) $seoRow?->image, 'upload/seopage/'),
             ],
-            'story' => ['eyebrow' => $l['storyEyebrow'], 'title' => $l['storyTitle'], 'intro' => $intro, 'body' => $body, 'image' => $this->image($story['photo'] ?? '', 'upload/news/')],
-            'history' => ['title' => self::text($historyRecord['title_indexvi'] ?? $historyRecord['namevi'] ?? ''), 'image' => $this->image($historyRecord['photo'] ?? '', 'upload/news/'), 'items' => []],
+            'story' => ['eyebrow' => $l['storyEyebrow'], 'title' => $l['storyTitle'], 'intro' => $intro, 'body' => $body, 'image' => $this->image($story['image'] ?? '', 'upload/news/')],
+            'history' => ['title' => self::text($historyRecord['subtitle'] ?? '') ?: self::text($historyRecord['title'] ?? ''), 'image' => $this->image($historyRecord['image'] ?? '', 'upload/news/'), 'items' => []],
             'people' => [
-                'eyebrow' => self::text($people['title_indexvi'] ?? '') ?: $l['peopleEyebrow'],
-                'title' => self::text($people['namevi'] ?? '') ?: $l['peopleTitle'],
-                'intro' => self::text($people['descvi'] ?? '') ?: $l['peopleFallback'],
-                'body' => self::sentences($people['contentvi'] ?? '', 2),
+                'eyebrow' => self::text($people['subtitle'] ?? '') ?: $l['peopleEyebrow'],
+                'title' => self::text($people['title'] ?? '') ?: $l['peopleTitle'],
+                'intro' => self::text($people['summary'] ?? '') ?: $l['peopleFallback'],
+                'body' => self::sentences($people['body'] ?? '', 2),
                 'image' => $peopleImage,
                 'principles' => $principles,
             ],
@@ -158,10 +157,10 @@ class AboutAssembler
             'compass' => ['title' => $l['compassTitle'], 'items' => $compass],
             'certificates' => ['title' => $l['certTitle'], 'intro' => $l['certIntro'], 'items' => $this->certificates()],
             'cta' => [
-                'title' => self::text($cta['namevi'] ?? '') ?: $l['contactTitle'],
-                'description' => self::text($cta['descvi'] ?? '') ?: $l['contactIntro'],
-                'image' => $this->image($cta['photo'] ?? '', 'upload/photo/'),
-                'href' => self::safeLink($cta['link'] ?? '') ?: null,
+                'title' => self::text($cta?->title) ?: $l['contactTitle'],
+                'description' => self::text($cta?->summary) ?: $l['contactIntro'],
+                'image' => $this->image($cta?->image, 'upload/photo/'),
+                'href' => self::safeLink($cta?->link) ?: null,
                 'buttonLabel' => $l['contactPrimary'],
                 'hotline' => $hotline === '' ? null : ['label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline)],
                 'zaloUrl' => $zalo === '' || strlen($zalo) > 20 ? null : 'https://zalo.me/'.$zalo,
@@ -177,46 +176,43 @@ class AboutAssembler
                 'certAll' => $l['certAll'],
                 'certDetail' => $l['certDetail'],
             ],
-            'showroomImage' => $this->image($showroom->photo ?? '', 'upload/photo/'),
+            'showroomImage' => $this->image($showroom?->image, 'upload/photo/'),
         ];
     }
 
     /** Featured certificates first (up to three), then the rest in Admin order. */
     private function certificates(): array
     {
-        $rows = $this->rows("select id, coalesce(title,'') as namevi, coalesce(summary,'') as descvi, coalesce(link,'') as link, coalesce(image,'') as photo, concat_ws(',', 'hienthi', if(is_featured,'noibat',null)) as status from banners where placement='chungnhan' and is_visible=1 order by sort_order,id desc");
-        $flags = fn ($row) => array_filter(array_map('trim', explode(',', (string) ($row['status'] ?? ''))));
-        $featured = array_values(array_filter($rows, fn ($row) => in_array('noibat', $flags($row), true)));
-        $cards = array_slice($featured ?: $rows, 0, 3);
-        $cardIds = array_column($cards, 'id');
-        $items = [];
-        foreach (array_merge($cards, array_values(array_filter($rows, fn ($row) => ! in_array($row['id'], $cardIds, true)))) as $row) {
-            if ((int) $row['id'] <= 0) {
-                continue;
-            }
-            $image = $this->image($row['photo'], 'upload/photo/');
-            $items[] = ['id' => (int) $row['id'], 'name' => self::text($row['namevi']), 'description' => self::text($row['descvi']), 'image' => $image,
-                'href' => $image !== '' ? $image : null, 'featured' => in_array('noibat', $flags($row), true)];
-        }
+        $rows = $this->db->table('banners')->where('placement', 'chungnhan')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')
+            ->get(['id', 'title', 'summary', 'image', 'is_featured']);
+        $featured = $rows->where('is_featured', true);
+        $cards = ($featured->isNotEmpty() ? $featured : $rows)->take(3);
+        $ordered = $cards->concat($rows->whereNotIn('id', $cards->pluck('id')));
 
-        return $items;
+        return $ordered->map(function ($row) {
+            $image = $this->image($row->image, 'upload/photo/');
+
+            return ['id' => (int) $row->id, 'name' => self::text($row->title), 'description' => self::text($row->summary), 'image' => $image,
+                'href' => $image !== '' ? $image : null, 'featured' => (bool) $row->is_featured];
+        })->values()->all();
     }
 
-    private const SECTIONS = ['lich-su' => 'about.history', 'su-menh' => 'about.compass', 'ly-do-chon-chung-toi' => 'about.reasons', 'about-team' => 'about.team', 'about-principle' => 'about.principles'];
-
-    /** @return list<array<string, mixed>> visible items of an About section, flags folded back into "status" */
-    private function news(string $type, int $limit = 0): array
+    /**
+     * Visible items of an About section in Admin order; text columns are never null.
+     *
+     * @return list<array{id: int, title: string, subtitle: string, summary: string, body: string, image: string, flags: list<string>}>
+     */
+    private function section(string $section, int $limit = 0): array
     {
-        $rows = $this->rows("select coalesce(title,'') as namevi, coalesce(subtitle,'') as title_indexvi, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi,"
-            ." coalesce(figure,'') as solieu, id, coalesce(image,'') as photo, flags from page_items where section=? and is_visible=1 order by sort_order,id desc".($limit > 0 ? ' limit 0,'.$limit : ''), [self::SECTIONS[$type]]);
-
-        return array_map(fn ($row) => ['status' => implode(',', array_merge(['hienthi'], (array) json_decode((string) $row['flags'], true)))] + $row, $rows);
+        return $this->db->table('page_items')->where('section', $section)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')
+            ->when($limit > 0, fn ($q) => $q->limit($limit))->get()
+            ->map(fn ($row) => ['id' => (int) $row->id, 'title' => (string) $row->title, 'subtitle' => (string) $row->subtitle, 'summary' => (string) $row->summary,
+                'body' => (string) $row->body, 'image' => (string) $row->image, 'flags' => array_values((array) json_decode((string) $row->flags, true))])->all();
     }
 
-    /** @return list<array<string, mixed>> */
-    private function rows(string $sql, array $bindings = []): array
+    private function firstBanner(string $placement): ?object
     {
-        return array_map(fn ($row) => (array) $row, $this->db->select($sql, $bindings));
+        return $this->db->table('banners')->where('placement', $placement)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->first();
     }
 
     private function image(mixed $value, string $folder): string
@@ -257,11 +253,11 @@ class AboutAssembler
         return $plain === '' ? '' : str_replace('-', ' ', Text::changeTitle($plain));
     }
 
-    /** First row whose normalised name contains one of the needles (ptsAboutFind). */
+    /** First row whose normalised title contains one of the needles. */
     private static function find(array $rows, array $needles): array
     {
         foreach ($rows as $row) {
-            $haystack = self::normalise($row['namevi'] ?? '');
+            $haystack = self::normalise($row['title']);
             foreach ($needles as $needle) {
                 if (str_contains($haystack, self::normalise($needle))) {
                     return $row;

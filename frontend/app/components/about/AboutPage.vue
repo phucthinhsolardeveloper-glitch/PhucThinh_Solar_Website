@@ -16,10 +16,6 @@ let aboutNavResizeObserver: ResizeObserver | null = null
 useActiveHorizontalRail(aboutNavRef)
 useSlidingPill(aboutNavRef, 'about-sections', { chip: '.about-chapter-link' })
 const activeAboutSection = ref('ve-phuc-thinh')
-// The CMS leaves these item titles empty; the section title already names them in order.
-function compassLabel(title: string, index: number) {
-  return title || props.about.compass.title.split(/\s[–-]\s/)[index]?.trim() || ''
-}
 const galleryCertificates = computed(() => props.about.certificates.items)
 const visibleCertificates = computed(() => {
   const featured = props.about.certificates.items.filter((item) => item.featured)
@@ -282,7 +278,7 @@ const showroomImage = computed(() => {
         <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
             <header class="mb-3.5 flex items-center justify-between gap-4">
-              <h3 v-if="compassLabel(item.title, index)" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ compassLabel(item.title, index) }}</h3>
+              <h3 v-if="item.title" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ item.title }}</h3>
               <img v-if="item.image" class="about-compass-icon size-9 flex-none object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
