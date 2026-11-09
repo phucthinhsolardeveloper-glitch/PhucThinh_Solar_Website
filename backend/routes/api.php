@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\ProductDetailController;
 use App\Http\Controllers\Api\V1\ShopController;
 use App\Http\Controllers\Api\V1\SiteController;
 use App\Http\Controllers\NtlWebhookController;
+use App\Http\Controllers\PageViewController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Session\Middleware\StartSession;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 // v1: the payloads Nuxt reads (frontend/shared/contracts).
 Route::prefix('v1')->group(function () {
+    Route::post('track', PageViewController::class)->middleware('throttle:120,1');
     Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
         ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
     Route::get('about', AboutController::class);
