@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Order;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -16,8 +20,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use UnitEnum;
@@ -136,8 +143,26 @@ class OrderResource extends Resource
             ->filters([
                 SelectFilter::make('status')->label('Trạng thái')->options(self::STATUSES),
                 SelectFilter::make('payment_status')->label('Thanh toán')->options(self::PAYMENT),
+                SelectFilter::make('province_id')->label('Tỉnh / thành')->relationship('province', 'name')->searchable()->preload(),
+                Filter::make('created')->columns(2)->columnSpan(2)->schema([
+                    DatePicker::make('from')->label('Từ ngày'),
+                    DatePicker::make('until')->label('Đến ngày'),
+                ])->query(fn (Builder $query, array $data) => $query
+                    ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date))
+                    ->when($data['until'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date))),
             ])
-            ->recordActions([EditAction::make()->label('Xem / xử lý')]);
+            ->recordActions([
+                EditAction::make()->label('Xem / xử lý'),
+                Action::make('print')->label('In')->icon(Heroicon::OutlinedPrinter)->iconButton()->tooltip('In đơn hàng')
+                    ->url(fn (Order $record) => route('order.print', $record), true),
+                Action::make('excel')->label('Excel')->icon(Heroicon::OutlinedArrowDownTray)->iconButton()->tooltip('Tải Excel đơn này')
+                    ->action(fn (Order $record) => app(OrderExporter::class)->single($record->load('items', 'province', 'ward'))),
+            ])
+            ->toolbarActions([
+                BulkAction::make('exportSelected')->label('Xuất Excel các đơn đã chọn')->icon(Heroicon::OutlinedArrowDownTray)
+                    ->action(fn (Collection $records) => app(OrderExporter::class)->list(Order::query()->whereKey($records->pluck('id'))))
+                    ->deselectRecordsAfterCompletion(),
+            ]);
     }
 
     public static function getPages(): array
