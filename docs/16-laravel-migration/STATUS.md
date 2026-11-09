@@ -7,7 +7,6 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 Không có việc dở.
 
 ## Chưa làm (theo thứ tự)
-- [ ] Xem trước trên Nuxt cho Giải pháp / Dự án / Chính sách
 - [ ] Task 5: chỉnh trang theo khối (Home + About POC)
 
 ## Không làm (đã kiểm chứng)
@@ -43,3 +42,4 @@ Không có việc dở.
 | Bảng điều khiển: biểu đồ truy cập, đơn–doanh số, liên hệ, nguồn khách, trang xem nhiều, sản phẩm bán chạy; khối Cần xử lý thay các ô số | 94f8e267 | Lượt truy cập tự đếm (không cookie, không lưu IP, bỏ bot), giữ 400 ngày |
 | Checkout tính phí Nhất Tín (Tiết kiệm) từ cân nặng sản phẩm; mô phỏng ghi rõ; >50 kg hoặc thiếu cân nặng (sandbox/production) → nhân viên báo phí; ghi chú QR ở mục Chuyển khoản | 1abecf60 | Cần điền cân nặng sản phẩm (Admin hoặc Excel cột "Cân nặng đóng gói (kg)"). Tắt bằng `NTL_CHECKOUT_QUOTES=0` |
 | Thử thật upload banner, ảnh chèn trong editor (chặn file lạ, không lưu ảnh hỏng), ẩn/hiện hàng loạt theo quyền | bf664e4c | Video là link YouTube, không có upload |
+| Xem trước bản nháp Giải pháp / Dự án / Chính sách trên Nuxt (link ký 15 phút, giống hệt trang thật, kể cả ảnh/sản phẩm/SEO) | commit kế tiếp | Dựng bằng cách ghi nháp vào DB trong transaction rồi rollback; các builder công khai không cache |

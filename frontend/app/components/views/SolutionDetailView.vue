@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DraftPreviewQuery } from '#shared/draft-preview'
 import type { PublicSolutionDetailPayload } from '#shared/contracts/public-solution-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
@@ -9,11 +10,13 @@ import SolutionDetailPage from '~/components/solution-detail/SolutionDetailPage.
 const route = useRoute()
 const config = useRuntimeConfig()
 const links = usePublicLinks()
+const props = defineProps<{ preview?: DraftPreviewQuery }>()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
-if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
+if (!props.preview && !isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
 const { data: fetched, error } = await useAsyncData<PublicSolutionDetailPayload>(
-  () => `solution-detail-${slug.value}`,
+  () => props.preview ? `solution-preview-${props.preview.revision}` : `solution-detail-${slug.value}`,
   () => {
+    if (props.preview) return $fetch('/_api/post-draft-preview', { query: props.preview })
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
     return $fetch('/_api/solution-detail', { query: { slug: slug.value } })
   },
@@ -43,7 +46,7 @@ const pageKeywords = computed(() => data.value?.seo?.keywords || undefined)
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => props.preview ? 'noindex, nofollow, noarchive' : editorialPublicRouteRobots(true, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({

@@ -193,7 +193,7 @@ class PostRevisionResource extends Resource
     public static function previewAction(): Action
     {
         return Action::make('preview')->label('Xem trước')->icon(Heroicon::OutlinedEye)->color('gray')
-            ->visible(fn (PostRevision $record) => $record->post?->kind === 'article')
+            ->visible(fn (PostRevision $record) => isset(PostRevisions::PREVIEW_PATHS[(string) $record->post?->kind]))
             ->url(fn (PostRevision $record) => app(PostRevisions::class)->previewUrl($record))->openUrlInNewTab();
     }
 

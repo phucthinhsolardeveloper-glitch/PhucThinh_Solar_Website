@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DraftPreviewQuery } from '#shared/draft-preview'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import type { PublicProjectDetailPayload } from '#shared/contracts/public-project-detail'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
@@ -8,10 +9,11 @@ import ProjectDetailPage from '~/components/project-detail/ProjectDetailPage.vue
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const props = defineProps<{ preview?: DraftPreviewQuery }>()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
-const { data, error } = await useFetch<unknown>('/_api/project-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
+const { data, error } = await useFetch<unknown>(props.preview ? '/_api/post-draft-preview' : '/_api/project-detail', { query: computed(() => props.preview ?? { slug: slug.value }), default: () => null })
 const payload = computed<PublicProjectDetailPayload | null>(() => isPublicProjectDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !payload.value)
@@ -22,7 +24,7 @@ const pageKeywords = computed(() => payload.value?.seo.keywords || '')
 useSeoMeta({
   title: computed(() => payload.value ? payload.value.seo.title : 'Dự án'),
   description: computed(() => payload.value?.seo.description ?? ''),
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.projectDetailPublicRouteIndexable, !!payload.value && !error.value)),
+  robots: computed(() => props.preview ? 'noindex, nofollow, noarchive' : editorialPublicRouteRobots(true, config.public.projectDetailPublicRouteIndexable, !!payload.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({

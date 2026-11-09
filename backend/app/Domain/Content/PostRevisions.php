@@ -2,6 +2,9 @@
 
 namespace App\Domain\Content;
 
+use App\Domain\News\NewsDetail;
+use App\Domain\Projects\ProjectDetail;
+use App\Domain\Solutions\SolutionDetail;
 use App\Models\Post;
 use App\Models\PostRevision;
 use App\Models\User;
@@ -211,12 +214,59 @@ final class PostRevisions
     }
 
     /** Signed, short-lived link to the Nuxt preview of an article draft. */
+    /** Nuxt preview page of each kind; the link works for 15 minutes. */
+    public const PREVIEW_PATHS = ['article' => 'bai-viet', 'solution' => 'giai-phap', 'project' => 'du-an', 'policy' => 'chinh-sach'];
+
     public function previewUrl(PostRevision $revision): string
     {
-        abort_unless($revision->post?->kind === 'article', 404);
-        $signed = URL::temporarySignedRoute('article-draft.preview', now()->addMinutes(15), ['revision' => $revision->id], absolute: false);
+        $kind = (string) $revision->post?->kind;
+        abort_unless(isset(self::PREVIEW_PATHS[$kind]), 404);
+        $route = $kind === 'article' ? 'article-draft.preview' : 'post-draft.preview';
+        $signed = URL::temporarySignedRoute($route, now()->addMinutes(15), ['revision' => $revision->id], absolute: false);
 
-        return url('/xem-truoc/bai-viet/'.$revision->id).'?'.parse_url($signed, PHP_URL_QUERY);
+        return url('/xem-truoc/'.self::PREVIEW_PATHS[$kind].'/'.$revision->id).'?'.parse_url($signed, PHP_URL_QUERY);
+    }
+
+    /**
+     * The public detail of a solution, project or policy as it will look once this draft is published:
+     * the draft is written into the tables inside a transaction, the normal public builder reads it,
+     * and everything is rolled back. Nothing is cached by those builders, so nothing leaks.
+     *
+     * @return array{0: int, 1: array<string, mixed>}
+     */
+    public function previewPublic(PostRevision $revision): array
+    {
+        $post = $revision->post;
+        $kind = (string) $post?->kind;
+        if ($post === null || ! in_array($kind, ['solution', 'project', 'policy'], true)) {
+            return [404, ['error' => ['code' => 'PREVIEW_NOT_FOUND']]];
+        }
+        $profile = self::profile($post);
+        DB::beginTransaction();
+        try {
+            $payload = (array) $revision->payload + $this->snapshot($post);
+            $columns = array_intersect_key($payload, array_flip(self::COLUMNS));
+            $columns['slug'] = $post->slug; // publishing never changes the address
+            $columns['is_visible'] = true;
+            DB::table('posts')->where('id', $post->id)->update($columns);
+            $seo = array_intersect_key((array) ($payload['seo'] ?? []), array_flip(['title', 'description', 'keywords', 'image']));
+            DB::table('seo_metas')->updateOrInsert(['owner_type' => Post::class, 'owner_id' => $post->id], $seo);
+            if ($profile['products'] !== false) {
+                $this->syncProducts($post, $payload['products'] ?? []);
+            }
+            if ($profile['media']) {
+                $this->syncMedia($post, $payload['media'] ?? []);
+            }
+            $query = ['slug' => (string) $post->slug];
+
+            return match ($kind) {
+                'solution' => app(SolutionDetail::class)->handle($query),
+                'project' => app(ProjectDetail::class)->handle($query),
+                default => app(NewsDetail::class)->policy($query),
+            };
+        } finally {
+            DB::rollBack();
+        }
     }
 
     /** @return array<string, mixed> the whole public state of a post */

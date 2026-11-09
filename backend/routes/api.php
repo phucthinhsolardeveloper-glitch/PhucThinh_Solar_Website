@@ -20,6 +20,8 @@ Route::prefix('v1')->group(function () {
     Route::post('track', PageViewController::class)->middleware('throttle:120,1');
     Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
         ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
+    Route::get('post-draft-preview/{revision}', [ArticleDraftPreviewController::class, 'post'])
+        ->middleware(['signed:relative', 'throttle:30,1'])->name('post-draft.preview');
     Route::get('about', AboutController::class);
     Route::get('brand-detail', [PagesController::class, 'brandDetail']);
     Route::get('catalog', CatalogController::class);

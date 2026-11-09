@@ -30,7 +30,7 @@ public chỉ trả sản phẩm hiện, có ảnh; không tự sửa API snapsho
 | Category/Brand CRUD, thứ tự, SEO, khối kế thừa | `CategoryResource`, `BrandResource`, `contentSection`, `seo` | Screen; save unchanged; create/delete; sort field | PASS cho CRUD; kéo sắp xếp chưa có |
 | Product specs, documents, applications, PDP inheritance | Tab Thông số/Mô tả/Tài liệu; resolver domain | `ProductSpecsTest`, `ProductContentResolverModesTest`, Product unchanged, API snapshot | PASS cho dữ liệu hiện có; upload tài liệu chưa kiểm |
 | News/solution/project/policy CRUD | 4 `PostResource`, RichEditor và media | Screen; save unchanged Article/Solution/Project; create/delete cả 4 loại | PASS cho CRUD; copy/policy HTML edit còn GAP |
-| Content sections import/export/restore/toggle/upload | `PageItemResource`, content blocks builder, media field | Screen và snapshot public; không có import/export/restore tương đương | GAP |
+| Content sections import/export/restore/toggle/upload | `ContentSectionResource`: sửa khối trong form chủ, lịch sử 30 bản và khôi phục khối đã xóa (`SectionHistory`) | `ContentSectionAdminTest`; import/export JSON bỏ có chủ đích (xem STATUS → Không làm) | PASS |
 | Visual Studio draft → preview → publish → rollback | Bài viết có `ArticleDraftResource` và preview Nuxt ký 15 phút. Giải pháp/Dự án/Chính sách có `PostDraftResource`, publish transaction, SEO, thông tin Dự án, thiết bị liên quan và khôi phục thành bản nháp | `ArticleWorkflowTest`, `PostWorkflowTest`: public giữ nguyên trước publish, quyền editor/publisher, chặn draft cũ, giữ HTML/SEO, API công khai sau publish, restore | PASS cho bài viết và phiên bản nội dung/SEO của 3 loại còn lại; preview Nuxt, ảnh/thư viện và section tree còn GAP |
 | Gallery/photo/banner/video | `AlbumResource`, `BannerResource`, `VideoResource`, post/product repeaters | `ProductMediaAdminTest`, `AlbumMediaAdminTest`: upload tạo file, đổi thứ tự, xóa quan hệ và giữ file gốc | PASS cho sản phẩm/album; banner/video/post upload chưa kiểm thật, xóa file vật lý cần kiểm tham chiếu |
 | Rich editor media | `Fields::rich` lưu `filemanager/editor` trên disk uploads | `AdminUploadsTest`: ảnh chèn lưu khi lưu bài vào `filemanager/editor`, đọc lại qua `/upload`, lưu lại không đổi; SVG/file lạ bị chặn và báo lỗi thay vì lưu ảnh hỏng; banner upload ghi file và đọc lại | PASS |
@@ -45,7 +45,7 @@ public chỉ trả sản phẩm hiện, có ảnh; không tự sửa API snapsho
 | Places (Tỉnh/TP → Phường/Xã) | `ProvinceResource` tạo/sửa/ẩn; `WardResource` tạo/sửa, phí giao theo ward; không cho xóa vật lý | `ProvinceAdminTest`: tạo thật, public API, ẩn tỉnh, chặn quyền; checkout validation tests | PASS cho quản trị hai cấp; kiểm dữ liệu thật ở staging |
 | Quận/Huyện | Không đưa vào form/order mới, `district=0` legacy | Quy tắc `AGENTS.md` và checkout tests | RETIRED |
 | Cache clear Admin | Laravel cache/queue vận hành bằng CLI | Chưa có nhu cầu business cho nút Admin | RETIRED khỏi Admin |
-| Product campaign, OneSignal, tags, lang, word, generic Excel | Không tìm thấy workflow tương đương | Cần kiểm usage hiện hành trước khi quyết định nghỉ hẳn | GAP |
+| Product campaign, OneSignal, tags, lang, word, generic Excel | Khung khuyến mãi = `ProductCampaign` + `PromoFrames`; Excel sản phẩm = `ProductBulkPage` | `PromoFrameTest`, `ProductWorkbookTest`; OneSignal/tags/lang/word không làm (0 dữ liệu hoặc đã tắt, xem STATUS) | PASS |
 
 ## Ưu tiên đóng gap
 

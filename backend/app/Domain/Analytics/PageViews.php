@@ -22,7 +22,7 @@ final class PageViews
     public function record(string $path, string $referrer, string $campaign, string $ip, string $agent, string $ownHost, bool $entry = true): bool
     {
         $path = '/'.ltrim((string) parse_url($path, PHP_URL_PATH), '/');
-        if ($agent === '' || preg_match(self::BOTS, $agent) || strlen($path) > 255 || preg_match('#^/(admin|api|_api|_nuxt|livewire)(/|$)#', $path)) {
+        if ($agent === '' || preg_match(self::BOTS, $agent) || strlen($path) > 255 || preg_match('#^/(admin|api|_api|_nuxt|livewire|xem-truoc)(/|$)#', $path)) {
             return false;
         }
         $day = now()->toDateString();

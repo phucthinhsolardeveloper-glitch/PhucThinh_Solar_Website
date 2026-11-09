@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DraftPreviewQuery } from '#shared/draft-preview'
 import { isPublicPolicyDetail, type PublicPolicyDetail } from '#shared/contracts/public-policy-detail'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
@@ -10,13 +11,14 @@ const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const config = useRuntimeConfig()
+const props = defineProps<{ preview?: DraftPreviewQuery }>()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
-if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
+if (!props.preview && !isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
 const { data: fetched, error, pending } = await useAsyncData<PublicPolicyDetail>(
-  () => 'policy-' + slug.value,
+  () => props.preview ? 'policy-preview-' + props.preview.revision : 'policy-' + slug.value,
   async () => {
-    if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
-    const payload = await $fetch<unknown>('/_api/policy-detail', { query: { slug: slug.value } })
+    if (!props.preview && !isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
+    const payload = await $fetch<unknown>(props.preview ? '/_api/post-draft-preview' : '/_api/policy-detail', { query: props.preview ?? { slug: slug.value } })
     if (!isPublicPolicyDetail(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid policy contract' })
     return payload
   },
@@ -90,7 +92,7 @@ const socialDescription = computed(() => publicSeoDescription(data.value?.seo.de
 useSeoMeta({
   title: pageTitle,
   description: computed(() => data.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => props.preview ? 'noindex, nofollow, noarchive' : editorialPublicRouteRobots(true, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({
   enabled: computed(() => !!data.value && !error.value),
