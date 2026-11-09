@@ -66,13 +66,12 @@ const mastheadBrands = computed(() => {
   const selectedIds = catalogData.value?.selected?.brandIds ?? []
   const withProducts = (catalogData.value?.filters?.brands ?? []).map((item) => {
     const active = selectedIds.includes(item.id)
-    return { id: item.id, name: item.name, active, to: filterLink({ brand: active ? '' : String(item.id) }) }
+    return { id: item.id, name: item.name, logo: item.logo, active, to: filterLink({ brand: active ? '' : String(item.id) }) }
   })
-  if (category.value) return withProducts
   // The product landing page shows every partner logo; brands without products yet are shown, not linked.
-  const known = new Set(withProducts.map((item) => brandKey(item.name)))
-  const others = PARTNER_BRANDS.filter((brand) => !known.has(brandKey(brand.name)))
-    .map((brand, index) => ({ id: -1 - index, name: brand.name, active: false }))
+  const known = new Set(withProducts.map((item) => item.id))
+  const others = (catalogData.value?.filters?.partners ?? []).filter((brand) => !known.has(brand.id))
+    .map((brand) => ({ id: brand.id, name: brand.name, logo: brand.logo, active: false }))
   return [...withProducts, ...others]
 })
 function onSortChange(value: string) {

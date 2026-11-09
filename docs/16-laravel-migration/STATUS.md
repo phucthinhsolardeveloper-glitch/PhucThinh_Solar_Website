@@ -7,7 +7,6 @@ Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commi
 Không có việc dở.
 
 ## Chưa làm (theo thứ tự)
-- [ ] Logo thương hiệu: 19/22 chưa có trong DB, đang ghi cứng trong Nuxt (`partnerBrands.ts`), Admin không quản lý được
 - [ ] Nhập/xuất, khôi phục khối nội dung (`content_section.php`)
 - [ ] Thử thật: upload banner/video/ảnh trong editor, quyền theo từng thao tác (GAP trong `admin-capability-audit-2026-11-08.md`)
 - [ ] Xem trước trên Nuxt cho Giải pháp / Dự án / Chính sách
@@ -37,3 +36,4 @@ Không có việc dở.
 | Xuất đơn hàng Excel, phiếu in, lọc ngày/tỉnh | c373035a | Phiếu in thay file Word; có thể lưu PDF |
 | Kéo-thả thứ tự sản phẩm, bài viết | d3a24116 | |
 | Khung khuyến mãi theo chiến dịch | 225b2b21 | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
+| Logo thương hiệu quản lý trong Admin | commit kế tiếp | `pts:brand-logos` tự chạy trong `pts:import-legacy`; DB dev chưa chạy vì kho upload local chỉ đọc |

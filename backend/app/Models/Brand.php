@@ -48,4 +48,12 @@ class Brand extends Model
     {
         return '/thuong-hieu/'.($slug ?? $this->slug).'/';
     }
+
+    /** Public address of a stored logo file name, or '' when there is none. */
+    public static function logoUrl(mixed $image): string
+    {
+        $image = trim((string) $image);
+
+        return preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|webp|svg)$/i', $image) ? '/upload/product/'.$image : '';
+    }
 }

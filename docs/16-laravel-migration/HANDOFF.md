@@ -42,6 +42,8 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 - Đừng chạy `pkill -f <chuỗi>` khi chuỗi đó xuất hiện trong chính lệnh: shell tự tắt (mã 144).
 - Mốc so sánh API: `backend/resources/api-snapshots` (có trong git). `storage/app/snapshots` là bản cũ, bỏ qua. Đổi API có chủ đích thì `pts:snapshot <api> --save`.
 - Tài khoản Admin để test: tạo tạm bằng tinker (`username` = `kiemtra-local`, `role` = `owner`, mật khẩu ngẫu nhiên), xóa sau khi xong. Hiện có đúng 2 tài khoản thật: `admin`, `quoccuong123`.
+- Logo đối tác: `php artisan pts:brand-logos` đưa 20 logo trong `backend/resources/brand-logos` vào kho upload và gắn vào thương hiệu (giữ logo đã chọn trong Admin, trừ khi `--force`). Tự chạy trong `pts:import-legacy`. DB dev chưa chạy vì `/srv/upload` mount chỉ đọc, nên trang Giới thiệu local chỉ hiện 3 logo.
+- Bản ghi trang Đại lý (`page_items` 2167, `dealer.intro`) đã bị tài khoản `admin` xóa trên DB dev lúc 11:55 ngày 09/11; snapshot `dealer` vì thế lệch, chưa lưu đè.
 - Dữ liệu mẫu: `php artisan pts:demo-data`, xóa bằng `--remove`. Hiện đã xóa. Dữ liệu mẫu có đánh giá đã duyệt, phải xóa trước khi chạy `pts:snapshot`.
 - Audit: trong `tools/visual-tests`: `AUDIT_BASE=http://127.0.0.1:3110 node audit/site-audit.cjs`, `audit/shop-flow.cjs`, `DEEP=1 ADMIN_USER=… ADMIN_PASS=… node audit/admin-screens.cjs <thư mục>`. Bộ `visual-tests` cũ nhắm vào PHP nên đỏ trên Nuxt, không dùng làm cổng phát hành.
 

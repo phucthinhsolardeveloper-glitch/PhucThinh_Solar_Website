@@ -6,6 +6,7 @@ use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductContentPresenter;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -105,10 +106,10 @@ class CatalogAssembler
         }
         // Brand choices follow the category only, so ticking a brand never empties the list of brands.
         $brands = [];
-        foreach ($db->select("select distinct b.id, b.name, b.sort_order from products p inner join brands b on b.id = p.brand_id and b.is_visible = 1 where {$baseWhere} order by b.sort_order, b.id desc", $baseParams) as $row) {
+        foreach ($db->select("select distinct b.id, b.name, b.image, b.sort_order from products p inner join brands b on b.id = p.brand_id and b.is_visible = 1 where {$baseWhere} order by b.sort_order, b.id desc", $baseParams) as $row) {
             $name = Text::plain($row->name);
             if ((int) $row->id > 0 && $name !== '') {
-                $brands[] = ['id' => (int) $row->id, 'name' => $name];
+                $brands[] = ['id' => (int) $row->id, 'name' => $name, 'logo' => Brand::logoUrl($row->image)];
             }
         }
         $subcategories = [];
@@ -134,6 +135,8 @@ class CatalogAssembler
                 'brands' => $brands,
                 'priceRanges' => array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES),
                 'subcategories' => $subcategories,
+                // The product landing page also shows partner logos that have no product yet.
+                ...($category === [] ? ['partners' => $this->partners()] : []),
                 'needs' => $needsEnabled ? array_map(fn ($key, $label) => ['key' => $key, 'label' => $label], array_keys(CatalogFilters::NEED_LABELS), CatalogFilters::NEED_LABELS) : [],
             ],
             'selected' => [
@@ -170,5 +173,13 @@ class CatalogAssembler
         [$faq, $rest] = ProductContentPresenter::splitFaq(is_array($blocks) ? $blocks : []);
 
         return ['faq' => $faq, 'cards' => array_values(array_filter($rest, fn ($block) => ($block['type'] ?? '') === 'cards'))];
+    }
+
+    /** @return list<array{id: int, name: string, logo: string}> visible brands with a logo, in Admin order */
+    private function partners(): array
+    {
+        return DB::table('brands')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'image'])
+            ->map(fn ($brand) => ['id' => (int) $brand->id, 'name' => Text::plain($brand->name), 'logo' => Brand::logoUrl($brand->image)])
+            ->filter(fn (array $brand) => $brand['logo'] !== '' && $brand['name'] !== '')->values()->all();
     }
 }

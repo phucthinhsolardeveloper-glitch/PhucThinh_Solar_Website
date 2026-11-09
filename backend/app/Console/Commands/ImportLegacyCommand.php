@@ -69,6 +69,8 @@ class ImportLegacyCommand extends Command
             $this->seo();
             $this->commerce();
         });
+        // Partner logos ship with the code; the import is where they first reach the upload folder.
+        $this->call('pts:brand-logos');
         @mkdir(storage_path('app'), 0775, true);
         file_put_contents(storage_path('app/import-map.json'), json_encode(['categories' => $this->categoryMap], JSON_PRETTY_PRINT));
         foreach (self::NEW_TABLES as $table) {

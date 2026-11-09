@@ -3,6 +3,7 @@
 namespace App\Domain\About;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Models\Brand;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Database\Connection;
@@ -156,6 +157,7 @@ class AboutAssembler
             'trust' => ['title' => $l['trustTitle'], 'items' => $trust],
             'compass' => ['title' => $l['compassTitle'], 'items' => $compass],
             'certificates' => ['title' => $l['certTitle'], 'intro' => $l['certIntro'], 'items' => $this->certificates()],
+            'partners' => $this->partners(),
             'cta' => [
                 'title' => self::text($cta?->title) ?: $l['contactTitle'],
                 'description' => self::text($cta?->summary) ?: $l['contactIntro'],
@@ -181,6 +183,27 @@ class AboutAssembler
     }
 
     /** Featured certificates first (up to three), then the rest in Admin order. */
+    /**
+     * Brand wall: visible brands that have a logo, in Admin order; those with products on sale link to them.
+     *
+     * @return list<array{id: int, name: string, logo: string, href: string|null}>
+     */
+    private function partners(): array
+    {
+        $partners = [];
+        foreach ($this->db->table('brands as b')->where('b.is_visible', true)->orderBy('b.sort_order')->orderByDesc('b.id')
+            ->select(['b.id', 'b.name', 'b.image'])
+            ->selectRaw('exists(select 1 from products p where p.brand_id = b.id and p.is_visible = 1) as has_products')->get() as $brand) {
+            $logo = Brand::logoUrl($brand->image);
+            $name = self::text($brand->name);
+            if ($logo !== '' && $name !== '') {
+                $partners[] = ['id' => (int) $brand->id, 'name' => $name, 'logo' => $logo, 'href' => $brand->has_products ? '/san-pham/?brand='.(int) $brand->id : null];
+            }
+        }
+
+        return $partners;
+    }
+
     private function certificates(): array
     {
         $rows = $this->db->table('banners')->where('placement', 'chungnhan')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')

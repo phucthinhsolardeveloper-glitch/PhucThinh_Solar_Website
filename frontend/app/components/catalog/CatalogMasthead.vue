@@ -5,7 +5,7 @@ import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 
 const NuxtLinkComponent = resolveComponent('NuxtLink')
 
-export interface CatalogMastheadBrand { id: number; name: string; to?: RouteLocationRaw; active: boolean }
+export interface CatalogMastheadBrand { id: number; name: string; logo?: string; to?: RouteLocationRaw; active: boolean }
 
 const props = withDefaults(defineProps<{
   heading: string
@@ -58,7 +58,6 @@ watch(() => props.hero?.image, () => { heroFailed.value = false; heroThumbFailed
 const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
 const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
-const brandLogo = partnerBrandLogo
 </script>
 
 <template>
@@ -107,7 +106,7 @@ const brandLogo = partnerBrandLogo
               :data-active="brand.active"
               class="masthead-brand"
             >
-              <img v-if="brandLogo(brand.name)" :src="brandLogo(brand.name)" :alt="brand.name" width="120" height="40" loading="lazy" decoding="async">
+              <img v-if="brand.logo" :src="brand.logo" :alt="brand.name" width="120" height="40" loading="lazy" decoding="async">
               <span v-else>{{ brand.name }}</span>
             </component>
           </nav>

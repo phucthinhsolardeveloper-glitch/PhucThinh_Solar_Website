@@ -14,6 +14,7 @@ export interface PublicAboutPayload {
   certificates: { title: string; intro: string; items: Array<{ id: number; name: string; description: string; image: string; href: string | null; featured: boolean }> }
   cta: { title: string; description: string; image: string; href: string | null; buttonLabel: string; hotline: { label: string; text: string; tel: string } | null; zaloUrl: string | null }
   showroomImage?: string
+  partners?: Array<{ id: number; name: string; logo: string; href: string | null }>
   labels: { story: string; history: string; people: string; compass: string; certificates: string; timeline: string; certLabel: string; certAll: string; certDetail: string }
 }
 
@@ -45,6 +46,9 @@ export function isPublicAboutPayload(value: unknown): value is PublicAboutPayloa
   for (const key of ['trust', 'compass']) { const section = value[key]; if (!isRecord(section) || !isText(section.title) || !Array.isArray(section.items) || !section.items.every(isTextItem)) return false }
   const certificates = value.certificates; if (!isRecord(certificates) || !isText(certificates.title) || !isText(certificates.intro) || !Array.isArray(certificates.items)) return false
   if (!certificates.items.every((item) => isRecord(item) && isPositiveId(item.id) && isText(item.name, true) && isText(item.description, true) && isImage(item.image) && typeof item.featured === 'boolean' && (item.href === null || item.href === item.image && isSafeHref(item.href)))) return false
+  if (value.partners !== undefined && !(Array.isArray(value.partners) && value.partners.every((item) => isRecord(item) && isPositiveId(item.id) && isText(item.name, false)
+    && typeof item.logo === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|webp|svg)$/i.test(item.logo)
+    && (item.href === null || typeof item.href === 'string' && /^\/san-pham\/\?brand=[1-9][0-9]*$/.test(item.href))))) return false
   const cta = value.cta; if (!isRecord(cta) || !['title', 'description', 'buttonLabel'].every((key) => isText(cta[key])) || !isImage(cta.image) || (cta.href !== null && !isSafeHref(cta.href))) return false
   if (cta.hotline !== null && (!isRecord(cta.hotline) || !isText(cta.hotline.label) || !isText(cta.hotline.text) || !isText(cta.hotline.tel))) return false
   if (cta.zaloUrl !== null && !isZaloUrl(cta.zaloUrl)) return false

@@ -22,7 +22,7 @@ export type PublicCatalogPricing =
   | { mode: 'price'; currency: 'VND'; regularPrice: number | null; salePrice: number | null }
   | { mode: 'quote'; currency: 'VND'; regularPrice: null; salePrice: null }
 
-export interface PublicCatalogBrand { id: number; name: string }
+export interface PublicCatalogBrand { id: number; name: string; logo?: string }
 export interface PublicCatalogPriceRange { key: '1' | '2' | '3'; label: string }
 export interface PublicCatalogSubcategory { id: number; name: string; slug: string }
 export interface PublicCatalogNeed { key: 'du-an-cong-trinh' | 'chieu-sang-gia-dinh' | 'san-vuon-canh-quan'; label: string }
@@ -46,6 +46,7 @@ export interface PublicCatalogPayload {
     priceRanges: PublicCatalogPriceRange[]
     subcategories: PublicCatalogSubcategory[]
     needs?: PublicCatalogNeed[]
+    partners?: Array<{ id: number; name: string; logo: string }>
   }
   selected?: {
     brandIds: number[]
@@ -123,8 +124,12 @@ export function isPricing(value: unknown): value is PublicCatalogPricing {
   return value.mode === 'price' && isMoney(value.regularPrice) && isMoney(value.salePrice) && (value.regularPrice !== null || value.salePrice !== null)
 }
 
+export function isBrandLogo(value: unknown): value is string {
+  return value === '' || typeof value === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|webp|svg)$/i.test(value)
+}
+
 function isBrand(value: unknown): value is PublicCatalogBrand {
-  return isRecord(value) && hasExactKeys(value, ['id', 'name']) && isSafeId(value.id) && isSafeText(value.name)
+  return isRecord(value) && (hasExactKeys(value, ['id', 'name']) || hasExactKeys(value, ['id', 'name', 'logo']) && isBrandLogo(value.logo)) && isSafeId(value.id) && isSafeText(value.name)
 }
 
 function isPriceRange(value: unknown): value is PublicCatalogPriceRange {
@@ -156,6 +161,11 @@ function isPriceKeyArray(value: unknown): value is string[] {
 
 function isCatalogFilters(value: unknown): value is NonNullable<PublicCatalogPayload['filters']> {
   if (!isRecord(value)) return false
+  if (Object.prototype.hasOwnProperty.call(value, 'partners')) {
+    const { partners, ...rest } = value
+    return Array.isArray(partners) && partners.every((item) => isRecord(item) && hasExactKeys(item, ['id', 'name', 'logo']) && isSafeId(item.id) && isSafeText(item.name) && item.logo !== '' && isBrandLogo(item.logo))
+      && isCatalogFilters(rest)
+  }
   const hasNeeds = Object.prototype.hasOwnProperty.call(value, 'needs')
   return (hasExactKeys(value, ['brands', 'priceRanges', 'subcategories']) || hasNeeds && hasExactKeys(value, ['brands', 'priceRanges', 'subcategories', 'needs']))
     && Array.isArray(value.brands) && value.brands.every(isBrand)

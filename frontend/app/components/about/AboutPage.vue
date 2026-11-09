@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import type { PublicAboutPayload } from '#shared/contracts/public-about'
-import { isPublicCatalogPayload, type PublicCatalogPayload } from '#shared/contracts/public-catalog'
 
 const props = defineProps<{ about: PublicAboutPayload }>()
-const { data: brandCatalogData } = await useAsyncData<PublicCatalogPayload | null>('about-brand-catalog-options', async () => {
-  const payload: unknown = await $fetch('/_api/catalog', { query: { per_page: '1' } })
-  return isPublicCatalogPayload(payload) ? payload : null
-}, { default: () => null })
 const links = usePublicLinks()
 const { openConsultation } = useStorefrontModal()
 const { isHeaderHidden } = useSiteHeader()
@@ -27,11 +22,7 @@ const certificateTrigger = ref<HTMLElement | null>(null)
 const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
-const partnerBrands = PARTNER_BRANDS
-const partnerBrandsWithProducts = computed(() => partnerBrands.map((brand) => {
-  const match = (brandCatalogData.value?.filters?.brands ?? []).find((option) => brandKey(option.name) === brandKey(brand.name))
-  return { ...brand, href: match ? `/san-pham/?brand=${match.id}` : null }
-}))
+const partnerBrands = computed(() => props.about.partners ?? [])
 const aboutSectionNavItems = computed(() => [
   { id: 've-phuc-thinh', label: props.about.labels.story },
   { id: 'lich-su-phat-trien', label: 'Lịch sử hình thành' },
@@ -258,11 +249,11 @@ const showroomImage = computed(() => {
         <div class="about-brand-board" aria-label="Các thương hiệu thiết bị">
           <span class="about-brand-circuit" aria-hidden="true" />
           <ul class="about-brand-grid">
-            <li v-for="brand in partnerBrandsWithProducts" :key="brand.name" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
+            <li v-for="brand in partnerBrands" :key="brand.id" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
               <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
-                <img :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
+                <img :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
               </NuxtLink>
-              <img v-else :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
+              <img v-else :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
             </li>
           </ul>
         </div>
