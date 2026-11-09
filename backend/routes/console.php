@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 
 // Lost or stalled outbox mail is re-dispatched; the worker itself retries with backoff.
 Schedule::command('pts:outbox --sweep')->everyFiveMinutes()->withoutOverlapping();
+
+// Review uploads left behind by an interrupted submission; the media inventory is refreshed nightly.
+Schedule::command('pts:media --prune-staging')->hourly()->withoutOverlapping();
+Schedule::command('pts:media --scan')->dailyAt('03:30')->withoutOverlapping();

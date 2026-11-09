@@ -242,7 +242,7 @@ final class RichText
         return (($parts['query'] ?? '') !== '' ? '?'.$parts['query'] : '').(($parts['fragment'] ?? '') !== '' ? '#'.$parts['fragment'] : '');
     }
 
-    private static function isCmsHost(mixed $host): bool
+    public static function isCmsHost(mixed $host): bool
     {
         return in_array(strtolower((string) $host), ['phucthinhsolar.com', 'www.phucthinhsolar.com'], true);
     }
