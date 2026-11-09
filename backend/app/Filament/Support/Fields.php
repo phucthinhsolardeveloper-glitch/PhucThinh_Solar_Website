@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /** Form pieces shared by the Admin resources, so every screen names and stores things the same way. */
@@ -131,6 +132,12 @@ final class Fields
 
         return RichEditor::make($name)->label($label)
             ->fileAttachmentsDisk('uploads')->fileAttachmentsDirectory('filemanager/editor')->fileAttachmentsVisibility('public')
+            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])->fileAttachmentsMaxSize(15 * 1024)
+            // A picture node must be a fresh upload or a file already in the editor folder; anything else
+            // (a refused upload, a pasted local path) is reported instead of saving a broken image.
+            ->preventFileAttachmentPathTampering(true, fn (string $file): bool => str_starts_with($file, 'filemanager/editor/')
+                && ! str_contains($file, '..') && Storage::disk('uploads')->exists($file))
+            ->validationMessages(['tampered' => 'Có ảnh chèn trong nội dung chưa tải lên được. Chỉ nhận ảnh JPG, PNG, WebP, GIF tối đa 15 MB; xóa ảnh đó rồi chèn lại.'])
             ->dehydrateStateUsing(function ($state, ?Model $record) use ($name, $html) {
                 $original = $record?->getOriginal($name);
                 if (is_string($original) && $original !== '' && $html($state) === $html($original)) {
