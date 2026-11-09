@@ -36,4 +36,4 @@ Không có việc dở.
 | Nhập/xuất Excel hợp nhất, ảnh ZIP, feed Google | b52f3366 | Đã đối chiếu xong `product_bulk.php`; không đọc lại |
 | Xuất đơn hàng Excel, phiếu in, lọc ngày/tỉnh | c373035a | Phiếu in thay file Word; có thể lưu PDF |
 | Kéo-thả thứ tự sản phẩm, bài viết | d3a24116 | |
-| Khung khuyến mãi theo chiến dịch | commit kế tiếp | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
+| Khung khuyến mãi theo chiến dịch | 225b2b21 | Đã đối chiếu `product_promo.php`, `product_campaign.php` |
