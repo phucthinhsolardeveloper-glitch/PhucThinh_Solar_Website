@@ -29,20 +29,20 @@ abstract class PageSupport
         return (array) ($this->db->selectOne($sql, $bindings) ?? []);
     }
 
-    /** SEO of a fixed page from table_seopage (ptsPublicSeoDto with the seopage folder). */
+    /** SEO of a fixed page (seo_metas.page). */
     protected function pageSeo(string $type, callable $text): array
     {
-        $row = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page=? limit 0,1", [$type]);
+        $row = $this->db->table('seo_metas')->where('page', $type)->first(['title', 'description', 'keywords', 'image']);
 
         return [
-            'title' => $text(Text::flat($row['titlevi'] ?? '')),
-            'description' => $text(Text::flat($row['descriptionvi'] ?? '')),
-            'keywords' => $text(Text::flat($row['keywordsvi'] ?? '')),
-            'image' => $this->urls->visual($row['photo'] ?? '', 'upload/seopage/'),
+            'title' => $text(Text::flat((string) $row?->title)),
+            'description' => $text(Text::flat((string) $row?->description)),
+            'keywords' => $text(Text::flat((string) $row?->keywords)),
+            'image' => $this->urls->visual((string) $row?->image, 'upload/seopage/'),
         ];
     }
 
-    /** File name that must start with a letter or digit (ptsDealerMedia, ptsAboutImage). */
+    /** Bare file name that must start with a letter or digit, and must exist. */
     protected function strictImage(mixed $value, string $folder): string
     {
         $file = is_scalar($value) ? ltrim(trim((string) $value), '/') : '';
@@ -53,7 +53,7 @@ abstract class PageSupport
         return $this->urls->exists($folder.$file) ? '/'.$folder.$file : '';
     }
 
-    /** Any file name with an image extension (ptsContactAsset, ptsHomePath). */
+    /** Any bare file name with an image extension that exists. */
     protected function looseImage(mixed $value, string $folder): string
     {
         $file = is_scalar($value) ? trim((string) $value) : '';
@@ -62,6 +62,41 @@ abstract class PageSupport
         }
 
         return $this->urls->exists($folder.$file) ? '/'.$folder.$file : '';
+    }
+
+    /**
+     * Items of a page section in Admin order, with their own column names; text columns are never null.
+     *
+     * @return list<array{id: int, title: string, subtitle: string, summary: string, body: string, extra: string, figure: string, image: string, link: string, is_visible: bool, flags: list<string>}>
+     */
+    protected function section(string $section, int $limit = 0, bool $visibleOnly = false): array
+    {
+        $query = $this->db->table('page_items')->where('section', $section)->orderBy('sort_order')->orderByDesc('id');
+        $visibleOnly && $query->where('is_visible', true);
+        $limit > 0 && $query->limit($limit);
+
+        return $query->get()->map(fn ($row) => [
+            'id' => (int) $row->id, 'title' => (string) $row->title, 'subtitle' => (string) $row->subtitle, 'summary' => (string) $row->summary,
+            'body' => (string) $row->body, 'extra' => (string) $row->extra, 'figure' => (string) $row->figure, 'image' => (string) $row->image,
+            'link' => (string) $row->link, 'is_visible' => (bool) $row->is_visible, 'flags' => array_values((array) json_decode((string) $row->flags, true)),
+        ])->all();
+    }
+
+    /**
+     * Pictures of one placement in Admin order, with their own column names.
+     *
+     * @return list<array{id: int, title: string, summary: string, image: string, link: string, video_url: string, is_visible: bool, is_featured: bool, options: array<string, mixed>}>
+     */
+    protected function banners(string $placement, bool $visibleOnly = false): array
+    {
+        $query = $this->db->table('banners')->where('placement', $placement)->orderBy('sort_order')->orderByDesc('id');
+        $visibleOnly && $query->where('is_visible', true);
+
+        return $query->get()->map(fn ($row) => [
+            'id' => (int) $row->id, 'title' => (string) $row->title, 'summary' => (string) $row->summary, 'image' => (string) $row->image,
+            'link' => (string) $row->link, 'video_url' => (string) $row->video_url, 'is_visible' => (bool) $row->is_visible,
+            'is_featured' => (bool) $row->is_featured, 'options' => (array) json_decode((string) $row->options, true),
+        ])->all();
     }
 
     /**
@@ -85,8 +120,13 @@ abstract class PageSupport
         }, $rows);
     }
 
+    /** Native rows carry is_visible; rows still read through the older aliases carry a status list. */
     protected static function visible(array $row): bool
     {
+        if (array_key_exists('is_visible', $row)) {
+            return (bool) $row['is_visible'];
+        }
+
         return in_array('hienthi', array_filter(array_map('trim', explode(',', (string) ($row['status'] ?? '')))), true);
     }
 }

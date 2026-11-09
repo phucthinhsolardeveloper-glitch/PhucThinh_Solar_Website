@@ -4,12 +4,12 @@ namespace App\Domain\Media;
 
 use App\Domain\Pages\PageSupport;
 use App\Models\Album;
+use App\Models\AlbumImage;
+use App\Models\SeoMeta;
+use App\Models\Video;
 use App\Support\Text;
 
-/**
- * Photo albums and videos (api/pts_v1_gallery.php, pts_v1_gallery_detail.php, pts_v1_video.php).
- * Albums with their pictures; videos are YouTube links only.
- */
+/** Photo albums with their pictures, and YouTube videos. */
 class MediaLibrary extends PageSupport
 {
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
@@ -21,18 +21,14 @@ class MediaLibrary extends PageSupport
         if ($page === null) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $where = "is_visible=1 and slug<>''";
-        $total = max(0, (int) ($this->row("select count(*) as num from albums where {$where}")['num'] ?? 0));
-        $albums = [];
-        foreach ($this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, 'hienthi' as status from albums where {$where} order by sort_order,id desc limit ".(($page - 1) * 20).',20') as $row) {
-            if ($dto = $this->albumDto($row)) {
-                $albums[] = $dto;
-            }
-        }
-        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='thu-vien-anh' limit 1");
+        $listed = Album::query()->where('is_visible', true)->where('slug', '<>', '');
+        $total = (clone $listed)->count();
+        $albums = $listed->orderBy('sort_order')->orderByDesc('id')->forPage($page, 20)->get()
+            ->map(fn (Album $album) => $this->albumDto($album))->filter()->values()->all();
+        $seo = SeoMeta::query()->where('page', 'thu-vien-anh')->first();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'path' => '/thu-vien-anh/', 'title' => 'Thư viện ảnh',
-            'seo' => self::seo($seo, 'Thư viện ảnh', 'Thư viện ảnh', '/thu-vien-anh/', $this->urls->visual($seo['photo'] ?? '', 'upload/seopage/')),
+            'seo' => self::seo($seo, 'Thư viện ảnh', 'Thư viện ảnh', '/thu-vien-anh/', $this->urls->visual((string) $seo?->image, 'upload/seopage/')),
             'albums' => $albums, 'pagination' => ['page' => $page, 'perPage' => 20, 'total' => $total]]];
     }
 
@@ -42,25 +38,17 @@ class MediaLibrary extends PageSupport
         if (count($get) !== 1 || ! isset($get['slug']) || ! is_string($get['slug']) || ! preg_match(self::SLUG, $slug = trim($get['slug'], '/'))) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        $row = $this->row("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, 'hienthi' as status from albums where slug=? and is_visible=1 limit 1", [$slug]);
-        $album = $row ? $this->albumDto($row) : null;
+        $model = Album::query()->where('slug', $slug)->where('is_visible', true)->first();
+        $album = $model ? $this->albumDto($model) : null;
         if ($album === null) {
             return [404, ['error' => ['code' => 'GALLERY_NOT_FOUND']]];
         }
-        $images = [];
-        foreach ($this->rows("select id, path as photo, coalesce(caption,'') as namevi, 'hienthi' as status from album_images where album_id=? and is_visible=1 order by sort_order,id desc", [(int) $row['id']]) as $image) {
-            $url = $this->productImage($image['photo']);
-            if (self::visible($image) && $url !== '') {
-                $images[] = ['id' => max(0, (int) $image['id']), 'image' => $url, 'caption' => Text::cms($image['namevi'])];
-            }
-            if (count($images) >= 120) {
-                break;
-            }
-        }
-        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Album::class, (int) $row['id']]);
+        $images = $model->images()->where('is_visible', true)->get()
+            ->map(fn (AlbumImage $image) => ['id' => (int) $image->id, 'image' => $this->productImage($image->path), 'caption' => Text::cms((string) $image->caption)])
+            ->filter(fn ($image) => $image['image'] !== '')->take(120)->values()->all();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'album' => $album, 'images' => $images,
-            'seo' => self::seo($seo, $album['title'], $album['description'], '/'.$album['slug'].'/')]];
+            'seo' => self::seo($model->seo, $album['title'], $album['description'], '/'.$album['slug'].'/')]];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */
@@ -71,30 +59,29 @@ class MediaLibrary extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $videos = [];
-        foreach ($this->rows("select id, title as namevi, url as link_video, 'hienthi' as status from videos where is_visible=1 order by sort_order,id desc") as $row) {
-            $title = Text::cms($row['namevi']);
-            $youtube = self::youtubeId($row['link_video']);
-            if (self::visible($row) && (int) $row['id'] > 0 && $title !== '' && $youtube !== '') {
-                $videos[] = ['id' => (int) $row['id'], 'title' => $title, 'youtubeId' => $youtube, 'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$youtube, 'thumbnail' => 'https://img.youtube.com/vi/'.$youtube.'/0.jpg'];
+        foreach (Video::query()->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get() as $video) {
+            $title = Text::cms($video->title);
+            $youtube = self::youtubeId($video->url);
+            if ($title !== '' && $youtube !== '') {
+                $videos[] = ['id' => (int) $video->id, 'title' => $title, 'youtubeId' => $youtube, 'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$youtube, 'thumbnail' => 'https://img.youtube.com/vi/'.$youtube.'/0.jpg'];
             }
         }
-        $seo = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi, coalesce(image,'') as photo from seo_metas where page='video' limit 1");
+        $seo = SeoMeta::query()->where('page', 'video')->first();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'path' => '/video/', 'title' => 'Video',
-            'seo' => self::seo($seo, 'Video', 'Video', '/video/', $this->urls->visual($seo['photo'] ?? '', 'upload/seopage/')),
+            'seo' => self::seo($seo, 'Video', 'Video', '/video/', $this->urls->visual((string) $seo?->image, 'upload/seopage/')),
             'videos' => array_slice($videos, ($page - 1) * 10, 10), 'pagination' => ['page' => $page, 'perPage' => 10, 'total' => count($videos)]]];
     }
 
-    private function albumDto(array $row): ?array
+    private function albumDto(Album $album): ?array
     {
-        $id = (int) $row['id'];
-        $title = Text::cms($row['namevi']);
-        $slug = Text::slug($row['slugvi']);
-        if (! self::visible($row) || $id <= 0 || $title === '' || $slug === '') {
+        $title = Text::cms($album->title);
+        $slug = Text::slug($album->slug);
+        if ($title === '' || $slug === '') {
             return null;
         }
 
-        return ['id' => $id, 'title' => $title, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms($row['descvi']), 'image' => $this->productImage($row['photo'])];
+        return ['id' => (int) $album->id, 'title' => $title, 'slug' => $slug, 'url' => '/'.$slug.'/', 'description' => Text::cms((string) $album->summary), 'image' => $this->productImage($album->image)];
     }
 
     private function productImage(mixed $file): string
@@ -117,10 +104,10 @@ class MediaLibrary extends PageSupport
         return $page > 1000000 ? null : $page;
     }
 
-    private static function seo(array $row, string $title, string $description, string $canonical, ?string $image = null): array
+    private static function seo(?SeoMeta $row, string $title, string $description, string $canonical, ?string $image = null): array
     {
-        $seo = ['title' => Text::cms($row['titlevi'] ?? '') ?: Text::cms($title), 'description' => Text::cms($row['descriptionvi'] ?? '') ?: Text::cms($description),
-            'keywords' => Text::cms($row['keywordsvi'] ?? ''), 'canonical' => $canonical];
+        $seo = ['title' => Text::cms((string) $row?->title) ?: Text::cms($title), 'description' => Text::cms((string) $row?->description) ?: Text::cms($description),
+            'keywords' => Text::cms((string) $row?->keywords), 'canonical' => $canonical];
         if ($image !== null) {
             $seo['image'] = $image;
         }
