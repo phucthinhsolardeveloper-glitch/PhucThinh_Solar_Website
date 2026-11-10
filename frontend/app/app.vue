@@ -10,7 +10,11 @@ import CompareTray from '~/components/compare/CompareTray.vue'
 const { site } = await usePublicSite()
 
 // Google Tag Manager, only when Admin has a container id (validated as GTM-XXXX on both sides, so nothing else can be injected).
-const gtmId = computed(() => /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
+// Only on the real domain: local previews and the staging stack never send test visits into the owner's reports.
+const liveHost = (() => { try { return new URL(useRuntimeConfig().public.canonicalSiteOrigin as string).hostname } catch { return '' } })()
+const requestHost = useRequestURL().hostname
+const onLiveSite = !!liveHost && (requestHost === liveHost || requestHost === `www.${liveHost}`)
+const gtmId = computed(() => onLiveSite && /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
 useHead(() => gtmId.value ? {
   script: [{
     key: 'pts-gtm',

@@ -129,10 +129,11 @@ class SiteSettingsPage extends Page
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
             ]),
             Section::make('Đo lường (Google Tag Manager)')->collapsed()->schema([
-                TextInput::make('gtm_id')->label('Mã vùng chứa GTM')->placeholder('GTM-XXXXXXX')->maxLength(20)
-                    ->regex('/^\s*GTM-[A-Z0-9]{4,12}\s*$/i')->validationMessages(['regex' => 'Mã có dạng GTM-XXXXXXX (lấy trong Google Tag Manager).'])
-                    ->dehydrateStateUsing(fn ($state) => strtoupper(trim((string) $state)))
-                    ->helperText('Chỉ nhập mã, ví dụ GTM-57TJSRVM. Website tự gắn đoạn mã vào đầu <head> và ngay sau <body> trên mọi trang. Để trống là tắt.'),
+                // Either the id alone or the whole snippet Google gives: only the GTM-XXXX id is kept.
+                TextInput::make('gtm_id')->label('Mã vùng chứa GTM')->placeholder('GTM-57TJSRVM')->maxLength(4000)
+                    ->regex('/GTM-[A-Z0-9]{4,12}/i')->validationMessages(['regex' => 'Không thấy mã dạng GTM-XXXXXXX (lấy trong Google Tag Manager).'])
+                    ->dehydrateStateUsing(fn ($state) => preg_match('/GTM-[A-Z0-9]{4,12}/i', (string) $state, $m) ? strtoupper($m[0]) : '')
+                    ->helperText('Nhập mã (ví dụ GTM-57TJSRVM) hoặc dán nguyên đoạn mã Google đưa, hệ thống tự lấy mã. Website tự gắn vào đầu <head> và ngay sau <body> trên mọi trang. Để trống là tắt.'),
             ]),
             Section::make('Tìm kiếm sản phẩm')->collapsed()->schema([
                 Textarea::make('search_synonyms')->label('Từ đồng nghĩa')->rows(8)->maxLength(4000)

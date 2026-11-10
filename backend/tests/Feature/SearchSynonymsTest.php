@@ -52,3 +52,14 @@ it('takes a Google Tag Manager id in Admin and gives the site only a well-formed
     app(SiteSettings::class)->clear();
     $this->getJson('/api/v1/site')->assertJsonPath('gtmId', '');
 });
+
+it('keeps only the GTM id when the whole Google snippet is pasted, and starts with the owner container', function () {
+    DB::table('settings')->where('key', 'gtm_id')->delete();
+    (require database_path('migrations/2026_11_10_001600_preset_gtm_container.php'))->up();
+    expect(json_decode((string) DB::table('settings')->where('key', 'gtm_id')->value('value'), true))->toBe('GTM-57TJSRVM');
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'chu-'.bin2hex(random_bytes(3)), 'password' => 'test-password', 'role' => User::ROLE_OWNER, 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    $snippet = "<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){})(window,document,'script','dataLayer','GTM-ABCD1234');</script>\n<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=GTM-ABCD1234\"></iframe></noscript>";
+    Livewire::test(SiteSettingsPage::class)->set('data.gtm_id', $snippet)->call('save')->assertHasNoErrors();
+    expect(json_decode((string) DB::table('settings')->where('key', 'gtm_id')->value('value'), true))->toBe('GTM-ABCD1234');
+});
