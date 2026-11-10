@@ -39,6 +39,8 @@ let timer: ReturnType<typeof setTimeout> | undefined
 let sequence = 0
 async function estimate() {
   const ticket = ++sequence
+  result.value = null
+  problems.value = []
   busy.value = true
   try {
     type Answer = { ok: boolean; result?: unknown; errors?: string[] }
@@ -50,16 +52,23 @@ async function estimate() {
     if (ticket !== sequence) return
     problems.value = answer.ok ? [] : (answer.errors ?? [])
     if (answer.ok && isPublicSolarEstimate(answer.result)) result.value = answer.result
+    else if (answer.ok) problems.value = ['Kết quả chưa hợp lệ, vui lòng thử lại.']
   } finally {
     if (ticket === sequence) busy.value = false
   }
 }
 watch(() => ({ ...form }), () => {
+  ++sequence
   clearTimeout(timer)
+  result.value = null
+  busy.value = false
+  sent.value = ''
+  sendError.value = ''
   if (form.bill < range.value.min || form.bill > range.value.max) {
     problems.value = [`Tiền điện mỗi tháng từ ${money(range.value.min)} đến ${money(range.value.max)}`]
     return
   }
+  problems.value = []
   timer = setTimeout(estimate, 350)
 }, { deep: true })
 onMounted(() => { if (config.value?.enabled) estimate() })
@@ -82,12 +91,14 @@ const phoneDigits = computed(() => lead.phone.replace(/[\s.-]/g, ''))
 const leadInvalid = computed(() => ({ fullname: !lead.fullname.trim(), phone: !/^(03|05|07|08|09)\d{8}$/.test(phoneDigits.value) }))
 async function sendLead() {
   touched.fullname = touched.phone = true
-  if (!result.value || leadInvalid.value.fullname || leadInvalid.value.phone || sending.value) return
+  if (!result.value || busy.value || leadInvalid.value.fullname || leadInvalid.value.phone || sending.value) return
   sending.value = true
   sendError.value = ''
+  const requestSequence = sequence
+  const summary = result.value.summary
   try {
-    const answer = await submit('contact', { fullname: lead.fullname.trim(), phone: phoneDigits.value, subject: 'Ước tính điện mặt trời', content: result.value.summary })
-    sent.value = answer.message
+    const answer = await submit('contact', { fullname: lead.fullname.trim(), phone: phoneDigits.value, subject: 'Ước tính điện mặt trời', content: summary })
+    if (requestSequence === sequence) sent.value = answer.message
   } catch (reason) {
     sendError.value = reason instanceof Error && reason.message ? reason.message : 'Chưa gửi được, vui lòng thử lại hoặc gọi hotline.'
   } finally {
@@ -162,7 +173,7 @@ async function sendLead() {
               <label class="est-switch">
                 <input v-model="form.battery" type="checkbox">
                 <span class="est-switch__track" aria-hidden="true" />
-                <span>Có pin lưu trữ: dùng điện mặt trời buổi tối, có điện khi lưới mất</span>
+                <span>Có pin lưu trữ: dự kiến dùng điện mặt trời buổi tối; cấp điện khi mất lưới tùy cấu hình inverter và mạch dự phòng</span>
               </label>
 
               <FormMoreToggle v-if="!moreOpen" label="Thêm diện tích mái hoặc giá điện" @click="moreOpen = true" />
@@ -246,7 +257,7 @@ async function sendLead() {
                       <input v-model="lead.phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" required placeholder="0944 555 957" @blur="touched.phone = true">
                       <small v-if="touched.phone && leadInvalid.phone" role="alert">Số điện thoại chưa đúng</small>
                     </label>
-                    <button type="submit" class="est-submit" :disabled="sending">
+                    <button type="submit" class="est-submit" :disabled="sending || busy || !result">
                       <UIcon :name="sending ? 'i-lucide-loader-circle' : 'i-lucide-send'" :class="['size-5', sending && 'animate-spin']" aria-hidden="true" />
                       {{ sending ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
                     </button>

@@ -63,13 +63,24 @@ nhập trong form (tối đa 5 lần/giờ cho mỗi người). SMTP vẫn cấu
 việc gửi qua SMTP thật cần thử ở staging mailbox.
 
 Admin **Tích hợp** tại `/admin/tich-hop` cho người có quyền settings xem trạng
-thái VNPay, reCAPTCHA, email và bốn hãng vận chuyển. Trang chỉ cho biết bật/tắt,
-thiếu cấu hình hoặc cần kiểm thử/mapping; không hiển thị hay chỉnh sửa secret.
-Carrier có credential vẫn cần kho gửi, mã dịch vụ, quy cách kiện hàng và adapter
-API trước khi dùng phí hãng trong checkout.
-Mẫu `deploy/laravel13/backend.env.example` liệt kê đầy đủ biến credential và
-endpoint của 4 hãng để chuẩn bị môi trường; điền biến **không tự bật API hãng**.
+thái VNPay, reCAPTCHA, email và Nhất Tín trên **server đang xem**. Trang chỉ cho
+biết bật/tắt, thiếu cấu hình hoặc cần kiểm thử/mapping; không hiển thị hay chỉnh
+sửa secret. Mock Nhất Tín chỉ dùng thử ở môi trường không phải production. Nếu
+production còn cấu hình mock, checkout dùng phí Phường/Xã và không tạo vận đơn
+Nhất Tín. Carrier có credential vẫn cần kho gửi, mã dịch vụ, quy cách kiện hàng,
+đối chiếu mã tỉnh/phường và thử sandbox trước khi dùng phí hãng.
+Mẫu `deploy/laravel13/backend.env.example` là hợp đồng biến môi trường; điền biến
+**không tự bật API hãng**.
 VNPay bật nhưng URL endpoint/return/IPN sai sẽ hiện `URL không hợp lệ` ở Admin.
+
+Admin **Công cụ ước tính** tại `/admin/cong-cu-uoc-tinh` vẫn tắt public mặc định.
+Biểu giá mặc định cho bản cài mới dùng 5 bậc theo [Quyết định 2892/QĐ-BCT](https://xaydungchinhsach.chinhphu.vn/chi-tiet-gia-ban-le-dien-cho-sinh-hoat-san-xuat-kinh-doanh-tu-1-11-119261104152055059.htm), hiệu
+lực 01/11/2026; cấu hình đã lưu trước đây **không tự ghi đè**, cần đối chiếu
+trước khi bật. Công cụ từ chối mái không đủ chỗ cho hệ tối thiểu, cấu hình giá
+không hợp lệ và bậc điện sai thứ tự. Giá hệ, sản lượng, pin và hoàn vốn vẫn là
+ước tính cần kinh doanh/kỹ thuật duyệt trên staging; không bật public chỉ vì code
+đã qua test. Bộ lọc sản phẩm thiếu dữ liệu vận chuyển dùng `weight_kg`, đúng
+trường checkout dùng để tính cân nặng kiện hàng.
 
 Admin đơn hàng chỉ cho sửa trạng thái xử lý và ghi chú. `payment_status` là
 thông tin đọc; VNPay chỉ cập nhật từ callback có chữ ký. Với đơn thanh toán

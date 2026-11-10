@@ -22,7 +22,7 @@ class ProductSalesReadiness
         'content' => 'Chưa có khối mô tả riêng',
         'specs' => 'Thiếu thông số kỹ thuật',
         'power' => 'Thiếu công suất',
-        'shipping' => 'Thiếu kích thước đóng gói',
+        'shipping' => 'Thiếu cân nặng hoặc kích thước đóng gói',
         'discount' => 'Đang giảm giá',
     ];
 
@@ -79,7 +79,8 @@ class ProductSalesReadiness
             'content' => $query->whereDoesntHave('contentSection', fn (Builder $section) => $section->where('is_visible', true)->whereNotNull('blocks')->where('blocks', '!=', '[]')),
             'specs' => $query->whereRaw("TRIM(COALESCE(products.specs_html, '')) = ''")->whereRaw("TRIM(COALESCE(products.additional_specs, '')) IN ('', '[]')"),
             'power' => $query->where(fn (Builder $power) => $power->whereNull('products.power_watts')->orWhere('products.power_watts', '<=', 0)),
-            'shipping' => $query->where(fn (Builder $box) => $box->whereRaw("TRIM(COALESCE(products.carton_dimensions, '')) = ''")->orWhereRaw("TRIM(COALESCE(products.weight, '')) IN ('', '0')")),
+            'shipping' => $query->where(fn (Builder $box) => $box->whereRaw("TRIM(COALESCE(products.carton_dimensions, '')) = ''")
+                ->orWhereNull('products.weight_kg')->orWhere('products.weight_kg', '<=', 0)),
             'discount' => $query->where('products.sale_price', '>', 0)->whereColumn('products.sale_price', '<', 'products.regular_price'),
         };
     }

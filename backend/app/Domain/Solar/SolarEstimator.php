@@ -19,13 +19,13 @@ final class SolarEstimator
     public const HABITS = ['day' => ['Dùng nhiều ban ngày', 0.7], 'mixed' => ['Ngày và tối như nhau', 0.5], 'evening' => ['Chủ yếu buổi tối', 0.3]];
 
     /**
-     * Starting values. Tariff: EVN household retail tiers from 10/05/2025 (before VAT). Sun: typical yield of a
+     * Starting values. Household tariff: Decision 2892/QD-BCT, effective 01/11/2026 (before VAT). Sun: typical yield of a
      * well-placed roof, kWh per kWp per day. Prices are placeholders the owner must confirm before switching on.
      */
     public const DEFAULTS = [
         'enabled' => false,
         'vat_percent' => 8,
-        'tiers' => [[50, 1984], [100, 2050], [200, 2380], [300, 2998], [400, 3350], [null, 3460]],
+        'tiers' => [[100, 1901], [200, 2289], [400, 2894], [700, 3456], [null, 3844]],
         'business_price' => 2900,
         'regions' => ['bac' => ['Miền Bắc', 3.2], 'trung' => ['Miền Trung', 4.0], 'tay-nguyen' => ['Tây Nguyên', 4.3], 'nam' => ['Miền Nam', 4.4]],
         'price_per_kwp' => ['household' => 10500000, 'business' => 9000000],
@@ -53,6 +53,75 @@ final class SolarEstimator
     public function enabled(): bool
     {
         return (bool) $this->config()['enabled'];
+    }
+
+    /** Reject unsafe settings even when they were written outside Filament. */
+    public static function configurationErrors(array $c): array
+    {
+        $errors = [];
+        foreach (['business_price', 'panel_watt', 'panel_area_m2', 'min_kwp'] as $key) {
+            if (! is_numeric($c[$key] ?? null) || (float) $c[$key] <= 0) {
+                $errors[] = 'Cấu hình '.$key.' phải lớn hơn 0';
+            }
+        }
+        if (! is_numeric($c['vat_percent'] ?? null) || (float) $c['vat_percent'] < 0 || (float) $c['vat_percent'] > 15) {
+            $errors[] = 'VAT phải từ 0 đến 15%';
+        }
+        if (! is_numeric($c['match_percent'] ?? null) || (float) $c['match_percent'] <= 0 || (float) $c['match_percent'] > 100) {
+            $errors[] = 'Tỷ lệ sử dụng sản lượng phải từ 0 đến 100%';
+        }
+        if (! is_numeric($c['price_spread_percent'] ?? null) || (float) $c['price_spread_percent'] < 0 || (float) $c['price_spread_percent'] > 40) {
+            $errors[] = 'Khoảng giá phải từ 0 đến 40%';
+        }
+        foreach (['household', 'business'] as $type) {
+            foreach (['price_per_kwp', 'max_kwp'] as $key) {
+                if (! is_numeric($c[$key][$type] ?? null) || (float) $c[$key][$type] <= 0) {
+                    $errors[] = 'Cấu hình '.$key.'.'.$type.' phải lớn hơn 0';
+                }
+            }
+            if (is_numeric($c['max_kwp'][$type] ?? null) && is_numeric($c['min_kwp'] ?? null)
+                && (float) $c['max_kwp'][$type] < (float) $c['min_kwp']) {
+                $errors[] = 'Công suất tối đa phải lớn hơn công suất tối thiểu';
+            }
+        }
+        foreach (['hybrid_extra_per_kwp', 'battery_price_per_kwh'] as $key) {
+            if (! is_numeric($c[$key] ?? null) || (float) $c[$key] <= 0) {
+                $errors[] = 'Cấu hình '.$key.' phải lớn hơn 0';
+            }
+        }
+        $tiers = $c['tiers'] ?? null;
+        if (! is_array($tiers) || count($tiers) < 2) {
+            $errors[] = 'Cần ít nhất hai bậc giá điện';
+        } else {
+            $previous = 0;
+            foreach (array_values($tiers) as $index => $tier) {
+                if (! is_array($tier) || ! is_numeric($tier[1] ?? null) || (float) $tier[1] <= 0) {
+                    $errors[] = 'Giá điện mỗi bậc phải lớn hơn 0';
+
+                    continue;
+                }
+                $limit = $tier[0] ?? null;
+                if ($index === count($tiers) - 1) {
+                    if ($limit !== null) {
+                        $errors[] = 'Bậc cuối phải không giới hạn kWh';
+                    }
+                } elseif (! is_numeric($limit) || (int) $limit <= $previous) {
+                    $errors[] = 'Giới hạn kWh phải tăng dần';
+                } else {
+                    $previous = (int) $limit;
+                }
+            }
+        }
+        if (! is_array($c['regions'] ?? null) || $c['regions'] === []) {
+            $errors[] = 'Cần ít nhất một khu vực có sản lượng hợp lệ';
+        }
+        foreach (is_array($c['regions'] ?? null) ? $c['regions'] : [] as $region) {
+            if (! is_array($region) || ! is_numeric($region[1] ?? null) || (float) $region[1] <= 0) {
+                $errors[] = 'Sản lượng theo khu vực phải lớn hơn 0';
+            }
+        }
+
+        return $errors;
     }
 
     /** What the form needs: choices and the ranges the inputs accept. */
@@ -92,6 +161,14 @@ final class SolarEstimator
         if ($limits && ($bill < $limits['min'] || $bill > $limits['max'])) {
             $errors[] = 'Tiền điện mỗi tháng từ '.self::money($limits['min']).' đến '.self::money($limits['max']);
         }
+        $errors = array_merge($errors, self::configurationErrors($c));
+        if (array_key_exists('roof_m2', $input) && (! is_numeric($input['roof_m2']) || (float) $input['roof_m2'] <= 0)) {
+            $errors[] = 'Diện tích mái phải lớn hơn 0';
+        }
+        if ($type === 'business' && array_key_exists('price', $input)
+            && (! is_numeric($input['price']) || (float) $input['price'] < 1000 || (float) $input['price'] > 10000)) {
+            $errors[] = 'Giá điện doanh nghiệp phải từ 1.000 đến 10.000đ/kWh';
+        }
         if ($errors !== []) {
             return ['ok' => false, 'errors' => $errors];
         }
@@ -106,12 +183,15 @@ final class SolarEstimator
         // Size for what is used while the sun is up (plus what the battery stores for the evening).
         $target = $usage * ($battery ? min(0.9, $share + 0.3) : $share);
         $kwp = $target / ($sun * 30);
-        $roofCap = is_numeric($input['roof_m2'] ?? null) && (float) $input['roof_m2'] > 0
-            ? (float) $input['roof_m2'] / ((float) $c['panel_area_m2'] * 1.15) * (float) $c['panel_watt'] / 1000 : null;
-        $limitedByRoof = $roofCap !== null && $roofCap < $kwp;
-        $kwp = min($kwp, $roofCap ?? INF, (float) $c['max_kwp'][$type]);
-        $kwp = max((float) $c['min_kwp'], round($kwp * 2) / 2);
-        $panels = (int) ceil($kwp * 1000 / (float) $c['panel_watt']);
+        $roofPanels = array_key_exists('roof_m2', $input)
+            ? (int) floor((float) $input['roof_m2'] / ((float) $c['panel_area_m2'] * 1.15)) : null;
+        $minimumPanels = (int) ceil((float) $c['min_kwp'] * 1000 / (float) $c['panel_watt']);
+        if ($roofPanels !== null && $roofPanels < $minimumPanels) {
+            return ['ok' => false, 'code' => 'roof_insufficient', 'errors' => ['Diện tích mái chưa đủ cho hệ tối thiểu. Vui lòng để lại thông tin để được khảo sát thực tế.']];
+        }
+        $targetPanels = max($minimumPanels, (int) ceil(round($kwp * 2) / 2 * 1000 / (float) $c['panel_watt']));
+        $limitedByRoof = $roofPanels !== null && $roofPanels < $targetPanels;
+        $panels = min($targetPanels, $roofPanels ?? PHP_INT_MAX, (int) floor((float) $c['max_kwp'][$type] * 1000 / (float) $c['panel_watt']));
         $kwp = round($panels * (float) $c['panel_watt'] / 1000, 2);
         $output = $kwp * $sun * 30;
         $used = min($output, $target) * (float) $c['match_percent'] / 100;

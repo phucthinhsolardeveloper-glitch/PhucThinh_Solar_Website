@@ -34,8 +34,12 @@ final class IntegrationReadiness
 
         $ntl = app(NtlClient::class);
         $ready = $ntl->readiness();
-        $items[] = ['label' => 'Nhất Tín', 'state' => ['mock' => 'Mô phỏng', 'sandbox' => 'Sandbox', 'production' => 'Production'][$ntl->mode()].($ready['ready'] ? '' : ' · chưa sẵn sàng'),
-            'detail' => $ready['reason'].(config('shipping.nhattin.locations_verified') ? '' : ' Mã tỉnh/phường chưa đối chiếu với Nhất Tín.')
+        $mode = $ntl->mode();
+        $mockOnProduction = app()->environment('production') && $mode === 'mock';
+        $items[] = ['label' => 'Nhất Tín', 'state' => $mockOnProduction ? 'Chưa dùng · phí theo Phường/Xã'
+            : ['mock' => 'Mô phỏng (chỉ thử nghiệm)', 'sandbox' => 'Sandbox', 'production' => 'Production'][$mode].($ready['ready'] ? '' : ' · chưa sẵn sàng'),
+            'detail' => ($mockOnProduction ? 'Chế độ mock bị chặn ở production; checkout dùng phí địa phương và không tạo vận đơn Nhất Tín. ' : '').$ready['reason']
+                .(config('shipping.nhattin.locations_verified') ? '' : ' Mã tỉnh/phường chưa đối chiếu với Nhất Tín.')
                 .(trim((string) config('shipping.nhattin.webhook_token')) === '' ? ' Webhook chưa có token.' : '')];
 
         return $items;

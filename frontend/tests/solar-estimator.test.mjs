@@ -31,7 +31,8 @@ test('estimator form and estimate contracts accept the Laravel answers and refus
 test('the estimate page only shows Laravel results and sends the lead with the server summary', () => {
   const page = read('app/components/estimator/SolarEstimatorPage.vue')
   assert.match(page, /\$fetch<Answer>\('\/api\/v1\/solar-estimate'/)
-  assert.match(page, /content: result\.value\.summary/)
+  assert.match(page, /const summary = result\.value\.summary/)
+  assert.match(page, /content: summary/)
   assert.match(page, /createError\(\{ statusCode: 404/)
   // One formula only: tariff tiers and sun hours live in Laravel (SolarEstimator), never here.
   assert.doesNotMatch(page, /tiers|1984|3460|kWh\/kWp\/ngày'/)

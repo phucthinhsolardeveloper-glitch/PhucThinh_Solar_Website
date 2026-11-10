@@ -38,3 +38,13 @@ it('shows sales and SEO gap filters to catalog editors without changing products
     Livewire::test(ListProducts::class)->assertSee('Cần bổ sung')
         ->filterTable('sales_readiness', 'seo')->assertHasNoErrors();
 });
+
+it('uses packed weight from the same field as checkout when checking shipping readiness', function () {
+    $product = Product::query()->where('is_visible', true)->firstOrFail();
+    $product->update(['carton_dimensions' => '40 × 30 × 20 cm', 'weight' => '8 kg', 'weight_kg' => null]);
+    $readiness = app(ProductSalesReadiness::class);
+    expect($readiness->filter(Product::query(), 'shipping')->whereKey($product->id)->exists())->toBeTrue();
+
+    $product->update(['weight_kg' => 8]);
+    expect($readiness->filter(Product::query(), 'shipping')->whereKey($product->id)->exists())->toBeFalse();
+});

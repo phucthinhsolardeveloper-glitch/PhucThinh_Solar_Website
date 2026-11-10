@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use UnitEnum;
 
 /**
@@ -68,7 +69,7 @@ class SolarEstimatorPage extends Page
 
     public function form(Schema $schema): Schema
     {
-        $money = fn (string $name, string $label) => TextInput::make($name)->label($label)->numeric()->required()->minValue(0)->suffix('đ');
+        $money = fn (string $name, string $label) => TextInput::make($name)->label($label)->numeric()->required()->minValue(1)->suffix('đ');
 
         return $schema->statePath('data')->components([
             Section::make('Hiển thị')->schema([
@@ -95,9 +96,10 @@ class SolarEstimatorPage extends Page
             ]),
             Section::make('Giá điện')->columns(2)->schema([
                 TextInput::make('vat_percent')->label('VAT trên tiền điện')->numeric()->required()->minValue(0)->maxValue(15)->suffix('%'),
-                $money('business_price', 'Doanh nghiệp: đơn giá bình quân mỗi kWh (trước VAT)'),
+                $money('business_price', 'Doanh nghiệp: đơn giá bình quân mỗi kWh (trước VAT)')
+                    ->helperText('Chỉ là giả định nếu khách chưa nhập giá trên hóa đơn; biểu giá thực tế phụ thuộc khung giờ và cấp điện áp.'),
                 Repeater::make('tiers')->label('Bậc giá điện sinh hoạt (trước VAT)')->columnSpanFull()->columns(2)->minItems(1)->maxItems(8)->reorderable(false)
-                    ->helperText('Bậc cuối để trống "Đến kWh" (không giới hạn). Mặc định: biểu giá EVN từ 10/05/2025.')
+                    ->helperText('Bậc cuối để trống "Đến kWh" (không giới hạn). Mặc định: Quyết định 2892/QĐ-BCT, hiệu lực 01/11/2026; kiểm lại cấu hình đã lưu trước khi bật.')
                     ->schema([
                         TextInput::make('up_to')->label('Đến kWh')->numeric()->minValue(1),
                         $money('price', 'Giá mỗi kWh'),
@@ -147,6 +149,10 @@ class SolarEstimatorPage extends Page
     {
         $data = $this->form->getState();
         $after = $this->values($data);
+        $errors = SolarEstimator::configurationErrors($after);
+        if ($errors !== []) {
+            throw ValidationException::withMessages(['data.tiers' => implode('. ', $errors)]);
+        }
         $before = app(SolarEstimator::class)->config();
         DB::transaction(function () use ($before, $after) {
             DB::table('settings')->updateOrInsert(['key' => SolarEstimator::SETTING],
@@ -163,10 +169,7 @@ class SolarEstimatorPage extends Page
     /** @return array<string, mixed> the stored shape */
     private function values(array $data): array
     {
-        $tiers = collect($data['tiers'] ?? [])->map(fn ($tier) => [is_numeric($tier['up_to'] ?? null) ? (int) $tier['up_to'] : null, (int) ($tier['price'] ?? 0)])
-            ->sortBy(fn ($tier) => $tier[0] ?? PHP_INT_MAX)->values();
-        // Only the last tier may be open-ended.
-        $tiers = $tiers->map(fn ($tier, $i) => $i === $tiers->count() - 1 ? [null, $tier[1]] : $tier)->all();
+        $tiers = collect($data['tiers'] ?? [])->map(fn ($tier) => [is_numeric($tier['up_to'] ?? null) ? (int) $tier['up_to'] : null, (int) ($tier['price'] ?? 0)])->values()->all();
 
         return [
             'enabled' => ! empty($data['enabled']),
