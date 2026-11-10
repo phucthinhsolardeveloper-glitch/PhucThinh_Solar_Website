@@ -46,11 +46,11 @@ it('rewrites spec cells of a bulk file before the preview, extra spec lines by t
         ->and(SpecFormat::cell('additional_specs', 'specs', "tg | Thời gian chiếu sáng | 10-12h\n | Model | JD-8500"))->toBe("tg | Thời gian chiếu sáng | 10–12 giờ\n | Model | JD-8500");
 });
 
-it('writes the brand in a product name as Admin writes it, once, on one line, and folds same-meaning spec names', function () {
+it('writes the brand in a product name as Admin writes it, once, on one line, and never renames spec rows', function () {
     expect(SpecFormat::changes(['name' => 'Biến tần bơm NLMT Hober HOBER HSHP5500H', 'brand_name' => 'Hober'])['name'])->toBe('Biến tần bơm NLMT Hober HSHP5500H')
         ->and(SpecFormat::changes(['name' => "Tấm pin ASTRONERGY 595Wp \n- 1 MẶT KÍNH", 'brand_name' => 'Astronergy'])['name'])->toBe('Tấm pin Astronergy 595Wp - 1 MẶT KÍNH')
         ->and(SpecFormat::changes(['name' => 'Đèn pha 60W JinDian JD-8860L', 'brand_name' => 'JINDIAN'])['name'])->toBe('Đèn pha 60W JINDIAN JD-8860L')
         ->and(SpecFormat::changes(['name' => 'Đèn pha JINDIAN', 'brand_name' => 'JINDIAN']))->toBe([])
-        ->and(SpecFormat::changes(['additional_specs' => [['key' => '', 'label' => 'Mã model', 'value' => 'X1'], ['key' => '', 'label' => 'Khối lượng', 'value' => '26kg']]])['additional_specs'])
-        ->toBe([['key' => '', 'label' => 'Model', 'value' => 'X1'], ['key' => '', 'label' => 'Khối lượng', 'value' => '26 kg']]);
+        ->and(SpecFormat::changes(['additional_specs' => [['key' => '', 'label' => 'Công suất danh định', 'value' => '5kW'], ['key' => '', 'label' => 'Mã model', 'value' => 'X1'], ['key' => '', 'label' => 'Khối lượng', 'value' => '26kg']]])['additional_specs'])
+        ->toBe([['key' => '', 'label' => 'Công suất danh định', 'value' => '5kW'], ['key' => '', 'label' => 'Mã model', 'value' => 'X1'], ['key' => '', 'label' => 'Khối lượng', 'value' => '26 kg']]);
 });

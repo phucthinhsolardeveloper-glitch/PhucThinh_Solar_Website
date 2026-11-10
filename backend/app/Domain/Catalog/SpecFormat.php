@@ -11,8 +11,9 @@ namespace App\Domain\Catalog;
  *   size "585 x 260 x 85mm", "610*250mm"   → "585 × 260 × 85 mm", "610 × 250 mm"
  * plus warranty "05 năm" → "5 năm", battery/panel "3.2v/100ah" → "3.2V/100Ah", colour temperature
  * "3000k - 6500k" → "3000–6500K", protection "ip 65" → "IP65", carton "4pcs/ctn" → "4 cái/thùng".
- * Extra spec names with the same meaning are folded ("Mã model" → "Model"), and a product name writes its brand the way the
- * brand is written in Admin ("JinDian" → "JINDIAN") when brand_name is given.
+ * A product name writes its brand the way the brand is written in Admin ("JinDian" → "JINDIAN") when brand_name is given.
+ * Spec names are never renamed: the product page hides or merges rows by name, so a rename would change what shows
+ * (checked: every alias tried added or hid rows on some products).
  * Only these kinds of spec are touched, never names or model codes ("EPV230-4T2.2G" keeps its dash),
  * and free text around the figures stays as written.
  */
@@ -30,12 +31,6 @@ final class SpecFormat
     public const EXAMPLES = [
         'time' => 'Ví dụ: 4–6 giờ', 'length' => 'Ví dụ: 3–5 m', 'area' => 'Ví dụ: 200 m²', 'size' => 'Ví dụ: 585 × 260 × 85 mm',
         'mass' => 'Ví dụ: 26 kg', 'duration' => 'Ví dụ: 2 năm', 'electric' => 'Ví dụ: 3.2V/30Ah LiFePO4', 'cct' => 'Ví dụ: 3000–6500K', 'ip' => 'Ví dụ: IP66', 'carton' => 'Ví dụ: 4 cái/thùng',
-    ];
-
-    /** Extra spec names that mean the same thing, folded into one name (lower-case key → name kept). */
-    public const LABEL_ALIASES = [
-        'mã model' => 'Model', 'model' => 'Model', 'công suất danh định' => 'Công suất định mức', 'bảo hành tiêu chuẩn' => 'Bảo hành',
-        'chức năng bảo vệ' => 'Bảo vệ',
     ];
 
     private const NUMBER = '\d+(?:[.,]\d+)?';
@@ -166,11 +161,6 @@ final class SpecFormat
         if (is_array($extra)) {
             $changed = false;
             foreach ($extra as $i => $spec) {
-                $alias = is_array($spec) ? (self::LABEL_ALIASES[mb_strtolower(trim((string) ($spec['label'] ?? '')))] ?? null) : null;
-                if ($alias !== null && $alias !== $spec['label']) {
-                    $extra[$i]['label'] = $spec['label'] = $alias;
-                    $changed = true;
-                }
                 $kind = is_array($spec) ? self::kindOfLabel((string) ($spec['label'] ?? '')) : null;
                 if ($kind !== null && is_string($spec['value'] ?? null) && ($new = self::apply($spec['value'], $kind)) !== $spec['value']) {
                     $extra[$i]['value'] = $new;
