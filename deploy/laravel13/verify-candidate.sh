@@ -15,8 +15,7 @@ config = json.load(sys.stdin)
 services = config["services"]
 backend, db, proxy = (services[name] for name in ("backend", "db", "proxy"))
 env = backend["environment"]
-assert env["DB_HOST"] == "db" and env["LEGACY_DB_HOST"] == "db", "DB must stay inside the candidate stack"
-assert env["DB_DATABASE"] == env["LEGACY_DB_DATABASE"], "Import and runtime DB differ"
+assert env["DB_HOST"] == "db", "DB must stay inside the candidate stack"
 assert re.search(r"(?:candidate|staging|rehearsal)", env["DB_DATABASE"]), "DB name is not isolated"
 assert len(env.get("APP_KEY", "")) >= 32, "APP_KEY is missing"
 assert env.get("APP_TIMEZONE") == "Asia/Ho_Chi_Minh" and env.get("APP_LOCALE") == "vi", "Locale or timezone drift"

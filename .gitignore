@@ -3,6 +3,8 @@
 *.sql:Zone.Identifier
 !migrations/*.sql
 backup/
+# Bản sao mã PHP cũ, giữ trên máy để tra cứu. Mã thật nằm ở tag legacy-php-before-laravel13.
+domains/
 domains/phucthinhsolar.com/public_html/caches/
 domains/phucthinhsolar.com/public_html/assets/caches/
 domains/phucthinhsolar.com/public_html/logs/

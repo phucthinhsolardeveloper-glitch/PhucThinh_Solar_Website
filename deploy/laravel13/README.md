@@ -151,13 +151,12 @@ khi mở Admin. File `.env` được loại khỏi Docker build context.
    `docker load` cùng manifest; đối chiếu SHA-256 file tar và image ID. Không
    build lại cùng tag trên VPS rồi giả định bytes giống nhau. Đo chỗ trống
    trước khi tạo tar. Sau đó `docker compose --env-file runtime/stack.env up -d db`.
-5. Nạp dump vào DB candidate qua `docker compose exec -T db`; sau đó chạy
-   `docker compose run --rm --no-deps backend php artisan migrate --force` và
-   `docker compose run --rm --no-deps backend php artisan pts:import-legacy --fresh`.
-   Đây chỉ là **lần import đầu trên DB clone riêng**. Bản nâng cấp sau đó chạy
-   migration mới trên clone và kiểm dữ liệu; tuyệt đối không chạy lại `--fresh`
-   trên DB đã nhận đơn/lead/Admin write. Không trỏ hai lệnh vào DB production.
+5. Nạp dump vào DB candidate qua `docker compose exec -T db`, rồi
+   `docker compose run --rm --no-deps backend php artisan migrate --force`.
    So counts, quan hệ, orphan, tiền, content inheritance, user/SEO/media.
+   (Lệnh nhập từ bản PHP cũ `pts:import-legacy` đã bỏ khỏi mã nguồn ngày
+   2026-11-10 sau khi chuyển hệ thống xong; cần đọc lại thì lấy ở lịch sử git,
+   commit cuối còn lệnh này là `b64dbfda`.)
 6. `docker compose --env-file runtime/stack.env up -d backend nuxt proxy`.
    Chạy `./verify-candidate.sh runtime/stack.env runtime/release-manifest.json`:
    gate so image ID của **container đang chạy** với manifest, DB chỉ nằm trong

@@ -60,10 +60,6 @@ services:
       DB_DATABASE: ${DB_DATABASE:?Set candidate database name}
       DB_USERNAME: ${DB_USERNAME:?Set candidate database user}
       DB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
-      LEGACY_DB_HOST: db
-      LEGACY_DB_DATABASE: ${DB_DATABASE:?Set candidate database name}
-      LEGACY_DB_USERNAME: ${DB_USERNAME:?Set candidate database user}
-      LEGACY_DB_PASSWORD: ${DB_PASSWORD:?Set candidate database password}
       DB_PREFIX: ""
       APP_ENV: production
       APP_DEBUG: "false"
