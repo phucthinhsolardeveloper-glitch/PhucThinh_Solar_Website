@@ -14,3 +14,14 @@ test('the "Thêm chi tiết" button is phone-only where wide screens already sho
     assert.doesNotMatch(source, /<FormMoreToggle[^>]*tb:hidden/, file)
   }
 })
+
+// Wide screens: search replaces the header (covers it, field centred at header height) and fades out on close;
+// no full-page backdrop blur, which stalled the fade on ordinary laptops.
+test('desktop search covers the header and closes with a fade, without a page-wide blur', () => {
+  const header = read('app/components/SiteHeader.vue')
+  assert.match(header, /<Transition name="pts-search"/)
+  assert.match(header, /\.pts-search-leave-to \.pts-search-panel \{ opacity: 0;/)
+  assert.match(header, /@media \(min-width: 821px\) \{\n  \.pts-search-panel \{ top: 0 !important;/)
+  assert.match(header, /grid-template-rows: var\(--pts-header-h, 89px\) auto/)
+  assert.doesNotMatch(header.match(/\.pts-search-scrim \{ top: 0[^}]*\}/)[0], /backdrop-filter/)
+})

@@ -445,6 +445,9 @@ function toggleSearch() {
   closeMobileMenu(false)
   closeNavDropdown(false)
   searchOpen.value = true
+  // The panel covers the header on wide screens; its first row matches the header's height.
+  const capsule = import.meta.client ? document.querySelector<HTMLElement>('.pts-header-capsule') : null
+  if (capsule) document.documentElement.style.setProperty('--pts-header-h', `${capsule.offsetHeight}px`)
   syncBodyLock()
   nextTick(() => {
     syncModalBackground()
@@ -823,6 +826,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Backdrop mờ cho hộp thoại tìm kiếm: click ra ngoài để đóng nhanh -->
+      <Transition name="pts-search" :duration="{ enter: 260, leave: 180 }">
       <div
         v-if="searchOpen"
         ref="searchOverlay"
@@ -845,7 +849,7 @@ onBeforeUnmount(() => {
           aria-labelledby="ptsHeaderSearchTitle"
         >
         <div class="mx-auto w-full max-w-[max(1680px,var(--container-page))] px-4 max-[359px]:px-3 tb:px-6 nav:px-(--spacing-gutter)">
-          <div class="flex flex-wrap items-center gap-x-6 gap-y-3 max-[1099px]:pr-12 min-[1100px]:flex-nowrap">
+          <div class="pts-search-row flex flex-wrap items-center gap-x-6 gap-y-3 max-[1099px]:pr-12 min-[1100px]:flex-nowrap">
             <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
             <form class="pts-search-field flex w-full min-w-0 items-center min-[1100px]:order-2 min-[1100px]:w-[min(520px,36vw)] min-[1100px]:flex-none" role="search" @submit.prevent="submitSearch">
               <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
@@ -872,7 +876,7 @@ onBeforeUnmount(() => {
                 <span class="max-tb:hidden">Tìm kiếm</span><span class="tb:hidden">Tìm</span>
               </button>
             </form>
-            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1" :class="{ 'max-tb:hidden': searchKeyword.trim().length >= 2 }">
+            <div class="pts-search-quick flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1" :class="{ 'max-tb:hidden': searchKeyword.trim().length >= 2 }">
               <span class="mr-1.5 text-[13px] font-semibold text-slate-500">Tra cứu nhanh</span>
               <button
                 v-for="term in popularSearchTerms"
@@ -885,7 +889,7 @@ onBeforeUnmount(() => {
               </button>
             </div>
             <button
-              class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700 min-[1100px]:order-3 max-[1099px]:absolute max-[1099px]:right-3 max-[1099px]:top-3"
+              class="pts-search-close inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700 min-[1100px]:order-3 max-[1099px]:absolute max-[1099px]:right-3 max-[1099px]:top-3"
               type="button"
               aria-label="Đóng tìm kiếm"
               @click="closeSearch()"
@@ -906,6 +910,7 @@ onBeforeUnmount(() => {
         </div>
         </div>
       </div>
+      </Transition>
 
       <!-- Mega-menu Danh mục sản phẩm: neo sát ngay dưới thanh header sticky -->
       <Transition name="pts-catalog-menu">
@@ -1344,11 +1349,29 @@ onBeforeUnmount(() => {
 .pts-search-field input:focus, .pts-search-field input:focus-visible { outline: none; }
 .pts-search-field input::-webkit-search-cancel-button { display: none; }
 .pts-search-field:focus-within { border-color: var(--color-gold-500); box-shadow: 0 0 0 4px rgb(228 168 73 / 18%); }
-.pts-search-panel { animation: pts-search-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.pts-search-scrim { animation: pts-fade-in 0.2s ease both; }
-@keyframes pts-search-in { from { opacity: 0; transform: translateY(-6px); } }
+.pts-search-panel { animation: pts-search-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.pts-search-scrim { animation: pts-fade-in 0.22s ease both; }
+/* Closing fades out the same way instead of vanishing (the wrapper is display:contents, so its children carry it). */
+.pts-search-leave-active .pts-search-panel, .pts-search-leave-active .pts-search-scrim { animation: none; transition: opacity .18s ease, transform .18s ease; }
+.pts-search-leave-to .pts-search-panel { opacity: 0; transform: translateY(-10px); }
+.pts-search-leave-to .pts-search-scrim { opacity: 0; }
+@keyframes pts-search-in { from { opacity: 0; transform: translateY(-12px); } }
 @keyframes pts-fade-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .pts-search-panel, .pts-search-scrim { animation: none; } }
+/* Wide screens: search takes the header's place instead of hanging under it. The field sits where the menu was,
+   centred, and the page behind dims, so nothing half-covered competes with what is being typed. */
+@media (min-width: 821px) {
+  .pts-search-panel { top: 0 !important; border-top: 0 !important; padding-block: 0 22px !important; backdrop-filter: none !important; box-shadow: 0 34px 70px -34px rgb(10 34 81 / 55%) !important; }
+  /* Plain dim, no backdrop blur: blurring the whole page behind costs frames on ordinary laptops. */
+  .pts-search-scrim { top: 0 !important; height: 100dvh !important; background: rgb(6 20 48 / 46%) !important; }
+  .pts-search-row { display: grid !important; grid-template-columns: 44px minmax(0, 760px) 44px; grid-template-rows: var(--pts-header-h, 89px) auto; justify-content: center; align-items: center; column-gap: 20px; row-gap: 0; padding-right: 0 !important; }
+  .pts-search-row > form { grid-column: 2; grid-row: 1; width: 100% !important; }
+  .pts-search-close { position: static !important; grid-column: 3; grid-row: 1; }
+  .pts-search-quick { grid-column: 1 / -1; grid-row: 2; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pts-search-panel, .pts-search-scrim { animation: none; }
+  .pts-search-leave-active .pts-search-panel, .pts-search-leave-active .pts-search-scrim { transition: none; }
+}
 /* Flyouts fade in place instead of popping with display toggles. */
 .catalog-flyout { visibility: hidden; opacity: 0; transform: translateX(-6px); pointer-events: none; transition: opacity 0.1s ease, transform 0.1s ease, visibility 0s linear 0.1s; }
 .is-flyout-open > .catalog-flyout, li:focus-within > .catalog-flyout { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
