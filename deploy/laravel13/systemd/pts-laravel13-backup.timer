@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Phuc Thinh Solar (Laravel 13) full backup timer
+
+[Timer]
+OnCalendar=*-*-* 02:40:00 Asia/Ho_Chi_Minh
+Persistent=true
+
+[Install]
+WantedBy=timers.target

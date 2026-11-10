@@ -1,0 +1,8 @@
+[Unit]
+Description=Phuc Thinh Solar (Laravel 13) full backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/srv/pts-laravel13/scripts/backup.sh --full

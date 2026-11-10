@@ -221,9 +221,29 @@ Hai cái bẫy đã gặp, lần sau tránh:
   ngoài phải có một mạng không internal; `scheduler` thì không cần vì chỉ chạy
   việc trong DB.
 
-Rollback (stack PHP cũ vẫn chạy):
+Rollback: stack PHP cũ **đã gỡ** ngày 2026-11-10 theo yêu cầu chủ website, sau
+khi tải bản lưu đầy đủ về máy chủ sở hữu. Quay lại bản PHP nay phải dựng lại từ
+tag `legacy-php-before-laravel13`, ảnh `phucthinhsolar-web:2d151211971a` /
+`phucthinhsolar-nuxt:2d151211971a` (vẫn còn trên VPS),
+`docker-compose.yml.pre-laravel-20261110`, `Caddyfile.pre-laravel-20261110T034425Z`
+và dump DB trong bản lưu — tính bằng giờ, không phải bằng phút.
 
-```bash
-cp /srv/phucthinhsolar/Caddyfile.pre-laravel-20261110T034425Z /srv/phucthinhsolar/Caddyfile
-docker restart phucthinhsolar-proxy-1
-```
+## Backup của stack production
+
+`scripts/backup.sh` (cài ở `/srv/pts-laravel13/scripts/backup.sh`) và hai unit
+trong `systemd/`:
+
+| Việc | Lịch | Nội dung |
+|---|---|---|
+| `pts-laravel13-db-backup.timer` | 00:15, 06:15, 12:15, 18:15 | dump `pts_app` (~1,8 MB) |
+| `pts-laravel13-backup.timer` | 02:40 hằng ngày | dump + `upload` + `storage/app` (~1,1 GB) |
+
+Giữ 7 ngày (`BACKUP_RETENTION_DAYS`). Mỗi bản có `SHA256SUMS` tự kiểm ngay sau
+khi tạo và `MANIFEST.txt` ghi `source_revision`. Script **không** chép
+`runtime/*.env` vì file đó chứa mật khẩu.
+
+Chạy tay: `systemctl start pts-laravel13-backup.service` hoặc
+`/srv/pts-laravel13/scripts/backup.sh --db-only`.
+
+**Chưa có bản sao ngoài VPS.** Script in cảnh báo mỗi lần chạy; muốn bỏ cảnh báo
+thì đặt `/usr/local/sbin/pts-backup-offsite` như stack cũ từng dự tính.

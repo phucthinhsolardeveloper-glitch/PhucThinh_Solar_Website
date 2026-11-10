@@ -4,6 +4,36 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-10 — dọn môi trường sau cutover, backup chuyển sang stack mới
+
+- Chủ website duyệt từng mục trước khi xoá. Bản lưu của site PHP cũ đã tải về
+  máy chủ sở hữu (`D:\ProjectBackup\phucthinhsolar-php-pre-laravel-20261110`,
+  1,1 GB, `sha256sum -c` khớp 5/5 file) gồm dump DB 10:44, dump DB cuối lúc
+  11:34, `upload.tar.gz` (1.470 file), cấu hình stack và Dockerfile cũ.
+- Đã xoá: môi trường test `phucthinhsolar-staging` (4 container, 3 volume,
+  `/srv/phucthinhsolar-staging`, cổng nội bộ 18080/18443); 3 container PHP cũ
+  `web`/`nuxt`/`db` và volume `phucthinhsolar_db_data`; dữ liệu ứng dụng cũ
+  (`shared`, `releases`, `incoming`); 53/57 thư mục backup cũ (giữ 4 bản gần
+  nhất, trong đó có bản ngay trước cutover); 8 tag ảnh PHP cũ; 13,36 GB build
+  cache; 4 volume mồ côi (datadir MariaDB rỗng).
+- Giữ lại có chủ đích: `phucthinhsolar-proxy-1` (Caddy biên, cổng 80/443 và
+  chứng chỉ TLS của cả 3 tên miền) — `docker-compose.yml` của project
+  `phucthinhsolar` nay chỉ còn service `proxy`, bản đầy đủ ở
+  `docker-compose.yml.pre-laravel-20261110`. Giữ ảnh `2d151211971a` (bản PHP
+  chạy cuối) và `9ad585a6ece0` (bản trước đó), thư mục `secrets/` và `state/`.
+- Backup: hai timer cũ (`phucthinhsolar-backup`, `phucthinhsolar-db-backup`) đã
+  tắt và gỡ unit vì DB chúng dump không còn. Thay bằng
+  `pts-laravel13-backup.timer` (full 02:40 hằng ngày) và
+  `pts-laravel13-db-backup.timer` (DB mỗi 6 giờ, phút 15), chạy
+  `deploy/laravel13/scripts/backup.sh`, giữ 7 ngày. Đã chạy thử một bản full:
+  `/srv/pts-laravel13/backups/20261110T043603Z-full`, checksum tự kiểm khớp.
+- **Backup vẫn chỉ nằm trên chính VPS** — chưa có bản sao ngoài máy chủ. Script
+  in cảnh báo này mỗi lần chạy.
+- Đĩa: 95 GB → 54 GB đã dùng (83% → 47%). Cổng còn mở: 22, 80, 443 ra ngoài;
+  18085 (kiểm tra nội bộ stack Laravel), 5544 và 6381 (ZCRM) chỉ trên 127.0.0.1.
+- Kiểm tra sau mỗi bước xoá và lần cuối: 469/469 URL sitemap 200, `/admin/login`,
+  feed, API 200, `zcrm` và `training` 200, `www` 301.
+
 ## 2026-11-10 — chuyển website sang Laravel 13 + Nuxt (f5aac548)
 
 - Commit/image: `f5aac548` / `pts-laravel13-backend:f5aac548-candidate`,

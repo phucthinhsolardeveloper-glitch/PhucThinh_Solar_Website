@@ -1,0 +1,9 @@
+[Unit]
+Description=Six-hour Phuc Thinh Solar (Laravel 13) database backup timer
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:15:00 Asia/Ho_Chi_Minh
+Persistent=true
+
+[Install]
+WantedBy=timers.target
