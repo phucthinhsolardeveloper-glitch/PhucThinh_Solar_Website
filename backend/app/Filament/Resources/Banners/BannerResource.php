@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Banners;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\Banner;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -91,7 +92,7 @@ class BannerResource extends Resource
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('placement')->label('Vị trí')->options(self::PLACEMENTS)])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

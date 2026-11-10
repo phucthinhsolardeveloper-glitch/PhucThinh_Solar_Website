@@ -4,6 +4,7 @@ namespace App\Filament\Resources\StoreLocations;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\StoreLocation;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -57,7 +58,7 @@ class StoreLocationResource extends Resource
                 TextColumn::make('address')->label('Địa chỉ')->limit(60),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

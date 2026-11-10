@@ -2,7 +2,9 @@
 
 namespace App\Domain\Reviews;
 
+use App\Domain\Admin\AdminBell;
 use App\Domain\Leads\LeadSubmission;
+use App\Filament\Resources\Reviews\ReviewResource;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -167,6 +169,9 @@ class ReviewSubmission
             return [500, ['errors' => ['Gửi đánh giá thất bại. Vui lòng thử lại sau.']]];
         }
         $uploads->deleteDirectory($batch);
+        $productName = (string) DB::table('products')->where('id', $productId)->value('name');
+        AdminBell::ring('reviews', 'review:'.$productId.':'.md5($row['name'].$row['created_at']), 'Đánh giá mới chờ duyệt: '.$star.'★', $row['name'].' · '.mb_strimwidth($productName, 0, 90, '…'),
+            ReviewResource::getUrl('index', ['tableFilters' => ['status' => ['value' => 'pending']]], isAbsolute: false, panel: 'admin'), 'heroicon-o-star', 'warning');
 
         return [200, ['ok' => true, 'message' => 'Đã nhận đánh giá. Nội dung sẽ hiển thị sau khi được duyệt.']];
     }

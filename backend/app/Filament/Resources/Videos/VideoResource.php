@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Videos;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\Video;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -55,7 +56,7 @@ class VideoResource extends Resource
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

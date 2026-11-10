@@ -2,11 +2,13 @@
 
 namespace App\Domain\Commerce;
 
+use App\Domain\Admin\AdminBell;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
 use App\Domain\Outbox\Outbox;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
@@ -369,6 +371,10 @@ class Shop
         }
         $updated = DB::table('orders')->where('id', (int) ($entry['id'] ?? 0))->where('code', (string) ($entry['code'] ?? ''))->where('payment_status', 'unpaid')->whereNull('transfer_reported_at')
             ->update(['transfer_reported_at' => now(), 'updated_at' => now()]);
+        if ($updated > 0) {
+            AdminBell::ring('orders', 'transfer:'.(int) $entry['id'], 'Khách báo đã chuyển khoản #'.$entry['code'], 'Đối chiếu sao kê rồi xác nhận thanh toán trong đơn.',
+                OrderResource::getUrl('edit', ['record' => (int) $entry['id']], isAbsolute: false, panel: 'admin'), 'heroicon-o-banknotes', 'warning');
+        }
 
         return [200, ['ok' => true, 'reported' => true, 'changed' => $updated > 0]];
     }
@@ -606,6 +612,8 @@ class Shop
             'Thanh toán' => $paymentName, 'Yêu cầu thêm' => $order['requirements']];
         $totals = ['subtotal' => (float) $order['subtotal'], 'shipping' => (float) $order['shipping_fee'], 'total' => (float) $order['total']];
         $email = (string) $order['email'];
+        AdminBell::ring('orders', 'order:'.$order['id'], 'Đơn hàng mới #'.$order['code'], $order['customer_name'].' · '.AdminBell::money($order['total']).' · '.$paymentName,
+            OrderResource::getUrl('edit', ['record' => $order['id']], isAbsolute: false, panel: 'admin'), 'heroicon-o-shopping-bag', 'success');
         if (($admin = (string) config('mail.admin_to')) !== '') {
             Outbox::queue('order:'.$order['id'].':admin', 'order_admin', $admin,
                 new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name']));

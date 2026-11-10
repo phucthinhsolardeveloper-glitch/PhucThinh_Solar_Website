@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Reviews;
 use App\Domain\Reviews\ReviewModeration;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\PublicLink;
 use App\Models\Review;
 use App\Models\User;
 use BackedEnum;
@@ -102,7 +103,7 @@ class ReviewResource extends Resource
                     }),
             ])
             ->filters([SelectFilter::make('status')->label('Tình trạng')->options(self::STATUSES)])
-            ->recordActions([
+            ->recordActions([PublicLink::action(),
                 Action::make('approve')->label('Duyệt')->icon(Heroicon::OutlinedCheck)->color('success')
                     ->visible(fn (Review $record) => self::canModerate() && $record->status !== 'approved')
                     ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'approved')),

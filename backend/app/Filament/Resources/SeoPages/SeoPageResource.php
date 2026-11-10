@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SeoPages;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\SeoMeta;
 use BackedEnum;
 use Filament\Actions\EditAction;
@@ -67,7 +68,7 @@ class SeoPageResource extends Resource
                 TextColumn::make('title')->label('Tiêu đề SEO')->limit(60),
                 TextColumn::make('description')->label('Mô tả')->limit(60)->toggleable(),
             ])
-            ->recordActions([EditAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make()]);
     }
 
     public static function getPages(): array

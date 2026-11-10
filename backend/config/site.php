@@ -5,6 +5,10 @@ return [
     // The public address used in the sitemap and other absolute links.
     'canonical_origin' => env('SITE_CANONICAL_ORIGIN', 'https://phucthinhsolar.com'),
 
+    // Where the storefront is reachable from Admin's "Xem trên website" links. Empty in production (same host as Admin);
+    // locally the Nuxt server, e.g. http://127.0.0.1:3110.
+    'public_url' => env('SITE_PUBLIC_URL', ''),
+
     'admin_password' => [
         // Accounts carried over from the old admin keep md5(secret . password . salt) hashes until
         // their first sign-in, which replaces them with bcrypt.

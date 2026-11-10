@@ -135,6 +135,6 @@ abstract class PostResource extends Resource
                 static::$kind !== 'policy' ? SelectFilter::make('category_id')->label('Nhóm')->relationship('category', 'name', fn (Builder $query) => $query->where('kind', static::$kind)) : null,
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
             ])))
-            ->recordActions([EditAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make()]);
     }
 }

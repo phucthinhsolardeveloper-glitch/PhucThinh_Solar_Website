@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Albums;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\Album;
 use BackedEnum;
 use Filament\Actions\EditAction;
@@ -65,7 +66,7 @@ class AlbumResource extends Resource
                 TextColumn::make('images_count')->label('Số ảnh')->counts('images'),
                 IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
             ])
-            ->recordActions([EditAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make()]);
     }
 
     public static function getPages(): array

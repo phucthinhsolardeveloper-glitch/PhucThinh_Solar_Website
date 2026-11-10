@@ -2,9 +2,11 @@
 
 namespace App\Domain\Leads;
 
+use App\Domain\Admin\AdminBell;
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductSpecs;
 use App\Domain\Outbox\Outbox;
+use App\Filament\Resources\Leads\LeadResource;
 use App\Mail\AdminNotification;
 use App\Mail\MailTemplates;
 use App\Support\FormToken;
@@ -216,6 +218,12 @@ class LeadSubmission
     /** Queues the Admin alert for the lead just saved; the mail is sent by the queue worker with retries. */
     private function notify(string $template, array $values, array $fields, string $replyEmail, string $replyName): void
     {
+        if ($this->leadId !== null) {
+            $kind = ['contact_admin' => 'Liên hệ mới', 'consult_admin' => 'Yêu cầu tư vấn mới', 'dealer_admin' => 'Đăng ký đại lý mới'][$template] ?? 'Liên hệ mới';
+            $subject = trim((string) ($values['contact_subject'] ?? $values['company'] ?? ''));
+            AdminBell::ring('leads', 'lead:'.$this->leadId, $kind.': '.$values['customer_name'], $subject !== '' ? mb_strimwidth($subject, 0, 120, '…') : 'Mở để xem số điện thoại và nội dung.',
+                LeadResource::getUrl('index', ['tableSearch' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), 'heroicon-o-chat-bubble-left-right', 'info');
+        }
         $to = (string) config('mail.admin_to');
         if ($to === '' || $this->leadId === null) {
             return;

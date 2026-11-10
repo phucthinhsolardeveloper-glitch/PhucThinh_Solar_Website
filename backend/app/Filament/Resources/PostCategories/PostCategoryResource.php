@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PostCategories;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\PublicLink;
 use App\Models\PostCategory;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -68,7 +69,7 @@ class PostCategoryResource extends Resource
             ->filters([SelectFilter::make('kind')->label('Dùng cho')->options(self::KINDS)])
             // Delete stays on every row, greyed out when the group still holds posts: hiding it made the
             // buttons sit at a different place on each row, and the reason it cannot be used was invisible.
-            ->recordActions([
+            ->recordActions([PublicLink::action(),
                 EditAction::make(),
                 DeleteAction::make()
                     ->disabled(fn (PostCategory $record) => $record->posts()->exists())

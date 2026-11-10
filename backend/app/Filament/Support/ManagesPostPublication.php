@@ -3,6 +3,7 @@
 namespace App\Filament\Support;
 
 use App\Domain\Content\PostRevisions;
+use App\Filament\Concerns\ReportsSavedChanges;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Models\Post;
 use Filament\Actions\Action;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait ManagesPostPublication
 {
+    use ReportsSavedChanges;
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $publisher = AdminActor::current()->canPerform('content_publish');
@@ -64,6 +67,7 @@ trait ManagesPostPublication
         $draft = $record instanceof Post ? $record->revisions()->where('state', 'draft')->first() : null;
 
         return [
+            PublicLink::action(),
             Action::make('draft')->label($draft ? 'Mở bản nháp' : 'Soạn bản nháp')->icon('heroicon-o-document-duplicate')
                 ->color($draft ? 'warning' : 'primary')
                 ->action(function (Post $record) {

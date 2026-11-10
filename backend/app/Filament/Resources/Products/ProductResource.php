@@ -7,6 +7,7 @@ use App\Domain\Catalog\SpecFormat;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
+use App\Filament\Support\PublicLink;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
@@ -210,7 +211,7 @@ class ProductResource extends Resource
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])
-            ->recordActions([EditAction::make()])
+            ->recordActions([PublicLink::action(), EditAction::make()])
             ->toolbarActions(ProductBulkActions::groups());
     }
 

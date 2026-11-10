@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Categories;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
+use App\Filament\Support\PublicLink;
 use App\Models\Category;
 use App\Support\Slugs;
 use BackedEnum;
@@ -94,7 +95,7 @@ class CategoryResource extends Resource
                 SelectFilter::make('depth')->label('Cấp')->options([1 => 'Cấp 1', 2 => 'Cấp 2', 3 => 'Cấp 3', 4 => 'Cấp 4']),
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
             ])
-            ->recordActions([EditAction::make()]);
+            ->recordActions([PublicLink::action(), EditAction::make()]);
     }
 
     public static function getPages(): array
