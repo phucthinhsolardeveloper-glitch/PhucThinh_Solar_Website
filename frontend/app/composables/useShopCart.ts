@@ -74,7 +74,12 @@ export function useShopCart() {
       // Invalidate reads started while POST was in flight and keep the loading
       // state open until the authoritative post-mutation read completes.
       cartRevision.value += 1
-      return await refresh()
+      const after = await refresh()
+      if (body.action === 'add') {
+        const line = after?.items.find((item) => item.productId === body.productId)
+        if (line) pushEcommerce('add_to_cart', [{ item_id: String(line.productId), item_name: line.name, price: line.unitPrice ?? undefined, quantity: body.quantity }])
+      }
+      return after
     } catch (reason) {
       error.value = cartErrorMessage(reason)
       throw reason

@@ -70,6 +70,7 @@ export function useProductDetailData(slug: Ref<string>) {
       url: canonicalUrl,
     }
     if (p.code) productNode.sku = p.code
+    if (p.brand) productNode.brand = { '@type': 'Brand', name: p.brand }
     if (p.summary) productNode.description = p.summary
     if (p.media.length) {
       const images = p.media.map((path) => canonicalPublicUrl(siteOrigin, path)).filter((url): url is string => Boolean(url))
@@ -81,6 +82,9 @@ export function useProductDetailData(slug: Ref<string>) {
         url: canonicalUrl,
         priceCurrency: pricing.currency,
         price: pricing.salePrice ?? pricing.regularPrice,
+        // The shop sells new equipment only. Stock, delivery time and return days are not claimed here: the
+        // site has no stock count, and the return terms live in the policy pages.
+        itemCondition: 'https://schema.org/NewCondition',
       }
     }
     if (extras.value && extras.value.reviews.total > 0) {

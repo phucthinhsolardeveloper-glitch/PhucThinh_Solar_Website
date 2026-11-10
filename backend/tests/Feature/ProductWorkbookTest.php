@@ -13,7 +13,9 @@ use App\Filament\Pages\ProductBulkPage;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\SiteSettings;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -222,4 +224,27 @@ it('sends Google only products that meet every condition', function () {
     $rows = app(MerchantFeed::class)->build('https://phucthinhsolar.com')['rows'];
     expect($rows)->toHaveCount(1)->and($rows[0][0])->toBe('FEED-1')->and($rows[0][4])->toBe('https://phucthinhsolar.com/upload/product/sach.jpg')
         ->and($rows[0][6])->toBe('1000000 VND')->and($rows[0][7])->toBe('900000 VND');
+});
+
+it('serves the Merchant Center feed as RSS at /google-shopping.xml, and nothing while prices are hidden', function () {
+    Storage::fake('upload_product');
+    Storage::disk('upload_product')->put('sach.jpg', UploadedFile::fake()->image('s.jpg', 800, 800)->get());
+    DB::table('products')->update(['feed_image' => null]);
+    sampleProduct()->update(['code' => 'FEED-X1', 'name' => 'Đèn pha & bộ "A"', 'feed_image' => 'sach.jpg', 'regular_price' => 1_000_000, 'sale_price' => null, 'quote_only' => false]);
+    Cache::forget('merchant-feed-xml');
+
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('0')]);
+    app(SiteSettings::class)->clear();
+    $this->get('/google-shopping.xml')->assertNotFound();
+
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    $xml = $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->getContent();
+    $feed = simplexml_load_string($xml);
+    $items = $feed->channel->item;
+    expect($items)->toHaveCount(1)
+        ->and((string) $items[0]->children('g', true)->id)->toBe('FEED-X1')
+        ->and((string) $items[0]->children('g', true)->title)->toBe('Đèn pha & bộ "A"')
+        ->and((string) $items[0]->children('g', true)->price)->toBe('1000000 VND')
+        ->and(isset($items[0]->children('g', true)->sale_price))->toBeFalse();
 });

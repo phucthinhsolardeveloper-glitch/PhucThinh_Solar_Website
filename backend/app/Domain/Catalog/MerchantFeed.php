@@ -55,6 +55,31 @@ final class MerchantFeed
         }, 'google-shopping-'.date('Ymd-His').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
+    /**
+     * The same rows as an RSS 2.0 feed Merchant Center can fetch on a schedule (/google-shopping.xml). Empty values
+     * are left out rather than sent blank.
+     *
+     * @param  list<list<string>>  $rows
+     */
+    public function xml(array $rows, string $origin): string
+    {
+        $e = fn (string $text) => htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0"><channel>'
+            .'<title>'.$e($this->settings->siteName() ?: 'Phúc Thịnh Solar').'</title><link>'.$e(rtrim($origin, '/').'/').'</link>'
+            .'<description>Sản phẩm Phúc Thịnh Solar</description>'."\n";
+        foreach ($rows as $row) {
+            $out .= '<item>';
+            foreach (self::HEADERS as $i => $tag) {
+                if (($row[$i] ?? '') !== '') {
+                    $out .= '<g:'.$tag.'>'.$e($row[$i]).'</g:'.$tag.'>';
+                }
+            }
+            $out .= "</item>\n";
+        }
+
+        return $out.'</channel></rss>'."\n";
+    }
+
     /** @return list<string>|null */
     private function row(object $product, string $origin, array $paths, $brands): ?array
     {

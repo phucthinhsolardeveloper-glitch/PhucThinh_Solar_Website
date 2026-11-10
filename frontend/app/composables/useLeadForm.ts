@@ -1,6 +1,6 @@
 import type { PublicLeadFormSecurity, PublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { isPublicLeadFormSecurity, isPublicLeadFormResult } from '#shared/contracts/public-lead-form'
-import { LEAD_CAMPAIGN_KEY, leadSourceFromUrl } from '#shared/lead-source'
+import { leadSourceFromUrl } from '#shared/lead-source'
 
 type LeadKind = 'contact' | 'dealer' | 'product'
 
@@ -67,8 +67,7 @@ export function useLeadForm() {
     const token = await recaptchaToken(meta, action)
     let source = ''
     if (import.meta.client) {
-      let campaign = ''
-      try { campaign = sessionStorage.getItem(LEAD_CAMPAIGN_KEY) || '' } catch { /* Storage can be unavailable. */ }
+      const campaign = rememberedLeadCampaign()
       source = leadSourceFromUrl(window.location.href, campaign)
     }
     let payload: unknown
@@ -90,6 +89,8 @@ export function useLeadForm() {
       throw reason
     }
     if (!isPublicLeadFormResult(payload)) throw new Error('Invalid lead form result contract')
+    // GA4 generate_lead: which form and which page only, never what the visitor typed.
+    pushDataLayer('generate_lead', { form_kind: kind, page_path: import.meta.client ? window.location.pathname : '' })
     return payload
   }
 

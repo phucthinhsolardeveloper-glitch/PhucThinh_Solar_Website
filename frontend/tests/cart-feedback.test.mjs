@@ -17,7 +17,7 @@ test('cart reads are ordered against concurrent refreshes and mutations', async 
   const cart = read('../app/composables/useShopCart.ts')
   assert.match(cart, /pendingRequests\.value > 0/)
   assert.match(cart, /cartRevision\.value \+= 1[\s\S]*beginRequest\(\)/)
-  assert.match(cart, /cartRevision\.value \+= 1[\s\S]*return await refresh\(\)/)
+  assert.match(cart, /cartRevision\.value \+= 1\n\s*const after = await refresh\(\)[\s\S]*return after/)
 })
 
 test('add to cart plays the flight to the header cart and a dismissible confirmation card', () => {

@@ -106,6 +106,14 @@ async function loadWards() {
   }
 }
 
+// GA4 begin_checkout once the cart is known on this page.
+let checkoutTracked = false
+watch(cart, (value) => {
+  if (checkoutTracked || !value?.items.length || !import.meta.client) return
+  checkoutTracked = true
+  pushEcommerce('begin_checkout', value.items.map((item) => ({ item_id: String(item.productId), item_name: item.name, price: item.unitPrice ?? undefined, quantity: item.quantity })))
+}, { immediate: true })
+
 onMounted(async () => {
   const draft = checkoutDraft.value
   if (!draft) return

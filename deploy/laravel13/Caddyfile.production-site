@@ -7,7 +7,7 @@ www.phucthinhsolar.com {
 phucthinhsolar.com {
     encode zstd gzip
 
-    @laravel path /api/v1/* /admin /admin/* /livewire* /css/filament/* /js/filament/* /fonts/filament/* /upload/* /thumbs/* /health /up /sitemap.xml
+    @laravel path /api/v1/* /admin /admin/* /livewire* /css/filament/* /js/filament/* /fonts/filament/* /upload/* /thumbs/* /health /up /sitemap.xml /google-shopping.xml
     handle @laravel {
         reverse_proxy pts-laravel13-backend:80
     }

@@ -7,7 +7,11 @@ use App\Models\Product;
 /** Stores a public same-site path and a small allowlist of campaign codes. */
 final class LeadSource
 {
-    private const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
+    /** Kept in this order; when the address would pass 255 characters the later ones are dropped (ad click ids first). */
+    private const UTM_KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'fbclid'];
+
+    /** Ad click ids are longer than campaign names. */
+    private const CLICK_IDS = ['gclid', 'gbraid', 'wbraid', 'fbclid'];
 
     public static function normalize(mixed $input): ?string
     {
@@ -29,17 +33,19 @@ final class LeadSource
         }
 
         parse_str((string) ($parts['query'] ?? ''), $params);
-        $campaign = [];
+        $source = $path;
         foreach (self::UTM_KEYS as $key) {
             $value = $params[$key] ?? null;
-            if (is_string($value) && preg_match('/^[A-Za-z0-9._-]{1,60}$/', $value)) {
-                $campaign[$key] = $value;
+            $limit = in_array($key, self::CLICK_IDS, true) ? 200 : 60;
+            if (is_string($value) && preg_match('/^[A-Za-z0-9._-]{1,'.$limit.'}$/', $value)) {
+                $next = $source.(str_contains($source, '?') ? '&' : '?').$key.'='.$value;
+                if (strlen($next) <= 255) {
+                    $source = $next;
+                }
             }
         }
-        $query = http_build_query($campaign, '', '&', PHP_QUERY_RFC3986);
-        $source = $path.($query !== '' ? '?'.$query : '');
 
-        return strlen($source) <= 255 ? $source : $path;
+        return $source;
     }
 
     public static function productId(?string $source): ?int

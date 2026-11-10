@@ -109,3 +109,11 @@ it('saves a product consultation with the profile the product page sent', functi
     expect($row->kind)->toBe('consultation')->and((int) $row->product_id)->toBe((int) $product->id)->and($row->profile_key)->toBe($profile)
         ->and($row->source_url)->toBe('/san-pham/'.$product->slug);
 });
+
+it('keeps ad click ids on the lead source, Google first, within 255 characters', function () {
+    $gclid = 'Cj0KCQiA'.str_repeat('x', 80);
+    expect(LeadSource::normalize("/lien-he/?fbclid=FB_1&utm_source=google&gclid={$gclid}&phone=0912345678"))
+        ->toBe("/lien-he/?gclid={$gclid}&utm_source=google&fbclid=FB_1");
+    $long = str_repeat('y', 190);
+    expect(LeadSource::normalize("/lien-he/?gclid={$long}&fbclid={$long}"))->toBe("/lien-he/?gclid={$long}");
+});

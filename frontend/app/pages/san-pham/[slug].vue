@@ -23,6 +23,18 @@ const breadcrumbItems = computed(() => [
   ...(product.value ? [{ label: product.value.name }] : []),
 ])
 
+// GA4 view_item once per product shown (also after an in-app move to another product).
+if (import.meta.client) {
+  watch(() => product.value?.id, (id) => {
+    const p = product.value
+    if (!id || !p) return
+    const pricing = payload.value?.pricing
+    const price = pricing?.mode === 'price' ? (pricing.salePrice ?? pricing.regularPrice ?? undefined) : undefined
+    const category = payload.value?.breadcrumbs?.at(-1)?.label
+    pushEcommerce('view_item', [{ item_id: String(p.id), item_name: p.name, price, quantity: 1, ...(p.brand ? { item_brand: p.brand } : {}), ...(category ? { item_category: category } : {}) }])
+  }, { immediate: true })
+}
+
 useSeoMeta({
   title: productTitle,
   description: productDescription,

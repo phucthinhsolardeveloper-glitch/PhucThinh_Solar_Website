@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MerchantFeedController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,6 @@ Route::get('/thumbs/{width}x{height}x{mode}/{path}', [MediaController::class, 't
 
 // Canonical addresses of every public page, for search engines.
 Route::get('/sitemap.xml', SitemapController::class);
+
+// Product feed for Google Merchant Center (scheduled fetch).
+Route::get('/google-shopping.xml', MerchantFeedController::class);
