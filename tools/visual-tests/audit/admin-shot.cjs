@@ -37,6 +37,12 @@ const width = Number(process.env.WIDTH || 1440);
     await page.goto(`${base}/admin/${slug}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     await page.waitForTimeout(1200);
+    if (directive && directive.startsWith('click:')) {
+      // Opens a modal (for example a mail preview) before the shot.
+      const label = directive.slice('click:'.length);
+      await page.getByRole('button', { name: label }).first().click({ timeout: 8000 });
+      await page.waitForTimeout(1500);
+    }
     if (directive && directive.startsWith('open-select:')) {
       const field = directive.slice('open-select:'.length);
       // Filament renders a searchable select as a button that opens a listbox.

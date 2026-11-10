@@ -50,6 +50,23 @@ it('saves a contact request as a lead and mails the admin', function () {
     Mail::assertSent(AdminNotification::class, fn ($mail) => $mail->copy['subject'] === '[Liên hệ mới] Yêu cầu tư vấn từ website');
 });
 
+it('writes back to a customer who left an email, and stays quiet when there is none', function () {
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Trần Minh', 'phone' => '0912345678', 'email' => 'khach@example.test', 'content' => 'Báo giá giúp tôi']])
+        ->assertOk();
+    $lead = DB::table('leads')->orderByDesc('id')->value('id');
+    $sent = DB::table('outbox_messages')->where('dedupe_key', 'lead:'.$lead.':contact_customer')->first();
+    expect($sent)->not->toBeNull()
+        ->and($sent->recipient)->toBe('khach@example.test');
+    Mail::assertSent(AdminNotification::class, fn ($mail) => $mail->copy['heading'] === 'Cảm ơn Quý khách đã tin tưởng Phúc Thịnh Solar');
+
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Không email', 'phone' => '0912345679', 'content' => 'Gọi lại giúp tôi']])
+        ->assertOk();
+    $second = DB::table('leads')->orderByDesc('id')->value('id');
+    expect(DB::table('outbox_messages')->where('dedupe_key', 'lead:'.$second.':contact_customer')->exists())->toBeFalse();
+});
+
 it('keeps safe page attribution and connects product-page leads to the product', function () {
     $product = DB::table('products')->where('is_visible', true)->first();
     $source = '/san-pham/'.$product->slug.'/?utm_source=google&utm_campaign=solar-2026&email=private%40example.vn';

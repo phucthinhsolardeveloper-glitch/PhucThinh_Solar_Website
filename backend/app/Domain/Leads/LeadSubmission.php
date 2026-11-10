@@ -88,6 +88,10 @@ class LeadSubmission
         $this->notify('contact_admin', ['customer_name' => $data['fullname'], 'customer_phone' => $data['phone'], 'contact_subject' => $data['subject']],
             ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Email' => $data['email'], 'Địa chỉ' => $data['address'], 'Nhu cầu' => $data['subject'], 'Nội dung' => $data['content'], 'Trang nguồn' => $source ?? ''],
             $data['email'], $data['fullname']);
+        // The PHP site also wrote back to the sender; without it a customer had no proof we received anything.
+        $this->acknowledge('contact_customer', $data['email'],
+            ['customer_name' => $data['fullname'], 'contact_subject' => $data['subject']],
+            ['Họ tên' => $data['fullname'], 'Điện thoại' => $data['phone'], 'Nhu cầu' => $data['subject'], 'Nội dung' => $data['content']]);
 
         return [200, ['ok' => true, 'message' => 'Gửi yêu cầu tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.']];
     }
@@ -222,6 +226,21 @@ class LeadSubmission
         } catch (Throwable $e) {
             // The lead row is saved and listed in Admin even if the alert cannot be queued.
             Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /** Writes back to the customer who left an email, so they know the message arrived. */
+    private function acknowledge(string $template, string $email, array $values, array $fields): void
+    {
+        if ($this->leadId === null || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+        try {
+            Outbox::queue('lead:'.$this->leadId.':'.$template, $template, $email,
+                new AdminNotification($this->templates->copy($template, $values), $fields));
+        } catch (Throwable $e) {
+            // The lead is saved either way; a failed acknowledgement must not lose the enquiry.
+            Log::warning('Customer acknowledgement could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
         }
     }
 

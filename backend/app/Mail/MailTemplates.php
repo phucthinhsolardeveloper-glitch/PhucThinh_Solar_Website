@@ -14,6 +14,7 @@ class MailTemplates
         'consult_admin' => 'Yêu cầu tư vấn',
         'dealer_admin' => 'Đăng ký đại lý',
         'contact_admin' => 'Liên hệ mới',
+        'contact_customer' => 'Xác nhận gửi khách liên hệ',
         'order_admin' => 'Đơn hàng gửi quản trị',
         'order_customer' => 'Xác nhận gửi khách hàng',
     ];
@@ -38,6 +39,12 @@ class MailTemplates
             'heading' => 'Phúc Thịnh Solar vừa nhận được liên hệ mới',
             'intro' => 'Khách hàng đã gửi nội dung liên hệ qua website. Thông tin người gửi và yêu cầu chi tiết được trình bày bên dưới để bộ phận phụ trách tiếp nhận.',
             'closing' => 'Nếu địa chỉ email của khách hàng hợp lệ, anh/chị có thể bấm Trả lời để phản hồi trực tiếp.',
+        ],
+        'contact_customer' => [
+            'subject' => 'Phúc Thịnh Solar đã tiếp nhận yêu cầu của Quý khách',
+            'heading' => 'Cảm ơn Quý khách đã tin tưởng Phúc Thịnh Solar',
+            'intro' => 'Thông tin của Quý khách đã được ghi nhận và chuyển đến bộ phận phụ trách. Chúng tôi sẽ xem xét nhu cầu để hỗ trợ phương án phù hợp trong thời gian làm việc.',
+            'closing' => 'Nếu cần hỗ trợ sớm hơn, Quý khách vui lòng liên hệ hotline được ghi ở cuối email.',
         ],
         'order_admin' => [
             'subject' => '[Đơn hàng mới #{order_code}] {customer_name}',

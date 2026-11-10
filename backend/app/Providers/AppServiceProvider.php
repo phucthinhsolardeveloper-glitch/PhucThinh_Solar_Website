@@ -6,6 +6,7 @@ use App\Auth\AdminUserProvider;
 use App\Auth\PasswordVerifier;
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Mail\MailBrand;
 use App\Support\SiteSettings;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -13,7 +14,9 @@ use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -42,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Auth::provider('admin-users', fn ($app) => new AdminUserProvider($app['hash'], $app->make(PasswordVerifier::class)));
+        // Every transactional mail shows the same logo, hotlines and company block, as the PHP site did.
+        View::composer('mail.*', fn (ViewContract $view) => $view->with('brand', app(MailBrand::class)->data()));
         // Long Vietnamese names wrap instead of widening the table and pushing the row buttons off screen.
         TextColumn::configureUsing(fn (TextColumn $column) => $column->wrap());
         // The funnel sits beside the search box; a wide panel fits long category names, and filters apply as soon as they change.
