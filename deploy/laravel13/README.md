@@ -228,6 +228,27 @@ tag `legacy-php-before-laravel13`, ảnh `phucthinhsolar-web:2d151211971a` /
 `docker-compose.yml.pre-laravel-20261110`, `Caddyfile.pre-laravel-20261110T034425Z`
 và dump DB trong bản lưu — tính bằng giờ, không phải bằng phút.
 
+## Trang bảo trì
+
+`maintenance.html` là trang khách thấy khi website tạm dừng. Nó tự chứa hoàn toàn (logo nhúng
+thẳng dạng webp base64, không gọi phông chữ hay script bên ngoài) vì lúc bật thì Laravel và Nuxt
+có thể đang tắt.
+
+```bash
+/srv/pts-laravel13/app/deploy/laravel13/scripts/maintenance.sh on      # bật
+/srv/pts-laravel13/app/deploy/laravel13/scripts/maintenance.sh status  # xem đang ở chế độ nào
+/srv/pts-laravel13/app/deploy/laravel13/scripts/maintenance.sh off     # mở lại
+```
+
+Khi bật: trang công khai trả **503 + Retry-After** (Google hiểu là tạm thời, giữ nguyên thứ hạng;
+trả 200 hay 404 mới là cái làm mất hạng), kèm `noindex` và `no-store`. `/admin`, `/api/v1/*`,
+`/upload`, `/thumbs` vẫn chạy nên vẫn vào Admin làm việc và kiểm tra được trong lúc bảo trì.
+
+Script tự kiểm tra cấu hình bằng `caddy validate` trước khi nạp, và ghi đè **tại chỗ** lên
+`/srv/phucthinhsolar/Caddyfile` (xem bẫy inode ở phần Cutover).
+
+Đã diễn tập bật/tắt trên container Caddy riêng ngày 2026-11-10: 200 → 503 → 200, Admin và API giữ 200.
+
 ## Backup của stack production
 
 `scripts/backup.sh` (cài ở `/srv/pts-laravel13/scripts/backup.sh`) và hai unit
