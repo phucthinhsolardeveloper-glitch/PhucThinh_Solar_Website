@@ -19,8 +19,9 @@ File ổ ảo `.vhdx` trên Windows **không tự nhỏ lại** khi xóa dữ li
 | `scripts/maintenance/clean-docker-wsl.sh [--apply]` | Trong WSL | Mặc định chỉ xem. `--apply` xóa build cache, image PTS cũ không container nào dùng, layer treo, cache npm/pnpm. Chỉ **liệt kê** volume, image của project khác (ZCRM), thư mục home lớn: không tự xóa |
 | `scripts/maintenance/Compact-WslDisks.ps1` | PowerShell "Run as administrator" | Xóa bản sao upload thừa của bản thử nghiệm (cần root), `fstrim`, tắt WSL + Docker Desktop, nén mọi `.vhdx` (Ubuntu, Docker), in dung lượng trước/sau |
 
-Thứ tự: `bash scripts/maintenance/clean-docker-wsl.sh --apply` rồi script `.ps1` ở terminal admin. Không bao giờ chạy `docker compose down -v` hay `docker volume prune`: volume `web_pts_php_pts_mariadb_data` là DB local (bản sao dữ liệu production).
+Thứ tự: `bash scripts/maintenance/clean-docker-wsl.sh --apply` rồi script `.ps1` ở terminal admin. Không bao giờ chạy `docker compose down -v` hay `docker volume prune`: volume `pts-local_pts_local_data` là DB local (bản sao dữ liệu production).
 
-Local chỉ gồm một compose project `pts-local` (container `pts-laravel13-local` = Laravel, `pts-mariadb-local` = MariaDB UTC) và Nuxt chạy bằng node trên máy:
+Local chỉ gồm **một container** `pts-laravel13-local` (project `pts-local`) chạy cả Laravel và MariaDB 10.11 UTC trong cùng container, cộng Nuxt chạy bằng node trên máy. Mất DB local thì `docker compose down` rồi xóa volume `pts-local_pts_local_data`: lần `up` sau tạo DB trống (muốn nạp lại dữ liệu: `docker cp <file.sql> pts-laravel13-local:/seed/local-dbs.sql` trước khi `docker start`). Các volume `web_pts_php_pts_mariadb_data` và `pts-local_pts_mariadb_data` là DB của kiểu chạy hai container cũ, chờ xóa.
+
 `cd frontend && npm run build && NUXT_LOCAL_API_PROXY=1 NITRO_HOST=0.0.0.0 NITRO_PORT=3110 NUXT_API_ORIGIN=http://127.0.0.1:8090 node .output/server/index.mjs`.
 

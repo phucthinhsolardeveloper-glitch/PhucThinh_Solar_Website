@@ -21,7 +21,7 @@ Trình duyệt ── Nuxt 4 (frontend/) ── trang, SEO, giỏ hàng, form
 
 ## Chạy local
 
-Laravel chạy trong Docker, nối vào container MariaDB `pts-mariadb-local` qua mạng `web_pts_php_default`.
+Một container Docker `pts-laravel13-local` chạy cả Laravel và MariaDB 10.11 (UTC, như production). Dữ liệu DB nằm ở volume `pts-local_pts_local_data`.
 
 ```bash
 docker compose up -d                       # Laravel: http://127.0.0.1:8090

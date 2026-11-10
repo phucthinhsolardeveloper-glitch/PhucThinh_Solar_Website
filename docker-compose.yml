@@ -1,13 +1,12 @@
-# Môi trường local: Laravel 13 (API, media, Admin Filament) và MariaDB của nó.
+# Môi trường local: MỘT container `pts-laravel13-local` chạy cả Laravel (API, media, Admin Filament) và MariaDB.
 # Lên:  docker compose up -d --build
-# Xuống: docker compose down
+# Xuống: docker compose down        (KHÔNG thêm -v: volume pts_local_data là database local)
 #
-# `db` chạy **UTC giống production** (`--default-time-zone=+00:00`). Trước 2026-11-10 container này
-# mồ côi từ một worktree đã xoá và chạy +07, nên mọi cột TIMESTAMP đọc ở local lệch production đúng
-# 7 giờ và mốc so sánh API không bao giờ khớp. Đừng đổi lại múi giờ.
+# MariaDB trong container chạy **UTC giống production** (--default-time-zone=+00:00 trong local-entrypoint.sh).
+# Trước 2026-11-10 DB local chạy +07 nên mọi cột TIMESTAMP lệch production đúng 7 giờ. Đừng đổi lại múi giờ.
 #
-# Mật khẩu lấy từ .env ở thư mục gốc (không commit). Dữ liệu nằm trong volume pts_mariadb_data.
-# Tên project cố định: mọi container, mạng, volume của máy local nằm dưới một tên, không lẫn với bản khác.
+# Lần đầu (volume rỗng) entrypoint tạo user/database theo backend/.env và nạp /seed/local-dbs.sql nếu có.
+# Nuxt không chạy trong container: xem scripts/README.md.
 name: pts-local
 services:
   laravel13:
@@ -17,49 +16,26 @@ services:
     restart: "no"
     working_dir: /app
     environment:
+      TZ: UTC
       # artisan serve answers several requests at once (Nuxt SSR fans out API calls).
       PHP_CLI_SERVER_WORKERS: "4"
     volumes:
       - ./backend:/app
+      # Database local (MariaDB nằm trong cùng container).
+      - pts_local_data:/var/lib/mysql
       # Uploaded media volume, read-only locally.
       - legacy_upload:/srv/upload:ro
       # Site pictures shipped with the storefront (checked and resized by Laravel, served by Nuxt).
       - ./frontend/public/assets:/srv/assets:ro
     ports:
       - "127.0.0.1:8090:8000"
-    networks:
-      - web_pts_php_default
-  db:
-    image: mariadb:10.4
-    container_name: pts-mariadb-local
-    restart: "no"
-    environment:
-      MARIADB_ROOT_PASSWORD: ${PTS_LOCAL_DB_ROOT_PASSWORD:?Đặt trong .env ở thư mục gốc}
-      MARIADB_DATABASE: ${PTS_LOCAL_DB_DATABASE:-phucthinhs_local}
-      MARIADB_USER: ${PTS_LOCAL_DB_USER:-pts_local}
-      MARIADB_PASSWORD: ${PTS_LOCAL_DB_PASSWORD:?Đặt trong .env ở thư mục gốc}
-      TZ: UTC
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --default-time-zone=+00:00
-    volumes:
-      - pts_mariadb_data:/var/lib/mysql
-    networks:
-      - web_pts_php_default
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -p\"$$MARIADB_ROOT_PASSWORD\" --silent"]
+      test: ["CMD-SHELL", "mariadb-admin ping --silent"]
       interval: 10s
       timeout: 5s
       retries: 20
-
-networks:
-  web_pts_php_default:
-    external: true
 volumes:
-  # Tên cố định: giữ đúng volume đã có dữ liệu, đổi tên project không làm DB local "biến mất".
-  pts_mariadb_data:
-    name: web_pts_php_pts_mariadb_data
+  pts_local_data:
   legacy_upload:
     external: true
     name: web_pts_php_pts_web_upload
