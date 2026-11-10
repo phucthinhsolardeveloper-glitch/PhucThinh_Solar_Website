@@ -21,23 +21,28 @@ class Sitemap
 
     public function __construct(private readonly CategoryTree $tree) {}
 
-    /** @return list<array{path: string, lastmod: string}> */
+    /** @return list<array{path: string, lastmod?: string}> */
     public function entries(): array
     {
-        $now = now()->toAtomString();
-        $entries = [['path' => '/', 'lastmod' => $now]];
+        // Static pages have no reliable aggregate modification timestamp. Omitting
+        // lastmod is more accurate than claiming they change on every request.
+        $entries = [['path' => '/']];
         foreach (self::PAGES as $page) {
-            $entries[] = ['path' => $page, 'lastmod' => $now];
+            $entries[] = ['path' => $page];
         }
         if (app(SolarEstimator::class)->enabled()) {
-            $entries[] = ['path' => '/uoc-tinh-dien-mat-troi/', 'lastmod' => $now];
+            $entries[] = ['path' => '/uoc-tinh-dien-mat-troi/'];
         }
 
         foreach (DB::table('categories')->where('is_visible', true)->orderBy('depth')->orderBy('sort_order')->orderBy('id')->get(['id', 'updated_at']) as $row) {
             $path = $this->tree->path((int) $row->id);
             // A category page without a visible product answers 404, so it is not listed.
             if ($path !== '' && $this->chainVisible((int) $row->id) && $this->tree->hasVisibleProducts((int) $row->id)) {
-                $entries[] = ['path' => '/'.trim($path, '/').'/', 'lastmod' => $this->date($row->updated_at)];
+                $entry = ['path' => '/'.trim($path, '/').'/'];
+                if ($lastmod = $this->date($row->updated_at)) {
+                    $entry['lastmod'] = $lastmod;
+                }
+                $entries[] = $entry;
             }
         }
         $this->add($entries, DB::table('products')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/san-pham/'.$slug);
@@ -69,14 +74,18 @@ class Sitemap
         $origin = rtrim($origin, '/');
         $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
         foreach ($this->entries() as $entry) {
-            $out .= '<url><loc>'.htmlspecialchars($origin.$entry['path'], ENT_XML1).'</loc><lastmod>'.$entry['lastmod'].'</lastmod></url>'."\n";
+            $out .= '<url><loc>'.htmlspecialchars($origin.$entry['path'], ENT_XML1).'</loc>';
+            if (isset($entry['lastmod'])) {
+                $out .= '<lastmod>'.$entry['lastmod'].'</lastmod>';
+            }
+            $out .= '</url>'."\n";
         }
 
         return $out.'</urlset>'."\n";
     }
 
     /**
-     * @param  list<array{path: string, lastmod: string}>  $entries
+     * @param  list<array{path: string, lastmod?: string}>  $entries
      * @param  callable(string): string  $path
      */
     private function add(array &$entries, Builder $query, callable $path): void
@@ -84,7 +93,11 @@ class Sitemap
         foreach ($query->get(['slug', 'updated_at']) as $row) {
             $slug = (string) $row->slug;
             if (preg_match(self::SLUG, $slug)) {
-                $entries[] = ['path' => (string) $path($slug), 'lastmod' => $this->date($row->updated_at)];
+                $entry = ['path' => (string) $path($slug)];
+                if ($lastmod = $this->date($row->updated_at)) {
+                    $entry['lastmod'] = $lastmod;
+                }
+                $entries[] = $entry;
             }
         }
     }
@@ -100,8 +113,8 @@ class Sitemap
         return true;
     }
 
-    private function date(mixed $value): string
+    private function date(mixed $value): ?string
     {
-        return $value ? Carbon::parse((string) $value)->toAtomString() : now()->toAtomString();
+        return $value ? Carbon::parse((string) $value)->toAtomString() : null;
     }
 }

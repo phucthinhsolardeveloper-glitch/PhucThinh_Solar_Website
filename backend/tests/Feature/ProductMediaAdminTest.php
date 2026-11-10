@@ -9,6 +9,19 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
+it('keeps a newly created product private until an editor makes it visible', function () {
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'product-draft-owner', 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    $slug = 'product-draft-'.bin2hex(random_bytes(4));
+
+    Livewire::test(CreateProduct::class)->fillForm([
+        'name' => 'Sản phẩm đang biên tập', 'slug' => $slug, 'category_id' => Category::query()->value('id'),
+    ])->call('create')->assertHasNoFormErrors();
+
+    expect(Product::query()->where('slug', $slug)->firstOrFail()->is_visible)->toBeFalse();
+});
+
 it('uploads, reorders and removes product gallery entries through Filament', function () {
     Storage::fake('upload_product');
     $owner = User::query()->create(['name' => 'Chủ', 'username' => 'product-media-owner', 'password' => 'test-password',

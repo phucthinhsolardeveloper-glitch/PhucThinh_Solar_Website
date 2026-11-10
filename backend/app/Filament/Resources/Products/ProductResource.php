@@ -89,7 +89,8 @@ class ProductResource extends Resource
                         ->placeholder('Theo danh mục')->helperText('Để trống thì dùng kiểu của danh mục.'),
                     Textarea::make('summary')->label('Mô tả ngắn')->rows(3)->columnSpanFull(),
                     Grid::make(4)->columnSpanFull()->schema([
-                        Fields::visible(),
+                        Fields::visible()->default(false)
+                            ->helperText('Sản phẩm mới mặc định ẩn. Bật khi đã có ảnh, mô tả, giá hoặc báo giá và SEO.'),
                         Toggle::make('is_bestseller')->label('Bán chạy'),
                     ]),
                 ]),
