@@ -108,7 +108,9 @@ services:
       - ../../frontend/public/assets:/srv/assets:ro
       - app_storage:/var/www/html/storage
     healthcheck: {disable: true}
-    networks: [data]
+    # `data` is internal, so the worker would have no route out and SMTP would fail name
+    # resolution; `egress` is the plain bridge that gives it outbound access, nothing else.
+    networks: [data, egress]
     depends_on:
       backend: {condition: service_healthy}
     mem_limit: 512m
@@ -165,6 +167,9 @@ networks:
   edge:
   data:
     internal: true
+  # Outbound only: no container publishes ports here, it exists so the queue worker can
+  # reach the mail relay while the database network stays internal.
+  egress:
 
 volumes:
   db_data:
