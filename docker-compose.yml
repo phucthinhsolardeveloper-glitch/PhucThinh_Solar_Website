@@ -1,11 +1,14 @@
-# Môi trường local: MỘT container `pts-laravel13-local` chạy cả Laravel (API, media, Admin Filament) và MariaDB.
+# Môi trường local: HAI container, mỗi cái một việc.
+#   pts-laravel13-local  Laravel (API, media, Admin Filament), cổng 8090
+#   pts-mariadb-local    MariaDB 10.11 (đúng bản production), chạy UTC
 # Lên:  docker compose up -d --build
-# Xuống: docker compose down        (KHÔNG thêm -v: volume pts_local_data là database local)
+# Xuống: docker compose down        (KHÔNG thêm -v: volume db_data là database local)
 #
-# MariaDB trong container chạy **UTC giống production** (--default-time-zone=+00:00 trong local-entrypoint.sh).
-# Trước 2026-11-10 DB local chạy +07 nên mọi cột TIMESTAMP lệch production đúng 7 giờ. Đừng đổi lại múi giờ.
+# MariaDB chạy **UTC giống production** (--default-time-zone=+00:00). Trước 2026-11-10 DB local chạy +07 nên mọi
+# cột TIMESTAMP lệch production đúng 7 giờ. Đừng đổi lại múi giờ.
 #
-# Lần đầu (volume rỗng) entrypoint tạo user/database theo backend/.env và nạp /seed/local-dbs.sql nếu có.
+# Lần đầu (volume rỗng): bash scripts/maintenance/local-db-init.sh [file.sql]  -> tạo database/user theo backend/.env
+# và nạp dump nếu có. Mật khẩu root DB lấy từ .env ở thư mục gốc (không commit).
 # Nuxt không chạy trong container: xem scripts/README.md.
 name: pts-local
 services:
@@ -21,21 +24,35 @@ services:
       PHP_CLI_SERVER_WORKERS: "4"
     volumes:
       - ./backend:/app
-      # Database local (MariaDB nằm trong cùng container).
-      - pts_local_data:/var/lib/mysql
       # Uploaded media volume, read-only locally.
       - legacy_upload:/srv/upload:ro
       # Site pictures shipped with the storefront (checked and resized by Laravel, served by Nuxt).
       - ./frontend/public/assets:/srv/assets:ro
     ports:
       - "127.0.0.1:8090:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb:10.11
+    container_name: pts-mariadb-local
+    restart: "no"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${PTS_LOCAL_DB_ROOT_PASSWORD:?Đặt trong .env ở thư mục gốc}
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+00:00
+    volumes:
+      - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping --silent"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -p\"$$MARIADB_ROOT_PASSWORD\" --silent"]
       interval: 10s
       timeout: 5s
       retries: 20
 volumes:
-  pts_local_data:
+  db_data:
   legacy_upload:
     external: true
     name: web_pts_php_pts_web_upload
