@@ -17,7 +17,7 @@ test('catalog media reserves intrinsic space and chooses responsive product size
   assert.match(catalog, /categoryContent\.applications[\s\S]*width="760"[\s\S]*height="475"[\s\S]*sizes=/)
   assert.match(catalog, /<PublicCtaBanner\s+v-if="catalogData\?\.support"[^>]*variant="catalog"[^>]*:image="catalogData\.support\.image/)
   assert.match(sharedCta, /\.cta-band--catalog \{/)
-  assert.match(sharedCta, /cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
+  assert.match(sharedCta, /cta-band__image" :src="optimizedImage\(imageSource, 1600, 900\)" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
   assert.match(sharedCta, /\.cta-band__image \{[^}]*object-fit: cover/)
   assert.match(products, /width="640"[\s\S]*height="640"[\s\S]*sizes=/)
   assert.match(products, /thumbUrl\(original, 640, 640\)/)

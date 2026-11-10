@@ -6,9 +6,10 @@ export function thumbUrl(src: string, width: number, height: number, mode: 1 | 2
   return `/thumbs/${width}x${height}x${mode}${src}${WEBP_RENDITION.test(src) ? '.webp' : ''}`
 }
 
-// Uploads and the JPG/PNG site visuals can be resized by /thumbs; anything else (WebP art,
+// Uploads, the JPG/PNG site visuals and the product use-case pictures (also on the backend) can be resized by
+// /thumbs; anything else (WebP art that only the frontend has,
 // external URLs, empty) passes through.
-const RESIZABLE = /^\/(?:upload\/(?:news|photo|product)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
+const RESIZABLE = /^\/(?:upload\/(?:news|photo|product)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)|assets\/images\/site-visuals\/pdp-usecase-v2\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp))$/i
 
 // Fit mode keeps the original aspect ratio, so CSS framing (object-fit/position) is unchanged.
 export function optimizedImage(src: string | null | undefined, width: number, height: number): string {

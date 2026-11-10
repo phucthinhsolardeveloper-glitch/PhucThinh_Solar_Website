@@ -21,7 +21,7 @@ test('solution CTA uses the shared corporate image band and its responsive layou
   assert.match(component, /variant="corporate"/)
   assert.match(component, /:image="backgroundImage"/)
   assert.match(component, /id="ptsContactModal"/)
-  assert.match(sharedCta, /cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
+  assert.match(sharedCta, /cta-band__image" :src="optimizedImage\(imageSource, 1600, 900\)" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
   assert.match(sharedCta, /cta-band__shade" aria-hidden="true"/)
 })
 

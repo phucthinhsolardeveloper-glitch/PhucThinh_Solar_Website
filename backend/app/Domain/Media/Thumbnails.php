@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class Thumbnails
 {
-    private const SOURCE = '#^(upload/(?:news|photo|product|seopage)/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp)|assets/images/site-visuals/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$#i';
+    private const SOURCE = '#^(upload/(?:news|photo|product|seopage)/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp)|assets/images/site-visuals/(?:[A-Za-z0-9][A-Za-z0-9_-]*/)?[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp))$#i';
 
     public function __construct(private readonly ProductMediaUrls $urls) {}
 

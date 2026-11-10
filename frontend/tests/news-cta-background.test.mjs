@@ -15,7 +15,7 @@ test('news CTA keeps CMS content and uses the shared editorial image band', () =
   assert.match(nuxtCta, /props\.cta\.image \|\| ''/)
   // Owner decision 2026-11-04: shared CTA band redesign.
   assert.match(nuxtCta, /cta\.title[\s\S]*cta\.description[\s\S]*cta\.hotline\?\.text[\s\S]*cta\.buttonLabel/)
-  assert.match(sharedCta, /cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
+  assert.match(sharedCta, /cta-band__image" :src="optimizedImage\(imageSource, 1600, 900\)" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
   assert.match(sharedCta, /cta-band__shade" aria-hidden="true"/)
   assert.match(sharedCta, /background:\s*#061537/)
 })

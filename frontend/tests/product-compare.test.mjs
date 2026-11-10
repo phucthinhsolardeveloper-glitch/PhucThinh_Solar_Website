@@ -43,3 +43,12 @@ test('a category page lists its parent categories in the breadcrumb', async () =
   assert.match(page, /\[root, \.\.\.parents, \{ label: heading\.value \}\]/)
   assert.equal(isPublicCatalogPayload({ breadcrumbs: [{ label: 'x', url: 'javascript:alert(1)' }] }), false)
 })
+
+// Product and category links stay inside the app: 'external' made every card click reload the whole site
+// (measured 0.7 s on PC, 4.9 s on a slow phone; 0.09 s / 0.9 s without it).
+test('product cards, home product groups and the category tree navigate without a full reload', () => {
+  for (const file of ['app/components/catalog/CatalogProductGrid.vue', 'app/components/home/HomeProductGroups.vue', 'app/components/catalog/CatalogCategoryBranch.vue']) {
+    assert.doesNotMatch(read(file), /<NuxtLink[^>]*\n?\s*external\b/, file)
+  }
+  assert.match(read('app/components/experience-v3/EnergyScene3DExperience.vue'), /rootMargin: nearMargin\(\)/)
+})

@@ -32,7 +32,11 @@ const activeIndex = ref(0)
       >
         <div v-if="item.image" class="app-card-media mb-4 overflow-hidden rounded-btn bg-navy-950">
           <img
-            :src="item.image"
+            :src="optimizedImage(item.image, 720, 450)"
+            :srcset="`${optimizedImage(item.image, 480, 300)} 480w, ${optimizedImage(item.image, 720, 450)} 720w, ${optimizedImage(item.image, 960, 600)} 960w`"
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+            width="720"
+            height="450"
             :alt="item.title"
             class="aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out"
             loading="lazy"

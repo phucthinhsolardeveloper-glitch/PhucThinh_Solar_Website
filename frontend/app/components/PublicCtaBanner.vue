@@ -132,7 +132,7 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
         @ended="handleEnded"
       />
     </template>
-    <img v-else-if="!imageFailed" class="cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError">
+    <img v-else-if="!imageFailed" class="cta-band__image" :src="optimizedImage(imageSource, 1600, 900)" alt="" loading="lazy" decoding="async" @error="handleImageError">
     <span class="cta-band__shade" aria-hidden="true" />
     <span class="cta-band__sun" aria-hidden="true" />
 

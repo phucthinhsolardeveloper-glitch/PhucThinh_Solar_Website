@@ -193,6 +193,14 @@ function onViewerFaded(event: TransitionEvent) {
   if (event.propertyName === 'opacity' && viewerReady.value) posterGone.value = true
 }
 
+// Phones, data saver and slow links fetch the model (≈2 MB) only when the visitor is about to reach it, so it does not
+// compete with the first screen; wide screens on good links keep loading it a good way ahead.
+function nearMargin(): string {
+  const link = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+  if (link?.saveData || /(?:^|-)(?:2g|3g)$/.test(link?.effectiveType ?? '')) return '10% 0px'
+  return window.matchMedia('(max-width: 820px)').matches ? '35% 0px' : '150% 0px'
+}
+
 onMounted(() => {
   window.addEventListener('message', onViewerMessage)
   manualStart.value = isConstrainedDevice()
@@ -226,7 +234,7 @@ onMounted(() => {
   nearObserver = new IntersectionObserver(([entry]) => {
     near.value = entry?.isIntersecting === true
     scheduleViewerLoad()
-  }, { rootMargin: '150% 0px', threshold: 0 })
+  }, { rootMargin: nearMargin(), threshold: 0 })
 
   if (stage.value) {
     observer.observe(stage.value)
