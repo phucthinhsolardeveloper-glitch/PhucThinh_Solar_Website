@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Xóa file trong WSL/Docker KHÔNG làm file .vhdx trên Windows nhỏ lại: nó chỉ lớn lên rồi giữ nguyên.
-  Script này: (1) xóa bản sao upload thừa của bản thử nghiệm cũ (cần root), (2) trả block trống cho ổ ảo,
+  Script này: (1) xóa bản sao upload thừa và thư mục worktree cũ pts-laravel13 (cần root), (2) trả block trống cho ổ ảo,
   (3) tắt WSL + Docker Desktop, (4) nén từng .vhdx, (5) in dung lượng trước/sau.
 
   Chạy: mở PowerShell bằng "Run as administrator", rồi
@@ -53,7 +53,7 @@ if (-not $Yes) {
 if (-not $SkipWslCleanup) {
   Write-Host "`n[1/4] Dọn trong WSL (bản sao upload thừa của bản thử nghiệm cũ, fstrim)..." -ForegroundColor Cyan
   # Thư mục này do container tạo bằng user www-data nên cần root. Chỉ xóa đúng đường dẫn này.
-  wsl.exe -d Ubuntu -u root -- bash -c 'R=/home/admin01/src/Web_PTS_PHP/deploy/laravel13/runtime/upload; [ -d "$R" ] && rm -rf "$R" && echo "  đã xóa $R"; fstrim -av 2>/dev/null | sed "s/^/  /"'
+  wsl.exe -d Ubuntu -u root -- bash -c 'for R in /home/admin01/src/Web_PTS_PHP/deploy/laravel13/runtime/upload /home/admin01/src/pts-laravel13; do [ -d "$R" ] && rm -rf "$R" && echo "  đã xóa $R"; done; fstrim -av 2>/dev/null | sed "s/^/  /"'
 }
 
 Write-Host "`n[2/4] Tắt Docker Desktop và WSL..." -ForegroundColor Cyan
