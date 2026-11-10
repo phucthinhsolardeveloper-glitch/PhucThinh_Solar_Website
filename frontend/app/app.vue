@@ -3,6 +3,7 @@ import { MotionConfig } from 'motion-v'
 import StorefrontConsultationModal from '~/components/modal/StorefrontConsultationModal.vue'
 import CartFeedback from '~/components/commerce/CartFeedback.vue'
 import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
+import CompareTray from '~/components/compare/CompareTray.vue'
 
 // One shell for the whole site. Header, footer and the phone dock stay mounted across
 // navigation, so a route change only swaps the page instead of rebuilding everything.
@@ -49,6 +50,7 @@ useHead({
       <StorefrontConsultationModal />
       <StorefrontDealerModal />
       <CartFeedback />
+      <CompareTray />
     </UApp>
   </MotionConfig>
 </template>

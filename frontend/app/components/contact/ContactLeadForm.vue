@@ -182,7 +182,7 @@ async function send() {
       <UFormField label="Số điện thoại" name="phone" required class="lead-half grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
         <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
       </UFormField>
-      <FormMoreToggle v-if="!detailsOpen" class="tb:hidden" @click="detailsOpen = true" />
+      <FormMoreToggle v-if="!detailsOpen" phone-only @click="detailsOpen = true" />
       <UFormField label="Email" name="email" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
         <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
       </UFormField>

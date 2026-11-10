@@ -169,7 +169,7 @@ async function send() {
             </UFormField>
           </div>
 
-          <FormMoreToggle v-if="!detailsOpen" class="mb-3 tb:hidden" @click="detailsOpen = true" />
+          <FormMoreToggle v-if="!detailsOpen" class="mb-3" phone-only @click="detailsOpen = true" />
           <UFormField label="Nội dung cần trao đổi" name="content" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
             <UTextarea ref="contentRef" v-model="form.content" name="content" :rows="4" maxlength="5000" placeholder="Mô tả ngắn nhu cầu của bạn..." variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>

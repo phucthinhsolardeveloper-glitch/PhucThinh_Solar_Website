@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
     Route::get('public-route-resolve', [PagesController::class, 'publicRouteResolve']);
     Route::get('redirect', [PagesController::class, 'redirect']);
     Route::get('search', [PagesController::class, 'search']);
+    Route::get('compare', [PagesController::class, 'compare']);
     Route::get('site', SiteController::class);
 
     // Cart and checkout keep state in the visitor's session (cookie).

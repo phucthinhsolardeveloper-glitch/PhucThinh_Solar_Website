@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Domain\Brands\BrandDetail;
 use App\Domain\Catalog\Listing\ProductSearch;
+use App\Domain\Catalog\ProductCompare;
 use App\Domain\Catalog\ProductDetail\ProductExtras;
 use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
@@ -94,6 +95,11 @@ class PagesController extends Controller
     public function search(Request $request, ProductSearch $search): JsonResponse
     {
         return self::result($search->handle($request->query()));
+    }
+
+    public function compare(Request $request, ProductCompare $compare): JsonResponse
+    {
+        return self::result($compare->handle($request->query()));
     }
 
     public function productExtras(Request $request, ProductExtras $extras): JsonResponse

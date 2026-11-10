@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Domain\Audit\Audit;
+use App\Domain\Catalog\Listing\SearchSynonyms;
 use App\Domain\Commerce\VietQr;
 use App\Models\Province;
 use App\Models\User;
@@ -10,6 +11,7 @@ use App\Models\Ward;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -79,6 +81,8 @@ class SiteSettingsPage extends Page
         foreach (self::SWITCH_KEYS as $key) {
             $data[$key] = (string) ($values[$key] ?? '') === '1';
         }
+        $synonyms = $values[SearchSynonyms::SETTING] ?? null;
+        $data['search_synonyms'] = implode("\n", is_array($synonyms) ? array_map('strval', $synonyms) : SearchSynonyms::DEFAULTS);
         $data['shipping_sender_province'] = Ward::query()->whereKey((int) ($data['shipping_sender_ward_id'] ?? 0))->value('province_id');
         $this->form->fill($data);
     }
@@ -124,6 +128,10 @@ class SiteSettingsPage extends Page
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
             ]),
+            Section::make('Tìm kiếm sản phẩm')->collapsed()->schema([
+                Textarea::make('search_synonyms')->label('Từ đồng nghĩa')->rows(8)->maxLength(4000)
+                    ->helperText('Mỗi dòng một nhóm, các từ cách nhau bằng dấu phẩy. Khách gõ một từ trong nhóm thì kết quả có cả các từ còn lại, ví dụ: inverter, biến tần.'),
+            ]),
         ]);
     }
 
@@ -152,6 +160,12 @@ class SiteSettingsPage extends Page
         foreach (self::SWITCH_KEYS as $key) {
             $after[$key] = ! empty($data[$key]) ? '1' : '0';
         }
+        // Untouched starting groups stay unsaved, so a later change to the defaults still reaches this site.
+        $synonyms = array_map(fn ($terms) => implode(', ', $terms), SearchSynonyms::parse(preg_split('/\R/', (string) ($data['search_synonyms'] ?? '')) ?: []));
+        $current = is_array($before[SearchSynonyms::SETTING] ?? null) ? $before[SearchSynonyms::SETTING] : SearchSynonyms::DEFAULTS;
+        if ($synonyms !== $current) {
+            $after[SearchSynonyms::SETTING] = $synonyms;
+        }
         DB::transaction(function () use ($before, $after, $now) {
             foreach ($after as $key => $value) {
                 $this->store($key, $value, $now);
@@ -164,7 +178,7 @@ class SiteSettingsPage extends Page
         Notification::make()->title('Đã lưu thông tin website')->success()->send();
     }
 
-    private function store(string $key, string $value, mixed $now): void
+    private function store(string $key, string|array $value, mixed $now): void
     {
         DB::table('settings')->updateOrInsert(['key' => $key], ['value' => json_encode($value, JSON_UNESCAPED_UNICODE), 'updated_at' => $now, 'created_at' => $now]);
     }

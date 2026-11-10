@@ -47,6 +47,18 @@ async function add(goToCart = false) {
   clearTimeout(justAddedTimer)
   justAddedTimer = setTimeout(() => { justAdded.value = false }, 2000)
 }
+// Compare: the floating "So sánh" button opens the side-by-side table once two or more are picked.
+const compare = useProductCompare()
+const comparing = computed(() => compare.has(props.productId))
+const compareNote = ref('')
+function toggleCompare() {
+  const added = !comparing.value
+  if (!compare.toggle({ id: props.productId, name: props.productName || 'Sản phẩm', image: props.productImage || '' })) {
+    compareNote.value = `Đã đủ ${COMPARE_MAX} sản phẩm để so sánh. Bỏ bớt một sản phẩm rồi thêm lại.`
+    return
+  }
+  compareNote.value = added && compare.items.value.length === 1 ? 'Đã thêm. Mở thêm một sản phẩm khác và bấm "So sánh" để xem cạnh nhau.' : ''
+}
 // Brief confirmation on the button itself; the status line below has a reserved slot.
 const justAdded = ref(false)
 let justAddedTimer: ReturnType<typeof setTimeout> | undefined
@@ -107,7 +119,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
     </p>
 
     <!-- Link đại lý: mở popup modal đại lý của hệ thống đại lý -->
-    <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs">
       <button
         type="button"
         class="inline-flex items-center gap-1.5 font-bold text-navy-800 transition-colors hover:text-gold-700 cursor-pointer"
@@ -116,6 +128,18 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         <span>Bạn là đại lý? Đăng ký hợp tác</span>
         <span aria-hidden="true" class="text-gold-600 font-black">→</span>
       </button>
+      <button
+        v-if="mounted"
+        type="button"
+        class="compare-toggle"
+        :class="{ 'is-on': comparing }"
+        :aria-pressed="comparing"
+        @click="toggleCompare"
+      >
+        <UIcon :name="comparing ? 'i-lucide-check' : 'i-lucide-git-compare-arrows'" class="size-4" aria-hidden="true" />
+        {{ comparing ? 'Đang so sánh' : 'So sánh' }}
+      </button>
+      <p v-if="compareNote" class="compare-note" role="status">{{ compareNote }}</p>
     </div>
 
     <!-- Keep product trust copy aligned with the catalog's published promises. -->
@@ -255,4 +279,9 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
   .added-label { animation: none; }
   .purchase-status-enter-active, .purchase-status-leave-active { transition: none; }
 }
+
+.compare-toggle { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-btn, 10px); background: #fff; color: var(--color-navy-800); font-size: 13px; font-weight: 800; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+.compare-toggle:hover { border-color: var(--color-gold-500); }
+.compare-note { flex-basis: 100%; margin: 2px 0 0; color: #475569; font-size: 13.5px; line-height: 1.5; }
+.compare-toggle.is-on { border-color: transparent; background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); }
 </style>

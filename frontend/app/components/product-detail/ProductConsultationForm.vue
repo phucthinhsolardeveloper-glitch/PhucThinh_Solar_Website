@@ -179,7 +179,7 @@ async function send() {
           <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <FormMoreToggle v-if="!detailsOpen" class="tb:hidden" @click="detailsOpen = true" />
+          <FormMoreToggle v-if="!detailsOpen" phone-only @click="detailsOpen = true" />
           <UFormField label="Email" name="email" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="email@example.com" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>

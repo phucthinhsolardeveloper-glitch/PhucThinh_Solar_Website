@@ -15,7 +15,7 @@ const routes = (process.env.AUDIT_ROUTES || [
   '/', '/gioi-thieu/', '/giai-phap/', '/giai-phap/dien-mat-troi-ho-gia-dinh/', '/giai-phap/he-thong-luu-tru-bess/',
   '/san-pham/', '/danh-muc-san-pham/den-nlmt/', '/tim-kiem/?keyword=den+pha', '/tim-kiem/?keyword=zzzzzz',
   '/du-an-da-thuc-hien/', '/danh-muc-du-an/du-an-doanh-nghiep/', '/du-an-dien-nlmt-ho-anh-quan/',
-  '/tin-tuc/', '/tin-truyen-thong', '/dai-ly/', '/lien-he/', '/gio-hang/', '/video/', '/thu-vien-anh/',
+  '/tin-tuc/', '/tin-truyen-thong', '/dai-ly/', '/lien-he/', '/gio-hang/', '/video/', '/thu-vien-anh/', '/so-sanh-san-pham/?ids=325%2C329%2C355',
 ].join(',')).split(',');
 
 function scanPage() {

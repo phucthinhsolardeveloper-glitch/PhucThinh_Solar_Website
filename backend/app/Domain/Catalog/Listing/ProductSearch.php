@@ -22,7 +22,9 @@ class ProductSearch
     // JSON columns compare byte-for-byte in MariaDB; the collate makes them case-insensitive like the other text columns.
     private const COMPACT_FIELDS = ['p.code', 'p.slug', 'p.pdp_profile', 'p.additional_specs collate utf8mb4_unicode_ci', 'p.specs_html', 'p.body', 'p.summary'];
 
-    public function __construct(private readonly SiteSettings $settings, private readonly ProductCard $cards) {}
+    private const SYNONYM_FIELDS = ['p.name', 'p.summary', 'p.highlights', 'p.applications'];
+
+    public function __construct(private readonly SiteSettings $settings, private readonly ProductCard $cards, private readonly SearchSynonyms $synonyms) {}
 
     /** @return array{0: int, 1: array<string, mixed>} */
     public function handle(array $get): array
@@ -71,6 +73,15 @@ class ProductSearch
                 $clauses[] = $expr.' LIKE ?';
                 $params[] = '%'.$compact.'%';
             }
+        }
+        // Same thing under another name ("inverter" → "biến tần"): fewer columns, the ones a name would show in.
+        foreach ($this->synonyms->variants($keyword) as [$raw, $slug]) {
+            foreach (self::SYNONYM_FIELDS as $field) {
+                $clauses[] = $field.' LIKE ?';
+                $params[] = '%'.$raw.'%';
+            }
+            $clauses[] = 'p.slug LIKE ?';
+            $params[] = '%'.$slug.'%';
         }
         $where = '('.implode(' or ', $clauses).') and p.is_visible = 1';
         $brandIds = isset($get['brand']) ? array_values(array_unique(array_map('intval', explode(',', $get['brand'])))) : [];
