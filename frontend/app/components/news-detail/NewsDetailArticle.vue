@@ -147,7 +147,7 @@ function formatDate(value: string): string {
           <div class="mt-6 hidden pts-note-dark p-4 text-white nav:block">
             <p class="m-0 text-sm font-bold text-white">Cần tư vấn kỹ thuật thực tế?</p>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
-              Đội ngũ kỹ sư Phúc Thịnh Solar hỗ trợ bóc tách cấu hình và báo giá theo nhu cầu thực tế.
+              Phúc Thịnh Solar hỗ trợ bóc tách cấu hình và báo giá theo nhu cầu thực tế.
             </p>
             <button
               type="button"

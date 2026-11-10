@@ -20,7 +20,7 @@ test('Storefront modal composable exposes consultation and dealer modal state an
 test('StorefrontConsultationModal renders consultation fields, gold submit action, and connects to lead form', () => {
   const consultationModal = read('components/modal/StorefrontConsultationModal.vue')
   assert.match(consultationModal, /Đăng ký nhận tư vấn giải pháp/)
-  assert.match(consultationModal, /kỹ sư Phúc Thịnh Solar sẽ liên hệ tư vấn trong vòng 15 phút/)
+  assert.match(consultationModal, /Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn trong vòng 15 phút/)
   assert.match(consultationModal, /Họ và tên/)
   assert.match(consultationModal, /Số điện thoại/)
   assert.match(consultationModal, /Email/)

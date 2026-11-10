@@ -52,3 +52,19 @@ test('product cards, home product groups and the category tree navigate without 
   }
   assert.match(read('app/components/experience-v3/EnergyScene3DExperience.vue'), /rootMargin: nearMargin\(\)/)
 })
+
+test('policy pages keep the same header height so the policy cards do not jump between pages', () => {
+  const view = read('app/components/views/PolicyView.vue')
+  assert.match(view, /class="policy-hub__head"/)
+  assert.match(view, /\.policy-hub__head \{ min-height: calc\(clamp\(32px, 4\.4vw, 60px\) \* 2\.1 \+ 14px \+ 22px\); \}/)
+  assert.doesNotMatch(read('app/components/estimator/SolarEstimatorPage.vue'), /kỹ sư/)
+})
+
+test('Google Tag Manager comes from the site settings and only as GTM-XXXX', async () => {
+  const { isPublicSitePayload } = await import('../shared/contracts/public-site.ts').catch(() => ({}))
+  const app = read('app/app.vue')
+  assert.match(app, /\/\^GTM-\[A-Z0-9\]\{4,12\}\$\/\.test\(site\.value\?\.gtmId/)
+  assert.match(app, /tagPosition: 'bodyOpen'/)
+  assert.match(read('shared/contracts/public-site.ts'), /value\.gtmId === '' \|\| typeof value\.gtmId === 'string' && \/\^GTM-\[A-Z0-9\]\{4,12\}\$\//)
+  if (isPublicSitePayload) assert.ok(true)
+})

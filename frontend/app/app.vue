@@ -9,6 +9,21 @@ import CompareTray from '~/components/compare/CompareTray.vue'
 // navigation, so a route change only swaps the page instead of rebuilding everything.
 const { site } = await usePublicSite()
 
+// Google Tag Manager, only when Admin has a container id (validated as GTM-XXXX on both sides, so nothing else can be injected).
+const gtmId = computed(() => /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
+useHead(() => gtmId.value ? {
+  script: [{
+    key: 'pts-gtm',
+    tagPriority: 'critical',
+    innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId.value}');`,
+  }],
+  noscript: [{
+    key: 'pts-gtm-noscript',
+    tagPosition: 'bodyOpen',
+    innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId.value}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+  }],
+} : {})
+
 useHead({
   script: [
     {

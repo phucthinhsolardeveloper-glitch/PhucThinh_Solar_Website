@@ -47,7 +47,7 @@ class SiteSettingsPage extends Page
 
     /** Keys this page edits; anything else in the table is left alone. */
     public const TEXT_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours', 'fanpage', 'youtube',
-        'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
+        'gtm_id', 'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
 
     /** Only the owner may change where customers send money. */
     public const OWNER_KEYS = ['bank_bin', 'bank_account_no', 'bank_account_name'];
@@ -127,6 +127,12 @@ class SiteSettingsPage extends Page
             Section::make('Bán hàng')->columns(2)->schema([
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
+            ]),
+            Section::make('Đo lường (Google Tag Manager)')->collapsed()->schema([
+                TextInput::make('gtm_id')->label('Mã vùng chứa GTM')->placeholder('GTM-XXXXXXX')->maxLength(20)
+                    ->regex('/^\s*GTM-[A-Z0-9]{4,12}\s*$/i')->validationMessages(['regex' => 'Mã có dạng GTM-XXXXXXX (lấy trong Google Tag Manager).'])
+                    ->dehydrateStateUsing(fn ($state) => strtoupper(trim((string) $state)))
+                    ->helperText('Chỉ nhập mã, ví dụ GTM-57TJSRVM. Website tự gắn đoạn mã vào đầu <head> và ngay sau <body> trên mọi trang. Để trống là tắt.'),
             ]),
             Section::make('Tìm kiếm sản phẩm')->collapsed()->schema([
                 Textarea::make('search_synonyms')->label('Từ đồng nghĩa')->rows(8)->maxLength(4000)

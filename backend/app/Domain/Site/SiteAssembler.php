@@ -114,6 +114,8 @@ class SiteAssembler
             'quickSearches' => $this->sectionTitles('search.suggestions', 7)->map(fn ($row) => Text::excerpt($row->title, 48))->filter()->values()->all(),
             // Pages linking to /uoc-tinh-dien-mat-troi/ show the link only while the owner has it switched on.
             'estimator' => app(SolarEstimator::class)->enabled(),
+            // Google Tag Manager container set in Admin → Thông tin website; empty means no tag on the site.
+            'gtmId' => preg_match('/^GTM-[A-Z0-9]{4,12}$/', $gtm = strtoupper(trim((string) ($options['gtm_id'] ?? '')))) ? $gtm : '',
         ];
     }
 

@@ -107,7 +107,7 @@ async function send() {
     <div class="lead-aside flex min-w-0 flex-col justify-between gap-7">
       <div class="lead-intro">
         <h2 class="m-0 max-w-md text-[clamp(28px,2.7vw,40px)] font-black leading-tight tracking-tight text-navy-900">Đăng ký nhận tư vấn</h2>
-        <p class="mb-0 mt-3.5 max-w-md text-base leading-7 text-slate-600">Cho chúng tôi biết nhu cầu của bạn. Đội ngũ kỹ sư Phúc Thịnh Solar sẽ liên hệ để cùng chọn giải pháp phù hợp nhất.</p>
+        <p class="mb-0 mt-3.5 max-w-md text-base leading-7 text-slate-600">Cho chúng tôi biết nhu cầu của bạn. Phúc Thịnh Solar sẽ liên hệ để cùng chọn giải pháp phù hợp nhất.</p>
 
         <ol class="lead-steps m-rail m-0 mt-7 grid list-none gap-4 border-t border-slate-200/90 pt-6 p-0">
           <li class="flex items-start gap-3">

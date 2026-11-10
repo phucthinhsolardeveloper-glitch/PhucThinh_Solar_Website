@@ -337,8 +337,8 @@ usePublicSocialMeta({
             <h2 class="m-0 text-xl font-extrabold text-navy-950">Không tìm thấy sản phẩm phù hợp.</h2>
             <p class="m-0 mt-2 max-w-[56ch] text-[15px] leading-6 text-slate-600">
               {{ hasActiveFilters
-                ? 'Bộ lọc đang chọn chưa có sản phẩm khớp với từ khóa này. Hãy bỏ bớt bộ lọc, hoặc gửi yêu cầu để kỹ sư Phúc Thịnh Solar tra cứu mã tương đương trong kho.'
-                : 'Thử chọn từ khóa ngắn gọn hơn hoặc gửi yêu cầu để kỹ sư Phúc Thịnh Solar tra cứu mã tương đương trong kho.' }}
+                ? 'Bộ lọc đang chọn chưa có sản phẩm khớp với từ khóa này. Hãy bỏ bớt bộ lọc, hoặc gửi yêu cầu để Phúc Thịnh Solar tra cứu mã tương đương trong kho.'
+                : 'Thử chọn từ khóa ngắn gọn hơn hoặc gửi yêu cầu để Phúc Thịnh Solar tra cứu mã tương đương trong kho.' }}
             </p>
             <div class="mt-4 flex flex-wrap justify-center gap-2" aria-label="Thử từ khóa khác">
               <button v-for="term in otherTerms" :key="term" type="button" class="public-filter-chip min-h-10 cursor-pointer px-[13px] text-[14px] font-bold text-navy-800" @click="submitKeyword(term)">{{ term }}</button>

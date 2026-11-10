@@ -239,7 +239,7 @@ async function sendLead() {
                     <label class="est-field" :class="{ 'is-invalid': touched.fullname && leadInvalid.fullname }">
                       <span>Họ và tên</span>
                       <input v-model="lead.fullname" autocomplete="name" maxlength="100" required placeholder="Nguyễn Văn A" @blur="touched.fullname = true">
-                      <small v-if="touched.fullname && leadInvalid.fullname" role="alert">Nhập họ tên để kỹ sư xưng hô</small>
+                      <small v-if="touched.fullname && leadInvalid.fullname" role="alert">Vui lòng nhập họ và tên</small>
                     </label>
                     <label class="est-field" :class="{ 'is-invalid': touched.phone && leadInvalid.phone }">
                       <span>Số điện thoại</span>
@@ -248,7 +248,7 @@ async function sendLead() {
                     </label>
                     <button type="submit" class="est-submit" :disabled="sending">
                       <UIcon :name="sending ? 'i-lucide-loader-circle' : 'i-lucide-send'" :class="['size-5', sending && 'animate-spin']" aria-hidden="true" />
-                      {{ sending ? 'Đang gửi…' : 'Gửi cho kỹ sư' }}
+                      {{ sending ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
                     </button>
                     <p v-if="sendError" class="est-problems" role="alert">{{ sendError }}</p>
                   </form>

@@ -142,9 +142,12 @@ useHead({
 
     <section v-if="data" class="policy-hub" aria-labelledby="policy-title">
       <div class="pts-container">
-        <h1 id="policy-title" class="policy-hub__title">{{ data.title }}</h1>
-        <p v-if="data.description" class="policy-hub__lede">{{ data.description }}</p>
-        <p class="policy-hub__meta">Cập nhật {{ formatMetadataDate(data.date) }} · {{ data.author.name }}</p>
+        <!-- Same height on every policy (room for a two-line title), so the policy cards below never jump when switching. -->
+        <div class="policy-hub__head" :class="{ 'has-lede': !!data.description }">
+          <h1 id="policy-title" class="policy-hub__title">{{ data.title }}</h1>
+          <p v-if="data.description" class="policy-hub__lede">{{ data.description }}</p>
+          <p class="policy-hub__meta">Cập nhật {{ formatMetadataDate(data.date) }} · {{ data.author.name }}</p>
+        </div>
         <nav v-if="policies.length" ref="policyRailRef" class="policy-rail" aria-label="Chính sách và hỗ trợ">
           <NuxtLink
             v-for="pol in policies"
@@ -243,7 +246,11 @@ useHead({
 
 <style>
 .policy-hub { padding: clamp(36px, 5vw, 64px) 0 clamp(28px, 3vw, 40px); background: radial-gradient(120% 140% at 85% 0%, #17407a 0%, var(--color-navy-950) 60%); color: #fff; }
-.policy-hub__title { margin: 0; max-width: 22ch; font-size: clamp(32px, 4.4vw, 60px); font-weight: 900; line-height: 1.05; letter-spacing: -0.035em; }
+.policy-hub__head { display: flex; flex-direction: column; justify-content: flex-end; }
+/* Two title lines (font × line-height 1.05 × 2) + the date line under it, on phones too. */
+.policy-hub__head { min-height: calc(clamp(32px, 4.4vw, 60px) * 2.1 + 14px + 22px); }
+.policy-hub__head.has-lede { min-height: 0; }
+.policy-hub__title { margin: 0; max-width: 22ch; text-wrap: balance; font-size: clamp(32px, 4.4vw, 60px); font-weight: 900; line-height: 1.05; letter-spacing: -0.035em; }
 .policy-hub__lede { margin: 16px 0 0; max-width: 64ch; color: #cbd5e1; font-size: clamp(16px, 1.2vw, 19px); line-height: 1.65; }
 .policy-hub__meta { margin: 14px 0 0; color: #94a3b8; font-size: 14.5px; }
 .policy-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 8px; margin-top: clamp(24px, 3vw, 36px); overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }

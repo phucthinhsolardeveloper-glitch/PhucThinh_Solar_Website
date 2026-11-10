@@ -183,7 +183,7 @@ watch([payload, token], trackOrderConversion)
             <span class="tabular-nums text-xs font-extrabold text-gold-700">03</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Giao hàng & Hỗ trợ kỹ thuật</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
-              Đồng kiểm khi nhận hàng; đội ngũ kỹ sư hỗ trợ hướng dẫn đấu nối, vận hành và bảo hành dài hạn.
+              Đồng kiểm khi nhận hàng; đội ngũ kỹ thuật hỗ trợ hướng dẫn đấu nối, vận hành và bảo hành dài hạn.
             </p>
           </div>
         </div>

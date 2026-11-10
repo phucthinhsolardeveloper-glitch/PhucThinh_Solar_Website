@@ -24,7 +24,7 @@ class AboutAssembler
         'peopleTitle' => 'Nhân sự Phúc Thịnh Solar',
         'peopleFallback' => 'Đội ngũ giàu kinh nghiệm, tư vấn sát nhu cầu thực tế, triển khai có trách nhiệm và đồng hành lâu dài cùng khách hàng.',
         'principleExpertise' => 'Chuyên môn thực tế',
-        'principleExpertiseDescription' => 'Đội ngũ kỹ sư, kỹ thuật viên giàu kinh nghiệm, am hiểu thực tế.',
+        'principleExpertiseDescription' => 'Đội ngũ kỹ thuật giàu kinh nghiệm, am hiểu thực tế.',
         'principleSupport' => 'Đồng hành đến cùng',
         'principleSupportDescription' => 'Tư vấn trung thực, hỗ trợ xuyên suốt vòng đời dự án.',
         'principleCustomer' => 'Lấy khách hàng làm trung tâm',

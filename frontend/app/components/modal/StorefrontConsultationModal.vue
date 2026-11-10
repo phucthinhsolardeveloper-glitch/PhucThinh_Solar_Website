@@ -134,7 +134,7 @@ async function send() {
   <UModal
     v-model:open="isConsultationOpen"
     :title="'Đăng ký nhận tư vấn giải pháp'"
-    :description="'Để lại thông tin, kỹ sư Phúc Thịnh Solar sẽ liên hệ tư vấn trong vòng 15 phút.'"
+    :description="'Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn trong vòng 15 phút.'"
     :ui="{
       overlay: 'glass-overlay',
       content: 'shadow-[0_28px_70px_-24px_rgb(6_21_55/45%)] w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',

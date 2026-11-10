@@ -39,3 +39,16 @@ it('lets settings staff edit the groups in Admin', function () {
         ->and(collect(app(SearchSynonyms::class)->variants('combiner box'))->pluck(0)->all())->toBe(['tủ điện', 'tủ điện solar'])
         ->and(app(SearchSynonyms::class)->variants('inverter'))->toBe([]);
 });
+
+it('takes a Google Tag Manager id in Admin and gives the site only a well-formed one', function () {
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'chu-'.bin2hex(random_bytes(3)), 'password' => 'test-password', 'role' => User::ROLE_OWNER, 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    Livewire::test(SiteSettingsPage::class)->set('data.gtm_id', 'gtm-<script>')->call('save')->assertHasErrors(['data.gtm_id']);
+    Livewire::test(SiteSettingsPage::class)->set('data.gtm_id', ' gtm-57tjsrvm ')->call('save')->assertHasNoErrors();
+    app(SiteSettings::class)->clear();
+    $this->getJson('/api/v1/site')->assertOk()->assertJsonPath('gtmId', 'GTM-57TJSRVM');
+
+    DB::table('settings')->where('key', 'gtm_id')->update(['value' => json_encode('"><script>x</script>')]);
+    app(SiteSettings::class)->clear();
+    $this->getJson('/api/v1/site')->assertJsonPath('gtmId', '');
+});
