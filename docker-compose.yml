@@ -7,6 +7,8 @@
 # 7 giờ và mốc so sánh API không bao giờ khớp. Đừng đổi lại múi giờ.
 #
 # Mật khẩu lấy từ .env ở thư mục gốc (không commit). Dữ liệu nằm trong volume pts_mariadb_data.
+# Tên project cố định: mọi container, mạng, volume của máy local nằm dưới một tên, không lẫn với bản khác.
+name: pts-local
 services:
   laravel13:
     build:
@@ -55,7 +57,9 @@ networks:
   web_pts_php_default:
     external: true
 volumes:
+  # Tên cố định: giữ đúng volume đã có dữ liệu, đổi tên project không làm DB local "biến mất".
   pts_mariadb_data:
+    name: web_pts_php_pts_mariadb_data
   legacy_upload:
     external: true
     name: web_pts_php_pts_web_upload
