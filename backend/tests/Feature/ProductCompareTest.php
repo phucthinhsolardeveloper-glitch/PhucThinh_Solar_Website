@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 function comparable(string $name, array $specs, bool $visible = true): Product
 {
@@ -27,8 +28,12 @@ it('lines specs up by label and flags rows that do not differ', function () {
 });
 
 it('treats values written slightly differently as the same', function () {
-    $a = comparable('Đèn A', ['Thời gian nạp' => '4-6H', 'Kích cỡ' => '282x235 mm', 'Vùng sáng' => '400 m2']);
-    $b = comparable('Đèn B', ['Thời gian nạp' => '4–6 giờ', 'Kích cỡ' => '282×235mm', 'Vùng sáng' => '400m²']);
+    // Written straight to the table: saving through the model would already rewrite them in one form.
+    $raw = fn (Product $p, array $specs) => DB::table('products')->where('id', $p->id)->update(['additional_specs' => json_encode(array_map(fn ($l, $v) => ['key' => '', 'label' => $l, 'value' => $v], array_keys($specs), $specs), JSON_UNESCAPED_UNICODE)]);
+    $a = comparable('Đèn A', []);
+    $b = comparable('Đèn B', []);
+    $raw($a, ['Thời gian nạp' => '4-6H', 'Kích cỡ' => '282x235 mm', 'Vùng sáng' => '400 m2']);
+    $raw($b, ['Thời gian nạp' => '4–6 giờ', 'Kích cỡ' => '282×235mm', 'Vùng sáng' => '400m²']);
     $rows = collect($this->getJson("/api/v1/compare?ids={$a->id},{$b->id}")->assertOk()->json('rows'))->keyBy('label');
 
     expect($rows['Thời gian nạp'])->toMatchArray(['values' => ['4-6H', '4–6 giờ'], 'same' => true])

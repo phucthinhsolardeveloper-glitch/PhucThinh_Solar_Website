@@ -1371,14 +1371,14 @@ onBeforeUnmount(() => {
 /* Wide screens: search takes the header's place instead of hanging under it. The field sits where the menu was,
    centred, and the page behind dims, so nothing half-covered competes with what is being typed. */
 @media (min-width: 821px) {
-  .pts-search-panel { top: 0 !important; border-top: 0 !important; padding-block: 0 22px !important; backdrop-filter: none !important; box-shadow: 0 34px 70px -34px rgb(10 34 81 / 55%) !important; }
+  .pts-search-panel { top: 0 !important; border-top: 0 !important; padding-block: 14px 24px !important; backdrop-filter: none !important; box-shadow: 0 34px 70px -34px rgb(10 34 81 / 55%) !important; }
   /* Plain dim, no backdrop blur: blurring the whole page behind costs frames on ordinary laptops. */
   .pts-search-scrim { top: 0 !important; height: 100dvh !important; background: rgb(6 20 48 / 46%) !important; }
   /* Same three zones as the header: logo where the logo was, the field where the menu was, call and close at the end. */
-  .pts-search-row { display: grid !important; grid-template-columns: minmax(150px, 1fr) minmax(0, 760px) minmax(44px, 1fr); grid-template-rows: var(--pts-header-h, 89px) auto; align-items: center; column-gap: 24px; row-gap: 0; padding-right: 0 !important; }
+  .pts-search-row { display: grid !important; grid-template-columns: minmax(150px, 1fr) minmax(0, 760px) minmax(44px, 1fr); grid-template-rows: minmax(calc(var(--pts-header-h, 89px) - 14px), auto) auto; row-gap: 6px; align-items: center; column-gap: 24px; padding-right: 0 !important; }
   .pts-search-row > form { grid-column: 2; grid-row: 1; width: 100% !important; }
   .pts-search-logo { display: flex; grid-column: 1; grid-row: 1; align-items: center; min-width: 0; }
-  .pts-search-logo img { display: block; width: auto; max-width: min(clamp(240px, 21vw, 420px), 100%); height: auto; max-height: clamp(56px, 5vw, 96px); object-fit: contain; }
+  .pts-search-logo img { display: block; width: auto; max-width: min(clamp(240px, 21vw, 420px), 100%); height: auto; max-height: clamp(52px, 4.4vw, 84px); object-fit: contain; }
   .pts-search-end { display: flex !important; grid-column: 3; grid-row: 1; align-items: center; justify-content: flex-end; gap: 14px; min-width: 0; }
   .pts-search-close { position: static !important; }
   .pts-search-quick { grid-column: 1 / -1; grid-row: 2; justify-content: center; }

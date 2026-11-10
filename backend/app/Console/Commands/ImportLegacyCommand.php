@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Catalog\SpecFormat;
 use App\Support\ContentBlocks;
 use App\Support\RetiredLegacyContent;
 use Illuminate\Console\Command;
@@ -172,6 +173,10 @@ class ImportLegacyCommand extends Command
                 'is_visible' => in_array('hienthi', $flags, true), 'is_bestseller' => in_array('banchay', $flags, true), 'sort_order' => (int) $row['numb'], 'views' => (int) $row['view']] + self::times($row);
             foreach ($specColumns as $column) {
                 $product[$column] = self::nullable(self::text($row[$column]));
+            }
+            // Same written form as Admin and the bulk file ("4-6H" → "4–6 giờ").
+            foreach (SpecFormat::changes($product) as $column => $value) {
+                $product[$column] = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
             }
             $this->new->table('products')->insert($product);
         }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Domain\Catalog\Listing\CatalogFilters;
+use App\Models\Category;
+use App\Models\Product;
 
 it('refuses malformed catalog queries with BAD_QUERY', function (array $query) {
     $this->getJson('/api/v1/catalog?'.http_build_query($query))
@@ -30,4 +32,15 @@ it('returns the v1 catalog shape for /san-pham/', function () {
 it('builds keyword slugs without accents or punctuation', function () {
     expect(CatalogFilters::keywordSlug('Đèn  Blue Carbon 100W!'))->toBe('den-blue-carbon-100w')
         ->and(CatalogFilters::keywordSlug('  Đường '))->toBe('duong');
+});
+
+it('gives a sub-category page the trail of its parents, like the product page', function () {
+    $tag = bin2hex(random_bytes(3));
+    $top = Category::query()->create(['name' => 'Đèn '.$tag, 'slug' => 'den-'.$tag, 'depth' => 1, 'is_visible' => true]);
+    $sub = Category::query()->create(['name' => 'Đèn pha '.$tag, 'slug' => 'den-pha-'.$tag, 'depth' => 2, 'parent_id' => $top->id, 'is_visible' => true]);
+    Product::query()->create(['name' => 'Pha '.$tag, 'slug' => 'pha-'.$tag, 'regular_price' => 1, 'is_visible' => true, 'category_id' => $sub->id]);
+
+    $this->getJson("/api/v1/catalog?category=den-{$tag}/den-pha-{$tag}")->assertOk()
+        ->assertJsonPath('breadcrumbs', [['label' => 'Đèn '.$tag, 'url' => "/danh-muc-san-pham/den-{$tag}/"]]);
+    $this->getJson("/api/v1/catalog?category=den-{$tag}")->assertOk()->assertJsonPath('breadcrumbs', []);
 });

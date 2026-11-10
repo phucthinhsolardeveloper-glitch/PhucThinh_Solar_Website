@@ -21,8 +21,9 @@ test('desktop search covers the header and closes with a fade, without a page-wi
   const header = read('app/components/SiteHeader.vue')
   assert.match(header, /<Transition name="pts-search"/)
   assert.match(header, /\.pts-search-leave-to \.pts-search-panel \{ opacity: 0;/)
-  assert.match(header, /@media \(min-width: 821px\) \{\n  \.pts-search-panel \{ top: 0 !important;/)
-  assert.match(header, /grid-template-rows: var\(--pts-header-h, 89px\) auto/)
+  assert.match(header, /@media \(min-width: 821px\) \{\n[^]*?\.pts-search-panel \{ top: 0 !important;/)
+  assert.match(header, /grid-template-rows: minmax\(calc\(var\(--pts-header-h, 89px\) - 14px\), auto\) auto/)
+  assert.match(header, /\.pts-search-panel \{ top: 0 !important; border-top: 0 !important; padding-block: 14px 24px !important;/)
   assert.doesNotMatch(header.match(/\.pts-search-scrim \{ top: 0[^}]*\}/)[0], /backdrop-filter/)
 })
 

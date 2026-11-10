@@ -207,7 +207,8 @@ const catalogBreadcrumbItems = computed(() => {
   const root = route.path.startsWith('/thuong-hieu/')
     ? { label: 'Thương hiệu', to: '/thuong-hieu/' }
     : { label: 'Sản phẩm', to: '/san-pham/' }
-  return category.value ? [root, { label: heading.value }] : [root]
+  const parents = (catalogData.value?.breadcrumbs ?? []).map((crumb) => ({ label: crumb.label, to: crumb.url }))
+  return category.value ? [root, ...parents, { label: heading.value }] : [root]
 })
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
 const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')

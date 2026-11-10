@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Bulk;
 
+use App\Domain\Catalog\SpecFormat;
 use App\Filament\Support\Options;
 use App\Models\Product;
 use App\Support\Slugs;
@@ -330,6 +331,10 @@ final class BulkPlanner
         }
         $kind = $column['kind'];
         $clear = $value === BulkColumns::CLEAR;
+        // Specs are written one way whatever the file says ("4-6H" → "4–6 giờ"), so the preview shows what will be saved.
+        if (! $clear) {
+            $value = SpecFormat::cell((string) ($column['field'] ?? $key), $kind, $value);
+        }
         if ($clear && (in_array($key, ['code', 'name', 'slug', 'category'], true) || $kind === 'flag')) {
             $item['errors'][] = $column['label'].' không dùng được '.BulkColumns::CLEAR.'.';
 
@@ -337,12 +342,13 @@ final class BulkPlanner
         }
         $incoming = $clear ? '' : self::canon($kind, $value);
         if ($existing) {
-            $now = self::canon($kind, $current[$key] ?? '');
+            // Stored text not yet in the one form still counts as the same value.
+            $now = self::canon($kind, SpecFormat::cell((string) ($column['field'] ?? $key), $kind, (string) ($current[$key] ?? '')));
             if ($incoming === $now || ($clear && in_array($now, ['', '0'], true))) {
                 return;
             }
             if ($base !== null && array_key_exists($key, $base)) {
-                $was = self::canon($kind, $base[$key]);
+                $was = self::canon($kind, SpecFormat::cell((string) ($column['field'] ?? $key), $kind, (string) $base[$key]));
                 if ($now !== $was) {
                     if ($incoming === $was) {
                         return;

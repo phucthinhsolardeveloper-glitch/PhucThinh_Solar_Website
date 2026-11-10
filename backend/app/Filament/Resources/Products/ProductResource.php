@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products;
 
 use App\Domain\Catalog\ProductSalesReadiness;
+use App\Domain\Catalog\SpecFormat;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
@@ -112,11 +113,16 @@ class ProductResource extends Resource
                 ]),
                 Tab::make('Thông số')->schema([
                     TextInput::make('power_watts')->label('Công suất (W)')->numeric()->minValue(0),
-                    Grid::make(3)->schema(collect(self::SPECS)->map(fn ($label, $column) => TextInput::make($column)->label($label))->values()->all()),
+                    // Measured specs are rewritten one way as soon as the field is left ("4-6H" → "4–6 giờ"); the model does it again on save.
+                    Grid::make(3)->schema(collect(self::SPECS)->map(fn ($label, $column) => isset(SpecFormat::COLUMNS[$column])
+                        ? TextInput::make($column)->label($label)->live(onBlur: true)->placeholder(SpecFormat::EXAMPLES[SpecFormat::COLUMNS[$column]])
+                            ->afterStateUpdated(fn ($state, $set) => is_string($state) && $state !== '' ? $set($column, SpecFormat::apply($state, SpecFormat::COLUMNS[$column])) : null)
+                        : TextInput::make($column)->label($label))->values()->all()),
                     Textarea::make('package_contents')->label('Bộ sản phẩm gồm')->rows(2),
                     Repeater::make('additional_specs')->label('Thông số thêm')->schema([
                         TextInput::make('label')->label('Tên thông số')->required(),
-                        TextInput::make('value')->label('Giá trị')->required(),
+                        TextInput::make('value')->label('Giá trị')->required()->live(onBlur: true)
+                            ->afterStateUpdated(fn ($state, $get, $set) => is_string($state) && ($kind = SpecFormat::kindOfLabel((string) $get('label'))) !== null ? $set('value', SpecFormat::apply($state, $kind)) : null),
                     ])->columns(2)->defaultItems(0)->addActionLabel('Thêm thông số')
                         ->dehydrateStateUsing(fn ($state) => array_values(array_map(fn ($row) => ['key' => '', 'label' => (string) $row['label'], 'value' => (string) $row['value']], (array) $state))),
                     Fields::rich('specs_html', 'Bảng thông số (dạng bảng tự soạn)'),

@@ -38,6 +38,8 @@ export interface PublicCatalogPayload {
   seo: { title: string; description: string; keywords: string; image?: string }
   canonical: { url: string }
   category: [] | PublicCatalogCategory
+  /** Parent categories above the current one (top first); empty on the product landing. */
+  breadcrumbs?: Array<{ label: string; url: string }>
   categories: PublicCatalogCategory[]
   products: PublicCatalogProduct[]
   pagination: { page: number; perPage: number; total: number }
@@ -184,6 +186,11 @@ function isCatalogSelected(value: unknown): value is NonNullable<PublicCatalogPa
 
 export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPayload {
   if (!isRecord(value)) return false
+  if ('breadcrumbs' in value) {
+    const { breadcrumbs, ...rest } = value
+    if (!Array.isArray(breadcrumbs) || !breadcrumbs.every((crumb) => isRecord(crumb) && hasExactKeys(crumb, ['label', 'url']) && isSafeText(crumb.label) && typeof crumb.url === 'string' && /^\/[a-z0-9/-]*$/.test(crumb.url))) return false
+    return isPublicCatalogPayload(rest)
+  }
   const baseKeys = ['schemaVersion', 'locale', 'seo', 'canonical', 'category', 'categories', 'products', 'pagination', 'pricesVisible']
   const basic = hasExactKeys(value, baseKeys)
   const extended = hasExactKeys(value, [...baseKeys, 'filters', 'selected', 'categoryHero', 'categoryContent', 'support'])

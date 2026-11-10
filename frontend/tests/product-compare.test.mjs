@@ -35,3 +35,11 @@ test('the pick list is per browser, capped, and every storage call survives a bl
   assert.match(read('app/components/product-detail/ProductPurchasePanel.vue'), /useProductCompare\(\)/)
   assert.match(read('app/app.vue'), /<CompareTray \/>/)
 })
+
+test('a category page lists its parent categories in the breadcrumb', async () => {
+  const { isPublicCatalogPayload } = await import('../shared/contracts/public-catalog.ts')
+  const page = read('app/components/catalog/CatalogPage.vue')
+  assert.match(page, /catalogData\.value\?\.breadcrumbs \?\? \[\]/)
+  assert.match(page, /\[root, \.\.\.parents, \{ label: heading\.value \}\]/)
+  assert.equal(isPublicCatalogPayload({ breadcrumbs: [{ label: 'x', url: 'javascript:alert(1)' }] }), false)
+})

@@ -128,6 +128,8 @@ class CatalogAssembler
             'schemaVersion' => 1,
             'locale' => 'vi',
             'category' => $category,
+            // Parent categories above this one, the same trail the product page shows.
+            'breadcrumbs' => $selectedId !== null ? $this->trail($selectedId) : [],
             'categories' => $categories,
             'products' => $products,
             'pagination' => ['page' => $request->page, 'perPage' => $request->perPage, 'total' => max(0, $total)],
@@ -181,5 +183,19 @@ class CatalogAssembler
         return DB::table('brands')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'image'])
             ->map(fn ($brand) => ['id' => (int) $brand->id, 'name' => Text::plain($brand->name), 'logo' => Brand::logoUrl($brand->image)])
             ->filter(fn (array $brand) => $brand['logo'] !== '' && $brand['name'] !== '')->values()->all();
+    }
+
+    /** @return list<array{label: string, url: string}> visible ancestors of a category, top first, itself excluded */
+    private function trail(int $id): array
+    {
+        $trail = [];
+        foreach (array_slice($this->tree->chain($id), 0, -1) as $node) {
+            $label = Text::plain((string) $node['name']);
+            if ($node['is_visible'] && $label !== '') {
+                $trail[] = ['label' => $label, 'url' => '/'.$this->tree->path((int) $node['id'])];
+            }
+        }
+
+        return $trail;
     }
 }
