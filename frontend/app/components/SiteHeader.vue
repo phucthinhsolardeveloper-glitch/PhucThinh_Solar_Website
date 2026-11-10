@@ -851,6 +851,9 @@ onBeforeUnmount(() => {
         <div class="mx-auto w-full max-w-[max(1680px,var(--container-page))] px-4 max-[359px]:px-3 tb:px-6 nav:px-(--spacing-gutter)">
           <div class="pts-search-row flex flex-wrap items-center gap-x-6 gap-y-3 max-[1099px]:pr-12 min-[1100px]:flex-nowrap">
             <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
+            <a v-if="brandLogo" class="pts-search-logo" :href="shellHref('/')" :aria-label="`${brandName} - Trang chủ`">
+              <img :src="brandLogoSrc" :alt="brandName" width="520" height="73">
+            </a>
             <form class="pts-search-field flex w-full min-w-0 items-center min-[1100px]:order-2 min-[1100px]:w-[min(520px,36vw)] min-[1100px]:flex-none" role="search" @submit.prevent="submitSearch">
               <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
               <UIcon name="i-lucide-search" class="ml-4 size-[18px] flex-none text-slate-400" aria-hidden="true" />
@@ -888,6 +891,11 @@ onBeforeUnmount(() => {
                 {{ term }}
               </button>
             </div>
+            <div class="pts-search-end contents">
+            <a v-if="hotline" class="pts-search-call" :href="telHrefFor(hotline)" :aria-label="`Gọi tư vấn: ${hotline}`">
+              <span class="pts-search-call__icon" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-[18px]" /></span>
+              <span class="pts-search-call__text">Chưa tìm thấy? Gọi tư vấn<b>{{ hotline }}</b></span>
+            </a>
             <button
               class="pts-search-close inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700 min-[1100px]:order-3 max-[1099px]:absolute max-[1099px]:right-3 max-[1099px]:top-3"
               type="button"
@@ -896,6 +904,7 @@ onBeforeUnmount(() => {
             >
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
             </button>
+            </div>
           </div>
           <SearchSuggestions
             ref="headerSuggest"
@@ -1357,16 +1366,29 @@ onBeforeUnmount(() => {
 .pts-search-leave-to .pts-search-scrim { opacity: 0; }
 @keyframes pts-search-in { from { opacity: 0; transform: translateY(-12px); } }
 @keyframes pts-fade-in { from { opacity: 0; } }
+/* Logo and call only appear on wide screens (below). */
+.pts-search-logo, .pts-search-call { display: none; }
 /* Wide screens: search takes the header's place instead of hanging under it. The field sits where the menu was,
    centred, and the page behind dims, so nothing half-covered competes with what is being typed. */
 @media (min-width: 821px) {
   .pts-search-panel { top: 0 !important; border-top: 0 !important; padding-block: 0 22px !important; backdrop-filter: none !important; box-shadow: 0 34px 70px -34px rgb(10 34 81 / 55%) !important; }
   /* Plain dim, no backdrop blur: blurring the whole page behind costs frames on ordinary laptops. */
   .pts-search-scrim { top: 0 !important; height: 100dvh !important; background: rgb(6 20 48 / 46%) !important; }
-  .pts-search-row { display: grid !important; grid-template-columns: 44px minmax(0, 760px) 44px; grid-template-rows: var(--pts-header-h, 89px) auto; justify-content: center; align-items: center; column-gap: 20px; row-gap: 0; padding-right: 0 !important; }
+  /* Same three zones as the header: logo where the logo was, the field where the menu was, call and close at the end. */
+  .pts-search-row { display: grid !important; grid-template-columns: minmax(150px, 1fr) minmax(0, 760px) minmax(44px, 1fr); grid-template-rows: var(--pts-header-h, 89px) auto; align-items: center; column-gap: 24px; row-gap: 0; padding-right: 0 !important; }
   .pts-search-row > form { grid-column: 2; grid-row: 1; width: 100% !important; }
-  .pts-search-close { position: static !important; grid-column: 3; grid-row: 1; }
+  .pts-search-logo { display: flex; grid-column: 1; grid-row: 1; align-items: center; min-width: 0; }
+  .pts-search-logo img { display: block; width: auto; max-width: min(clamp(240px, 21vw, 420px), 100%); height: auto; max-height: clamp(56px, 5vw, 96px); object-fit: contain; }
+  .pts-search-end { display: flex !important; grid-column: 3; grid-row: 1; align-items: center; justify-content: flex-end; gap: 14px; min-width: 0; }
+  .pts-search-close { position: static !important; }
   .pts-search-quick { grid-column: 1 / -1; grid-row: 2; justify-content: center; }
+}
+@media (min-width: 1280px) {
+  .pts-search-call { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px 0 6px; border: 1px solid rgb(10 34 81 / 12%); border-radius: 999px; background: #fff; color: var(--color-navy-900); text-decoration: none; transition: border-color .2s ease, background-color .2s ease; }
+  .pts-search-call:hover { border-color: var(--color-gold-500); background: rgb(228 168 73 / 8%); }
+  .pts-search-call__icon { display: grid; width: 36px; height: 36px; flex: none; place-items: center; border-radius: 999px; background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); }
+  .pts-search-call__text { display: grid; color: #64748b; font-size: 12px; font-weight: 600; line-height: 1.25; white-space: nowrap; }
+  .pts-search-call__text b { color: var(--color-navy-950); font-size: 16px; font-weight: 900; letter-spacing: .01em; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pts-search-panel, .pts-search-scrim { animation: none; }

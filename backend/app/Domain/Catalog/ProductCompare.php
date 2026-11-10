@@ -51,7 +51,7 @@ final class ProductCompare
                 }
             }
         }
-        $rows = array_values(array_map(fn ($row) => $row + ['same' => count($products) > 1 && count(array_unique(array_map(self::rowKey(...), $row['values']))) === 1], $rows));
+        $rows = array_values(array_map(fn ($row) => $row + ['same' => count($products) > 1 && count(array_unique(array_map(self::valueKey(...), $row['values']))) === 1], $rows));
         // Rows most products answer come first; a row only one product fills is still shown, lower down.
         usort($rows, fn ($a, $b) => count(array_filter($b['values'], fn ($v) => $v !== '')) <=> count(array_filter($a['values'], fn ($v) => $v !== '')));
 
@@ -62,6 +62,19 @@ final class ProductCompare
             'products' => array_map(fn ($p) => array_diff_key($p, ['specifications' => true]), $products),
             'rows' => $rows,
         ]];
+    }
+
+    /**
+     * How a reader compares two values: "4–6H", "4-6 h" and "4-6 giờ" are the same; so are "282×235" and "282*235",
+     * "400 m2" and "400m²". Only used to decide "same", the values are shown as written.
+     */
+    private static function valueKey(string $text): string
+    {
+        $text = mb_strtolower(trim($text));
+        $text = str_replace(['–', '—', '−', '×', 'm2', 'giờ', 'hours', 'hour'], ['-', '-', '-', '*', 'm²', 'h', 'h', 'h'], $text);
+        $text = (string) preg_replace('/(?<=\d)\s*x\s*(?=\d)/u', '*', $text);
+
+        return (string) preg_replace('/\s+/u', '', $text);
     }
 
     private static function rowKey(string $text): string

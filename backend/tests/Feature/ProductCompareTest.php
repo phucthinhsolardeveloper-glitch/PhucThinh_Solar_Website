@@ -26,6 +26,15 @@ it('lines specs up by label and flags rows that do not differ', function () {
         ->and(collect($r['rows'])->pluck('label')->filter(fn ($l) => in_array($l, ['Điện áp DC tối đa', 'Số pha'], true))->values()->all())->toBe(['Điện áp DC tối đa', 'Số pha']);
 });
 
+it('treats values written slightly differently as the same', function () {
+    $a = comparable('Đèn A', ['Thời gian nạp' => '4-6H', 'Kích cỡ' => '282x235 mm', 'Vùng sáng' => '400 m2']);
+    $b = comparable('Đèn B', ['Thời gian nạp' => '4–6 giờ', 'Kích cỡ' => '282×235mm', 'Vùng sáng' => '400m²']);
+    $rows = collect($this->getJson("/api/v1/compare?ids={$a->id},{$b->id}")->assertOk()->json('rows'))->keyBy('label');
+
+    expect($rows['Thời gian nạp'])->toMatchArray(['values' => ['4-6H', '4–6 giờ'], 'same' => true])
+        ->and($rows['Kích cỡ']['same'])->toBeTrue()->and($rows['Vùng sáng']['same'])->toBeTrue();
+});
+
 it('refuses more than four products and anything but a list of ids', function (string $query) {
     $this->getJson('/api/v1/compare'.$query)->assertStatus(400);
 })->with(['', '?ids=1,2,3,4,5', '?ids=a', '?ids=1&x=1', '?ids=0']);

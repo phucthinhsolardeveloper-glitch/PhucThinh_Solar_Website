@@ -25,3 +25,10 @@ test('desktop search covers the header and closes with a fade, without a page-wi
   assert.match(header, /grid-template-rows: var\(--pts-header-h, 89px\) auto/)
   assert.doesNotMatch(header.match(/\.pts-search-scrim \{ top: 0[^}]*\}/)[0], /backdrop-filter/)
 })
+
+// Phones showed the chosen category chip orange: the .m-lg glass (saturate 1.8) sat over the gold pill.
+test('nothing on a gliding pill applies a backdrop filter that would re-colour the gold', () => {
+  const css = read('app/assets/css/main.css')
+  assert.match(css, /\[data-pill-rail\] \[data-pill-on\] \{ -webkit-backdrop-filter: none !important; backdrop-filter: none !important; \}/)
+  assert.match(css, /\[data-pill-rail\] \.catalog-category-chip \{[^}]*backdrop-filter: none !important;/)
+})

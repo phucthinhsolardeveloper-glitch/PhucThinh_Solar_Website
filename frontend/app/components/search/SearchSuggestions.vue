@@ -213,7 +213,7 @@ defineExpose({ handleKey, activeOptionId, listId, remember: history.remember })
 .sug-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .sug-chip { display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--sug-line); border-radius: var(--radius-btn); background: var(--sug-tile); color: var(--sug-ink); font-size: 13.5px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
 .sug-chip:hover, .sug-chip.is-active { border-color: var(--color-gold-500); background: var(--sug-hover); }
-.sug-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.sug-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
 .sug-tile { display: flex; min-height: 56px; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--sug-line); border-radius: var(--radius-sm); background: var(--sug-tile); color: var(--sug-ink); font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
 .sug-tile > span:last-child { min-width: 0; overflow-wrap: anywhere; }
 .sug-tile:hover { border-color: var(--color-gold-500); background: var(--sug-hover); transform: translateY(-1px); }

@@ -1152,6 +1152,10 @@
   border-color: transparent !important;
   background: none !important;
   box-shadow: none !important;
+  /* The phone glass (.m-lg) blurred and saturated the gold pill behind it, so the chosen chip read a different
+     gold on phones than on PC. The chip has its own surface (::before), it needs no glass. */
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
   color: var(--color-navy-800);
   transition: transform 180ms ease;
 }
@@ -1169,6 +1173,9 @@
 [data-pill-rail] .catalog-category-chip:not([data-pill-on]):hover::before { border-color: rgb(10 34 81 / 58%); }
 [data-pill-rail] .catalog-category-chip[data-pill-on] { color: var(--color-navy-950); }
 [data-pill-rail] .catalog-category-chip[data-pill-on]::before { opacity: 0; }
+
+/* Whatever sits on the pill must not filter it: a glass saturate(1.8) turned the gold pill orange on phones. */
+[data-pill-rail] [data-pill-on] { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
 /* Section rails on product, about and solution pages: text chips with the same gliding pill. */
 [data-pill-rail] > a, [data-pill-rail] > div > a, [data-pill-rail] > li > a { position: relative; }

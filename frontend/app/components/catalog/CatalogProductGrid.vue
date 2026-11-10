@@ -120,6 +120,20 @@ function discountPercent(product: PublicCatalogProduct): number | null {
   }
   return null
 }
+
+// Compare: a toggle on each card; the floating tray opens the table.
+const compare = useProductCompare()
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+const fullId = ref<number | null>(null)
+let fullTimer: ReturnType<typeof setTimeout> | undefined
+function toggleCompare(product: PublicCatalogProduct) {
+  if (compare.toggle({ id: product.id, name: product.name, image: product.media[0] || '' })) return
+  fullId.value = product.id
+  clearTimeout(fullTimer)
+  fullTimer = setTimeout(() => { fullId.value = null }, 2200)
+}
+onBeforeUnmount(() => clearTimeout(fullTimer))
 </script>
 
 <template>
@@ -211,6 +225,19 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         <span v-if="product.powerWatts" class="absolute bottom-2 left-2 z-10 rounded-sm bg-navy-950 px-2 py-0.5 text-[13px] font-extrabold tabular-nums text-gold-300 tb:hidden">{{ formatPower(product.powerWatts) }}</span>
 
       </NuxtLink>
+      <!-- Pick for comparison straight from the list, without opening each product. -->
+      <button
+        v-if="mounted"
+        type="button"
+        class="card-compare"
+        :class="{ 'is-on': compare.has(product.id), 'is-full': fullId === product.id }"
+        :aria-pressed="compare.has(product.id)"
+        :aria-label="compare.has(product.id) ? `Bỏ ${product.name} khỏi so sánh` : `So sánh ${product.name}`"
+        @click="toggleCompare(product)"
+      >
+        <UIcon :name="compare.has(product.id) ? 'i-lucide-check' : 'i-lucide-git-compare-arrows'" class="size-4" aria-hidden="true" />
+        <span class="card-compare__label">{{ fullId === product.id ? `Tối đa ${COMPARE_MAX}` : compare.has(product.id) ? 'Đang so sánh' : 'So sánh' }}</span>
+      </button>
 
       <h3 class="mt-3 mb-1.5 min-h-[42px] line-clamp-2 text-[15px] font-bold leading-[1.4] text-navy-800 max-ph:min-h-[2.8em] max-ph:text-sm">
         <NuxtLink
@@ -293,6 +320,14 @@ function discountPercent(product: PublicCatalogProduct): number | null {
 </template>
 
 <style scoped>
+.card-compare { position: absolute; top: 8px; right: 8px; z-index: 20; display: inline-flex; min-height: 36px; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid rgb(10 34 81 / 14%); border-radius: 999px; background: rgb(255 255 255 / 94%); color: var(--color-navy-800); font-size: 12.5px; font-weight: 800; cursor: pointer; opacity: 0; transition: opacity .2s ease, border-color .2s ease, background-color .2s ease; }
+.group:hover .card-compare, .card-compare:focus-visible, .card-compare.is-on, .card-compare.is-full { opacity: 1; }
+.card-compare:hover { border-color: var(--color-gold-500); }
+.card-compare.is-on { border-color: transparent; background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); }
+.card-compare.is-full { border-color: #f59e0b; color: #92400e; }
+/* Touch screens have no hover: the toggle stays visible as a compact icon. */
+@media (hover: none), (max-width: 820px) { .card-compare { opacity: 1; width: 36px; justify-content: center; padding: 0; } .card-compare__label { display: none; } .card-compare.is-full { width: auto; padding: 0 10px; } .card-compare.is-full .card-compare__label { display: inline; } }
+@media (prefers-reduced-motion: reduce) { .card-compare { transition: none; } }
 .grid-added { display: inline-flex; align-items: center; gap: 6px; animation: grid-added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes grid-added-in { from { opacity: 0; transform: translateY(5px) scale(0.95); } }
 @media (prefers-reduced-motion: reduce) { .grid-added { animation: none; } }
