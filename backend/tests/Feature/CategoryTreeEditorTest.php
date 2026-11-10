@@ -50,13 +50,13 @@ function moveNode(array $tree, int $id, int $newParent): array
 
 it('saves the same tree as no change, then a moved branch with depths, order and a 301', function () {
     $editor = app(CategoryTreeEditor::class);
-    $editor->apply(currentTree()); // first save fixes tie orders; the next identical save changes nothing
-    expect($editor->apply(currentTree()))->toBe(['moved' => [], 'reordered' => 0]);
+    $editor->apply(currentTree(), $editor->version()); // first save fixes tie orders; the next identical save changes nothing
+    expect($editor->apply(currentTree(), $editor->version()))->toBe(['moved' => [], 'reordered' => 0]);
 
     $roots = DB::table('categories')->whereNull('parent_id')->orderBy('id')->pluck('id')->all();
     $child = (int) DB::table('categories')->where('parent_id', $roots[0])->value('id');
     $from = '/'.trim((new CategoryTree)->path($child), '/').'/';
-    $result = $editor->apply(moveNode(currentTree(), $child, (int) $roots[1]));
+    $result = $editor->apply(moveNode(currentTree(), $child, (int) $roots[1]), $editor->version());
 
     $row = DB::table('categories')->where('id', $child)->first();
     $to = '/'.trim((new CategoryTree)->path($child), '/').'/';
@@ -77,8 +77,55 @@ it('refuses a fifth level and a tree that does not match the stored one', functi
         $nested = [['id' => $id, 'children' => $nested]];
     }
     $rest = array_values(array_filter($tree, fn ($node) => ! in_array($node['id'], $ids, true)));
-    expect(fn () => $editor->apply(array_merge($nested, $rest)))->toThrow(InvalidArgumentException::class, '4 cấp')
-        ->and(fn () => $editor->apply(array_slice($tree, 1)))->toThrow(InvalidArgumentException::class);
+    expect(fn () => $editor->apply(array_merge($nested, $rest), $editor->version()))->toThrow(InvalidArgumentException::class, '4 cấp')
+        ->and(fn () => $editor->apply(array_slice($tree, 1), $editor->version()))->toThrow(InvalidArgumentException::class);
+});
+
+it('rejects a stale tree instead of overwriting a category changed in another tab', function () {
+    $editor = app(CategoryTreeEditor::class);
+    $version = $editor->version();
+    $id = (int) DB::table('categories')->whereNull('parent_id')->value('id');
+    DB::table('categories')->where('id', $id)->update(['sort_order' => 765432]);
+
+    expect(fn () => $editor->apply(currentTree(), $version))->toThrow(InvalidArgumentException::class, 'đã thay đổi ở nơi khác')
+        ->and((int) DB::table('categories')->where('id', $id)->value('sort_order'))->toBe(765432);
+});
+
+it('refuses to reuse old URLs when two equal slugs swap parents', function () {
+    $editor = app(CategoryTreeEditor::class);
+    [$first, $second] = DB::table('categories')->whereNull('parent_id')->orderBy('id')->limit(2)->pluck('id')->all();
+    $create = fn (int $parent, string $name) => DB::table('categories')->insertGetId([
+        'parent_id' => $parent, 'depth' => 2, 'slug' => 'pts-tree-swap', 'name' => $name,
+        'sort_order' => 9999, 'is_visible' => false, 'created_at' => now(), 'updated_at' => now(),
+    ]);
+    $left = $create((int) $first, 'Swap left');
+    $right = $create((int) $second, 'Swap right');
+    $tree = moveNode(currentTree(), $left, (int) $second);
+    $tree = moveNode($tree, $right, (int) $first);
+
+    expect(fn () => $editor->apply($tree, $editor->version()))->toThrow(InvalidArgumentException::class, 'link cũ');
+
+    expect((int) DB::table('categories')->where('id', $left)->value('parent_id'))->toBe((int) $first)
+        ->and((int) DB::table('categories')->where('id', $right)->value('parent_id'))->toBe((int) $second)
+        ->and(DB::table('categories')->whereIn('id', [$left, $right])->pluck('slug')->all())->toBe(['pts-tree-swap', 'pts-tree-swap']);
+});
+
+it('keeps the destination URL and picks a free suffix when a moved slug collides twice', function () {
+    $editor = app(CategoryTreeEditor::class);
+    [$source, $target] = DB::table('categories')->whereNull('parent_id')->orderBy('id')->limit(2)->pluck('id')->all();
+    $create = fn (int $parent, string $slug) => DB::table('categories')->insertGetId([
+        'parent_id' => $parent, 'depth' => 2, 'slug' => $slug, 'name' => $slug,
+        'sort_order' => 9999, 'is_visible' => false, 'created_at' => now(), 'updated_at' => now(),
+    ]);
+    $incoming = $create((int) $source, 'pts-tree-collision');
+    $existing = $create((int) $target, 'pts-tree-collision');
+    $reserved = $create((int) $target, 'pts-tree-collision-'.$incoming);
+
+    $editor->apply(moveNode(currentTree(), $incoming, (int) $target), $editor->version());
+
+    expect(DB::table('categories')->where('id', $existing)->value('slug'))->toBe('pts-tree-collision')
+        ->and(DB::table('categories')->where('id', $reserved)->value('slug'))->toBe('pts-tree-collision-'.$incoming)
+        ->and(DB::table('categories')->where('id', $incoming)->value('slug'))->toBe('pts-tree-collision-'.$incoming.'-2');
 });
 
 it('shows the tree page to catalogue staff and saves through it', function () {

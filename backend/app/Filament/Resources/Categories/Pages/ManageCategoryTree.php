@@ -26,6 +26,13 @@ class ManageCategoryTree extends Page
 
     protected static ?string $title = 'Danh mục sản phẩm';
 
+    public string $treeVersion = '';
+
+    public function mount(): void
+    {
+        $this->treeVersion = app(CategoryTreeEditor::class)->version();
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -72,7 +79,7 @@ class ManageCategoryTree extends Page
     {
         abort_unless(CategoryResource::canViewAny(), 403);
         try {
-            $result = app(CategoryTreeEditor::class)->apply($roots);
+            $result = app(CategoryTreeEditor::class)->apply($roots, $this->treeVersion);
         } catch (InvalidArgumentException $e) {
             Notification::make()->danger()->title('Chưa lưu được')->body($e->getMessage())->persistent()->send();
 
