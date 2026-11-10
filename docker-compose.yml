@@ -1,7 +1,12 @@
-# Local Laravel 13 backend (API, media, Filament admin).
-# Up:   docker compose up -d --build
-# Down: docker compose down
-# It reaches the local MariaDB container on the shared Docker network (database pts_app).
+# Môi trường local: Laravel 13 (API, media, Admin Filament) và MariaDB của nó.
+# Lên:  docker compose up -d --build
+# Xuống: docker compose down
+#
+# `db` chạy **UTC giống production** (`--default-time-zone=+00:00`). Trước 2026-11-10 container này
+# mồ côi từ một worktree đã xoá và chạy +07, nên mọi cột TIMESTAMP đọc ở local lệch production đúng
+# 7 giờ và mốc so sánh API không bao giờ khớp. Đừng đổi lại múi giờ.
+#
+# Mật khẩu lấy từ .env ở thư mục gốc (không commit). Dữ liệu nằm trong volume pts_mariadb_data.
 services:
   laravel13:
     build:
@@ -22,10 +27,35 @@ services:
       - "127.0.0.1:8090:8000"
     networks:
       - web_pts_php_default
+  db:
+    image: mariadb:10.4
+    container_name: pts-mariadb-local
+    restart: "no"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${PTS_LOCAL_DB_ROOT_PASSWORD:?Đặt trong .env ở thư mục gốc}
+      MARIADB_DATABASE: ${PTS_LOCAL_DB_DATABASE:-phucthinhs_local}
+      MARIADB_USER: ${PTS_LOCAL_DB_USER:-pts_local}
+      MARIADB_PASSWORD: ${PTS_LOCAL_DB_PASSWORD:?Đặt trong .env ở thư mục gốc}
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+00:00
+    volumes:
+      - pts_mariadb_data:/var/lib/mysql
+    networks:
+      - web_pts_php_default
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -p\"$$MARIADB_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
 networks:
   web_pts_php_default:
     external: true
 volumes:
+  pts_mariadb_data:
   legacy_upload:
     external: true
     name: web_pts_php_pts_web_upload
