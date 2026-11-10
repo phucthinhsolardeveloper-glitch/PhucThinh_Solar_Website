@@ -126,7 +126,10 @@ class PageItemResource extends Resource
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->groups([Group::make('section')->label('Phần')->getTitleFromRecordUsing(fn (PageItem $record) => self::sectionOptions()[$record->section] ?? $record->section)])
-            ->filters([SelectFilter::make('section')->label('Phần')->options(fn () => self::sectionOptions())->searchable()])
+            ->filters([
+                SelectFilter::make('section')->label('Phần')->options(fn () => self::sectionOptions())->searchable(),
+                SelectFilter::make('is_visible')->label('Trạng thái')->options([1 => 'Đang bật', 0 => 'Đã lưu trữ'])->default('1'),
+            ])
             ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
     }
 
