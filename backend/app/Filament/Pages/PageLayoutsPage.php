@@ -69,7 +69,7 @@ class PageLayoutsPage extends Page
         $live = DB::table('page_layouts')->where('page', $this->page)->where('state', 'published')->orderByDesc('version')->first();
 
         return PageLayouts::PAGES[$this->page]['label'].': '.($live ? 'đang dùng bản '.$live->version : 'đang dùng bố cục gốc')
-            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Chữ và ảnh trong từng khối sửa ở "Nội dung các trang".';
+            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Dấu bật cho phép hiện khối khi trang có dữ liệu tương ứng; chữ và ảnh sửa ở "Nội dung các trang".';
     }
 
     public function form(Schema $schema): Schema
@@ -82,10 +82,11 @@ class PageLayoutsPage extends Page
                 ->columns(2)
                 ->schema([
                     Hidden::make('type'),
-                    Toggle::make('visible')->label('Hiện trên trang')
+                    Toggle::make('visible')->label('Cho phép hiện khối')
                         ->disabled(fn ($get) => ! empty($sections[$get('type')]['required']))
                         ->helperText(fn ($get) => ! empty($sections[$get('type')]['required']) ? 'Khối mở đầu: luôn hiện và luôn ở đầu trang.'
-                            : ($this->page === 'about' && $get('type') === 'history' ? 'Mốc lịch sử hiện do giao diện mới hiển thị; công tắc này chỉ bật hoặc tắt cả khối.' : null)),
+                            : ($this->page === 'about' && $get('type') === 'history' ? 'Mốc lịch sử hiện do giao diện mới hiển thị; công tắc này chỉ bật hoặc tắt cả khối.'
+                                : 'Khối chỉ xuất hiện nếu trang có dữ liệu và đã xuất bản bố cục.')),
                     Select::make('variant')->label('Kiểu hiển thị')->selectablePlaceholder(false)
                         ->options(fn ($get) => $sections[$get('type')]['variants'] ?? [])
                         ->visible(fn ($get) => count($sections[$get('type')]['variants'] ?? []) > 1),
