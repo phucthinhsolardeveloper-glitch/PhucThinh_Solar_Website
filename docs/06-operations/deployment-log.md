@@ -4,6 +4,44 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-10 — chuyển website sang Laravel 13 + Nuxt (f5aac548)
+
+- Commit/image: `f5aac548` / `pts-laravel13-backend:f5aac548-candidate`,
+  `pts-laravel13-nuxt:f5aac548-candidate`. Stack mới `pts-laravel13` (6 container).
+  Stack PHP cũ `phucthinhsolar` vẫn chạy nguyên để rollback.
+- Phạm vi: toàn bộ website. Caddy biên đưa `/api/v1/*`, `/admin*`, `/livewire*`,
+  `/upload/*`, `/thumbs/*`, `/sitemap.xml`, `/google-shopping.xml` sang Laravel;
+  mọi trang còn lại sang Nuxt.
+- Backup trước cutover: `/srv/phucthinhsolar/backups/20261110T034425Z-full`.
+  Caddyfile cũ giữ ở `/srv/phucthinhsolar/Caddyfile.pre-laravel-20261110T034425Z`.
+- Dữ liệu nhập lại từ bản PHP: 399 sản phẩm, 29 bài, 42 banner, 469 mục SEO.
+  Sau đó `migrate --force`, `pts:normalize-specs --apply` (còn 0 sản phẩm cần
+  chuẩn hóa), `cache:clear`, `settings.gtm_id = GTM-57TJSRVM`.
+- Sự cố 1 — site 503 từ 11:07 đến 11:12: `/srv/phucthinhsolar/Caddyfile` bị thay
+  bằng file khác inode, nên bind mount trong container vẫn giữ file cũ và
+  `caddy reload` chỉ nạp lại chính file cũ đó. Sửa bằng
+  `docker restart phucthinhsolar-proxy-1` để Docker gắn lại đúng file trên host.
+- Sự cố 2 — mail form liên hệ không gửi được: container `worker` chỉ nằm trên
+  mạng `data` (`internal: true`) nên không phân giải được tên máy chủ SMTP
+  (`getaddrinfo ... Temporary failure in name resolution`). Backend không lộ lỗi
+  này vì nó nằm cả trên `edge` và chỉ xếp mail vào hàng đợi. Sửa ở `e126fe41`:
+  worker thêm mạng `egress`, tạo lại container; mail đang chờ gửi xong lúc
+  11:21:29, `jobs=0 failed=0`.
+- Kiểm tra sau deploy: 469/469 URL trong sitemap trả 200; `/admin/login` 200 và
+  tài nguyên Filament 200; `POST livewire-*/update` trả 419 (đúng, thiếu CSRF);
+  `/google-shopping.xml` 170 sản phẩm; ảnh `/thumbs/*` 200; `www` 301 về
+  non-www; `zcrm` và `training` 200; trang chủ có `GTM-57TJSRVM`; chứng chỉ TLS
+  hạn 16/12/2026; log Laravel không có ERROR; cổng 18085 chỉ mở trên 127.0.0.1.
+- Một lead kiểm tra đã gửi qua form thật để xác minh đường mail — trái quy tắc
+  "không gửi lead thật khi test" trong `docs/16-laravel-migration/HANDOFF.md`.
+  Bản ghi lead và outbox đã xóa ngay sau khi xác minh, nhưng hộp thư nhận thông
+  báo của Admin có một email tiêu đề "Kiểm tra sau cutover 10/11".
+- Rollback: `cp /srv/phucthinhsolar/Caddyfile.pre-laravel-20261110T034425Z
+  /srv/phucthinhsolar/Caddyfile && docker restart phucthinhsolar-proxy-1`. Stack
+  PHP cũ và DB cũ còn nguyên; DB mới tách riêng nên không cần rollback dữ liệu.
+- Rủi ro còn lại: công cụ ước tính đang tắt (trang 404 đúng thiết kế, chủ website
+  bật trong Admin khi duyệt đơn giá); chưa có Consent Mode v2; đĩa VPS dùng 83%.
+
 ## 2026-11-07 — bản vá giao diện điện thoại (2d151211)
 
 - Commit/image: `2d151211` / `phucthinhsolar-web:2d151211971a`, `phucthinhsolar-nuxt:2d151211971a`. AUTO chọn FAST.

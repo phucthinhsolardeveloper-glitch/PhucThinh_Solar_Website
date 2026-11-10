@@ -195,8 +195,35 @@ Không thay route của training/ZCRM. Kiểm hostname và TLS qua proxy thật.
 - Sau cutover cần giám sát 5xx, log, form, checkout, callback, SEO/404, media
   và image ID đang chạy; giữ current + previous image/release và 1–2 backup đầy đủ.
 
-## Gate chưa đóng
+## Gate chưa đóng (trạng thái trước cutover)
 
 Chưa có staging runtime trên VPS, benchmark Apache/FPM/FrankenPHP, restore và
-rollback rehearsal qua Caddy thật. Không dùng file này để suy ra production đã
-đổi. Phải có chủ project duyệt rõ trước mọi thao tác production.
+rollback rehearsal qua Caddy thật. Phải có chủ project duyệt rõ trước mọi thao
+tác production.
+
+## Cutover thật 2026-11-10
+
+Production đã chạy `pts-laravel13` (`f5aac548-candidate`) từ 11:12 ngày
+2026-11-10. Chi tiết và bằng chứng: `docs/06-operations/deployment-log.md`.
+Hai cái bẫy đã gặp, lần sau tránh:
+
+- **Caddyfile bind mount theo inode.** `/srv/phucthinhsolar/Caddyfile` được gắn
+  vào `phucthinhsolar-proxy-1` dạng bind một file. Nếu thay file bằng cách tạo
+  file mới (đổi inode), container vẫn đọc file cũ, `docker cp` báo *device or
+  resource busy* và ghi thẳng vào container báo *read-only file system*; chỉ
+  `caddy reload` thì nạp lại đúng cấu hình cũ. Cách đúng: ghi đè **tại chỗ**
+  (`cat mới > /srv/phucthinhsolar/Caddyfile`) rồi `caddy reload`, hoặc
+  `docker restart phucthinhsolar-proxy-1` để Docker gắn lại file hiện tại. So
+  inode hai phía (`stat -c %i`) trước khi kết luận cấu hình đã vào.
+- **Mạng `data` là `internal: true`.** Container chỉ nằm trên mạng này không có
+  đường ra Internet, nên `worker` không gửi được mail (DNS hỏng với máy chủ
+  SMTP). `worker` nay nằm trên `data` + `egress`. Dịch vụ mới nào cần gọi ra
+  ngoài phải có một mạng không internal; `scheduler` thì không cần vì chỉ chạy
+  việc trong DB.
+
+Rollback (stack PHP cũ vẫn chạy):
+
+```bash
+cp /srv/phucthinhsolar/Caddyfile.pre-laravel-20261110T034425Z /srv/phucthinhsolar/Caddyfile
+docker restart phucthinhsolar-proxy-1
+```
