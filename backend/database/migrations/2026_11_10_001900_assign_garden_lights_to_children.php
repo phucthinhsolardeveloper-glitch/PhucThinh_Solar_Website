@@ -13,7 +13,7 @@ return new class extends Migration
             $lightingRootId = DB::table('categories')->whereNull('parent_id')->where('slug', 'den-nlmt')->value('id');
             $gardenId = $lightingRootId === null ? null : DB::table('categories')->where('parent_id', $lightingRootId)->where('slug', 'den-san-vuon')->value('id');
             if ($gardenId === null) {
-                throw new \RuntimeException('Không tìm thấy danh mục Đèn NLMT › Đèn Sân Vườn.');
+                throw new RuntimeException('Không tìm thấy danh mục Đèn NLMT › Đèn Sân Vườn.');
             }
 
             $children = DB::table('categories')->where('parent_id', $gardenId)
@@ -21,7 +21,7 @@ return new class extends Migration
                 ->pluck('id', 'slug');
             $required = ['den-tru-cong', 'den-treo-tuong', 'den-san-vuon-den-nam', 'den-cam-co'];
             if ($children->count() !== count($required)) {
-                throw new \RuntimeException('Thiếu một hoặc nhiều danh mục con của Đèn Sân Vườn.');
+                throw new RuntimeException('Thiếu một hoặc nhiều danh mục con của Đèn Sân Vườn.');
             }
 
             $beforeCount = DB::table('products')->where('category_id', $gardenId)->count();
@@ -40,7 +40,7 @@ return new class extends Migration
                 ->update(['category_id' => $children['den-san-vuon-den-nam'], 'updated_at' => now()]);
 
             if (array_sum($moved) !== $beforeCount || DB::table('products')->where('category_id', $gardenId)->exists()) {
-                throw new \RuntimeException('Không phân loại hết sản phẩm Đèn Sân Vườn; giao dịch đã được hoàn tác.');
+                throw new RuntimeException('Không phân loại hết sản phẩm Đèn Sân Vườn; giao dịch đã được hoàn tác.');
             }
 
             if ($beforeCount > 0) {
