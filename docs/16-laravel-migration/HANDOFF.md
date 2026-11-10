@@ -81,6 +81,17 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 | Nhập dữ liệu từ PHP | `app/Console/Commands/ImportLegacyCommand.php` (`pts:import-legacy`) |
 | Cấu hình toàn Admin | `app/Providers/AppServiceProvider.php`, `app/Providers/Filament/AdminPanelProvider.php` |
 
+## Mốc 2026-11-10 (candidate `f5aac548`)
+
+- Thông số sản phẩm có một cách viết (`App\Domain\Catalog\SpecFormat`), áp ở model saving, ô Admin (khi rời ô),
+  xem trước Excel (hai phía cùng chuẩn hóa nên xuất rồi nhập lại không báo đổi), import cũ và lệnh
+  `pts:normalize-specs`. **Không đổi tên dòng thông số**: trang sản phẩm ẩn/gộp dòng theo tên, đổi tên làm mất hoặc
+  nhân đôi dòng (đã đo).
+- Đo lường: `useDataLayer` (GA4), plugin `contact-clicks`, `lead-attribution` (localStorage 30 ngày, không cookie).
+  Không đưa tên/SĐT/email vào dataLayer. GTM id ở settings `gtm_id`, chỉ render trên phucthinhsolar.com.
+- Feed Merchant: `GET /google-shopping.xml` (cache 1 giờ), cùng điều kiện với CSV trong Admin.
+- Chưa làm, cần chủ website quyết: Consent Mode v2 / banner đồng ý, Enhanced Conversions (băm SĐT), lưu gclid vào đơn hàng.
+
 ## Việc tiếp theo
 
 Danh sách "Chưa làm" trong `STATUS.md` đã hết. Bố cục trang (Task 5) nằm ở `App\Domain\Pages\PageLayouts` (danh mục khối `PAGES`, khớp `frontend/shared/page-layout.ts`; thêm khối mới phải sửa cả hai). Việc tiếp theo là chuẩn bị chuyển hệ thống: khai tài khoản nhận chuyển khoản, kho gửi hàng, cân nặng sản phẩm, tài khoản sandbox Nhất Tín.

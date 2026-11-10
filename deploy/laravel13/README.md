@@ -90,6 +90,16 @@ Mốc `5f3e0ba8` (2026-11-10): thêm công cụ ước tính (tắt mặc địn
 (`docker-compose.sim.yml`) đạt: Nhất Tín 11/11 bước, VNPay thành công/báo 2 lần/thất bại/hủy, mail qua worker.
 Với giả lập bật, gate báo `checkout` có thêm VNPay: đúng như cấu hình, không phải lỗi.
 
+Mốc `f5aac548` (2026-11-10): so sánh sản phẩm, tìm kiếm từ đồng nghĩa, chuẩn hóa thông số, GTM từ Admin, sự kiện
+GA4, feed Merchant Center `/google-shopping.xml` (Caddy chuyển thẳng sang Laravel), migration `001600` (đặt sẵn
+`gtm_id = GTM-57TJSRVM` nếu chưa có). Trên DB candidate: `migrate`, rồi `pts:normalize-specs --apply` (344 sản phẩm,
+bảng thông số hiển thị trên trang không đổi dòng nào, chạy lại = 0). `verify-candidate.sh` đạt toàn bộ, `site-audit`
+0 lỗi. Thẻ GTM chỉ gắn khi host là phucthinhsolar.com, nên candidate/local không có thẻ.
+
+**Khi lên production (theo thứ tự, sau backup DB):** `php artisan migrate --force` → `php artisan pts:normalize-specs`
+(xem thử) → `php artisan pts:normalize-specs --apply` → `php artisan cache:clear`. Sau đó mở trang chủ xem nguồn có
+`GTM-57TJSRVM`, mở `/google-shopping.xml` (chỉ có sản phẩm đã có ảnh Shopping ≥ 500 px, có mã, có giá; 404 khi đang ẩn giá).
+
 ## Runtime và quyết định tạm thời
 
 `Caddy → Nuxt 4` cho trang public; `Caddy → Laravel 13/PHP 8.4 Apache` cho
