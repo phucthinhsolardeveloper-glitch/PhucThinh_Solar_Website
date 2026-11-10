@@ -152,7 +152,7 @@ const categoryNavItems = computed(() => {
     : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
 
   // The catalog applies this explicit lighting rail order after the Admin taxonomy query.
-  if (activeCategoryRoot.value?.slug !== 'den-nlmt' || selectedCategory.value?.children.length || selectedCategoryParent.value?.slug !== 'den-nlmt') return items
+  if (activeCategoryRoot.value?.slug !== 'den-nlmt' || (selectedCategory.value?.url !== activeCategoryRoot.value?.url && selectedCategoryParent.value?.slug !== 'den-nlmt')) return items
   return [...items].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000))
 })
 const categoryAllHref = computed(() => links.generic((selectedCategory.value?.children.length ? selectedCategory.value.url : selectedCategoryParent.value?.url ?? selectedCategory.value?.url) ?? '/san-pham/'))
@@ -193,6 +193,11 @@ const hasFilters = computed(() => {
 })
 const hasSidebar = computed(() => (siteData.value?.productCategoryTree?.length ?? 0) > 0 || hasFilters.value)
 const emptyFilters: NonNullable<PublicCatalogPayload['filters']> = { brands: [], priceRanges: [], subcategories: [], needs: [] }
+const displayFilters = computed(() => {
+  const filters = catalogData.value?.filters ?? emptyFilters
+  if (selectedCategory.value?.slug !== 'den-nlmt') return filters
+  return { ...filters, subcategories: [...filters.subcategories].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000)) }
+})
 const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds: [], priceKeys: [], subcategoryIds: [], sort: 'default', needKeys: [] }
 /*
  * Ẩn hai lựa chọn sắp xếp theo giá khi public_product_prices đang tắt -
@@ -358,7 +363,7 @@ function pageLink(nextPage: number) {
             id-prefix="catalog-filter-sidebar"
             :categories="sidebarCategories"
             :selected-category="selectedCategory?.url ?? ''"
-            :filters="catalogData?.filters ?? emptyFilters"
+            :filters="displayFilters"
             :selected="catalogData?.selected ?? emptySelected"
             :keyword="keyword"
             :subcategory-title="subcategoryTitle"
@@ -547,7 +552,7 @@ function pageLink(nextPage: number) {
               id-prefix="catalog-filter-drawer"
               :categories="sidebarCategories"
               :selected-category="selectedCategory?.url ?? ''"
-              :filters="catalogData?.filters ?? emptyFilters"
+              :filters="displayFilters"
               :selected="catalogData?.selected ?? emptySelected"
               :keyword="keyword"
               :subcategory-title="subcategoryTitle"
