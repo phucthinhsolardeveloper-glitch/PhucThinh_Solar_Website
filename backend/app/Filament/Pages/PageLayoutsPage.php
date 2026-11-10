@@ -84,7 +84,8 @@ class PageLayoutsPage extends Page
                     Hidden::make('type'),
                     Toggle::make('visible')->label('Hiện trên trang')
                         ->disabled(fn ($get) => ! empty($sections[$get('type')]['required']))
-                        ->helperText(fn ($get) => ! empty($sections[$get('type')]['required']) ? 'Khối mở đầu: luôn hiện và luôn ở đầu trang.' : null),
+                        ->helperText(fn ($get) => ! empty($sections[$get('type')]['required']) ? 'Khối mở đầu: luôn hiện và luôn ở đầu trang.'
+                            : ($this->page === 'about' && $get('type') === 'history' ? 'Mốc lịch sử hiện do giao diện mới hiển thị; công tắc này chỉ bật hoặc tắt cả khối.' : null)),
                     Select::make('variant')->label('Kiểu hiển thị')->selectablePlaceholder(false)
                         ->options(fn ($get) => $sections[$get('type')]['variants'] ?? [])
                         ->visible(fn ($get) => count($sections[$get('type')]['variants'] ?? []) > 1),

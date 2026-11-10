@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->authGuard('admin')
+            ->resourceEditPageRedirect('index')
             ->brandName('Phúc Thịnh Solar')
             ->brandLogo('/thumbs/480x67x3/upload/photo/logo-phucthinh-solar-wordmark-2026.png')
             ->brandLogoHeight('1.75rem')

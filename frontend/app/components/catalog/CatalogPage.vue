@@ -109,8 +109,19 @@ function findCategory(nodes: PublicProductCategoryNode[], chain: string): Public
   }
   return null
 }
+function findCategoryParent(nodes: PublicProductCategoryNode[], url: string): PublicProductCategoryNode | null {
+  for (const node of nodes) {
+    if (node.children.some((child) => child.url === url)) return node
+    const parent = findCategoryParent(node.children, url)
+    if (parent) return parent
+  }
+  return null
+}
 
 const selectedCategory = computed(() => findCategory(siteData.value?.productCategoryTree ?? [], category.value))
+const selectedCategoryParent = computed(() => selectedCategory.value
+  ? findCategoryParent(siteData.value?.productCategoryTree ?? [], selectedCategory.value.url)
+  : null)
 if (import.meta.server && props.categoryPath && siteData.value && !selectedCategory.value) {
   setResponseStatus(404, 'Not Found')
 }
@@ -124,8 +135,7 @@ if (import.meta.server && publicEnabled.value && (siteError.value || catalogErro
 const activeCategoryRoot = computed(() => {
   const tree = siteData.value?.productCategoryTree ?? []
   if (!selectedCategory.value) return null
-  return tree.find((node) => node.url === selectedCategory.value?.url)
-    ?? tree.find((node) => node.children.some((child) => child.url === selectedCategory.value?.url))
+  return tree.find((node) => node.url === selectedCategory.value?.url || findCategory([node], category.value) !== null) ?? null
 })
 const lightingRailOrder: Record<string, number> = {
   'den-pha-nang-luong-mat-troi': 10,
@@ -138,14 +148,15 @@ const lightingRailOrder: Record<string, number> = {
 }
 const categoryNavItems = computed(() => {
   const items = selectedCategory.value
-    ? activeCategoryRoot.value?.children ?? []
+    ? selectedCategory.value.children.length ? selectedCategory.value.children : selectedCategoryParent.value?.children ?? []
     : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
 
   // The catalog applies this explicit lighting rail order after the Admin taxonomy query.
-  if (activeCategoryRoot.value?.slug !== 'den-nlmt') return items
+  if (activeCategoryRoot.value?.slug !== 'den-nlmt' || selectedCategory.value?.children.length || selectedCategoryParent.value?.slug !== 'den-nlmt') return items
   return [...items].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000))
 })
-const categoryAllHref = computed(() => links.generic(activeCategoryRoot.value?.url ?? '/san-pham/'))
+const categoryAllHref = computed(() => links.generic((selectedCategory.value?.children.length ? selectedCategory.value.url : selectedCategoryParent.value?.url ?? selectedCategory.value?.url) ?? '/san-pham/'))
+const categoryAllActive = computed(() => !selectedCategory.value || selectedCategory.value.url === categoryAllHref.value)
 const sidebarCategories = computed(() => selectedCategory.value
   ? []
   : (siteData.value?.productCategoryTree ?? []).map((node) => ({ ...node, children: [] })))
@@ -318,8 +329,8 @@ function pageLink(nextPage: number) {
         <NuxtLink
           :to="categoryAllHref"
           class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden m-lg"
-          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
-          :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
+          :class="categoryAllActive ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
+          :aria-current="categoryAllActive ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
           <span class="min-w-0 whitespace-normal [overflow-wrap:anywhere] max-[769px]:line-clamp-2">Tất cả</span>

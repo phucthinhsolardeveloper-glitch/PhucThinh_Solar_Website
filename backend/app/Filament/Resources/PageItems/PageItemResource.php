@@ -50,7 +50,7 @@ class PageItemResource extends Resource
         'home.about' => ['Trang chủ · Giới thiệu ngắn', ['title', 'summary', 'body', 'image', 'link']],
         'home.about_points' => ['Trang chủ · Điểm nổi bật giới thiệu', ['title', 'summary', 'image']],
         'home.energy_chain' => ['Trang chủ · Chuỗi năng lượng', ['title', 'subtitle', 'summary', 'figure', 'image']],
-        'about.history' => ['Giới thiệu · Lịch sử', ['title', 'body', 'image']],
+        'about.history' => ['Giới thiệu · Nội dung mở đầu (mốc lịch sử dùng giao diện riêng)', ['title', 'body', 'image']],
         'about.compass' => ['Giới thiệu · Sứ mệnh, tầm nhìn', ['title', 'body', 'image']],
         'about.reasons' => ['Giới thiệu · Lý do chọn chúng tôi', ['title', 'summary', 'image']],
         'about.principles' => ['Giới thiệu · Nguyên tắc', ['title', 'summary', 'image']],
@@ -107,7 +107,7 @@ class PageItemResource extends Resource
             Textarea::make('summary')->label(self::FIELD_LABELS['summary'])->rows(3)->columnSpanFull()->visible(self::shows('summary')),
             Fields::rich('body', self::FIELD_LABELS['body'])->columnSpanFull()->visible(self::shows('body')),
             Fields::image('image', 'news')->visible(self::shows('image')),
-            Fields::visible(),
+            Fields::visible('Bật dữ liệu')->helperText('Bật để trang có thể lấy dòng này. Dấu bật không xác nhận nội dung đang xuất hiện trên giao diện.'),
             Fields::sort(),
         ]);
     }
@@ -121,7 +121,8 @@ class PageItemResource extends Resource
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(36),
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(60)->placeholder('—'),
                 TextColumn::make('section')->label('Phần')->formatStateUsing(fn ($state) => self::sectionOptions()[$state] ?? $state)->toggleable(),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                IconColumn::make('is_visible')->label('Bật dữ liệu')->boolean()
+                    ->tooltip('Chỉ cho biết dòng dữ liệu được bật. Nội dung lên trang còn phụ thuộc bố cục và cách trang sử dụng dữ liệu.'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->groups([Group::make('section')->label('Phần')->getTitleFromRecordUsing(fn (PageItem $record) => self::sectionOptions()[$record->section] ?? $record->section)])
