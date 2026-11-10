@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Domain\Audit\Audit;
 use App\Domain\Catalog\Listing\SearchSynonyms;
 use App\Domain\Commerce\VietQr;
+use App\Domain\Site\SocialNetworks;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
@@ -45,9 +46,15 @@ class SiteSettingsPage extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    /** Keys this page edits; anything else in the table is left alone. */
-    public const TEXT_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours', 'fanpage', 'youtube',
+    /** Keys this page edits besides the social ones; anything else in the table is left alone. */
+    private const OWN_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours',
         'gtm_id', 'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
+
+    /** @return list<string> */
+    public static function textKeys(): array
+    {
+        return [...self::OWN_KEYS, ...SocialNetworks::keys()];
+    }
 
     /** Only the owner may change where customers send money. */
     public const OWNER_KEYS = ['bank_bin', 'bank_account_no', 'bank_account_name'];
@@ -75,7 +82,7 @@ class SiteSettingsPage extends Page
     {
         $values = DB::table('settings')->pluck('value', 'key')->map(fn ($value) => json_decode((string) $value, true));
         $data = [];
-        foreach (self::TEXT_KEYS as $key) {
+        foreach (self::textKeys() as $key) {
             $data[$key] = is_scalar($values[$key] ?? null) ? (string) $values[$key] : '';
         }
         foreach (self::SWITCH_KEYS as $key) {
@@ -102,14 +109,22 @@ class SiteSettingsPage extends Page
                 TextInput::make('phone')->label('Điện thoại')->tel(),
                 TextInput::make('zalo')->label('Số Zalo')->tel(),
             ]),
-            Section::make('Mạng xã hội')->columns(2)->schema([
-                TextInput::make('fanpage')->label('Facebook')->url(),
-                TextInput::make('youtube')->label('YouTube')->url(),
-            ]),
+            Section::make('Mạng xã hội')->columns(2)
+                ->description('Điền trang nào thì chân trang hiện đúng biểu tượng của trang đó; để trống là ẩn. Các địa chỉ này cũng được khai báo cho Google là tài khoản chính thức của công ty.')
+                ->schema(array_map(
+                    fn (array $network, string $key) => TextInput::make($key)->label($network[0])->url()
+                        ->placeholder($network[2])->maxLength(300),
+                    SocialNetworks::NETWORKS,
+                    SocialNetworks::keys(),
+                )),
             Section::make('Tài khoản nhận chuyển khoản')->columns(3)->visible(fn () => self::isOwner())
                 ->description('Khách chọn chuyển khoản sẽ thấy mã VietQR theo tài khoản này, kèm số tiền và nội dung riêng cho từng đơn. Để trống thì không nhận chuyển khoản.')
                 ->schema([
-                    Select::make('bank_bin')->label('Ngân hàng')->searchable()->options(VietQr::BANKS),
+                    // allowHtml: the option draws the bank's badge, so a long list is scannable by colour.
+                    Select::make('bank_bin')->label('Ngân hàng')->searchable()->native(false)->allowHtml()
+                        ->options(VietQr::options())
+                        ->getSearchResultsUsing(fn (string $search) => VietQr::options($search))
+                        ->getOptionLabelUsing(fn (?string $value) => VietQr::options()[$value] ?? null),
                     TextInput::make('bank_account_no')->label('Số tài khoản')->regex('/^[0-9A-Za-z ]{4,23}$/'),
                     TextInput::make('bank_account_name')->label('Tên chủ tài khoản')->maxLength(60)->helperText('Viết như trên thẻ ngân hàng, không dấu cũng được.'),
                 ]),
@@ -156,7 +171,7 @@ class SiteSettingsPage extends Page
         $now = now();
         $before = DB::table('settings')->pluck('value', 'key')->map(fn ($v) => json_decode((string) $v, true))->all();
         $after = [];
-        foreach (self::TEXT_KEYS as $key) {
+        foreach (self::textKeys() as $key) {
             $after[$key] = (string) ($data[$key] ?? '');
         }
         if (! self::isOwner()) {

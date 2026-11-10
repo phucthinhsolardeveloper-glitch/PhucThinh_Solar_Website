@@ -44,6 +44,9 @@ export interface PublicOrderThanksPayload {
 }
 export interface PublicOrderTransfer {
   bankName: string
+  /** Letters and colour of the bank badge drawn on the page; no logo is fetched from anyone. */
+  bankShort: string
+  bankColor: string
   accountNo: string
   accountName: string
   amount: number
@@ -91,7 +94,7 @@ export function isPublicCheckoutNoticePayload(value: unknown): value is PublicCh
     && ['city', 'ward', 'payments'].every((key) => form[key] === undefined || /^-?\d{1,12}$/.test(form[key] as string))
 }
 function isOrderTransfer(value: unknown): value is PublicOrderTransfer {
-  return record(value) && text(value.bankName) && typeof value.accountNo === 'string' && /^[0-9A-Za-z]{4,19}$/.test(value.accountNo)
+  return record(value) && text(value.bankName) && text(value.bankShort, true) && /^#[0-9a-f]{6}$/i.test(String(value.bankColor)) && typeof value.accountNo === 'string' && /^[0-9A-Za-z]{4,19}$/.test(value.accountNo)
     && text(value.accountName) && typeof value.amount === 'number' && Number.isSafeInteger(value.amount) && value.amount > 0
     && typeof value.note === 'string' && /^[A-Z0-9]{4,25}$/.test(value.note)
     && typeof value.qrImage === 'string' && value.qrImage.startsWith('data:image/svg+xml;base64,') && value.qrImage.length < 200000

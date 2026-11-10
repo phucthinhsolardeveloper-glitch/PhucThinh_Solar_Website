@@ -7,7 +7,10 @@ export interface PublicCatalogItem { label: string; href: string; children: Publ
 export interface PublicCatalogGroup { label: string; href: string; items: PublicCatalogItem[] }
 export interface PublicFooterPolicy { label: string; href: string }
 export interface PublicFooterLocation { name: string; address: string; mapUrl: string }
-export interface PublicSocialLink { label: string; href: string }
+export const PUBLIC_SOCIAL_KINDS = ['facebook', 'youtube', 'tiktok', 'zalo', 'instagram', 'shopee', 'lazada', 'tiki',
+  'threads', 'linkedin', 'x', 'telegram', 'whatsapp', 'pinterest'] as const
+export type PublicSocialKind = typeof PUBLIC_SOCIAL_KINDS[number]
+export interface PublicSocialLink { label: string; href: string; kind: PublicSocialKind }
 export interface PublicTrustBadge { image: string; href: string }
 
 export interface PublicSitePayload {
@@ -51,7 +54,7 @@ function isCatalogGroup(value: unknown): value is PublicCatalogGroup {
 }
 function isFooter(value: unknown): value is NonNullable<PublicSitePayload['footer']> {
   if (!isRecord(value) || !isText(value.companyName, true) || !isPublicSanitizedRichText(value.contactText) || !Array.isArray(value.policies) || !Array.isArray(value.locations) || !Array.isArray(value.socialLinks)) return false
-  if (!value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) || !value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) || !value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href))) return false
+  if (!value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) || !value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) || !value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href) && PUBLIC_SOCIAL_KINDS.includes(row.kind as PublicSocialKind))) return false
   return value.trustBadge === undefined || isRecord(value.trustBadge) && isSafeUrl(value.trustBadge.image) && isSafeUrl(value.trustBadge.href)
 }
 

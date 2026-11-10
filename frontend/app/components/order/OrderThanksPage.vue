@@ -120,7 +120,18 @@ watch([payload, token], trackOrderConversion)
           <div>
             <h2 id="transfer-title" class="m-0 text-lg font-bold text-navy-900">Thông tin chuyển khoản</h2>
             <dl class="m-0 mt-3 grid gap-2.5 text-sm">
-              <div class="flex flex-wrap items-center justify-between gap-2"><dt class="text-slate-500">Ngân hàng</dt><dd class="m-0 font-semibold text-navy-900">{{ transfer.bankName }}</dd></div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <dt class="text-slate-500">Ngân hàng</dt>
+                <dd class="m-0 flex items-center gap-2 font-semibold text-navy-900">
+                  <span
+                    v-if="transfer.bankShort"
+                    class="inline-flex h-6 w-11 shrink-0 items-center justify-center rounded-md text-[10px] font-bold tracking-wide text-white"
+                    :style="{ background: transfer.bankColor }"
+                    aria-hidden="true"
+                  >{{ transfer.bankShort }}</span>
+                  {{ transfer.bankName }}
+                </dd>
+              </div>
               <div class="flex flex-wrap items-center justify-between gap-2"><dt class="text-slate-500">Chủ tài khoản</dt><dd class="m-0 font-semibold text-navy-900">{{ transfer.accountName }}</dd></div>
               <div v-for="row in [
                 { key: 'account', label: 'Số tài khoản', value: transfer.accountNo, shown: transfer.accountNo },

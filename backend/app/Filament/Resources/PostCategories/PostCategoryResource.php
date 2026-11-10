@@ -66,7 +66,14 @@ class PostCategoryResource extends Resource
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('kind')->label('Dùng cho')->options(self::KINDS)])
-            ->recordActions([EditAction::make(), DeleteAction::make()->hidden(fn (PostCategory $record) => $record->posts()->exists())]);
+            // Delete stays on every row, greyed out when the group still holds posts: hiding it made the
+            // buttons sit at a different place on each row, and the reason it cannot be used was invisible.
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make()
+                    ->disabled(fn (PostCategory $record) => $record->posts()->exists())
+                    ->tooltip(fn (PostCategory $record) => $record->posts()->exists() ? 'Nhóm còn bài viết nên chưa xóa được' : null),
+            ]);
     }
 
     public static function getPages(): array

@@ -345,7 +345,11 @@ class Shop
     /** @return array<string, mixed> what the thank-you page shows to pay by transfer */
     private static function transfer(object $instruction, bool $reported): array
     {
-        return ['bankName' => (string) $instruction->bank_name, 'accountNo' => (string) $instruction->account_no, 'accountName' => (string) $instruction->account_name,
+        // The badge travels with the instruction so the page can show which bank without loading a logo.
+        $badge = VietQr::badge((string) $instruction->bank_bin) ?? ['short' => '', 'color' => '#09285e'];
+
+        return ['bankName' => (string) $instruction->bank_name, 'bankShort' => $badge['short'], 'bankColor' => $badge['color'],
+            'accountNo' => (string) $instruction->account_no, 'accountName' => (string) $instruction->account_name,
             'amount' => (int) $instruction->amount, 'note' => (string) $instruction->reference, 'qrImage' => VietQr::svg((string) $instruction->qr_text),
             'reported' => $reported];
     }

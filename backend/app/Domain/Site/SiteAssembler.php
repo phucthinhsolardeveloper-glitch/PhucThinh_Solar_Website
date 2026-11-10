@@ -254,11 +254,13 @@ class SiteAssembler
                 $locations[] = ['name' => $name, 'address' => $address, 'mapUrl' => self::url($row->map_url)];
             }
         }
+        // Only the accounts the owner filled in are shown, in the order SocialNetworks lists them.
+        // `kind` travels with the link so the footer picks an icon by identity, not by sniffing the URL.
         $social = [];
-        foreach (['fanpage' => 'Facebook', 'youtube' => 'YouTube'] as $key => $label) {
+        foreach (SocialNetworks::NETWORKS as $key => [$label, $kind]) {
             $href = self::url($options[$key] ?? '');
             if ($href !== '') {
-                $social[] = ['label' => $label, 'href' => $href];
+                $social[] = ['label' => $label, 'href' => $href, 'kind' => $kind];
             }
         }
         // The contact cards show the hotlines, so tel: links and the tax-code line are taken out of the CMS text.

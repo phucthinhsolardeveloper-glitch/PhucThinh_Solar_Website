@@ -11,7 +11,7 @@ final class BankTransfer
 {
     public function __construct(private readonly SiteSettings $settings) {}
 
-    /** @return array{bin: string, bank: string, account_no: string, account_name: string}|null */
+    /** @return array{bin: string, bank: string, short: string, color: string, account_no: string, account_name: string}|null */
     public function account(): ?array
     {
         $bin = trim((string) $this->settings->get('bank_bin', ''));
@@ -21,7 +21,8 @@ final class BankTransfer
             return null;
         }
 
-        return ['bin' => $bin, 'bank' => VietQr::BANKS[$bin], 'account_no' => $no, 'account_name' => mb_strtoupper(Str::ascii($name))];
+        return ['bin' => $bin, 'bank' => VietQr::BANKS[$bin][0], 'short' => VietQr::BANKS[$bin][1], 'color' => VietQr::BANKS[$bin][2],
+            'account_no' => $no, 'account_name' => mb_strtoupper(Str::ascii($name))];
     }
 
     public function ready(): bool

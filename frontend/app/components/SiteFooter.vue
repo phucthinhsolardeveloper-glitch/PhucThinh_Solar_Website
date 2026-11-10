@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { sentenceCase } from '~/utils/sentenceCase'
-import type { PublicSitePayload } from '#shared/contracts/public-site'
+import type { PublicSitePayload, PublicSocialKind } from '#shared/contracts/public-site'
 import SiteFloatingContact from '~/components/SiteFloatingContact.vue'
 
 const props = defineProps<{
@@ -35,11 +35,27 @@ watch(footerLogo, () => {
 function trustBadgeSrc(src: string): string {
   return CMS_UPLOAD_PHOTO.test(src) ? thumbUrl(src, 400, 152, 3) : src
 }
-function socialKind(label: string, href: string): 'facebook' | 'youtube' | 'other' {
-  const value = `${label} ${href}`.toLocaleLowerCase('en')
-  if (value.includes('facebook') || value.includes('fb.com')) return 'facebook'
-  if (value.includes('youtube') || value.includes('youtu.be')) return 'youtube'
-  return 'other'
+// Written out so the icon bundler sees every name it must ship; a computed string would not be scanned.
+// Lazada and Tiki have no brand glyph in the icon set, so they borrow a neutral storefront mark.
+const SOCIAL_ICONS: Record<PublicSocialKind, string> = {
+  facebook: 'i-simple-icons-facebook',
+  youtube: 'i-simple-icons-youtube',
+  tiktok: 'i-simple-icons-tiktok',
+  zalo: 'i-simple-icons-zalo',
+  instagram: 'i-simple-icons-instagram',
+  shopee: 'i-simple-icons-shopee',
+  lazada: 'i-lucide-store',
+  tiki: 'i-lucide-store',
+  threads: 'i-simple-icons-threads',
+  linkedin: 'i-simple-icons-linkedin',
+  x: 'i-simple-icons-x',
+  telegram: 'i-simple-icons-telegram',
+  whatsapp: 'i-simple-icons-whatsapp',
+  pinterest: 'i-simple-icons-pinterest',
+}
+
+function socialIcon(kind: PublicSocialKind): string {
+  return SOCIAL_ICONS[kind] ?? 'i-lucide-share-2'
 }
 const footer = computed(() => props.site.footer)
 const { generic: footerHref, external: isExternalLink } = usePublicLinks()
@@ -191,13 +207,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg v-if="socialKind(social.label, social.href) === 'facebook'" class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.019 4.388 11.022 10.125 11.927v-8.432H7.078v-3.495h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.49 0-1.956.931-1.956 1.886v2.268h3.328l-.532 3.495h-2.796V24C19.612 23.095 24 18.092 24 12.073Z" />
-              </svg>
-              <svg v-else-if="socialKind(social.label, social.href) === 'youtube'" class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.51A3.02 3.02 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14c1.87.51 9.38.51 9.38.51s7.51 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.55 15.62V8.38L15.82 12l-6.27 3.62Z" />
-              </svg>
-              <UIcon v-else name="i-lucide-share-2" class="size-5" aria-hidden="true" />
+              <UIcon :name="socialIcon(social.kind)" class="size-6" aria-hidden="true" />
             </a>
           </li>
         </ul>

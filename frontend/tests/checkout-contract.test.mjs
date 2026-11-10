@@ -32,7 +32,7 @@ test('validates wards and session-bound thank-you DTO', () => {
 
 test('bank transfer orders carry a fixed VietQR instruction', () => {
   const base = { schemaVersion: 1, locale: 'vi', order: { code: 'ABC123', customerName: 'Khách', totalPrice: 1030000 }, conversionPending: true }
-  const transfer = { bankName: 'VietinBank', accountNo: '113366668888', accountName: 'TAI KHOAN THU NGHIEM', amount: 1030000, note: 'PTSABC123', qrImage: 'data:image/svg+xml;base64,PHN2Zz4=', reported: false }
+  const transfer = { bankName: 'VietinBank', bankShort: 'CTG', bankColor: '#004A94', accountNo: '113366668888', accountName: 'TAI KHOAN THU NGHIEM', amount: 1030000, note: 'PTSABC123', qrImage: 'data:image/svg+xml;base64,PHN2Zz4=', reported: false }
   assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer', transfer }), true)
   assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer' }), false)
   assert.equal(isPublicOrderThanksPayload({ ...base, paymentState: 'awaiting_transfer', transfer: { ...transfer, qrImage: 'https://evil.test/qr.png' } }), false)

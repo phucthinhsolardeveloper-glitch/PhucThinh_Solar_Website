@@ -44,7 +44,7 @@ test('accepts the published navigation and footer projection', () => {
       companyName: 'Thông tin doanh nghiệp', contactText: footerRichText,
       policies: [{ label: 'Chính sách', href: '/ho-tro/chinh-sach/' }],
       locations: [{ name: 'Trụ sở', address: 'Gia Lai', mapUrl: 'https://maps.example.test/' }],
-      socialLinks: [{ label: 'Facebook', href: 'https://facebook.com/example' }],
+      socialLinks: [{ label: 'Facebook', href: 'https://facebook.com/example', kind: 'facebook' }],
       trustBadge: { image: '/upload/photo/bct.webp', href: 'https://online.gov.vn/Home/WebDetails/123' },
     },
   }), true)
@@ -53,6 +53,8 @@ test('accepts the published navigation and footer projection', () => {
 test('rejects unsafe URLs in optional CMS fields', () => {
   assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, logo: 'javascript:alert(1)' } }), false)
   assert.equal(isPublicSitePayload({ ...good, footer: { companyName: '', contactText: '', policies: [], locations: [], socialLinks: [], trustBadge: { image: '/upload/photo/bct.webp', href: 'javascript:alert(1)' } } }), false)
+  // An unknown network would render no icon at all, so the payload is rejected before it reaches the footer.
+  assert.equal(isPublicSitePayload({ ...good, footer: { companyName: '', contactText: footerRichText, policies: [], locations: [], socialLinks: [{ label: 'Mạng mới', href: 'https://example.com', kind: 'myspace' }] } }), false)
   assert.equal(isPublicSitePayload({ ...good, navigation: [{ label: 'X', href: '//evil.example/' }] }), false)
   assert.equal(isPublicSitePayload({ ...good, footer: { companyName: '', contactText: '', policies: [], locations: [{ name: 'X', address: 'Y', mapUrl: 'data:text/html,x' }], socialLinks: [] } }), false)
 })

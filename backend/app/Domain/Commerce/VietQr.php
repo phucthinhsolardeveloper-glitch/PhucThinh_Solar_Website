@@ -12,15 +12,80 @@ use chillerlan\QRCode\QROptions;
  */
 final class VietQr
 {
-    /** Bank identification numbers of common Vietnamese banks (NAPAS BIN => short name). */
+    /**
+     * Banks that can receive a VietQR transfer (NAPAS BIN => [name, badge letters, badge colour]).
+     *
+     * The badge is drawn by us — letters on a colour close to the bank's own — so Admin and the
+     * checkout page can tell banks apart at a glance without loading a logo from anyone's server.
+     * It is a signpost, not the bank's trademark, and nothing here is sent to a bank.
+     */
     public const BANKS = [
-        '970436' => 'Vietcombank', '970415' => 'VietinBank', '970418' => 'BIDV', '970405' => 'Agribank', '970407' => 'Techcombank',
-        '970422' => 'MB Bank', '970416' => 'ACB', '970432' => 'VPBank', '970403' => 'Sacombank', '970423' => 'TPBank',
-        '970441' => 'VIB', '970443' => 'SHB', '970437' => 'HDBank', '970448' => 'OCB', '970426' => 'MSB',
-        '970440' => 'SeABank', '970431' => 'Eximbank', '970449' => 'LPBank', '970428' => 'Nam A Bank', '970425' => 'ABBANK',
-        '970409' => 'Bac A Bank', '970412' => 'PVcomBank', '970452' => 'KienlongBank', '970419' => 'NCB', '970427' => 'VietABank',
-        '970438' => 'BaoViet Bank', '970400' => 'Saigonbank', '970430' => 'PG Bank', '970433' => 'Vietbank', '970429' => 'SCB',
+        '970436' => ['Vietcombank', 'VCB', '#0F7A3D'],
+        '970415' => ['VietinBank', 'CTG', '#004A94'],
+        '970418' => ['BIDV', 'BIDV', '#006A4E'],
+        '970405' => ['Agribank', 'AGR', '#9E1B32'],
+        '970407' => ['Techcombank', 'TCB', '#E4002B'],
+        '970422' => ['MB Bank', 'MB', '#1F4E9C'],
+        '970416' => ['ACB', 'ACB', '#004B8D'],
+        '970432' => ['VPBank', 'VPB', '#00A562'],
+        '970403' => ['Sacombank', 'STB', '#0066B3'],
+        '970423' => ['TPBank', 'TPB', '#5B2A86'],
+        '970441' => ['VIB', 'VIB', '#0057A8'],
+        '970443' => ['SHB', 'SHB', '#1B4F9C'],
+        '970437' => ['HDBank', 'HDB', '#ED1C24'],
+        '970448' => ['OCB', 'OCB', '#008C44'],
+        '970426' => ['MSB', 'MSB', '#D71920'],
+        '970440' => ['SeABank', 'SEA', '#B01F24'],
+        '970431' => ['Eximbank', 'EIB', '#1B4FA0'],
+        '970449' => ['LPBank', 'LPB', '#8E1B3A'],
+        '970428' => ['Nam A Bank', 'NAB', '#0072BC'],
+        '970425' => ['ABBANK', 'ABB', '#0057A4'],
+        '970409' => ['Bac A Bank', 'BAB', '#0B6E4F'],
+        '970412' => ['PVcomBank', 'PVC', '#C8102E'],
+        '970452' => ['KienlongBank', 'KLB', '#0E6EB8'],
+        '970419' => ['NCB', 'NCB', '#1C4E9D'],
+        '970427' => ['VietABank', 'VAB', '#0F6FB7'],
+        '970438' => ['BaoViet Bank', 'BVB', '#0C5AA6'],
+        '970400' => ['Saigonbank', 'SGB', '#1A7A3C'],
+        '970430' => ['PG Bank', 'PGB', '#B8860B'],
+        '970433' => ['Vietbank', 'VBB', '#0E7AC2'],
+        '970429' => ['SCB', 'SCB', '#0A3D91'],
     ];
+
+    /**
+     * The badge of one bank: letters and colour, or null when the BIN is unknown.
+     *
+     * @return array{short: string, color: string}|null
+     */
+    public static function badge(string $bin): ?array
+    {
+        return isset(self::BANKS[$bin]) ? ['short' => self::BANKS[$bin][1], 'color' => self::BANKS[$bin][2]] : null;
+    }
+
+    /**
+     * Picker options, BIN => a row with the badge beside the name.
+     *
+     * The styling is inline on purpose: Admin's stylesheet is built ahead of time and never sees
+     * these strings, so utility classes would not exist and the badge would come out as bare text.
+     *
+     * @return array<string, string>
+     */
+    public static function options(string $search = ''): array
+    {
+        $search = trim(mb_strtolower($search));
+        $options = [];
+        foreach (self::BANKS as $bin => [$name, $short, $color]) {
+            if ($search !== '' && ! str_contains(mb_strtolower($name.' '.$short.' '.$bin), $search)) {
+                continue;
+            }
+            $options[$bin] = '<span style="display:inline-flex;align-items:center;gap:.5rem;line-height:1.5">'
+                .'<span style="display:inline-flex;flex:none;align-items:center;justify-content:center;width:2.75rem;height:1.5rem;'
+                .'border-radius:.375rem;font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:'.$color.'">'
+                .e($short).'</span><span>'.e($name).'</span></span>';
+        }
+
+        return $options;
+    }
 
     public static function payload(string $bin, string $account, int $amount, string $note): string
     {
