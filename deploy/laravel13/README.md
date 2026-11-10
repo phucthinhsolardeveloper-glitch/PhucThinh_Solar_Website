@@ -1,6 +1,20 @@
-# Ứng viên triển khai Laravel 13 — chỉ dùng cho rehearsal
+# Triển khai Laravel 13 — rehearsal, staging và production
 
-Trạng thái 2026-11-09: **chưa triển khai production**. Compose ở đây tạo project
+## Trạng thái hiện tại — 2026-11-10
+
+Production đang chạy release `d2c529e0` (Laravel 13 + Nuxt) sau khi chủ website
+cho phép triển khai. Chi tiết, checksum, migration, kiểm tra và rollback point ở
+[`docs/06-operations/deployment-log.md`](../../docs/06-operations/deployment-log.md).
+Các mốc candidate bên dưới là lịch sử. Compose candidate dành cho DB cô lập;
+production dùng thêm `docker-compose.production.yml` và image đã kiểm, không chép
+compose candidate đè lên stack VPS.
+
+Release gần nhất áp migration `001700`–`001900`; 68 đèn sân vườn nằm dưới
+`Đèn NLMT › Đèn Sân Vườn` theo nhóm trụ cổng/treo tường/đèn nấm/cắm cỏ. Trước
+mỗi lần deploy tiếp theo cần backup mới, kiểm SHA-256 image archive, giữ image
+đang chạy để rollback và chỉ khởi động lại service thuộc `pts-laravel13`.
+
+Trạng thái tại 2026-11-09: **chưa triển khai production**. Compose ở đây tạo project
 `pts_laravel13_candidate` riêng, chỉ mở Caddy ở `127.0.0.1:18085`. DB và upload
 riêng; không thay Caddy, container, volume của website đang chạy, training hoặc ZCRM.
 Không chạy `down -v`.
@@ -194,7 +208,7 @@ Không thay route của training/ZCRM. Kiểm hostname và TLS qua proxy thật.
 - Sau cutover cần giám sát 5xx, log, form, checkout, callback, SEO/404, media
   và image ID đang chạy; giữ current + previous image/release và 1–2 backup đầy đủ.
 
-## Gate chưa đóng (trạng thái trước cutover)
+## Gate chưa đóng trước cutover ngày 2026-11-10 (lịch sử)
 
 Chưa có staging runtime trên VPS, benchmark Apache/FPM/FrankenPHP, restore và
 rollback rehearsal qua Caddy thật. Phải có chủ project duyệt rõ trước mọi thao
@@ -267,3 +281,25 @@ Chạy tay: `systemctl start pts-laravel13-backup.service` hoặc
 
 **Chưa có bản sao ngoài VPS.** Script in cảnh báo mỗi lần chạy; muốn bỏ cảnh báo
 thì đặt `/usr/local/sbin/pts-backup-offsite` như stack cũ từng dự tính.
+
+## Incremental release 2026-11-10 — d2c529e0
+
+- Exact backend/Nuxt images were built locally, verified on the isolated
+  production-data candidate, and loaded from the checksummed archive recorded in
+  the deployment log. Production `stack.env` was saved first at
+  `/srv/pts-laravel13/releases/rollback-d2c529e0/stack.env.before`.
+- Full backup before migration:
+  `/srv/pts-laravel13/backups/20261110T085016Z-full` (all checksums passed).
+- Migrations `2026_11_10_001700`, `001800` and `001900` completed. Product count
+  remained 399; orphan count 0; 68 garden lights moved to four child groups. Old
+  category paths return 301, new paths and representative PDP URLs return 200.
+- Current images are `pts-laravel13-backend:d2c529e0-candidate` and
+  `pts-laravel13-nuxt:d2c529e0-candidate`. Rollback images remain
+  `f5aac548-candidate`; restore the saved environment file and recreate only
+  backend, Nuxt, worker and scheduler. Keep the migrated DB unless a reviewed
+  data recovery plan says otherwise.
+- No dedicated staging VPS, off-host backup, or full Caddy rollback rehearsal
+  was completed in this release. The candidate used a separate DB restored from
+  the current production backup. The desktop Products table audit reported a
+  24 px internal overflow; row actions remained visible and no server/JS errors
+  were found.

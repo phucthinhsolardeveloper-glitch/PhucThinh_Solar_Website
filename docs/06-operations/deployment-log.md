@@ -4,6 +4,44 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-10 — category tree + Admin updates (d2c529e0)
+
+- Commit/image: `d2c529e03111cc3e7fceeef07f1e384951b5295c`; backend image ID
+  `sha256:ec8f378c5b776ed5dc9843d99522b2ae61c2e47173f3f7d1bd33ca898e811c96`,
+  Nuxt image ID `sha256:84f213156edf430e5cb69b8dbc0381154d576f486be0041b3e316059e12d4343`.
+  Exact images were built and verified on candidate, transferred as
+  `/srv/pts-laravel13/releases/pts-release-d2c529e0-images.tar.gz` (SHA-256
+  `21408e94a7e6062ec822eda0e647ab8a66a9ff20d064be8444b6a9d9bf9cbbf0`), then
+  loaded on the VPS. Commit `d2c529e0` is pushed to `origin/master`.
+- Backup before migration: `/srv/pts-laravel13/backups/20261110T085016Z-full`;
+  all 6 files passed `SHA256SUMS`. Rollback environment copy and previous image
+  IDs are in `/srv/pts-laravel13/releases/rollback-d2c529e0/`.
+- Applied migrations `001700`, `001800`, `001900` (batch 2). Total products
+  stayed at 399, orphan products 0, and no garden-light product remains in its
+  old parent. Counts are 53 gate lights, 9 wall lights, 5 garden stake lights,
+  and 1 lawn light. Two old category URLs now return 301 to their new paths.
+- Candidate rehearsal restored the pre-deploy production DB backup into an
+  isolated DB, applied all three migrations, matched 1,754/1,754 API snapshot
+  cases after refreshing only the seven affected category snapshots, and passed
+  `verify-candidate.sh`. `shop-flow` passed without submitting an order.
+- Gates: Laravel 293 passed/1 skipped/1,842 assertions; Pint 392 files; PHPStan
+  0 errors; Nuxt 500/500 tests, typecheck and production build passed. Admin
+  browser audit opened 94 desktop/mobile/deep screens with no server or JS
+  errors; it reported a 24 px table overflow on desktop Products, while the row
+  actions remained visible. This small Admin layout issue is a follow-up.
+- Production after deploy: backend/Nuxt healthy; worker and scheduler running;
+  recent Laravel error count 0. Home, Admin login, site API, four new category
+  pages and four representative product pages returned 200; old garden and
+  clamp paths returned 301; sitemap lists all four garden-light child paths.
+  Caddy, MariaDB, training and ZCRM were not replaced or reconfigured.
+- Rollback point: previous backend/Nuxt image tags are `f5aac548-candidate`;
+  restore the saved `stack.env.before` and recreate only backend, Nuxt, worker
+  and scheduler. The data-only category reshuffle is forward-compatible; do not
+  restore the DB backup blindly after new orders or Admin writes.
+- Remaining operational risk: this backup is on the VPS only; a separate
+  off-host copy and a full Caddy route/DB restore rollback rehearsal remain
+  outstanding. The site is live on the new release.
+
 ## 2026-11-10 — dọn môi trường sau cutover, backup chuyển sang stack mới
 
 - Chủ website duyệt từng mục trước khi xoá. Bản lưu của site PHP cũ đã tải về

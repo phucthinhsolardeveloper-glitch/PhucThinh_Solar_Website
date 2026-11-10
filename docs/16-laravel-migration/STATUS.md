@@ -1,13 +1,25 @@
 # Trạng thái chuyển đổi Laravel
 
+**Cập nhật 2026-11-10:** production đã chạy Laravel 13 + Nuxt, release
+`d2c529e0`; migrations `001700`–`001900` đã áp dụng. Xem backup, image IDs và
+post-deploy verification trong [`deployment-log.md`](../06-operations/deployment-log.md).
 Đọc file này trước khi mở lại bất kỳ module nào. Mục đã **CHỐT** không đọc/rà lại, trừ khi có lỗi mới được báo.
 Làm xong phần nào: test → commit → chuyển dòng sang CHỐT kèm commit → xóa file tạm của phần đó.
 
 ## Đang làm
-Không có việc dở.
+Không có thay đổi code đang dở; release `d2c529e0` đã push và deploy.
 
-## Chưa làm (theo thứ tự)
-Không còn mục nào. Việc tiếp: chuẩn bị chuyển hệ thống (xem HANDOFF → Cutover).
+## Chưa làm (follow-up vận hành, không chặn release d2c529e0)
+
+1. Diễn tập restore/rollback đầy đủ qua Caddy trên staging VPS; lần này đã restore
+   DB production vào candidate cô lập và kiểm migration, nhưng không diễn tập
+   chuyển route production ngược lại.
+2. Rà lại bảng Products Admin: browser audit ghi nhận table rộng hơn card 24 px
+   ở desktop; nút hàng vẫn nhìn thấy, không có lỗi server/JavaScript.
+3. Carrier ngoài Nhất Tín vẫn chưa có adapter API thật; cần mapping kho, dịch vụ,
+   kiện hàng và mã tỉnh/phường trước khi bật. Hiện checkout dùng phí địa phương.
+4. Consent Mode / Enhanced Conversions và so sánh lưu lượng Search Console cần
+   quyết định/quyền truy cập riêng.
 
 ## Không làm (đã kiểm chứng)
 | Mục | Lý do |

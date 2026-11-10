@@ -1,21 +1,36 @@
-# Bàn giao nhánh Laravel (cập nhật 2026-11-09)
+# Bàn giao nhánh Laravel (cập nhật sau deploy 2026-11-10)
+
+## Trạng thái hiện tại
+
+- Repo: `/home/admin01/src/Web_PTS_PHP`, branch `master`, commit `d2c529e0`;
+  đã push `origin/master` và deploy production.
+- Production images: `pts-laravel13-backend:d2c529e0-candidate` và
+  `pts-laravel13-nuxt:d2c529e0-candidate`. Migrations `001700`–`001900` đã chạy;
+  68 đèn sân vườn đã vào bốn danh mục con. Xem
+  [`deployment-log.md`](../06-operations/deployment-log.md).
+- Backup trước deploy: `/srv/pts-laravel13/backups/20261110T085016Z-full`;
+  rollback env và image IDs cũ ở `/srv/pts-laravel13/releases/rollback-d2c529e0/`.
+- Tài khoản `admin-local` chỉ có trong DB local đã được tạo theo yêu cầu chủ
+  website; mật khẩu đã gửi trực tiếp, không ghi vào tài liệu.
+- Phần dưới là trạng thái tại mốc bàn giao 2026-11-09. Đường dẫn worktree và
+  chỉ dẫn chưa push/chưa deploy đã cũ; dùng trạng thái và nhật ký release mới.
 
 Đọc file này, rồi [`STATUS.md`](STATUS.md). Mục đã CHỐT trong STATUS không đọc lại trừ khi có lỗi mới.
 Chọn model theo [`../12-ai/model-routing.md`](../12-ai/model-routing.md).
 
-## Vị trí
+## Vị trí tại mốc bàn giao cũ (lịch sử)
 
 | | |
 |---|---|
-| Worktree | `/home/admin01/src/pts-laravel13` |
-| Nhánh | `migration/laravel13-integration`, đi trước `master` 117 commit, **chưa push** |
+| Worktree tại thời điểm bàn giao cũ | `/home/admin01/src/pts-laravel13` |
+| Nhánh tại thời điểm bàn giao cũ | `migration/laravel13-integration`, đi trước `master` 117 commit |
 | Hệ thống | Nuxt 4 (`frontend/`), Laravel 13 + Filament (`backend/`, Admin ở `/admin`) |
 | Thay thế | Toàn bộ backend PHP; cây PHP cũ đã xóa ở nhánh này, vẫn còn ở `master` để đối chiếu nghiệp vụ |
 | Mã PHP cũ | `/home/admin01/src/Web_PTS_PHP/domains/phucthinhsolar.com/public_html` |
 
-## Quy tắc của chủ website
+## Quy tắc tại mốc bàn giao cũ
 
-- Commit local, **không push** cho tới khi chủ website xác nhận hoàn thiện. **Không đụng production, không deploy.**
+- Chủ website đã cập nhật chỉ đạo ngày 2026-11-10 và cho phép push/deploy release `d2c529e0`; lần cho phép đó không tự động áp dụng cho các release tương lai.
 - Báo cáo tiếng Việt, ngắn, dễ hiểu với người không làm kỹ thuật.
 - Không gửi lead/đơn thật khi test. Không tự bịa dữ liệu. Không đổi mật khẩu thật. Mật khẩu mail chỉ nằm trong `.env`.
 - Số đại lý, đánh giá, chứng nhận do chủ website đưa là đúng, không hỏi lại. Công ty: thành lập 2020, sáng lập Mai Anh Tuấn, chỉ năng lượng mặt trời.
@@ -51,7 +66,7 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 - Mốc so sánh API: `backend/resources/api-snapshots` (có trong git). **Từ 2026-11-10 mốc này chụp trên
   đúng dữ liệu production** (DB dev đã nạp dump production cùng ngày), nên chênh lệch lần sau là do
   đổi mã, không phải do dữ liệu khác nhau. Chạy `pts:demo-data --remove` trước khi chụp lại. `storage/app/snapshots` là bản cũ, bỏ qua. Đổi API có chủ đích thì `pts:snapshot <api> --save`.
-- Tài khoản Admin để test: tạo tạm bằng tinker (`username` = `kiemtra-local`, `role` = `owner`, mật khẩu ngẫu nhiên), xóa sau khi xong. Hiện có đúng 2 tài khoản thật: `admin`, `quoccuong123`.
+- Mốc cũ tạo tài khoản Admin thử `kiemtra-local`; thông tin user trong dòng này không còn là inventory hiện tại. Tài khoản local hiện dùng là `admin-local`; mật khẩu không ghi vào docs/Git.
 - Logo đối tác: `php artisan pts:brand-logos` đưa 20 logo trong `backend/resources/brand-logos` vào kho upload và gắn vào thương hiệu (giữ logo đã chọn trong Admin, trừ khi `--force`). Tự chạy trong `pts:import-legacy`. DB dev chưa chạy vì `/srv/upload` mount chỉ đọc, nên trang Giới thiệu local chỉ hiện 3 logo.
 
 - Chuyển khoản: chủ website khai ngân hàng, số tài khoản, tên chủ tài khoản ở Admin → Thông tin website. Chưa khai thì checkout không hiện Chuyển khoản. Thử đặt đơn trên Nuxt local: chạy Nuxt với `NUXT_LOCAL_API_PROXY=1` để `/api/v1/*` chuyển sang Laravel (production có Caddy làm việc này, không bật biến này).
@@ -73,7 +88,7 @@ $D exec pts-laravel13-local sh -c 'cd /app && php artisan migrate --force; DB_DA
 - Nhập Excel: xem trước đã thử bằng tệp thật 399 sản phẩm qua trình duyệt; bước áp dụng mới có test tự động, chưa áp dụng tệp lớn trên dữ liệu dev.
 - ZIP ảnh, feed Google, Excel và phiếu in đơn hàng, kéo-thả thứ tự: có test hoặc mở màn, chưa bấm thử hết qua trình duyệt.
 - Feed: 185 sản phẩm có `feed_image`, 180 trùng đúng ảnh chính; 5 sản phẩm (321, 506, 507, 595, 596) trỏ tới tệp không có ở local. Chủ website cần xác nhận các ảnh đó thật sự sạch trước khi gửi Google.
-- Cổng trước khi chuyển production: staging VPS, VNPay sandbox, mail thật, thử khôi phục/rollback. Outbox và hàng đợi đã xong (`bff35f79`).
+- Cổng vận hành còn lại sau khi production đã chuyển: staging VPS riêng và diễn tập khôi phục/rollback qua Caddy. VNPay sandbox/mail thật vẫn cần mailbox và tài khoản thử; outbox/hàng đợi đã xong (`bff35f79`).
 
 ## Cấu trúc đáng biết
 

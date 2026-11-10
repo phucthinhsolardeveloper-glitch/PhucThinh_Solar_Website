@@ -2,15 +2,29 @@
 
 Đọc trước: `AGENTS.md` → `docs/12-ai/context-map.md`. File này chỉ ghi trạng thái lúc bàn giao.
 
-## Trạng thái production (KHÔNG đổi khi chưa được chủ website bảo)
+## Cập nhật sau khi tiếp quản — 2026-11-10
+
+- Chủ website đã cho phép push/deploy. Release `d2c529e0` hiện chạy production;
+  branch `master` đã sync `origin/master` tại commit này.
+- Migrations `001700`–`001900` đã chạy. 68 đèn chuyển vào bốn danh mục con;
+  counts 53/9/5/1, total 399, orphan 0. URL cũ trả 301.
+- Backup trước deploy: `/srv/pts-laravel13/backups/20261110T085016Z-full`;
+  images cũ và bản `stack.env` trước deploy còn ở
+  `/srv/pts-laravel13/releases/rollback-d2c529e0/`.
+- Kiểm tra 293 backend tests, Pint 392 file, PHPStan 0; Nuxt 500 tests,
+  typecheck/build; candidate snapshot 1.754/1.754; post-deploy routes và health
+  đều qua. Xem deployment log để biết chi tiết và giới hạn.
+- Phần dưới phản ánh trạng thái trước khi tiếp quản, được giữ làm lịch sử; các
+  chỉ dẫn “chưa push/chưa deploy” đã được thay thế.
+
+## Trạng thái production tại thời điểm bàn giao cũ (đã superseded)
 
 - phucthinhsolar.com chạy Laravel 13 + Nuxt từ 11:12 ngày 2026-11-10, images `pts-laravel13-*:f5aac548-candidate`,
   stack `/srv/pts-laravel13` trên VPS (`ssh pts-prod`). Nhật ký: `docs/06-operations/deployment-log.md`.
-- Chủ website nói: **"chưa deloy lại đâu, còn sửa thêm"**. Không deploy, không chạy migration trên production
-  khi chưa có lệnh rõ ràng.
+- Khi file này được viết, chủ website chưa cho phép deploy; sau đó đã có lệnh rõ ràng và release `d2c529e0` đã triển khai.
 - Stack PHP cũ đã xoá; bản sao lưu nằm ở máy chủ website `D:\ProjectBackup\`.
 
-## Commit local chưa push và chưa deploy
+## Commit local tại mốc bàn giao (đã push/deploy trong release d2c529e0)
 
 | Commit | Nội dung |
 |---|---|
@@ -37,15 +51,12 @@ production trước, migration 001800 chạy được lặp lại an toàn (tìm
 
 `vendor/bin/pint`, `phpstan` 0 lỗi, `php artisan test`: 284 passed, 1 skipped.
 
-## Việc còn mở
+## Việc còn lại sau release d2c529e0
 
-1. Push các commit trên khi chủ website đồng ý.
-2. Deploy đợt sau (khi được lệnh): build image mới, backup DB, `migrate --force` (001700, 001800), kiểm tra 301 của
-   `/danh-muc-san-pham/den-san-vuon/` và `/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/kep-tam-pin/`.
-3. Danh mục cấp 1 "Trụ đèn" (0 sản phẩm, 4 nhóm con rỗng) vẫn để nguyên; chủ website chưa quyết, có thể tự kéo trong
-   trang cây. (Lần kéo thử trên trình duyệt không bấm Lưu, DB không đổi.)
-4. Consent Mode / Enhanced Conversions: chờ chủ website quyết.
-5. Chủ website cần tự chạy `scripts/maintenance/Compact-WslDisks.ps1` (PowerShell admin) để thu nhỏ ổ ảo WSL.
+1. Diễn tập restore/rollback đầy đủ qua Caddy trên staging VPS; production đã có backup và candidate DB rehearsal nhưng chưa thử route production quay lui.
+2. Rà lại overflow 24 px trong bảng Products Admin trên desktop.
+3. Consent Mode / Enhanced Conversions: chờ chủ website quyết.
+4. Chủ website cần tự chạy `scripts/maintenance/Compact-WslDisks.ps1` (PowerShell admin) để thu nhỏ ổ ảo WSL.
 
 ## Môi trường local
 

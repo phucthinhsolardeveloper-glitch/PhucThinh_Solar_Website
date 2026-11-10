@@ -3,17 +3,20 @@
 Tài liệu đặc tả gốc: [../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md](../12-ai/LARAVEL13-MIGRATION-CLAUDE-MASTER-SPEC.md).
 Thư mục này ghi trạng thái thật của quá trình chuyển đổi.
 
-**Làm tiếp từ đâu:** [`HANDOFF.md`](HANDOFF.md) và [`STATUS.md`](STATUS.md) là trạng thái mới nhất (2026-11-09); các mốc bên dưới là nhật ký.
+**Làm tiếp từ đâu:** [`HANDOFF.md`](HANDOFF.md) và [`STATUS.md`](STATUS.md) là trạng thái mới nhất (2026-11-10); các mốc bên dưới là nhật ký.
 
-**Cập nhật 2026-11-08:** HEAD bàn giao `7265b9ad`; các mục Phase 1–4 bên dưới
+**Production hiện tại:** website chạy Laravel 13 + Nuxt ở release `d2c529e0`;
+migrations `001700`–`001900` đã áp dụng. Backup, image IDs, kiểm chứng sau deploy
+và rollback point nằm trong [deployment log](../06-operations/deployment-log.md).
+
+**Mốc kiểm chứng lịch sử 2026-11-08:** HEAD bàn giao `7265b9ad`; các mục Phase 1–4 bên dưới
 là nhật ký từng mốc và có đường dẫn/tên DB cũ. Runtime hiện tại dùng Laravel
 13/PHP 8.4/Filament 5 ở `/admin`, DB `pts_app`, Nuxt chỉ đọc Laravel. Kiểm
 chứng tiếp quản: 27 API snapshot 1.754/1.754 theo file hiện có, DB clone từ zero/import khớp 15
 nhóm số dòng và 0 orphan đã kiểm; 46 màn Admin desktop/mobile; candidate
 Caddy → Nuxt/Laravel chạy local, `site-audit` 0 lỗi trên 19 route × 4 viewport,
 `shop-flow` đạt. Chi tiết Admin: [admin-capability-audit-2026-11-08.md](admin-capability-audit-2026-11-08.md).
-Candidate deployment: [../../deploy/laravel13/README.md](../../deploy/laravel13/README.md).
-**Production/master chưa chuyển Laravel.**
+Candidate và deployment: [../../deploy/laravel13/README.md](../../deploy/laravel13/README.md).
 
 Correctness P0 của VNPay conversion/mail và review media đã được xử lý trên
 nhánh migration; chi tiết hành vi, test và giới hạn còn lại ở
@@ -251,11 +254,11 @@ Bẫy đã gặp:
   `ProductSpecs::lookup()` giữ cả hai, có test.
 - Khối mô tả bỏ phần "Ứng dụng" chỉ khi có thẻ ứng dụng, nên thẻ ứng dụng phải tính trước.
 
-## Phase 4: Nuxt chỉ dùng Laravel
+## Phase 4: Nuxt chỉ dùng Laravel (ghi chép trước production cutover)
 
-Nhánh này chuyển hẳn sang Laravel, không chạy song song với PHP và không có công tắc
-quay về. Production vẫn chạy `master` cho tới khi nhánh này hoàn thiện và được đổi hẳn.
-Chỉ commit ở local, chưa push.
+Ở mốc tài liệu này, nhánh migration chuyển hẳn sang Laravel, không chạy song song
+với PHP và không có công tắc quay về. Điều kiện “production vẫn chạy master” và
+“chỉ commit ở local” đã hết hiệu lực; xem mục Production hiện tại ở đầu file.
 
 | Phần | Trạng thái |
 |---|---|
