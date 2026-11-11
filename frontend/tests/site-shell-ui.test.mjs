@@ -41,7 +41,7 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
   assert.match(header, /min-\[1681px\]:flex min-\[1681px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
-  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1681px\]:flex"/)
+  assert.match(header, /class="gtranslate_wrapper[^\"]*nav:flex"/)
   assert.match(header, /<nav class="pts-desktop-nav hidden min-w-0 min-\[1321px\]:flex-1 min-\[1321px\]:block"/)
   assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1681px\]:w-\[clamp\(360px,22vw,460px\)\]/)
   assert.match(header, /min-\[1321px\]:max-\[1346px\]:w-\[244px\]/)
@@ -250,4 +250,13 @@ test('mobile drawer uses the real category tree with accessible collapsed branch
   assert.match(header, /class="relative z-\[1\] flex h-dvh max-h-dvh[\s\S]*overflow-hidden/)
   assert.match(header, /<nav class="flex min-h-0 flex-1 flex-col overflow-y-auto/)
   assert.match(header, /class="mt-3 flex min-h-\[50px\] w-full flex-none/)
+})
+
+test('language defaults to Vietnamese and the picker is reachable on every width', () => {
+  assert.match(app, /detect_browser_language: false/)
+  assert.doesNotMatch(app, /detect_browser_language: true/)
+  assert.match(app, /default_language: 'vi'/)
+  // desktop header picker from the nav breakpoint, drawer picker below it
+  assert.match(header, /class="gtranslate_wrapper[^"]*nav:flex"/)
+  assert.match(header, /pts-drawer__lang[\s\S]*aria-label="Chọn ngôn ngữ"[\s\S]*class="gtranslate_wrapper/)
 })

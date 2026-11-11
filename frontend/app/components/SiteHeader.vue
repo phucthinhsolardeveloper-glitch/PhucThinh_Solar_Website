@@ -760,9 +760,10 @@ onBeforeUnmount(() => {
         <!-- Cụm thao tác bên phải -->
         <div class="flex min-w-0 items-center justify-end gap-1.5 max-ph:gap-1">
           <!-- GTranslate adds this marker class synchronously while it mounts. Keep
-               it in SSR markup too so hydration does not report a class mismatch. -->
-          <div class="hidden h-11 w-[45px] flex-none items-center justify-center min-[1681px]:flex" role="group" aria-label="Chọn ngôn ngữ">
-            <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1681px]:flex" />
+               it in SSR markup too so hydration does not report a class mismatch.
+               Below the desktop nav width the same picker lives in the drawer. -->
+          <div class="hidden h-11 w-[45px] flex-none items-center justify-center nav:flex" role="group" aria-label="Chọn ngôn ngữ">
+            <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center nav:flex" />
           </div>
 
           <button
@@ -1284,6 +1285,11 @@ onBeforeUnmount(() => {
           </template>
         </nav>
 
+        <div class="pts-drawer__lang mt-3 flex flex-none items-center justify-between gap-3 border-t border-hdr-line pt-3" role="group" aria-label="Chọn ngôn ngữ">
+          <span class="text-[13px] font-semibold text-hdr-sub">Ngôn ngữ</span>
+          <div class="gtranslate_wrapper gt_container-unisv1 flex h-11 w-[45px] flex-none items-center justify-center" />
+        </div>
+
         <button
           type="button"
           class="mt-3 flex min-h-[50px] w-full flex-none items-center justify-center rounded-btn border border-hdr-gold
@@ -1315,6 +1321,7 @@ onBeforeUnmount(() => {
   border-right: 1px solid var(--m-glass-rim);
   box-shadow: var(--m-glass-shadow);
 }
+.pts-drawer__lang :deep(.gt_white_content) { right: 0; bottom: 100%; top: auto !important; }
 .pts-drawer__head { margin-top: -6px; margin-right: -4px; }
 .pts-drawer__logo { width: auto; max-width: 190px; height: 28px; object-fit: contain; object-position: left; }
 .pts-drawer__panel :deep(.text-navy-800), .pts-drawer__panel :deep(.text-navy-950) { color: #fff; }

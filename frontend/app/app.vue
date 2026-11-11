@@ -34,7 +34,8 @@ useHead({
       key: 'pts-gtranslate-settings',
       innerHTML: `window.gtranslateSettings = ${JSON.stringify({
         default_language: 'vi',
-        detect_browser_language: true,
+        // First visit is always Vietnamese. GTranslate keeps the visitor's own pick in its cookie across pages.
+        detect_browser_language: false,
         native_language_names: true,
         languages: ['vi', 'en', 'zh-CN', 'ko', 'ja'],
         wrapper_selector: '.gtranslate_wrapper',
