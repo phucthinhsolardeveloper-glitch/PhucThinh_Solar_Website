@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PostRevisions\Pages;
 
 use App\Domain\Content\PostRevisions;
+use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Filament\Support\AdminActor;
 use App\Models\PostRevision;
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EditPostRevision extends EditRecord
 {
+    use SavesAndStays;
+
     protected static string $resource = PostRevisionResource::class;
 
     public function getTitle(): string

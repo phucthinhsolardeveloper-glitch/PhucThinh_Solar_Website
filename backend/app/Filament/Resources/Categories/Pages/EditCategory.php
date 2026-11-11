@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Categories\Pages;
 
 use App\Filament\Concerns\ReportsSavedChanges;
+use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Support\PublicLink;
 use App\Models\Category;
@@ -11,7 +12,7 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditCategory extends EditRecord
 {
-    use ReportsSavedChanges;
+    use ReportsSavedChanges, SavesAndStays;
 
     protected static string $resource = CategoryResource::class;
 

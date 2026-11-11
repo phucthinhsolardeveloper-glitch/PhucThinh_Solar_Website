@@ -9,6 +9,7 @@ use App\Domain\Shipping\NhatTin\NtlClient;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Domain\Shipping\Shipments;
+use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Support\AdminActor;
 use App\Models\Order;
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EditOrder extends EditRecord
 {
+    use SavesAndStays;
+
     protected static string $resource = OrderResource::class;
 
     /** Only status and notes change here, through the lifecycle rules and the audit log. */

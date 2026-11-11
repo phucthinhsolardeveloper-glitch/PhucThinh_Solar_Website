@@ -74,3 +74,18 @@ it('toggles visibility straight from a list', function () {
     Livewire::test(ListBrands::class)->call('updateTableColumnState', 'is_visible', (string) $brand->getKey(), false);
     expect($brand->fresh()->is_visible)->toBeFalse();
 });
+
+it('offers "Lưu" back to the list and "Lưu, ở lại trang" on edit pages', function () {
+    $this->actingAs(quickAdmin(['catalog']), 'admin');
+    $brand = Brand::query()->create(['name' => 'Hãng thử', 'slug' => 'hang-thu-'.bin2hex(random_bytes(3)), 'is_visible' => true]);
+    $page = App\Filament\Resources\Brands\Pages\EditBrand::class;
+
+    Livewire::test($page, ['record' => $brand->getKey()])->fillForm(['name' => 'Hãng ở lại'])
+        ->callAction(Filament\Actions\Testing\TestAction::make('saveAndStay')->schemaComponent('form-actions', schema: 'content'))->assertHasNoActionErrors()->assertNoRedirect();
+    expect($brand->fresh()->name)->toBe('Hãng ở lại');
+
+    Livewire::test($page, ['record' => $brand->getKey()])->fillForm(['name' => 'Hãng quay về'])
+        ->call('save')->assertHasNoFormErrors()
+        ->assertRedirect(App\Filament\Resources\Brands\BrandResource::getUrl('index'));
+    expect($brand->fresh()->name)->toBe('Hãng quay về');
+});

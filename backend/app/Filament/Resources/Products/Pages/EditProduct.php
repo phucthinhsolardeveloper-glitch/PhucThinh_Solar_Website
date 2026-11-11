@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Domain\Catalog\ProductDuplicator;
 use App\Filament\Concerns\ReportsSavedChanges;
+use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\PublicLink;
 use App\Models\Product;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class EditProduct extends EditRecord
 {
-    use ReportsSavedChanges;
+    use ReportsSavedChanges, SavesAndStays;
 
     protected static string $resource = ProductResource::class;
 
