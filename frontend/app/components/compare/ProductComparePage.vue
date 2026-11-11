@@ -83,6 +83,35 @@ const oldPrice = (pricing: PublicCatalogPricing) => pricing.mode === 'price' && 
 const image = (src: string) => src.startsWith('/upload/product/') ? thumbUrl(src, 320, 320) : src
 
 const { openConsultation } = useStorefrontModal()
+
+// Buy from the table. State is per product: the shared cart `loading` flag would grey out every column at once.
+const { mutate } = useShopCart()
+const { celebrate } = useCartFeedback()
+const adding = ref<Set<number>>(new Set())
+const added = ref<Set<number>>(new Set())
+const cartErrors = ref<Map<number, string>>(new Map())
+const addedTimers = new Map<number, ReturnType<typeof setTimeout>>()
+onBeforeUnmount(() => { for (const timer of addedTimers.values()) clearTimeout(timer) })
+const withId = <T,>(set: Set<number>, id: number, on: boolean) => { const next = new Set(set); if (on) next.add(id); else next.delete(id); return next }
+async function addToCart(product: { id: number; name: string; image: string }, event: Event) {
+  if (adding.value.has(product.id)) return
+  const column = event.currentTarget instanceof HTMLElement ? event.currentTarget.closest('th') : null
+  adding.value = withId(adding.value, product.id, true)
+  const errors = new Map(cartErrors.value); errors.delete(product.id); cartErrors.value = errors
+  try {
+    await mutate({ action: 'add', productId: product.id, quantity: 1 })
+    added.value = withId(added.value, product.id, true)
+    celebrate({ name: product.name, image: product.image ? image(product.image) : undefined, quantity: 1, from: column?.querySelector('img') })
+    clearTimeout(addedTimers.get(product.id))
+    addedTimers.set(product.id, setTimeout(() => { added.value = withId(added.value, product.id, false) }, 3000))
+  } catch (reason) {
+    const next = new Map(cartErrors.value)
+    next.set(product.id, reason instanceof Error && reason.message ? reason.message : 'Không thể thêm vào giỏ hàng.')
+    cartErrors.value = next
+  } finally {
+    adding.value = withId(adding.value, product.id, false)
+  }
+}
 </script>
 
 <template>
@@ -160,6 +189,12 @@ const { openConsultation } = useStorefrontModal()
                       {{ price(product.pricing) }}
                       <s v-if="oldPrice(product.pricing)">{{ oldPrice(product.pricing) }}</s>
                     </span>
+                    <button v-if="product.pricing.mode === 'price'" type="button" class="cmp-buy" :disabled="adding.has(product.id)" :aria-busy="adding.has(product.id)" @click="addToCart(product, $event)">
+                      {{ adding.has(product.id) ? 'Đang thêm…' : added.has(product.id) ? 'Đã thêm vào giỏ' : 'Thêm vào giỏ' }}
+                    </button>
+                    <button v-else-if="product.pricing.mode === 'quote'" type="button" class="cmp-buy cmp-buy--quote" @click="openConsultation(product.name)">Nhận báo giá</button>
+                    <p class="cmp-buy__note" role="status" aria-live="polite">{{ added.has(product.id) ? `Đã thêm ${product.name} vào giỏ hàng.` : '' }}</p>
+                    <p v-if="cartErrors.has(product.id)" class="cmp-buy__error" role="alert">{{ cartErrors.get(product.id) }}</p>
                   </th>
                   <th v-if="products.length < max" scope="col" class="cmp-add">
                     <button type="button" class="cmp-add__link" @click="openPicker">
@@ -243,8 +278,16 @@ const { openConsultation } = useStorefrontModal()
 .cmp-product__meta { display: block; margin-top: 6px; color: #64748b; font-size: 13.5px; }
 .cmp-product__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-top: 8px; color: #b45309; font-size: 16px; font-weight: 900; }
 .cmp-product__price s { color: #94a3b8; font-size: 13.5px; font-weight: 600; }
-.cmp-remove { position: absolute; top: 8px; right: 8px; z-index: 1; display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid rgb(10 34 81 / 12%); border-radius: 999px; background: #fff; color: #475569; cursor: pointer; }
+.cmp-table th.cmp-product { padding-top: 52px; }
+.cmp-remove { position: absolute; top: 4px; right: 4px; z-index: 1; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgb(10 34 81 / 12%); border-radius: 999px; background: #fff; color: #475569; cursor: pointer; }
 .cmp-remove:hover { border-color: #dc2626; color: #dc2626; }
+.cmp-buy { display: inline-flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; margin-top: 10px; padding: 0 12px; border: 0; border-radius: var(--radius-md, 10px); background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); font-size: 14px; font-weight: 800; line-height: 1.2; cursor: pointer; }
+.cmp-buy:disabled { cursor: progress; opacity: .7; }
+.cmp-buy:focus-visible { outline: 3px solid var(--color-navy-800); outline-offset: 2px; }
+.cmp-buy--quote { border: 1px solid var(--color-navy-800); background: #fff; color: var(--color-navy-800); }
+.cmp-buy__note { margin: 0; min-height: 0; color: #166534; font-size: 13px; font-weight: 700; }
+.cmp-buy__note:empty { display: none; }
+.cmp-buy__error { margin: 6px 0 0; color: #b91c1c; font-size: 13px; font-weight: 700; line-height: 1.4; }
 .cmp-add { min-width: 150px; }
 .cmp-add__link { display: grid; aspect-ratio: 1; max-width: 160px; place-content: center; justify-items: center; gap: 6px; border: 1px dashed rgb(10 34 81 / 22%); border-radius: var(--radius-md, 10px); color: var(--color-navy-800); font-size: 14px; font-weight: 700; text-decoration: none; }
 .cmp-add__link:hover { border-color: var(--color-gold-500); color: var(--color-gold-700); }
@@ -268,5 +311,5 @@ const { openConsultation } = useStorefrontModal()
 .cmp-add__link { width: 100%; background: transparent; font: inherit; cursor: pointer; }
 .cmp-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-top: 24px; padding: 20px; border-radius: var(--radius-lg, 14px); background: var(--color-navy-950); color: #fff; }
 .cmp-cta p { margin: 0; max-width: 560px; font-size: 16px; font-weight: 600; line-height: 1.5; }
-@media (max-width: 639.98px) { .cmp-table th, .cmp-table td { padding: 10px; font-size: 14px; } .cmp-table tbody th { font-size: 13px; } .cmp-product__name { font-size: 14px; } .cmp-remove { width: 30px; height: 30px; top: 4px; right: 4px; } .cmp-add { min-width: 120px; } }
+@media (max-width: 639.98px) { .cmp-table th, .cmp-table td { padding: 10px; font-size: 14px; } .cmp-table tbody th { font-size: 13px; } .cmp-product__name { font-size: 14px; }  .cmp-add { min-width: 120px; } }
 </style>

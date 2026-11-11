@@ -69,3 +69,26 @@ test('Google Tag Manager comes from the site settings and only as GTM-XXXX', asy
   assert.match(read('shared/contracts/public-site.ts'), /value\.gtmId === '' \|\| typeof value\.gtmId === 'string' && \/\^GTM-\[A-Z0-9\]\{4,12\}\$\//)
   if (isPublicSitePayload) assert.ok(true)
 })
+
+test('compare header sells from the table: cart add for priced, consultation for quote, nothing otherwise', () => {
+  const source = read('app/components/compare/ProductComparePage.vue')
+  assert.match(source, /product\.pricing\.mode === 'price'[^>]*class="cmp-buy"/)
+  assert.match(source, /Thêm vào giỏ/)
+  assert.match(source, /mutate\(\{ action: 'add', productId: product\.id, quantity: 1 \}\)/)
+  assert.match(source, /celebrate\(\{ name: product\.name/)
+  assert.match(source, /v-else-if="product\.pricing\.mode === 'quote'"[^>]*@click="openConsultation\(product\.name\)"[^>]*>Nhận báo giá/)
+  assert.match(source, /:disabled="adding\.has\(product\.id\)"/)
+  assert.match(source, /role="alert"/)
+  assert.match(source, /aria-live="polite"/)
+  assert.doesNotMatch(source, /navigateTo\([^)]*gio-hang/)
+})
+
+test('compare remove button is a 44px target and the table keeps scrolling sideways', () => {
+  const source = read('app/components/compare/ProductComparePage.vue')
+  assert.match(source, /\.cmp-remove \{[^}]*width: 44px; height: 44px;/)
+  assert.doesNotMatch(source, /\.cmp-remove \{ width: 30px/)
+  assert.match(source, /\.cmp-table th\.cmp-product \{ padding-top: 52px; \}/)
+  assert.match(source, /\.cmp-scroll \{ overflow-x: auto;/)
+  assert.match(source, /\.cmp-buy \{[^}]*min-height: 44px;/)
+  assert.doesNotMatch(source.split('\n').filter((line) => line.startsWith('.cmp-buy')).join('\n'), /linear-gradient|box-shadow/)
+})
