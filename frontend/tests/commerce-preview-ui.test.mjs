@@ -210,6 +210,8 @@ test('PDP gallery uses the PHP white image surface and purchase actions preserve
   assert.match(gallery, /object-contain p-0/)
   assert.doesNotMatch(gallery, /border-slate-200\/80|transition-shadow duration-300 hover:shadow-md/)
   assert.ok(purchase.indexOf('Mua ngay') < purchase.indexOf('Thêm vào giỏ'))
+  assert.match(purchase, /if \(goToCheckout\) \{ await navigateTo\(links\.generic\('\/thanh-toan\/'\)\); return \}/, 'Mua ngay đi thẳng tới checkout sau khi thêm vào giỏ thành công')
+  assert.match(purchase, /if \(goToCheckout\).*?return \}[\s\S]*?celebrate\(/, 'Thêm vào giỏ vẫn giữ phản hồi giỏ hàng thay vì điều hướng')
   assert.match(purchase, /public-navy-outline-button/)
 })
 

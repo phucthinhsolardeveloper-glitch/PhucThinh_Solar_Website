@@ -31,9 +31,9 @@ onMounted(() => {
 })
 onBeforeUnmount(() => buyObserver?.disconnect())
 
-async function add(goToCart = false) {
+async function add(goToCheckout = false) {
   quantity.value = normalizeCommerceQuantity(quantity.value)
-  loadingAction.value = goToCart ? 'buy' : 'cart'
+  loadingAction.value = goToCheckout ? 'buy' : 'cart'
   try {
     await mutate({ action: 'add', productId: props.productId, quantity: quantity.value })
   } catch {
@@ -41,7 +41,7 @@ async function add(goToCart = false) {
   } finally {
     loadingAction.value = null
   }
-  if (goToCart) { await navigateTo(links.generic('/gio-hang/')); return }
+  if (goToCheckout) { await navigateTo(links.generic('/thanh-toan/')); return }
   celebrate({ name: props.productName || 'Sản phẩm', image: props.productImage, quantity: quantity.value, from: import.meta.client ? document.querySelector('[data-cart-source]') : null })
   justAdded.value = true
   clearTimeout(justAddedTimer)
