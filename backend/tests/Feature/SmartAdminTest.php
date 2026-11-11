@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Admin\WorkQueue;
 use App\Domain\Leads\LeadRouting;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Models\Lead;
@@ -8,6 +9,7 @@ use App\Models\User;
 use App\Support\SiteSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
@@ -63,4 +65,29 @@ it('fills packing weight for many products and shows only the ones that are read
 it('writes the weekly report', function () {
     Artisan::call('pts:weekly-report', ['--dry-run' => true]);
     expect(Artisan::output())->toContain('Báo cáo tuần')->toContain('Doanh số')->toContain('Đang chờ xử lý');
+});
+
+it('counts a record once on the menu badge even when it sits in two work groups', function () {
+    $owner = smartUser([], User::ROLE_OWNER);
+    DB::table('orders')->where('status', 'new')->delete();
+    DB::table('leads')->delete();
+    $order = ntlOrder();
+    $order->update(['status' => 'new', 'payment_status' => 'unpaid', 'transfer_reported_at' => now()]);
+    $lead = Lead::query()->create(['kind' => 'contact', 'name' => 'Trùng', 'phone' => '0900000401', 'status' => 'new', 'follow_up_at' => now()->subHour()]);
+
+    $sections = collect(app(WorkQueue::class)->sections($owner));
+    expect($sections->firstWhere('key', 'transfer')['count'])->toBe(1)->and($sections->firstWhere('key', 'orders')['count'])->toBe(1)
+        ->and($sections->firstWhere('key', 'overdue')['count'])->toBe(1)->and($sections->firstWhere('key', 'leads')['count'])->toBe(1);
+    expect(app(WorkQueue::class)->urgentCount($owner))->toBe(2);
+});
+
+it('drops the cached quality report when a product is saved', function () {
+    Cache::put('data-quality', ['stale'], 600);
+    Cache::put('catalog-health', ['stale'], 600);
+    Product::query()->firstOrFail()->touch();
+    Product::query()->firstOrFail()->update(['name' => Product::query()->firstOrFail()->name]);
+    $p = Product::query()->firstOrFail();
+    $p->name .= ' ';
+    $p->save();
+    expect(Cache::has('data-quality'))->toBeFalse()->and(Cache::has('catalog-health'))->toBeFalse();
 });

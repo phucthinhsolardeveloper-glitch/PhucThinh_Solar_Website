@@ -28,6 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            // Leaving an edit page (menu, Mục trước/sau, back) with unsaved fields asks first.
+            ->unsavedChangesAlerts()
             ->login(Login::class)
             ->authGuard('admin')
             ->resourceEditPageRedirect('index')

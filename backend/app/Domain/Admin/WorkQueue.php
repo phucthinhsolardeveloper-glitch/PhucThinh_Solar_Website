@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Cache;
 final class WorkQueue
 {
     /**
-     * @return list<array{key: string, title: string, tone: string, count: int, more: ?string, items: list<array{label: string, meta: string, url: string}>}>
+     * @return list<array{key: string, title: string, tone: string, count: int, more: ?string, items: list<array{label: string, meta: string, url: string}>, refs?: list<string>}>
      */
     public function sections(User $user, bool $mine = false): array
     {
@@ -98,16 +98,23 @@ final class WorkQueue
                 }
             }
             $sections[] = ['key' => 'products', 'title' => 'Sản phẩm đang hiện nhưng có lỗi', 'tone' => 'danger', 'count' => count($items),
-                'more' => null, 'items' => array_slice($items, 0, 10)];
+                'more' => null, 'items' => array_slice($items, 0, 10), 'refs' => []];
         }
 
         return array_values(array_filter($sections, fn ($s) => $s['count'] > 0));
     }
 
-    /** Count shown on the menu: things a customer is waiting on. */
+    /** Sections that count toward the menu badge. */
+    private const URGENT = ['transfer', 'orders', 'shipment_trouble', 'overdue', 'leads', 'review'];
+
+    /**
+     * Count shown on the menu: distinct orders, enquiries and drafts a customer or colleague is waiting on.
+     * A record in two sections (a new order whose transfer was reported, an overdue enquiry that is also new)
+     * is counted once; each section on the page still shows its own count.
+     */
     public function urgentCount(User $user): int
     {
-        return (int) collect($this->sections($user))->whereIn('key', ['transfer', 'orders', 'shipment_trouble', 'overdue', 'leads', 'review'])->sum('count');
+        return collect($this->sections($user))->whereIn('key', self::URGENT)->flatMap(fn ($s) => $s['refs'] ?? [])->unique()->count();
     }
 
     /**
@@ -118,13 +125,15 @@ final class WorkQueue
     private function section(string $key, string $title, string $tone, $query, callable $row, ?string $more): array
     {
         $count = $query->clone()->count();
+        $refs = $count === 0 || ! in_array($key, self::URGENT, true) ? [] : $query->clone()->reorder()->pluck($query->getModel()->getQualifiedKeyName())
+            ->map(fn ($id) => class_basename($query->getModel()).':'.$id)->all();
         $items = $count === 0 ? [] : $query->limit(10)->get()->map(function ($record) use ($row) {
             [$label, $meta, $url] = $row($record);
 
             return ['label' => $label, 'meta' => $meta, 'url' => $url];
         })->all();
 
-        return ['key' => $key, 'title' => $title, 'tone' => $tone, 'count' => $count, 'more' => $more, 'items' => $items];
+        return ['key' => $key, 'title' => $title, 'tone' => $tone, 'count' => $count, 'more' => $more, 'items' => $items, 'refs' => $refs];
     }
 
     private function money(mixed $value): string

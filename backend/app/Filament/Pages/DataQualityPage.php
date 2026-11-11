@@ -34,7 +34,7 @@ class DataQualityPage extends Page
 
     public function getSubheading(): ?string
     {
-        return 'Cập nhật 10 phút một lần. Số "7 ngày trước" lấy từ bản ghi hằng đêm. Bấm tên để mở và sửa.';
+        return 'Tự làm mới khi sửa hoặc xóa sản phẩm, bài viết, SEO (sửa hàng loạt thì bấm "Kiểm tra lại ngay"). Số "7 ngày trước" lấy từ bản ghi hằng đêm. Bấm tên để mở và sửa.';
     }
 
     protected function getHeaderActions(): array

@@ -4,10 +4,14 @@ namespace App\Providers;
 
 use App\Auth\AdminUserProvider;
 use App\Auth\PasswordVerifier;
+use App\Domain\Admin\DataQuality;
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Commerce\CustomerHistory;
 use App\Mail\MailBrand;
+use App\Models\Post;
+use App\Models\Product;
+use App\Models\SeoMeta;
 use App\Support\SiteSettings;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -49,6 +53,11 @@ class AppServiceProvider extends ServiceProvider
         // Admin lists keep their filters, search and sort when staff come back from a record.
         Table::configureUsing(fn (Table $table) => $table->persistFiltersInSession()->persistSearchInSession()->persistSortInSession());
         Auth::provider('admin-users', fn ($app) => new AdminUserProvider($app['hash'], $app->make(PasswordVerifier::class)));
+        // Fixing a product, post or SEO title must not leave the old error list on screen for ten minutes.
+        foreach ([Product::class, Post::class, SeoMeta::class] as $model) {
+            $model::saved(fn () => DataQuality::forget());
+            $model::deleted(fn () => DataQuality::forget());
+        }
         // Every transactional mail shows the same logo, hotlines and company block, as the PHP site did.
         View::composer('mail.*', fn (ViewContract $view) => $view->with('brand', app(MailBrand::class)->data()));
         // Long Vietnamese names wrap instead of widening the table and pushing the row buttons off screen.

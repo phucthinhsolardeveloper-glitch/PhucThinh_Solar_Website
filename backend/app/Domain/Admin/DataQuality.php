@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Every data-quality check in one report: products (catalog health + missing main specs of their type),
- * posts on the website (the publish checks), SEO titles used twice. Cached ten minutes; counts are recorded
+ * posts on the website (the publish checks), SEO titles used twice. Cached ten minutes but dropped whenever a product, post or SEO row is saved or deleted (bulk SQL updates still wait for the timer or "Kiểm tra lại ngay"); counts are recorded
  * nightly so the page can show the trend.
  */
 final class DataQuality
@@ -27,11 +27,17 @@ final class DataQuality
     public function report(bool $fresh = false): array
     {
         if ($fresh) {
-            Cache::forget('data-quality');
-            Cache::forget('catalog-health');
+            self::forget();
         }
 
         return Cache::remember('data-quality', 600, fn () => $this->build());
+    }
+
+    /** Drops the cached report so the next look re-checks (a product, post or SEO row was saved or deleted). */
+    public static function forget(): void
+    {
+        Cache::forget('data-quality');
+        Cache::forget('catalog-health');
     }
 
     /** @return list<array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>}> */
