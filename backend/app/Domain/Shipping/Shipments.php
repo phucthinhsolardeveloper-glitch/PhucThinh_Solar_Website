@@ -22,6 +22,49 @@ final class Shipments
 {
     public const ACTIVE = ['create_pending', 'draft', 'waiting_pickup', 'in_transit', 'out_for_delivery', 'failed', 'returning', 'unknown'];
 
+    /** Order statuses a first waybill may be made for. */
+    public const SHIPPABLE = ['new', 'confirmed'];
+
+    /**
+     * Why no waybill can be made for this order now, or null when one can. The single rule for every way in
+     * (row button, order page, bulk, service): checked again under the order lock in create().
+     *
+     * - "Mới" / "Đã xác nhận" with no waybill running: allowed.
+     * - "Đang giao" whose every waybill has ended without delivery (cancelled or returned): allowed, to send again.
+     * - "Hoàn tất" / "Đã hủy", a delivered waybill, or a waybill still running: refused, with what to do instead.
+     */
+    public static function blocker(Order $order): ?string
+    {
+        $shipments = $order->shipments()->get(['id', 'status', 'bill_code', 'ref_code']);
+        $running = $shipments->first(fn (Shipment $s) => in_array($s->status, self::ACTIVE, true));
+        if ($running !== null) {
+            $code = $running->bill_code ?? $running->ref_code;
+
+            return match ($running->status) {
+                'unknown', 'create_pending' => 'Vận đơn '.$code.' chưa rõ đã tạo bên Nhất Tín hay chưa. Dùng "Đối chiếu vận đơn chưa rõ" trước khi tạo lại.',
+                'failed' => 'Vận đơn '.$code.' đang có sự cố. Liên hệ Nhất Tín hoặc hủy vận đơn đó rồi mới tạo vận đơn mới.',
+                'returning' => 'Vận đơn '.$code.' đang hoàn về kho. Chờ hàng về (Đã hoàn) rồi mới gửi lại.',
+                default => 'Đơn đã có vận đơn đang hoạt động ('.$code.'). Hủy vận đơn đó trước khi tạo vận đơn mới.',
+            };
+        }
+
+        return match (true) {
+            $order->status === 'cancelled' => 'Đơn đã hủy: không tạo vận đơn.',
+            $order->status === 'done' => 'Đơn đã hoàn tất: không tạo vận đơn.',
+            $shipments->contains(fn (Shipment $s) => $s->status === 'delivered') => 'Đơn đã có vận đơn giao thành công: không tạo thêm.',
+            $order->status === 'shipping' && $shipments->isEmpty() => 'Đơn đang giao nhưng chưa có vận đơn trên hệ thống: kiểm tra lại trước khi tạo.',
+            in_array($order->status, [...self::SHIPPABLE, 'shipping'], true) => null,
+            default => 'Trạng thái đơn không cho tạo vận đơn.',
+        };
+    }
+
+    /** The waybill to follow: the running one, otherwise the newest with a bill code. Never an older one when a newer exists. */
+    public static function current(Order $order): ?Shipment
+    {
+        return $order->shipments()->whereIn('status', self::ACTIVE)->first()
+            ?? $order->shipments()->whereNotNull('bill_code')->first();
+    }
+
     public function __construct(private readonly NtlClient $client, private readonly SiteSettings $settings) {}
 
     /**
@@ -53,8 +96,8 @@ final class Shipments
         [$sender, $receiver] = $this->places($order, codes: true);
         $shipment = DB::transaction(function () use ($order, $input, $actor) {
             $locked = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
-            if ($locked->shipments()->whereIn('status', self::ACTIVE)->exists()) {
-                throw ValidationException::withMessages(['shipment' => 'Đơn đã có vận đơn đang hoạt động. Hủy vận đơn đó trước khi tạo vận đơn mới.']);
+            if (($reason = self::blocker($locked)) !== null) {
+                throw ValidationException::withMessages(['shipment' => $reason]);
             }
             $attempt = $locked->shipments()->count() + 1;
 

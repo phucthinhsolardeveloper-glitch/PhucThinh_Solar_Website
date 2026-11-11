@@ -43,6 +43,13 @@ final class ShipmentAutomation
             } elseif ($target === 'done' && in_array($order->status, ['confirmed', 'shipping'], true)) {
                 app(OrderLifecycle::class)->update($order, 'done', $order->notes);
             }
+            // A cancelled (or finished) order never follows its parcel; a parcel still moving for a cancelled order is flagged instead.
+            if ($order->status === 'cancelled' && in_array($shipment->status, [...self::ON_THE_WAY, 'delivered'], true)) {
+                AdminBell::ring('orders', 'shipment:'.$shipment->id.':cancelled-order:'.$shipment->status,
+                    'Đơn '.$order->code.' đã hủy nhưng vận đơn '.($shipment->bill_code ?? $shipment->ref_code).': '.NtlStatus::LABELS[$shipment->status],
+                    'Liên hệ Nhất Tín để dừng/hoàn hàng. Đơn giữ trạng thái Đã hủy.', OrderResource::getUrl('edit', ['record' => $order]),
+                    'heroicon-o-exclamation-triangle', 'danger');
+            }
             if (in_array($shipment->status, self::TROUBLE, true)) {
                 AdminBell::ring('orders', 'shipment:'.$shipment->id.':'.$shipment->status,
                     'Vận đơn '.($shipment->bill_code ?? $shipment->ref_code).': '.NtlStatus::LABELS[$shipment->status],

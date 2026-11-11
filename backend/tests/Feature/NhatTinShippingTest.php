@@ -86,7 +86,7 @@ it('marks a sandbox create that timed out as unknown and never sends it twice', 
     $order = ntlOrder();
     expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'trước khi tạo lại');
     expect($order->shipments()->value('status'))->toBe('unknown');
-    expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'đã có vận đơn');
+    expect(fn () => app(Shipments::class)->create($order, ['weight_kg' => 1, 'service_id' => '91'], ntlStaff()))->toThrow(ValidationException::class, 'Đối chiếu vận đơn chưa rõ');
 
     // Staff settle it from the portal: not there → closed, and the order can be sent again.
     $stuck = $order->shipments()->firstOrFail();

@@ -76,23 +76,35 @@ class EditOrder extends EditRecord
                     Notification::make()->success()->title('Đã xác nhận đơn '.$record->code)->send();
                 }),
             OrderResource::shippingAction()->name('shipNext')->label('Tạo vận đơn')->icon('heroicon-o-truck')->button()->color('primary')
-                ->visible(fn () => $this->getRecord()->getAttribute('status') === 'confirmed' && ! $this->hasActiveShipment())
+                ->visible(fn () => in_array($this->getRecord()->getAttribute('status'), ['confirmed', 'shipping'], true) && Shipments::blocker($this->getOrder()) === null)
                 ->after($after),
             OrderResource::shippingAction()->name('trackNext')->label('Hành trình vận đơn')->icon('heroicon-o-map')->button()->color('gray')
                 ->visible(fn () => $this->hasActiveShipment())->after($after),
             Action::make('cancelOrder')->label('Hủy đơn')->icon('heroicon-o-x-circle')->color('danger')->link()
                 ->visible(fn () => in_array($this->getRecord()->getAttribute('status'), ['new', 'confirmed', 'shipping'], true))
-                ->schema([Textarea::make('reason')->label('Lý do hủy')->required()->rows(2)
-                    ->helperText('Ghi vào ghi chú nội bộ. Vận đơn đang có (nếu có) cần hủy riêng ở nút Vận chuyển.')])
+                ->modalDescription(fn () => $this->hasActiveShipment()
+                    ? 'Đơn còn vận đơn đang chạy: hủy đơn không hủy vận đơn. Hủy vận đơn ở nút Vận chuyển (hoặc báo Nhất Tín) để hàng không tiếp tục đi.'
+                    : null)
+                ->schema([Textarea::make('reason')->label('Lý do hủy')->required()->rows(2)->helperText('Ghi vào ghi chú nội bộ.')])
                 ->action(function (array $data) use ($after) {
                     /** @var Order $record */
                     $record = $this->getRecord();
                     $notes = trim((string) $record->notes."\n".'Hủy '.now()->format('H:i d/m').': '.$data['reason']);
                     app(OrderLifecycle::class)->update($record, 'cancelled', $notes);
                     $after();
-                    Notification::make()->success()->title('Đã hủy đơn '.$record->code)->send();
+                    $running = $this->hasActiveShipment();
+                    $notice = Notification::make()->title('Đã hủy đơn '.$record->code);
+                    ($running ? $notice->warning()->persistent()->body('Vận đơn vẫn đang chạy: hủy vận đơn ở nút Vận chuyển.') : $notice->success())->send();
                 }),
         ];
+    }
+
+    private function getOrder(): Order
+    {
+        /** @var Order $order */
+        $order = $this->getRecord();
+
+        return $order;
     }
 
     private function hasActiveShipment(): bool
@@ -140,7 +152,7 @@ class EditOrder extends EditRecord
                             ->body(collect($quotes)->map(fn ($q) => $q['service'].': '.number_format($q['fee'], 0, ',', '.').'đ'.($q['lead_time'] ? ' · '.$q['lead_time'] : ''))->implode("\n") ?: 'Không có phương án.')->send();
                     }),
                 Action::make('ntlCreate')->label('Tạo vận đơn Nhất Tín')->icon('heroicon-o-truck')
-                    ->visible(fn (Order $record) => ! $record->shipments()->whereIn('status', Shipments::ACTIVE)->exists())
+                    ->visible(fn (Order $record) => Shipments::blocker($record) === null)
                     ->modalDescription(fn (Order $record) => (app(NtlClient::class)->mode() === 'mock' ? 'Chế độ mô phỏng: không gửi sang Nhất Tín. ' : '')
                         .'Tạo vận đơn nháp cho đơn '.$record->code.'. Kiểm tra cân nặng, kích thước và tiền thu hộ trước khi gửi.')
                     ->schema(fn (Order $record) => [
@@ -151,15 +163,17 @@ class EditOrder extends EditRecord
                         TextInput::make('note')->label('Ghi chú cho bưu tá')->maxLength(200),
                     ])
                     ->action(function (Order $record, array $data): void {
-                        app(Shipments::class)->create($record, $data, AdminActor::current());
-                        Notification::make()->success()->title('Đã tạo vận đơn')->send();
+                        if (OrderResource::reportShipmentErrors(fn () => app(Shipments::class)->create($record, $data, AdminActor::current()))) {
+                            Notification::make()->success()->title('Đã tạo vận đơn')->send();
+                        }
                         $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
                     }),
                 Action::make('ntlTrack')->label('Cập nhật hành trình')->icon('heroicon-o-arrow-path')
-                    ->visible(fn (Order $record) => $record->shipments()->whereNotNull('bill_code')->exists())
+                    // The waybill to follow is the running one (or the newest), never an older one kept for history.
+                    ->visible(fn (Order $record) => Shipments::current($record)?->bill_code !== null)
                     ->action(function (Order $record): void {
                         try {
-                            $shipment = app(Shipments::class)->refresh($record->shipments()->whereNotNull('bill_code')->firstOrFail());
+                            $shipment = app(Shipments::class)->refresh(Shipments::current($record) ?? throw new NtlException('Đơn chưa có mã vận đơn để theo dõi.'));
                             Notification::make()->success()->title(NtlStatus::LABELS[$shipment->status] ?? $shipment->status)->send();
                         } catch (NtlException $error) {
                             Notification::make()->danger()->title('Chưa lấy được hành trình')->body($error->getMessage())->send();
@@ -173,16 +187,20 @@ class EditOrder extends EditRecord
                         .' trên cổng Nhất Tín. Có vận đơn: nhập mã vận đơn. Không có: để trống để đóng lại và tạo vận đơn mới.')
                     ->schema([TextInput::make('bill_code')->label('Mã vận đơn trên cổng Nhất Tín')->maxLength(40)])
                     ->action(function (Order $record, array $data): void {
-                        $shipment = app(Shipments::class)->reconcile($record->shipments()->whereNull('bill_code')->whereIn('status', ['unknown', 'create_pending'])->firstOrFail(),
-                            $data['bill_code'] ?? null, AdminActor::current());
-                        Notification::make()->success()->title($shipment->bill_code ? 'Đã gắn vận đơn '.$shipment->bill_code : 'Đã đóng yêu cầu, có thể tạo vận đơn mới')->send();
+                        OrderResource::reportShipmentErrors(function () use ($record, $data) {
+                            $shipment = app(Shipments::class)->reconcile($record->shipments()->whereNull('bill_code')->whereIn('status', ['unknown', 'create_pending'])->firstOrFail(),
+                                $data['bill_code'] ?? null, AdminActor::current());
+                            Notification::make()->success()->title($shipment->bill_code ? 'Đã gắn vận đơn '.$shipment->bill_code : 'Đã đóng yêu cầu, có thể tạo vận đơn mới')->send();
+                        });
                         $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
                     }),
                 Action::make('ntlCancel')->label('Hủy vận đơn')->icon('heroicon-o-x-circle')->color('danger')->requiresConfirmation()
                     ->visible(fn (Order $record) => $record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->exists())
                     ->action(function (Order $record): void {
-                        app(Shipments::class)->cancel($record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->firstOrFail(), AdminActor::current());
-                        Notification::make()->success()->title('Đã hủy vận đơn')->send();
+                        if (OrderResource::reportShipmentErrors(fn () => app(Shipments::class)->cancel(
+                            $record->shipments()->whereIn('status', ['draft', 'waiting_pickup', 'failed'])->firstOrFail(), AdminActor::current()))) {
+                            Notification::make()->success()->title('Đã hủy vận đơn')->send();
+                        }
                         $this->redirect(OrderResource::getUrl('edit', ['record' => $record]));
                     }),
             ])->label('Vận chuyển')->icon('heroicon-o-truck')->button()->color('gray'),

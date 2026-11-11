@@ -38,8 +38,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 use UnitEnum;
 
@@ -238,7 +240,7 @@ class OrderResource extends Resource
                         Notification::make()->success()->title('Đã xác nhận '.$done.' đơn')->send();
                     })->deselectRecordsAfterCompletion(),
                 BulkAction::make('shipSelected')->label('Tạo vận đơn Nhất Tín cho các đơn đã chọn')->icon(Heroicon::OutlinedTruck)
-                    ->modalDescription('Mỗi đơn một vận đơn nháp. Cân nặng tính từ "Cân nặng khi đóng gói" của sản phẩm; dòng chưa có cân nặng dùng số kg bên dưới. Tiền thu hộ tự tính: đơn COD chưa thanh toán thu đúng tổng đơn. Đơn đã có vận đơn, đã hủy hoặc đã xong được bỏ qua.')
+                    ->modalDescription('Mỗi đơn một vận đơn nháp. Cân nặng tính từ "Cân nặng khi đóng gói" của sản phẩm; dòng chưa có cân nặng dùng số kg bên dưới. Tiền thu hộ tự tính: đơn COD chưa thanh toán thu đúng tổng đơn. Đơn đã hủy, đã hoàn tất, đã giao hoặc còn vận đơn đang chạy/chưa rõ được bỏ qua và ghi lý do.')
                     ->schema([
                         Select::make('service_id')->label('Dịch vụ')->required()->default('91')->options(config('shipping.nhattin.services')),
                         Select::make('payer_id')->label('Ai trả cước')->required()->default('10')->options(config('shipping.nhattin.payers')),
@@ -291,22 +293,24 @@ class OrderResource extends Resource
             });
     }
 
-    /** "Vận chuyển" cell: create the waybill when there is none, otherwise show the journey and refresh it. */
+    /** "Vận chuyển" cell: create the waybill when the order may have one, otherwise show the journey and refresh it. */
     public static function shippingAction(): Action
     {
         return Action::make('shipping')->label('Vận chuyển')
-            ->visible(fn (Order $record) => $record->latestShipment !== null || in_array($record->status, ['new', 'confirmed'], true))
+            ->visible(fn (Order $record) => $record->latestShipment !== null || Shipments::blocker($record) === null)
             ->modalHeading(fn (Order $record) => 'Vận chuyển đơn '.$record->code)
-            ->modalDescription(fn (Order $record) => $record->customer_name.' · '.$record->phone.' · '.OrderExporter::address($record->loadMissing('ward', 'province')))
+            ->modalDescription(fn (Order $record) => $record->customer_name.' · '.$record->phone.' · '.OrderExporter::address($record->loadMissing('ward', 'province'))
+                .(self::shippingMode($record) === 'closed' && ($why = Shipments::blocker($record)) ? "\n".$why : ''))
             ->modalWidth('lg')
-            ->modalSubmitActionLabel(fn (Order $record) => self::activeShipment($record) ? 'Cập nhật hành trình' : 'Tạo vận đơn nháp')
-            ->modalContent(fn (Order $record) => self::activeShipment($record) || $record->latestShipment ? view('filament.order-shipment', ['shipment' => $record->latestShipment]) : null)
+            ->modalSubmitActionLabel(fn (Order $record) => self::shippingMode($record) === 'track' ? 'Cập nhật hành trình' : 'Tạo vận đơn nháp')
+            ->modalSubmitAction(fn (Order $record, Action $action) => self::shippingMode($record) === 'closed' ? false : $action)
+            ->modalContent(fn (Order $record) => ($shown = Shipments::current($record) ?? $record->latestShipment) ? view('filament.order-shipment', ['shipment' => $shown]) : null)
             ->fillForm(function (Order $record) {
                 $weight = app(ShipmentAutomation::class)->weight($record);
 
                 return ['weight_kg' => $weight['kg'], 'service_id' => '91', 'payer_id' => '10', 'cod_amount' => app(Shipments::class)->codFor($record)];
             })
-            ->schema(fn (Order $record) => self::activeShipment($record) ? [] : [
+            ->schema(fn (Order $record) => self::shippingMode($record) !== 'create' ? [] : [
                 Grid::make(2)->schema([
                     TextInput::make('weight_kg')->label('Cân nặng (kg)')->numeric()->required()->minValue(0.1)->maxValue(1000)
                         ->helperText(fn () => app(ShipmentAutomation::class)->weight($record)['known'] ? 'Tính từ cân nặng sản phẩm.' : 'Có sản phẩm chưa nhập cân nặng: đang tính 1 kg mỗi cái, sửa nếu cần.'),
@@ -317,26 +321,47 @@ class OrderResource extends Resource
                 TextInput::make('note')->label('Ghi chú cho bưu tá')->maxLength(200),
             ])
             ->action(function (Order $record, array $data): void {
-                try {
-                    if ($active = self::activeShipment($record)) {
+                self::reportShipmentErrors(function () use ($record, $data) {
+                    $active = Shipments::current($record);
+                    if ($active !== null && in_array($active->status, Shipments::ACTIVE, true)) {
                         $shipment = app(Shipments::class)->refresh($active);
                         Notification::make()->success()->title(NtlStatus::LABELS[$shipment->status] ?? $shipment->status)->send();
 
                         return;
                     }
+                    // The service checks the order again under its lock: a stale modal cannot ship a cancelled or finished order.
                     $shipment = app(Shipments::class)->create($record, $data, AdminActor::current());
                     Notification::make()->success()->title('Đã tạo vận đơn '.($shipment->bill_code ?? $shipment->ref_code))->send();
-                } catch (NtlException $error) {
-                    Notification::make()->danger()->title('Nhất Tín chưa trả lời được')->body($error->getMessage())->persistent()->send();
-                }
+                });
             });
     }
 
-    private static function activeShipment(Order $order): ?Shipment
+    /** track = a waybill is running; create = a waybill may be made now; closed = neither (the reason is shown). */
+    private static function shippingMode(Order $order): string
     {
-        $latest = $order->latestShipment;
+        $current = Shipments::current($order);
 
-        return $latest && in_array($latest->status, Shipments::ACTIVE, true) ? $latest : null;
+        return match (true) {
+            $current !== null && in_array($current->status, Shipments::ACTIVE, true) => 'track',
+            Shipments::blocker($order) === null => 'create',
+            default => 'closed',
+        };
+    }
+
+    /** Shows a refused or failed shipping step as a notice that says what to do, instead of an error page or a silent form error. */
+    public static function reportShipmentErrors(callable $step): bool
+    {
+        try {
+            $step();
+
+            return true;
+        } catch (ValidationException $error) {
+            Notification::make()->danger()->title('Chưa làm được')->body(implode(' ', Arr::flatten($error->errors())))->persistent()->send();
+        } catch (NtlException $error) {
+            Notification::make()->danger()->title('Nhất Tín chưa trả lời được')->body($error->getMessage())->persistent()->send();
+        }
+
+        return false;
     }
 
     /** @param Collection<int, Order> $records */
@@ -346,8 +371,8 @@ class OrderResource extends Resource
         $skipped = [];
         $failed = [];
         foreach ($records as $order) {
-            if (! in_array($order->status, ['new', 'confirmed'], true) || $order->shipments()->whereIn('status', Shipments::ACTIVE)->exists()) {
-                $skipped[] = $order->code;
+            if (($why = Shipments::blocker($order)) !== null) {
+                $skipped[] = $order->code.' ('.Str::before($why, ':').')';
 
                 continue;
             }
@@ -362,7 +387,7 @@ class OrderResource extends Resource
         }
         $body = implode("\n", array_filter([
             $made ? 'Đã tạo: '.implode('; ', $made) : null,
-            $skipped ? 'Bỏ qua (đã có vận đơn hoặc không còn cần giao): '.implode(', ', $skipped) : null,
+            $skipped ? 'Bỏ qua: '.implode(', ', $skipped) : null,
             $failed ? 'Lỗi: '.implode('; ', $failed) : null,
         ]));
         Notification::make()->title('Tạo '.count($made).'/'.$records->count().' vận đơn')->body($body)
