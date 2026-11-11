@@ -6,7 +6,6 @@ use App\Domain\Catalog\CategoryTree;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
-use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
 use App\Models\Category;
 use App\Support\Slugs;
@@ -103,7 +102,7 @@ class CategoryResource extends Resource
                     ->tooltip('Sản phẩm đang hiện trong danh mục này và mọi danh mục con. 0 nghĩa là trang danh mục chưa hiện trên website.'),
                 TextColumn::make('slug')->label('Đường dẫn')->toggleable(isToggledHiddenByDefault: true),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
-                PublicStatusColumn::make(),
+                PublicStatusColumn::make(besideSwitch: true),
                 TextColumn::make('sort_order')->label('Thứ tự')->toggleable(),
             ])
             ->filters([
@@ -115,7 +114,6 @@ class CategoryResource extends Resource
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
             ])
             ->recordActions([
-                PublicLink::action()->iconButton(),
                 Action::make('addChild')->label('Thêm danh mục con')->tooltip('Thêm danh mục con')->iconButton()->icon(Heroicon::OutlinedPlus)->color('gray')
                     ->visible(fn (Category $record) => (int) $record->depth < 4)
                     ->url(fn (Category $record) => self::getUrl('create', ['parent_id' => $record->getKey()])),

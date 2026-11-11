@@ -137,6 +137,6 @@ abstract class PostResource extends Resource
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
                 Filter::make('scheduled')->label('Đang hẹn giờ đăng')->query(fn (Builder $query) => $query->where('is_visible', true)->where('published_at', '>', now())),
             ])))
-            ->recordActions([PublicLink::action(), EditAction::make()]);
+            ->recordActions([EditAction::make()]);
     }
 }

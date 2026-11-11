@@ -258,8 +258,9 @@ class SiteAssembler
         // Only the accounts the owner filled in are shown, in the order SocialNetworks lists them.
         // `kind` travels with the link so the footer picks an icon by identity, not by sniffing the URL.
         $social = [];
+        $hidden = SocialNetworks::hidden($options);
         foreach (SocialNetworks::NETWORKS as $key => [$label, $kind]) {
-            $href = self::url($options[$key] ?? '');
+            $href = in_array($key, $hidden, true) ? '' : self::url($options[$key] ?? '');
             if ($href !== '') {
                 $social[] = ['label' => $label, 'href' => $href, 'kind' => $kind];
             }

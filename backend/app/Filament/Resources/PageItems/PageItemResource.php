@@ -130,7 +130,7 @@ class PageItemResource extends Resource
                 SelectFilter::make('section')->label('Phần')->options(fn () => self::sectionOptions())->searchable(),
                 SelectFilter::make('is_visible')->label('Trạng thái')->options([1 => 'Đang bật', 0 => 'Đã lưu trữ'])->default('1'),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

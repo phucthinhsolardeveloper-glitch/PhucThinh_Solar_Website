@@ -56,7 +56,7 @@ class VideoResource extends Resource
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

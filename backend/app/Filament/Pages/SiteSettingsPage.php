@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Ward;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +22,8 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +92,7 @@ class SiteSettingsPage extends Page
             $data[$key] = (string) ($values[$key] ?? '') === '1';
         }
         $synonyms = $values[SearchSynonyms::SETTING] ?? null;
+        $data['social_hidden'] = SocialNetworks::hidden($values->all());
         $data['search_synonyms'] = implode("\n", is_array($synonyms) ? array_map('strval', $synonyms) : SearchSynonyms::DEFAULTS);
         $data['shipping_sender_province'] = Ward::query()->whereKey((int) ($data['shipping_sender_ward_id'] ?? 0))->value('province_id');
         $this->form->fill($data);
@@ -110,13 +114,26 @@ class SiteSettingsPage extends Page
                 TextInput::make('zalo')->label('Số Zalo')->tel(),
             ]),
             Section::make('Mạng xã hội')->columns(2)
-                ->description('Điền trang nào thì chân trang hiện đúng biểu tượng của trang đó; để trống là ẩn. Các địa chỉ này cũng được khai báo cho Google là tài khoản chính thức của công ty.')
+                ->description('Dán link trang nào thì chân trang hiện biểu tượng của trang đó. Bấm "Đang hiện" để tạm ẩn mà vẫn giữ link, rồi Lưu thay đổi. Các link đang hiện cũng được khai báo cho Google là tài khoản chính thức của công ty.')
                 ->schema(array_map(
                     fn (array $network, string $key) => TextInput::make($key)->label($network[0])->url()
-                        ->placeholder($network[2])->maxLength(300),
+                        ->placeholder('Dán link '.$network[0].', ví dụ '.$network[2])->maxLength(300)
+                        ->hintAction(Action::make('toggle_'.$key)
+                            ->label(fn (Get $get) => in_array($key, (array) $get('social_hidden'), true) ? 'Đang ẩn · bấm để hiện' : 'Đang hiện · bấm để ẩn')
+                            ->icon(fn (Get $get) => in_array($key, (array) $get('social_hidden'), true) ? 'heroicon-m-eye-slash' : 'heroicon-m-eye')
+                            ->color(fn (Get $get) => in_array($key, (array) $get('social_hidden'), true) ? 'gray' : 'success')
+                            ->visible(fn (Get $get) => filled($get($key)))
+                            ->action(function (Get $get, Set $set) use ($key) {
+                                $hidden = array_values(array_filter((array) $get('social_hidden'), fn ($k) => $k !== $key));
+                                if (! in_array($key, (array) $get('social_hidden'), true)) {
+                                    $hidden[] = $key;
+                                }
+                                $set('social_hidden', $hidden);
+                            })),
                     SocialNetworks::NETWORKS,
                     SocialNetworks::keys(),
                 )),
+            Hidden::make('social_hidden'),
             Section::make('Tài khoản nhận chuyển khoản')->columns(3)->visible(fn () => self::isOwner())
                 ->description('Khách chọn chuyển khoản sẽ thấy mã VietQR theo tài khoản này, kèm số tiền và nội dung riêng cho từng đơn. Để trống thì không nhận chuyển khoản.')
                 ->schema([
@@ -181,6 +198,10 @@ class SiteSettingsPage extends Page
         $after = array_filter($after, fn ($value, $key) => $value !== '' || array_key_exists($key, $before), ARRAY_FILTER_USE_BOTH);
         foreach (self::SWITCH_KEYS as $key) {
             $after[$key] = ! empty($data[$key]) ? '1' : '0';
+        }
+        $hidden = array_values(array_intersect(SocialNetworks::keys(), (array) ($data['social_hidden'] ?? [])));
+        if ($hidden !== [] || array_key_exists(SocialNetworks::HIDDEN_SETTING, $before)) {
+            $after[SocialNetworks::HIDDEN_SETTING] = $hidden;
         }
         // Untouched starting groups stay unsaved, so a later change to the defaults still reaches this site.
         $synonyms = array_map(fn ($terms) => implode(', ', $terms), SearchSynonyms::parse(preg_split('/\R/', (string) ($data['search_synonyms'] ?? '')) ?: []));

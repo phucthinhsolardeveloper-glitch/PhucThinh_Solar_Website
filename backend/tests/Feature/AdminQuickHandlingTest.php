@@ -50,17 +50,17 @@ it('changes an order status from the list through the lifecycle rules', function
     $this->actingAs(quickAdmin(['orders']), 'admin');
     $order = quickOrder();
 
-    Livewire::test(ListOrders::class)->callTableAction('quickStatus', $order, ['status' => 'confirmed', 'notes' => 'Đã gọi khách'])
+    Livewire::test(ListOrders::class)->callTableAction('statusFromColumn', $order, ['status' => 'confirmed', 'notes' => 'Đã gọi khách'])
         ->assertHasNoActionErrors();
     expect($order->fresh()->status)->toBe('confirmed')->and($order->fresh()->notes)->toBe('Đã gọi khách');
 
     // new -> done skips a step and stays refused, as on the edit page.
     $other = quickOrder();
-    Livewire::test(ListOrders::class)->callTableAction('quickStatus', $other, ['status' => 'done'])->assertHasActionErrors(['status']);
+    Livewire::test(ListOrders::class)->callTableAction('statusFromColumn', $other, ['status' => 'done'])->assertHasActionErrors(['status']);
     expect($other->fresh()->status)->toBe('new');
 
     $done = quickOrder(['status' => 'done']);
-    Livewire::test(ListOrders::class)->assertTableActionHidden('quickStatus', $done);
+    Livewire::test(ListOrders::class)->assertTableActionHidden('statusFromColumn', $done);
 });
 
 it('changes a lead status from the list without dropping its assignee', function () {

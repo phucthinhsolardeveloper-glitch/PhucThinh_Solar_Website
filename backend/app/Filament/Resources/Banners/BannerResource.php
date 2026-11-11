@@ -92,7 +92,7 @@ class BannerResource extends Resource
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('placement')->label('Vị trí')->options(self::PLACEMENTS)])
-            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

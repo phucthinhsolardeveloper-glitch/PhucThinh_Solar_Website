@@ -76,7 +76,29 @@ final class PublicUrls
     {
         $path = self::path($record);
 
-        return $path === null ? null : self::base().$path;
+        return $path === null ? null : self::base().$path.self::fragment($record);
+    }
+
+    /** PageItem section → the block on its page (ids of the Nuxt sections), so "Xem trên website" lands on it. */
+    private const SECTION_ANCHORS = [
+        'home.process' => 'home-process-title', 'home.about' => 'home-about-title', 'home.about_points' => 'home-about-title',
+        'about.history' => 'lich-su-phat-trien', 'about.compass' => 'tam-nhin-su-menh', 'about.reasons' => 'vi-sao-chon-chung-toi',
+        'about.principles' => 'con-nguoi', 'about.team' => 'con-nguoi',
+        'dealer.overview' => 'dealer-overview-start', 'dealer.benefits' => 'nang-luc-phan-phoi', 'dealer.support' => 'ho-tro-dai-ly',
+        'dealer.testimonials' => 'dealer-testimonials-heading', 'site.footer' => 'site-footer',
+    ];
+
+    /** "#…" of the spot on the page that shows this record, or '' for the top of the page. */
+    public static function fragment(Model $record): string
+    {
+        $anchor = match (true) {
+            $record instanceof Review => 'danh-gia-'.$record->getKey(),
+            $record instanceof StoreLocation => 'contact-locations-title',
+            $record instanceof PageItem => self::SECTION_ANCHORS[(string) $record->section] ?? null,
+            default => null,
+        };
+
+        return $anchor ? '#'.$anchor : '';
     }
 
     /**

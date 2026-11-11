@@ -30,6 +30,15 @@ final class SocialNetworks
         'pinterest' => ['Pinterest', 'pinterest', 'https://www.pinterest.com/phucthinhsolar'],
     ];
 
+    /** Setting holding the networks switched off: their link stays saved but is not shown anywhere. */
+    public const HIDDEN_SETTING = 'social_hidden';
+
+    /** @param array<string, mixed> $options all settings @return list<string> */
+    public static function hidden(array $options): array
+    {
+        return array_values(array_filter((array) ($options[self::HIDDEN_SETTING] ?? []), 'is_string'));
+    }
+
     /** @return list<string> */
     public static function keys(): array
     {

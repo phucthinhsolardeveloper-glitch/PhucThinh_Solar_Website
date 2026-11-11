@@ -25,4 +25,11 @@ final class PublicLink
                 ? 'Mục này đang ẩn (hoặc danh mục chưa có sản phẩm hiện) nên trang sẽ báo không tìm thấy.'
                 : 'Mở trang công khai ở tab mới');
     }
+
+    /** Table row: icon only, on every row (greyed out when the record has no page), so row buttons line up. */
+    public static function row(): Action
+    {
+        return self::action()->iconButton()->visible(true)
+            ->disabled(fn (?Model $record) => $record === null || PublicUrls::path($record) === null);
+    }
 }

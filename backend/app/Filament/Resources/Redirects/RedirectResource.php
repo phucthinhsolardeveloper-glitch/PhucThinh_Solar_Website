@@ -65,7 +65,7 @@ class RedirectResource extends Resource
                     ->description(fn (Redirect $record) => $record->last_hit_at ? 'gần nhất '.$record->last_hit_at->format('d/m/Y') : null),
             ])
             ->filters([SelectFilter::make('source')->label('Tạo bởi')->options(['auto' => 'Tự động', 'manual' => 'Thêm tay'])])
-            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

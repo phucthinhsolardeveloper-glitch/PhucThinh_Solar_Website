@@ -172,6 +172,7 @@ class OrderResource extends Resource
                     ->color(fn ($state) => match ($state) {
                         'new' => 'warning', 'done' => 'success', 'cancelled' => 'gray', default => 'info'
                     })
+                    ->icon(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [] ? 'heroicon-m-pencil-square' : null)->iconPosition('after')
                     ->tooltip(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [] ? 'Bấm để đổi trạng thái' : null)
                     ->action(self::quickStatusAction('statusFromColumn')),
                 TextColumn::make('payment_status')->label('Thanh toán')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
@@ -189,7 +190,6 @@ class OrderResource extends Resource
                     ->when($data['until'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date))),
             ])
             ->recordActions([
-                self::quickStatusAction('quickStatus')->iconButton(),
                 EditAction::make()->label('Xem / xử lý'),
                 Action::make('print')->label('In')->icon(Heroicon::OutlinedPrinter)->iconButton()->tooltip('In đơn hàng')
                     ->url(fn (Order $record) => route('order.print', $record), true),

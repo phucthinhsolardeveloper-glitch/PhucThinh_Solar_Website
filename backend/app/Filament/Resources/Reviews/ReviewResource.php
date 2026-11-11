@@ -13,6 +13,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -100,22 +101,31 @@ class ReviewResource extends Resource
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => match ($state) {
                         'pending' => 'warning', 'approved' => 'success', default => 'gray'
-                    }),
+                    })
+                    ->icon(fn () => self::canModerate() ? 'heroicon-m-pencil-square' : null)->iconPosition('after')
+                    ->tooltip(fn () => self::canModerate() ? 'Bấm để duyệt hoặc ẩn' : null)
+                    ->action(Action::make('moderate')->label('Đổi tình trạng')->visible(fn () => self::canModerate())
+                        ->modalHeading(fn (Review $record) => 'Đánh giá của '.$record->name)
+                        ->modalDescription(fn (Review $record) => str((string) $record->content)->limit(200)->toString())
+                        ->modalWidth('md')->modalSubmitActionLabel('Lưu')
+                        ->fillForm(fn (Review $record) => ['status' => $record->status === 'approved' ? 'approved' : 'hidden'])
+                        ->schema([Radio::make('status')->label('Tình trạng')->required()
+                            ->options(['approved' => 'Duyệt: hiện trên trang sản phẩm', 'hidden' => 'Ẩn: không hiện'])])
+                        ->action(fn (Review $record, array $data) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), (string) $data['status']))),
             ])
             ->filters([SelectFilter::make('status')->label('Tình trạng')->options(self::STATUSES)])
-            ->recordActions([PublicLink::action(),
-                Action::make('approve')->label('Duyệt')->icon(Heroicon::OutlinedCheck)->color('success')
-                    ->visible(fn (Review $record) => self::canModerate() && $record->status !== 'approved')
-                    ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'approved')),
-                Action::make('hide')->label('Ẩn')->icon(Heroicon::OutlinedEyeSlash)->requiresConfirmation()
-                    ->visible(fn (Review $record) => self::canModerate() && $record->status === 'approved')
-                    ->action(fn (Review $record) => app(ReviewModeration::class)->moderate($record, AdminActor::current(), 'hidden')),
-                Action::make('reply')->label('Trả lời')->icon(Heroicon::OutlinedChatBubbleLeft)
-                    ->visible(fn (Review $record) => self::canModerate() && $record->status === 'approved')
+            // Same buttons on every row, in the same place: the status is changed by clicking its badge, and an action
+            // that does not apply to the row is greyed out with the reason instead of disappearing.
+            ->recordActions([
+                PublicLink::row(),
+                Action::make('reply')->label('Trả lời')->tooltip(fn (Review $record) => $record->status === 'approved' ? 'Trả lời' : 'Duyệt đánh giá trước khi trả lời')
+                    ->icon(Heroicon::OutlinedChatBubbleLeft)->iconButton()->visible(fn () => self::canModerate())
+                    ->disabled(fn (Review $record) => $record->status !== 'approved')
                     ->schema([Textarea::make('content')->label('Câu trả lời của Phúc Thịnh Solar')->rows(4)->required()->maxLength(5000)])
                     ->action(fn (Review $record, array $data) => app(ReviewModeration::class)->reply($record, AdminActor::current(), $data['content'])),
-                Action::make('viewMedia')->label('Xem media')->icon(Heroicon::OutlinedPhoto)
-                    ->visible(fn (Review $record) => $record->media()->exists())
+                Action::make('viewMedia')->label('Xem media')->icon(Heroicon::OutlinedPhoto)->iconButton()
+                    ->tooltip(fn (Review $record) => $record->media()->exists() ? 'Xem ảnh, video khách gửi' : 'Không có ảnh, video')
+                    ->disabled(fn (Review $record) => ! $record->media()->exists())
                     ->modal()->modalHeading('Ảnh và video đánh giá')->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
                     ->modalContent(fn (Review $record) => view('filament.review-media', ['media' => $record->media()->get()])),
                 EditAction::make()->visible(fn () => self::canModerate())

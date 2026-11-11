@@ -68,7 +68,7 @@ class SeoPageResource extends Resource
                 TextColumn::make('title')->label('Tiêu đề SEO')->limit(60),
                 TextColumn::make('description')->label('Mô tả')->limit(60)->toggleable(),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make()]);
     }
 
     public static function getPages(): array

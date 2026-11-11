@@ -4,6 +4,7 @@ use App\Domain\Site\SocialNetworks;
 use App\Filament\Pages\SiteSettingsPage;
 use App\Models\User;
 use App\Support\SiteSettings;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
@@ -53,4 +54,24 @@ it('refuses an address that is not a link, so the footer cannot show a broken ic
     Livewire::test(SiteSettingsPage::class)
         ->set('data.tiktok', 'tiktok phuc thinh')
         ->call('save')->assertHasErrors(['data.tiktok']);
+});
+
+it('hides a network without losing its link, and shows it again', function () {
+    DB::table('settings')->whereIn('key', [...SocialNetworks::keys(), SocialNetworks::HIDDEN_SETTING])->delete();
+    $this->actingAs(socialOwner(), 'admin');
+
+    $page = Livewire::test(SiteSettingsPage::class)
+        ->set('data.fanpage', 'https://www.facebook.com/pts')->set('data.youtube', 'https://youtube.com/@pts')
+        ->callAction(TestAction::make('toggle_youtube')->schemaComponent('youtube'))
+        ->call('save')->assertHasNoErrors();
+    app(SiteSettings::class)->clear();
+
+    expect(collect($this->getJson('/api/v1/site')->json('footer.socialLinks'))->pluck('kind')->all())->toBe(['facebook'])
+        ->and(json_decode((string) DB::table('settings')->where('key', 'youtube')->value('value')))->toBe('https://youtube.com/@pts');
+
+    Livewire::test(SiteSettingsPage::class)->assertSet('data.social_hidden', ['youtube'])
+        ->callAction(TestAction::make('toggle_youtube')->schemaComponent('youtube'))
+        ->call('save');
+    app(SiteSettings::class)->clear();
+    expect(collect($this->getJson('/api/v1/site')->json('footer.socialLinks'))->pluck('kind')->all())->toBe(['facebook', 'youtube']);
 });

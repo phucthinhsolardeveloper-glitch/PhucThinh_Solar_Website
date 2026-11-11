@@ -4,7 +4,6 @@ namespace App\Filament\Resources\PostCategories;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
-use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
 use App\Models\PostCategory;
 use BackedEnum;
@@ -65,13 +64,13 @@ class PostCategoryResource extends Resource
                 TextColumn::make('kind')->label('Dùng cho')->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state)->badge(),
                 TextColumn::make('posts_count')->label('Số bài')->counts('posts'),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
-                PublicStatusColumn::make(),
+                PublicStatusColumn::make(besideSwitch: true),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('kind')->label('Dùng cho')->options(self::KINDS)])
             // Delete stays on every row, greyed out when the group still holds posts: hiding it made the
             // buttons sit at a different place on each row, and the reason it cannot be used was invisible.
-            ->recordActions([PublicLink::action(),
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
                     ->disabled(fn (PostCategory $record) => $record->posts()->exists())

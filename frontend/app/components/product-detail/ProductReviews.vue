@@ -10,6 +10,16 @@ const submitting = ref(false)
 const success = ref('')
 const error = ref('')
 const reviewDetailsOpen = ref(false)
+const reviewsDetails = ref<HTMLDetailsElement | null>(null)
+// "Xem trên website" from Admin links to #danh-gia-<id>: open the folded reviews and bring that review (or the list) into view.
+onMounted(() => {
+  if (!/^#danh-gia-/.test(window.location.hash) || !reviewsDetails.value) return
+  reviewsDetails.value.open = true
+  nextTick(() => {
+    const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1))) ?? reviewsDetails.value
+    target?.scrollIntoView({ block: 'start' })
+  })
+})
 const form = reactive({ star: 5, title: '', content: '', fullname: '', phone: '', email: '', orderCode: '' })
 const photoFiles = ref<File[]>([])
 const videoFile = ref<File | null>(null)
@@ -232,7 +242,7 @@ async function sendReview() {
 
 <template>
   <section class="scroll-mt-24 border-t border-gray-200 py-8" aria-labelledby="product-reviews-title">
-    <details id="danh-gia-san-pham" class="border-y border-gray-200">
+    <details id="danh-gia-san-pham" ref="reviewsDetails" class="border-y border-gray-200">
       <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-black text-navy-800">
         <span>Đánh giá sản phẩm <small class="ml-1 font-semibold text-slate-500">({{ currentReviews.total }} nhận xét)</small></span>
         <span class="text-2xl font-normal text-gold-700" aria-hidden="true">+</span>
@@ -266,7 +276,7 @@ async function sendReview() {
     <p v-if="!currentReviews.total" class="mt-6 rounded-chip border border-gray-200 p-5 text-slate-500">Sản phẩm chưa có đánh giá đã được duyệt. Anh/chị có thể gửi nhận xét đầu tiên.</p>
 
     <div v-else class="mt-7 divide-y divide-gray-200 border-y border-gray-200">
-      <article v-for="review in currentReviews.items" :key="review.id" class="py-6">
+      <article v-for="review in currentReviews.items" :id="`danh-gia-${review.id}`" :key="review.id" class="scroll-mt-28 py-6">
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
           <strong>{{ review.name || 'Khách hàng' }}</strong>
           <span v-if="review.verified" class="rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700">Đã mua hàng</span>

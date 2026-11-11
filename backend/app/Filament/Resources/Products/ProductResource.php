@@ -7,7 +7,6 @@ use App\Domain\Catalog\SpecFormat;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
-use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
 use App\Filament\Support\PublishGate;
 use App\Filament\Support\TypedSpecsForm;
@@ -191,10 +190,6 @@ class ProductResource extends Resource
                     }),
                 TextColumn::make('sales_readiness')->label('Cần bổ sung')
                     ->state(function (Product $record): string {
-                        if (! $record->is_visible) {
-                            return 'Đang ẩn';
-                        }
-
                         $issues = app(ProductSalesReadiness::class)->issues($record);
 
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
@@ -208,7 +203,7 @@ class ProductResource extends Resource
 
                         return $state;
                     }),
-                PublicStatusColumn::make(),
+                PublicStatusColumn::make(besideSwitch: true),
                 ToggleColumn::make('quote_only')->label('Báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(),
                 ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -221,14 +216,14 @@ class ProductResource extends Resource
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])
-            ->recordActions([PublicLink::action(), self::quickEditAction(), EditAction::make()])
+            ->recordActions([self::quickEditAction(), EditAction::make()])
             ->toolbarActions(ProductBulkActions::groups());
     }
 
     /** Price, category and flags from the list; the same model save as the edit page. */
     public static function quickEditAction(): Action
     {
-        return Action::make('quickEdit')->label('Sửa nhanh')->icon(Heroicon::OutlinedPencil)->iconButton()->tooltip('Sửa nhanh giá, danh mục')
+        return Action::make('quickEdit')->label('Sửa nhanh')->icon(Heroicon::OutlinedBanknotes)->iconButton()->tooltip('Sửa nhanh giá, danh mục')
             ->modalHeading(fn (Product $record) => $record->name)->modalWidth('lg')->modalSubmitActionLabel('Lưu')
             ->fillForm(fn (Product $record) => $record->only(['regular_price', 'sale_price', 'quote_only', 'category_id', 'is_bestseller']))
             ->schema([

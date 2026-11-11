@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Albums;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
-use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
 use App\Models\Album;
 use BackedEnum;
@@ -66,9 +65,9 @@ class AlbumResource extends Resource
                 TextColumn::make('title')->label('Album')->searchable(),
                 TextColumn::make('images_count')->label('Số ảnh')->counts('images'),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
-                PublicStatusColumn::make(),
+                PublicStatusColumn::make(besideSwitch: true),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make()]);
+            ->recordActions([EditAction::make()]);
     }
 
     public static function getPages(): array

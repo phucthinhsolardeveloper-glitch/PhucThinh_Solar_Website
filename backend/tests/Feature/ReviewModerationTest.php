@@ -30,7 +30,7 @@ it('moderates a real review and reply through Filament and changes the public pr
     $url = '/api/v1/product-extras?slug='.$product->slug;
     $before = $this->getJson($url)->assertOk()->json('reviews.total');
 
-    Livewire\Livewire::test(ManageReviews::class)->callTableAction('approve', $review)->assertHasNoActionErrors();
+    Livewire\Livewire::test(ManageReviews::class)->callTableAction('moderate', $review, ['status' => 'approved'])->assertHasNoActionErrors();
     expect($review->fresh()->status)->toBe('approved');
     $this->getJson($url)->assertOk()->assertJsonPath('reviews.total', $before + 1);
 
@@ -40,7 +40,7 @@ it('moderates a real review and reply through Filament and changes the public pr
         ->and($review->replies()->first()->content)->toBe('Cảm ơn khách hàng');
     $this->getJson($url)->assertOk()->assertJsonPath('reviews.items.0.repliesTotal', 1);
 
-    Livewire\Livewire::test(ManageReviews::class)->callTableAction('hide', $review)->assertHasNoActionErrors();
+    Livewire\Livewire::test(ManageReviews::class)->callTableAction('moderate', $review, ['status' => 'hidden'])->assertHasNoActionErrors();
     expect($review->fresh()->status)->toBe('hidden');
     $this->getJson($url)->assertOk()->assertJsonPath('reviews.total', $before);
 });
@@ -65,7 +65,7 @@ it('approves a selected batch and refuses unauthorized or nested mutations', fun
     $this->flushSession();
     $this->actingAs($viewer, 'admin');
     $this->get('/admin/reviews')->assertOk();
-    Livewire\Livewire::test(ManageReviews::class)->assertTableActionHidden('hide', $first);
+    Livewire\Livewire::test(ManageReviews::class)->assertTableActionHidden('moderate', $first)->assertTableActionHidden('reply', $first);
     expect(fn () => app(ReviewModeration::class)->moderate($first, $viewer, 'hidden'))
         ->toThrow(HttpException::class);
 

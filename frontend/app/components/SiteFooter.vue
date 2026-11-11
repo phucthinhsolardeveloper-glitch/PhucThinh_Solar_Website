@@ -68,7 +68,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
 </script>
 
 <template>
-  <footer class="border-t border-navy-900 bg-navy-950 pb-7 text-ftr-text">
+  <footer id="site-footer" class="border-t border-navy-900 bg-navy-950 pb-7 text-ftr-text">
     <div
       class="mx-auto grid w-full max-w-(--container-page) gap-8 px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) pt-12 max-tb:gap-0 max-tb:pt-6
              grid-cols-1

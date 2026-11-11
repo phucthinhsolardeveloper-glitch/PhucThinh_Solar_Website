@@ -33,8 +33,9 @@ final class MailBrand
         $origin = rtrim((string) config('site.canonical_origin'), '/');
 
         $social = [];
+        $hidden = SocialNetworks::hidden($options);
         foreach (SocialNetworks::NETWORKS as $key => [$label]) {
-            $href = is_scalar($options[$key] ?? null) ? trim((string) $options[$key]) : '';
+            $href = ! in_array($key, $hidden, true) && is_scalar($options[$key] ?? null) ? trim((string) $options[$key]) : '';
             if (preg_match('~^https?://~i', $href)) {
                 $social[] = ['label' => $label, 'href' => $href];
             }

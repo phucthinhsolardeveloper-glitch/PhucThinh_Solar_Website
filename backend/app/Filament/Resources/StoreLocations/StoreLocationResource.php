@@ -58,7 +58,7 @@ class StoreLocationResource extends Resource
                 TextColumn::make('address')->label('Địa chỉ')->limit(60),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
+            ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);
     }
 
     public static function getPages(): array

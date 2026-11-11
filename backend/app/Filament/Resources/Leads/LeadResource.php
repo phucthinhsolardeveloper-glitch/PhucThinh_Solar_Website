@@ -127,7 +127,7 @@ class LeadResource extends Resource
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
                     ->description(fn (Lead $record) => (data_get($record, 'assignee.name') ?? 'Chưa phân công')
                         .($record->follow_up_at ? ' · hẹn '.Carbon::parse($record->follow_up_at)->format('d/m H:i') : ''))
-                    ->tooltip('Bấm để đổi tình trạng')
+                    ->icon('heroicon-m-pencil-square')->iconPosition('after')->tooltip('Bấm để đổi tình trạng')
                     ->action(self::quickStatusAction()),
                 TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('d/m/Y H:i')->sortable()->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
             ])
