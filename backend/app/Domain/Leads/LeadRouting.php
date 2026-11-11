@@ -13,7 +13,7 @@ use Throwable;
 /**
  * "Tự chia liên hệ mới" (Thông tin website → Bán hàng, off by default): a new enquiry goes to the active staff
  * member with the leads permission who has the fewest open enquiries (owners only when nobody else can take it),
- * with a call-back time two working hours later. Written as an enquiry event so the history shows who decided.
+ * with a call-back time two working hours later (callBackAt). Written as an enquiry event so the history shows who decided.
  */
 final class LeadRouting
 {
@@ -46,9 +46,14 @@ final class LeadRouting
                 ->selectRaw('assigned_to, count(*) as n')->groupBy('assigned_to')->pluck('n', 'assigned_to');
             $chosen = $pool->sortBy(fn (User $u) => [(int) ($open[$u->id] ?? 0), $u->id])->first();
             $due = self::callBackAt(now());
-            $lead->forceFill(['assigned_to' => $chosen->id, 'follow_up_at' => $due])->save();
+            // Conditional write: someone who pressed "Nhận xử lý" in the meantime keeps the enquiry.
+            $won = Lead::query()->whereKey($lead->id)->whereNull('assigned_to')->whereNotIn('status', ['done', 'spam'])
+                ->update(['assigned_to' => $chosen->id, 'follow_up_at' => $lead->follow_up_at ?? $due, 'updated_at' => now()]);
+            if ($won !== 1) {
+                return null;
+            }
             $lead->events()->create(['actor_id' => null, 'changes' => ['assigned_to' => ['from' => null, 'to' => $chosen->id, 'to_name' => $chosen->name],
-                'follow_up_at' => ['from' => null, 'to' => $due->toDateTimeString()], 'auto' => true], 'created_at' => now()]);
+                'follow_up_at' => ['from' => null, 'to' => ($lead->follow_up_at ?? $due)->toDateTimeString()], 'auto' => true], 'created_at' => now()]);
 
             return $chosen;
         } catch (Throwable $e) {
@@ -58,20 +63,35 @@ final class LeadRouting
         }
     }
 
-    /** Two working hours later (Mon–Sat 8:00–17:00); outside them, 9:00 of the next working day. */
-    public static function callBackAt(Carbon $at): Carbon
-    {
-        $at = $at->copy();
-        $due = $at->copy()->addHours(2);
-        $working = fn (Carbon $t) => ! $t->isSunday() && $t->hour >= 8 && ($t->hour < 17 || ($t->hour === 17 && $t->minute === 0));
-        if ($working($at) && $working($due)) {
-            return $due->second(0);
-        }
-        $next = $at->copy()->hour < 8 && ! $at->isSunday() ? $at->copy() : $at->copy()->addDay();
-        while ($next->isSunday()) {
-            $next->addDay();
-        }
+    public const DAY_START = 8;
 
-        return $next->setTime(9, 0);
+    public const DAY_END = 17;
+
+    /**
+     * Two working hours later: 120 minutes counted only inside working time (Mon–Sat 08:00–17:00, public holidays
+     * not known here). 16:30 → 09:30 next working day; 17:00 or later, Sunday, or before 08:00 → 10:00 of the
+     * next working morning.
+     */
+    public static function callBackAt(Carbon $at, int $minutes = 120): Carbon
+    {
+        $t = $at->copy()->second(0);
+        $left = $minutes;
+        while (true) {
+            if ($t->isSunday() || $t->hour >= self::DAY_END) {
+                $t = $t->addDay()->setTime(self::DAY_START, 0);
+
+                continue;
+            }
+            if ($t->hour < self::DAY_START) {
+                $t = $t->setTime(self::DAY_START, 0);
+            }
+            $close = $t->copy()->setTime(self::DAY_END, 0);
+            $available = (int) $t->diffInMinutes($close);
+            if ($left <= $available) {
+                return $t->addMinutes($left);
+            }
+            $left -= $available;
+            $t = $close;
+        }
     }
 }

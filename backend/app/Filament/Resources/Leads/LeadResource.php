@@ -148,9 +148,10 @@ class LeadResource extends Resource
                 Action::make('takeLead')->label('Nhận xử lý')->icon(Heroicon::OutlinedHandRaised)->color('primary')
                     ->visible(fn (Lead $record) => $record->assigned_to === null && ! in_array($record->status, ['done', 'spam'], true))
                     ->action(function (Lead $record) {
-                        app(LeadTriage::class)->update($record, ['status' => $record->status, 'notes' => $record->notes, 'assigned_to' => AdminActor::current()->id,
-                            'follow_up_at' => $record->follow_up_at ?? LeadRouting::callBackAt(now())], AdminActor::current());
-                        Notification::make()->success()->title('Bạn đang phụ trách '.$record->name)->send();
+                        $holder = app(LeadTriage::class)->take($record, AdminActor::current(), LeadRouting::callBackAt(now()));
+                        $holder === null
+                            ? Notification::make()->success()->title('Bạn đang phụ trách '.$record->name)->send()
+                            : Notification::make()->warning()->title($holder->name.' đã nhận liên hệ này trước')->body('Không thay đổi người phụ trách. Danh sách đã được làm mới.')->send();
                     }),
                 Action::make('call')->label('Gọi')->icon(Heroicon::OutlinedPhone)->iconButton()->tooltip(fn (Lead $record) => 'Gọi '.$record->phone)
                     ->url(fn (Lead $record) => 'tel:'.CustomerHistory::normalise($record->phone)),
@@ -180,8 +181,9 @@ class LeadResource extends Resource
                     ->visible(fn ($get) => ! in_array($get('status'), ['done', 'spam'], true)),
                 Textarea::make('notes')->label('Ghi chú xử lý')->rows(3),
             ])
+            // Assignment is not on this form: keep whoever has the enquiry now, not the value the list was loaded with.
             ->action(fn (Lead $record, array $data) => app(LeadTriage::class)->update($record, [
-                'assigned_to' => $record->assigned_to,
+                'assigned_to' => Lead::query()->whereKey($record->id)->value('assigned_to'),
                 'follow_up_at' => $data['follow_up_at'] ?? null,
             ] + $data, AdminActor::current()));
     }

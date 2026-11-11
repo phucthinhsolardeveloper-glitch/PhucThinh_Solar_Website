@@ -161,7 +161,7 @@ class SiteSettingsPage extends Page
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
                 Toggle::make(LeadRouting::SETTING)->label('Tự chia liên hệ mới cho nhân viên')
-                    ->helperText('Giao cho người có quyền Liên hệ đang ít việc nhất, hẹn gọi lại sau 2 giờ làm việc. Tắt thì liên hệ mới để chưa phân công.'),
+                    ->helperText('Giao cho người có quyền Liên hệ đang ít việc nhất, hẹn gọi lại sau 2 giờ làm việc (tính trong giờ T2–T7 8:00–17:00; ví dụ gửi 16:30 thì hẹn 9:30 hôm sau). Tắt thì liên hệ mới để chưa phân công.'),
             ]),
             Section::make('Đo lường (Google Tag Manager)')->collapsed()->schema([
                 // Either the id alone or the whole snippet Google gives: only the GTM-XXXX id is kept.

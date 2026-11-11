@@ -32,12 +32,19 @@ it('hands a new enquiry to the least busy salesperson when switched on', functio
         ->and($lead->events()->first()->changes['auto'])->toBeTrue();
 });
 
-it('sets the call-back time inside working hours', function () {
-    expect(LeadRouting::callBackAt(Carbon::parse('2026-11-11 09:00'))->format('Y-m-d H:i'))->toBe('2026-11-11 11:00')
-        ->and(LeadRouting::callBackAt(Carbon::parse('2026-11-11 16:30'))->format('Y-m-d H:i'))->toBe('2026-11-12 09:00')
-        ->and(LeadRouting::callBackAt(Carbon::parse('2026-11-14 20:00'))->format('Y-m-d H:i'))->toBe('2026-11-16 09:00')
-        ->and(LeadRouting::callBackAt(Carbon::parse('2026-11-12 06:00'))->format('Y-m-d H:i'))->toBe('2026-11-12 09:00');
-});
+it('sets the call-back time two working hours later, counted inside Mon–Sat 08:00–17:00', function (string $at, string $due) {
+    expect(LeadRouting::callBackAt(Carbon::parse($at))->format('Y-m-d H:i'))->toBe($due);
+})->with([
+    'morning, same day' => ['2026-11-11 09:00', '2026-11-11 11:00'],
+    'ends exactly at closing' => ['2026-11-11 15:00', '2026-11-11 17:00'],
+    '16:30: 30 min today + 90 min tomorrow' => ['2026-11-11 16:30', '2026-11-12 09:30'],
+    '17:00: all of it tomorrow' => ['2026-11-11 17:00', '2026-11-12 10:00'],
+    'before 08:00' => ['2026-11-12 06:00', '2026-11-12 10:00'],
+    'Saturday 16:00 runs into Monday' => ['2026-11-14 16:00', '2026-11-16 09:00'],
+    'Saturday evening' => ['2026-11-14 20:00', '2026-11-16 10:00'],
+    'Sunday' => ['2026-11-15 11:00', '2026-11-16 10:00'],
+    'seconds dropped' => ['2026-11-11 09:00:45', '2026-11-11 11:00'],
+]);
 
 it('fills packing weight for many products and shows only the ones that are ready', function () {
     $this->actingAs(smartUser([], User::ROLE_OWNER), 'admin');
