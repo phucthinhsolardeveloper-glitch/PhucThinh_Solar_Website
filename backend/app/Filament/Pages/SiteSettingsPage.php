@@ -200,7 +200,11 @@ class SiteSettingsPage extends Page
         // A setting never filled in stays absent rather than becoming an empty row.
         $after = array_filter($after, fn ($value, $key) => $value !== '' || array_key_exists($key, $before), ARRAY_FILTER_USE_BOTH);
         foreach (self::SWITCH_KEYS as $key) {
-            $after[$key] = ! empty($data[$key]) ? '1' : '0';
+            $value = ! empty($data[$key]) ? '1' : '0';
+            // A switch never turned on stays absent (off), like an empty text setting.
+            if ($value === '1' || array_key_exists($key, $before)) {
+                $after[$key] = $value;
+            }
         }
         $hidden = array_values(array_intersect(SocialNetworks::keys(), (array) ($data['social_hidden'] ?? [])));
         if ($hidden !== [] || array_key_exists(SocialNetworks::HIDDEN_SETTING, $before)) {
