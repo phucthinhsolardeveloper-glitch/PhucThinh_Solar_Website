@@ -1,6 +1,8 @@
 <?php
 
 use App\Domain\Commerce\OrderExporter;
+use App\Filament\Resources\Brands\BrandResource;
+use App\Filament\Resources\Brands\Pages\EditBrand;
 use App\Filament\Resources\Brands\Pages\ListBrands;
 use App\Filament\Resources\Leads\Pages\ManageLeads;
 use App\Filament\Resources\Orders\Pages\ListOrders;
@@ -8,6 +10,7 @@ use App\Models\Brand;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
@@ -78,14 +81,14 @@ it('toggles visibility straight from a list', function () {
 it('offers "Lưu" back to the list and "Lưu, ở lại trang" on edit pages', function () {
     $this->actingAs(quickAdmin(['catalog']), 'admin');
     $brand = Brand::query()->create(['name' => 'Hãng thử', 'slug' => 'hang-thu-'.bin2hex(random_bytes(3)), 'is_visible' => true]);
-    $page = App\Filament\Resources\Brands\Pages\EditBrand::class;
+    $page = EditBrand::class;
 
     Livewire::test($page, ['record' => $brand->getKey()])->fillForm(['name' => 'Hãng ở lại'])
-        ->callAction(Filament\Actions\Testing\TestAction::make('saveAndStay')->schemaComponent('form-actions', schema: 'content'))->assertHasNoActionErrors()->assertNoRedirect();
+        ->callAction(TestAction::make('saveAndStay')->schemaComponent('form-actions', schema: 'content'))->assertHasNoActionErrors()->assertNoRedirect();
     expect($brand->fresh()->name)->toBe('Hãng ở lại');
 
     Livewire::test($page, ['record' => $brand->getKey()])->fillForm(['name' => 'Hãng quay về'])
         ->call('save')->assertHasNoFormErrors()
-        ->assertRedirect(App\Filament\Resources\Brands\BrandResource::getUrl('index'));
+        ->assertRedirect(BrandResource::getUrl('index'));
     expect($brand->fresh()->name)->toBe('Hãng quay về');
 });

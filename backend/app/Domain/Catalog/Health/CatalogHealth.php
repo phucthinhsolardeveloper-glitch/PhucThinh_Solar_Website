@@ -51,48 +51,97 @@ class CatalogHealth
 
         foreach ($products as $product) {
             $ref = ['id' => (int) $product->id, 'name' => (string) $product->name];
-
-            if ($this->media->product($product->image) === '') {
-                $fromGallery = collect($gallery->get($product->id, []))->contains(fn ($image) => $this->media->product($image->path) !== '');
-                $issues[$fromGallery ? 'image_from_gallery' : 'no_image'][] = $ref;
-            }
-
-            $regular = (float) $product->regular_price;
-            $sale = (float) $product->sale_price;
-            if ($regular > 0 && $sale > $regular) {
-                $issues['sale_above_regular'][] = $ref;
-            }
-            if ($product->quote_only && ($regular > 0 || $sale > 0)) {
-                $issues['quote_with_price'][] = $ref;
-            }
-            if (! $product->quote_only && $regular <= 0 && $sale <= 0) {
-                $issues['no_price'][] = $ref;
-            }
-
-            $chain = $product->category_id ? $this->tree->chain((int) $product->category_id) : [];
-            $resolved = $this->content->resolve([
-                'id' => (int) $product->id,
-                'brand_id' => (int) $product->brand_id,
-                'top_category_id' => (int) ($chain[0]['id'] ?? 0),
-                'second_category_id' => (int) ($chain[1]['id'] ?? 0),
-            ]);
-            if ($resolved['blocks'] === [] && $resolved['source'] !== 'hide') {
-                $issues['no_description'][] = $ref;
-            }
-
-            if ($chain === []) {
-                $issues['missing_category'][] = $ref;
-            } elseif (collect($chain)->contains(fn ($node) => ! $node['is_visible'])) {
-                $issues['hidden_category'][] = $ref;
-            }
-            if ((int) $product->brand_id > 0 && ! $brands->has((int) $product->brand_id)) {
-                $issues['missing_brand'][] = $ref;
+            foreach ($this->productIssues($product, $brands, $gallery->get($product->id, collect())) as $key) {
+                $issues[$key][] = $ref;
             }
         }
 
         $issues['duplicate_slug'] = $this->duplicateSlugs();
 
         return array_map(fn ($rows) => array_values(array_unique($rows, SORT_REGULAR)), $issues);
+    }
+
+    /**
+     * The same checks for one product, visible or not: used before it is switched on.
+     *
+     * @return list<string> keys of self::CHECKS
+     */
+    public function forProduct(int $id): array
+    {
+        $product = DB::table('products')->where('id', $id)
+            ->first(['id', 'name', 'slug', 'image', 'quote_only', 'regular_price', 'sale_price', 'category_id', 'brand_id']);
+        if (! $product) {
+            return [];
+        }
+        $keys = $this->productIssues($product, DB::table('brands')->pluck('id', 'id'),
+            DB::table('product_images')->where('product_id', $id)->where('is_visible', true)->orderBy('sort_order')->orderBy('id')->get(['product_id', 'path']));
+        if ($this->slugTaken((string) $product->slug, 'products', $id)) {
+            $keys[] = 'duplicate_slug';
+        }
+
+        return $keys;
+    }
+
+    /** True when another record already answers this top-level address. */
+    public function slugTaken(string $slug, string $table, int $id): bool
+    {
+        if (trim($slug) === '') {
+            return false;
+        }
+        if (DB::table('categories')->whereNull('parent_id')->where('slug', $slug)->when($table === 'categories', fn ($q) => $q->where('id', '<>', $id))->exists()) {
+            return true;
+        }
+        foreach (self::SLUG_TABLES as $other) {
+            if (DB::table($other)->where('slug', $slug)->when($other === $table, fn ($q) => $q->where('id', '<>', $id))->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  iterable<object>  $gallery  visible gallery rows of this product
+     * @return list<string>
+     */
+    private function productIssues(object $product, $brands, iterable $gallery): array
+    {
+        $keys = [];
+        if ($this->media->product($product->image) === '') {
+            $fromGallery = collect($gallery)->contains(fn ($image) => $this->media->product($image->path) !== '');
+            $keys[] = $fromGallery ? 'image_from_gallery' : 'no_image';
+        }
+        $regular = (float) $product->regular_price;
+        $sale = (float) $product->sale_price;
+        if ($regular > 0 && $sale > $regular) {
+            $keys[] = 'sale_above_regular';
+        }
+        if ($product->quote_only && ($regular > 0 || $sale > 0)) {
+            $keys[] = 'quote_with_price';
+        }
+        if (! $product->quote_only && $regular <= 0 && $sale <= 0) {
+            $keys[] = 'no_price';
+        }
+        $chain = $product->category_id ? $this->tree->chain((int) $product->category_id) : [];
+        $resolved = $this->content->resolve([
+            'id' => (int) $product->id,
+            'brand_id' => (int) $product->brand_id,
+            'top_category_id' => (int) ($chain[0]['id'] ?? 0),
+            'second_category_id' => (int) ($chain[1]['id'] ?? 0),
+        ]);
+        if ($resolved['blocks'] === [] && $resolved['source'] !== 'hide') {
+            $keys[] = 'no_description';
+        }
+        if ($chain === []) {
+            $keys[] = 'missing_category';
+        } elseif (collect($chain)->contains(fn ($node) => ! $node['is_visible'])) {
+            $keys[] = 'hidden_category';
+        }
+        if ((int) $product->brand_id > 0 && ! $brands->has((int) $product->brand_id)) {
+            $keys[] = 'missing_brand';
+        }
+
+        return $keys;
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
 use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
+use App\Filament\Support\PublishGate;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
@@ -200,7 +201,15 @@ class ProductResource extends Resource
 
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
                     })->wrap()->toggleable(),
-                ToggleColumn::make('is_visible')->label('Hiển thị')->disabled(fn () => ! self::canBulkImport()),
+                ToggleColumn::make('is_visible')->label('Hiển thị')->disabled(fn () => ! self::canBulkImport())
+                    ->updateStateUsing(function (Product $record, bool $state): bool {
+                        if ($state && ! PublishGate::allowSwitchOn($record)) {
+                            return false;
+                        }
+                        $record->update(['is_visible' => $state]);
+
+                        return $state;
+                    }),
                 PublicStatusColumn::make(),
                 ToggleColumn::make('quote_only')->label('Báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(),
                 ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),

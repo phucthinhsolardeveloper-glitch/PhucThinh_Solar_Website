@@ -7,6 +7,7 @@ use App\Filament\Concerns\ReportsSavedChanges;
 use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\PublicLink;
+use App\Filament\Support\PublishGate;
 use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -18,6 +19,18 @@ class EditProduct extends EditRecord
     use ReportsSavedChanges, SavesAndStays;
 
     protected static string $resource = ProductResource::class;
+
+    protected bool $wasVisible = false;
+
+    protected function beforeSave(): void
+    {
+        $this->wasVisible = (bool) $this->getRecord()->getOriginal('is_visible');
+    }
+
+    protected function afterSave(): void
+    {
+        PublishGate::afterSave($this->getRecord(), $this->wasVisible);
+    }
 
     protected function getHeaderActions(): array
     {

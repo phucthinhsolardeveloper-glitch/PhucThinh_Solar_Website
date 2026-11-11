@@ -132,6 +132,10 @@ final class PostRevisions
             if (trim((string) ($payload['title'] ?? '')) === '' || trim(strip_tags((string) ($payload['body'] ?? ''), '<img><iframe>')) === '') {
                 throw ValidationException::withMessages(['draft' => 'Cần có tiêu đề và nội dung trước khi xuất bản.']);
             }
+            $checks = app(PublishChecks::class)->post(['kind' => $post->kind] + $payload, (int) $post->id);
+            if ($checks['errors'] !== []) {
+                throw ValidationException::withMessages(['draft' => 'Chưa xuất bản được: '.implode('; ', $checks['errors']).'.']);
+            }
             if (($payload['slug'] ?? null) !== $post->slug) {
                 throw ValidationException::withMessages(['draft' => 'Đường dẫn đã khác bản công khai; không tự đổi URL khi xuất bản.']);
             }

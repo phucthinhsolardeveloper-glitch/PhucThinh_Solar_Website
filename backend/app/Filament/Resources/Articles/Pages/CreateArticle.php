@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Articles\Pages;
 
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\PublishGate;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateArticle extends CreateRecord
@@ -17,5 +18,10 @@ class CreateArticle extends CreateRecord
         }
 
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        PublishGate::afterSave($this->getRecord(), false);
     }
 }

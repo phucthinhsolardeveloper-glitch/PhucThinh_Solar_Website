@@ -113,7 +113,7 @@ abstract class PostResource extends Resource
                 Fields::visible()->default($kind !== 'article'),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
-                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())->seconds(false)
+                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())
                     ->helperText('Chọn ngày giờ trong tương lai để hẹn giờ: bài bật hiển thị sẽ tự lên website đúng lúc đó.'),
             ]))),
             Fields::seo('news'),

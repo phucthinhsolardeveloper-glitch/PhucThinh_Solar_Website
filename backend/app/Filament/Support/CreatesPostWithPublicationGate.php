@@ -12,4 +12,9 @@ trait CreatesPostWithPublicationGate
 
         return $data;
     }
+
+    protected function afterCreate(): void
+    {
+        PublishGate::afterSave($this->getRecord(), false);
+    }
 }

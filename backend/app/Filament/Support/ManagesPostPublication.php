@@ -18,6 +18,8 @@ trait ManagesPostPublication
 {
     use ReportsSavedChanges;
 
+    protected bool $wasVisible = false;
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $publisher = AdminActor::current()->canPerform('content_publish');
@@ -28,6 +30,7 @@ trait ManagesPostPublication
             $data['is_visible'] = false;
         }
         if ($record instanceof Post) {
+            $this->wasVisible = (bool) $record->getOriginal('is_visible');
             app(PostRevisions::class)->beforeDirectSave($record);
         }
 
@@ -39,6 +42,7 @@ trait ManagesPostPublication
     {
         $record = $this->getRecord();
         if ($record instanceof Post) {
+            PublishGate::afterSave($record, $this->wasVisible);
             app(PostRevisions::class)->afterDirectSave($record, AdminActor::current());
         }
     }
