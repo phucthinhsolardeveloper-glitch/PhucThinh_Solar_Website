@@ -22,9 +22,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 /** Form pieces shared by the Admin resources, so every screen names and stores things the same way. */
 final class Fields
@@ -95,7 +97,35 @@ final class Fields
             ->getUploadedFileNameForStorageUsing(fn ($file) => Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).'-'.Str::lower(Str::random(6)).'.'.strtolower($file->getClientOriginalExtension()))
             ->imagePreviewHeight('160')
             ->openable()
+            // Filament drops a stored name from the form state when its file is not on the disk, so an
+            // untouched save would write null or an empty gallery. Keep every stored name until the editor
+            // removes or replaces it, and flag the missing file instead of hiding it.
+            ->fetchFileInformation(false)
+            ->hint(fn (FileUpload $component): ?string => ($missing = self::missingFiles($component)) === []
+                ? null : 'Không còn file trên máy chủ: '.implode(', ', $missing).'. Tải ảnh khác hoặc xóa.')
+            ->hintColor('danger')
             ->hintAction(self::pickExisting($folder));
+    }
+
+    /** @return list<string> stored file names of the field that are not on its disk */
+    public static function missingFiles(FileUpload $component): array
+    {
+        $missing = [];
+        foreach (Arr::wrap($component->getRawState()) as $file) {
+            if (! is_string($file) || $file === '') {
+                continue;
+            }
+            try {
+                $exists = $component->getDisk()->exists($file);
+            } catch (Throwable) {
+                $exists = false;
+            }
+            if (! $exists) {
+                $missing[] = $file;
+            }
+        }
+
+        return $missing;
     }
 
     /**
