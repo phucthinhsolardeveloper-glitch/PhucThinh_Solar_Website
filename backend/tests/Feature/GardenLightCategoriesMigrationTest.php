@@ -38,10 +38,12 @@ it('moves garden lights into their matching child categories and leaves product 
     $slugsBefore = DB::table('products')->where('category_id', $parentId)->orderBy('id')->pluck('slug')->all();
     $migration = require database_path('migrations/2026_11_10_001900_assign_garden_lights_to_children.php');
 
+    // Products already moved by an earlier run of the migration on this database are counted too.
+    $alreadyMoved = DB::table('products')->whereIn('category_id', $children)->count();
     $migration->up();
     $counts = collect($children)->mapWithKeys(fn ($id, $slug) => [$slug => DB::table('products')->where('category_id', $id)->count()]);
 
-    expect(array_sum($counts->all()))->toBe(count($slugsBefore))
+    expect(array_sum($counts->all()))->toBe(count($slugsBefore) + $alreadyMoved)
         ->and($counts['den-tru-cong'])->toBeGreaterThan(0)
         ->and($counts['den-treo-tuong'])->toBeGreaterThan(0)
         ->and($counts['den-san-vuon-den-nam'])->toBeGreaterThan(0)

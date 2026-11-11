@@ -18,7 +18,8 @@ class EditCategory extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        return CategoryResource::withDepth($data);
+        // "Thuộc danh mục" is locked (not sent) while the category has children: keep its current parent.
+        return CategoryResource::withDepth($data + ['parent_id' => $this->getRecord()->getAttribute('parent_id')]);
     }
 
     protected function getHeaderActions(): array
