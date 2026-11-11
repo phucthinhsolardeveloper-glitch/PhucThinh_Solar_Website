@@ -56,7 +56,7 @@ production trước, migration 001800 chạy được lặp lại an toàn (tìm
 1. Diễn tập restore/rollback đầy đủ qua Caddy trên staging VPS; production đã có backup và candidate DB rehearsal nhưng chưa thử route production quay lui.
 2. Rà lại overflow 24 px trong bảng Products Admin trên desktop.
 3. Consent Mode / Enhanced Conversions: chờ chủ website quyết.
-4. Chủ website cần tự chạy `scripts/maintenance/Compact-WslDisks.ps1` (PowerShell admin) để thu nhỏ ổ ảo WSL.
+4. Chủ website cần tự chạy `D:\Scripts\windows\docker-wsl\Compact-WslDisks.ps1` (trước đây ở `scripts/maintenance/`) (PowerShell admin) để thu nhỏ ổ ảo WSL.
 
 ## Môi trường local
 
