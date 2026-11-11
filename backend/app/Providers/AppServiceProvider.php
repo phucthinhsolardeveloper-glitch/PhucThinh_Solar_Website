@@ -44,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Admin lists keep their filters, search and sort when staff come back from a record.
+        Table::configureUsing(fn (Table $table) => $table->persistFiltersInSession()->persistSearchInSession()->persistSortInSession());
         Auth::provider('admin-users', fn ($app) => new AdminUserProvider($app['hash'], $app->make(PasswordVerifier::class)));
         // Every transactional mail shows the same logo, hotlines and company block, as the PHP site did.
         View::composer('mail.*', fn (ViewContract $view) => $view->with('brand', app(MailBrand::class)->data()));

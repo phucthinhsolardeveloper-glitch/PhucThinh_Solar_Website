@@ -6,9 +6,13 @@ use App\Filament\Resources\Brands\Pages\EditBrand;
 use App\Filament\Resources\Brands\Pages\ListBrands;
 use App\Filament\Resources\Leads\Pages\ManageLeads;
 use App\Filament\Resources\Orders\Pages\ListOrders;
+use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Lead;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Support\Facades\DB;
@@ -91,4 +95,25 @@ it('offers "Lưu" back to the list and "Lưu, ở lại trang" on edit pages', f
         ->call('save')->assertHasNoFormErrors()
         ->assertRedirect(BrandResource::getUrl('index'));
     expect($brand->fresh()->name)->toBe('Hãng quay về');
+});
+
+it('edits price and category of a product from the list, and walks records from the edit page', function () {
+    $this->actingAs(quickAdmin(['catalog']), 'admin');
+    $product = Product::query()->where('is_visible', true)->firstOrFail();
+    $category = Category::query()->where('id', '<>', $product->category_id)->firstOrFail();
+
+    Livewire::test(ListProducts::class)
+        ->callTableAction('quickEdit', $product, ['quote_only' => false, 'regular_price' => 1500000, 'sale_price' => 1200000, 'category_id' => $category->id])
+        ->assertHasNoActionErrors();
+    expect((float) $product->fresh()->sale_price)->toBe(1200000.0)->and($product->fresh()->category_id)->toBe($category->id);
+
+    Livewire::test(ListProducts::class)
+        ->callTableAction('quickEdit', $product, ['regular_price' => 100, 'sale_price' => 200, 'category_id' => $category->id])
+        ->assertHasActionErrors(['sale_price']);
+
+    $older = Product::query()->where('id', '<', $product->id)->orderByDesc('id')->value('id');
+    $page = Livewire::test(EditProduct::class, ['record' => $product->getKey()]);
+    if ($older) {
+        $page->assertActionVisible(TestAction::make('nextRecord')->schemaComponent('form-actions', schema: 'content'));
+    }
 });

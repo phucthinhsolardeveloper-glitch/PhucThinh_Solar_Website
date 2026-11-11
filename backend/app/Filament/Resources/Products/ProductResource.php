@@ -14,6 +14,7 @@ use App\Filament\Support\TypedSpecsForm;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -21,6 +22,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -219,8 +221,30 @@ class ProductResource extends Resource
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])
-            ->recordActions([PublicLink::action(), EditAction::make()])
+            ->recordActions([PublicLink::action(), self::quickEditAction(), EditAction::make()])
             ->toolbarActions(ProductBulkActions::groups());
+    }
+
+    /** Price, category and flags from the list; the same model save as the edit page. */
+    public static function quickEditAction(): Action
+    {
+        return Action::make('quickEdit')->label('Sửa nhanh')->icon(Heroicon::OutlinedPencil)->iconButton()->tooltip('Sửa nhanh giá, danh mục')
+            ->modalHeading(fn (Product $record) => $record->name)->modalWidth('lg')->modalSubmitActionLabel('Lưu')
+            ->fillForm(fn (Product $record) => $record->only(['regular_price', 'sale_price', 'quote_only', 'category_id', 'is_bestseller']))
+            ->schema([
+                Toggle::make('quote_only')->label('Chỉ báo giá (ẩn giá)')->live(),
+                Grid::make(2)->schema([
+                    TextInput::make('regular_price')->label('Giá bán (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only')),
+                    TextInput::make('sale_price')->label('Giá khuyến mãi (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only'))
+                        ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
+                ]),
+                Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required(),
+                Toggle::make('is_bestseller')->label('Bán chạy'),
+            ])
+            ->action(function (Product $record, array $data): void {
+                $record->update($data);
+                Notification::make()->success()->title('Đã lưu '.$record->name)->send();
+            });
     }
 
     public static function getGloballySearchableAttributes(): array

@@ -51,6 +51,24 @@ class LeadResource extends Resource
 
     public const STATUSES = ['new' => 'Mới', 'contacted' => 'Đã liên hệ', 'done' => 'Đã xong', 'spam' => 'Rác'];
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'phone', 'email'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        /** @var Lead $record */
+        return ['Điện thoại' => (string) $record->phone, 'Tình trạng' => self::STATUSES[$record->status] ?? $record->status];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return self::getUrl().'?tableSearch='.urlencode((string) $record->getAttribute('phone'));
+    }
+
     public static function canCreate(): bool
     {
         return false;

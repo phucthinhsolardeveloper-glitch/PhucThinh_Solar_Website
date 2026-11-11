@@ -43,6 +43,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups(['Sản phẩm', 'Nội dung', 'Hình ảnh & video', 'Bán hàng', 'Khách hàng', 'Hệ thống'])
             ->sidebarCollapsibleOnDesktop()
+            // Ctrl+K / Cmd+K: search orders (code, phone), customers, products and posts from any page.
+            ->globalSearchKeyBindings(['mod+k'])
             // Bell in the header: new orders, transfer reports, enquiries and reviews (App\Domain\Admin\AdminBell).
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')

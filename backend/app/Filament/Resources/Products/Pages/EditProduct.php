@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
+use App\Domain\Catalog\ProductDetail\ProductDetailAssembler;
 use App\Domain\Catalog\ProductDuplicator;
 use App\Filament\Concerns\ReportsSavedChanges;
 use App\Filament\Concerns\SavesAndStays;
@@ -49,6 +50,9 @@ class EditProduct extends EditRecord
     {
         // Products with orders or reviews are kept for history; hide them instead.
         return [PublicLink::action(),
+            Action::make('preview')->label('Xem trước')->icon('heroicon-o-eye')->color('gray')
+                ->tooltip('Trang sản phẩm theo bản đã lưu, kể cả khi đang ẩn. Liên kết dùng được 15 phút.')
+                ->url(fn (Product $record) => ProductDetailAssembler::previewUrl((int) $record->getKey()), shouldOpenInNewTab: true),
             Action::make('duplicate')->label('Tạo bản sao')->icon('heroicon-o-square-2-stack')
                 ->requiresConfirmation()->modalDescription('Bản sao sẽ ẩn trên website và bỏ mã sản phẩm. Ảnh, tài liệu, SEO và khối nội dung được sao chép để bạn kiểm tra trước khi bật hiển thị.')
                 ->action(function (Product $record) {

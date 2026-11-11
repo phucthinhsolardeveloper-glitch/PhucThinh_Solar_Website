@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Builds the /api/v1/product-detail payload (frontend/shared/contracts/public-product-detail.ts).
@@ -24,11 +25,27 @@ class ProductDetailAssembler
         private readonly CategoryTree $tree,
     ) {}
 
+    /** The product page of a product as saved, shown or hidden, for the signed Admin preview. */
+    public function forPreview(int $id): ?array
+    {
+        $slug = (string) DB::table('products')->where('id', $id)->value('slug');
+
+        return $slug === '' ? null : $this->forSlug($slug, true);
+    }
+
+    /** Signed link (15 minutes) to the Nuxt preview of a product page, hidden products included. */
+    public static function previewUrl(int $id): string
+    {
+        $signed = URL::temporarySignedRoute('product.preview', now()->addMinutes(15), ['product' => $id], absolute: false);
+
+        return url('/xem-truoc/san-pham/'.$id).'?'.parse_url($signed, PHP_URL_QUERY);
+    }
+
     /** @return array<string, mixed>|null null when no visible product has this slug */
-    public function forSlug(string $slug): ?array
+    public function forSlug(string $slug, bool $includeHidden = false): ?array
     {
         $db = DB::connection();
-        $product = $db->table('products')->where('slug', $slug)->where('is_visible', true)->first();
+        $product = $db->table('products')->where('slug', $slug)->when(! $includeHidden, fn ($q) => $q->where('is_visible', true))->first();
         if (! $product) {
             return null;
         }

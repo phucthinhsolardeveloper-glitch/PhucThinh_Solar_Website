@@ -57,6 +57,17 @@ class OrderResource extends Resource
 
     public const PAYMENT = ['unpaid' => 'Chưa thanh toán', 'paid' => 'Đã thanh toán', 'refunded' => 'Đã hoàn tiền'];
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['code', 'customer_name', 'phone', 'email'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        /** @var Order $record */
+        return ['Khách' => $record->customer_name.' · '.$record->phone, 'Trạng thái' => self::STATUSES[$record->status] ?? $record->status];
+    }
+
     public static function canCreate(): bool
     {
         return false;
