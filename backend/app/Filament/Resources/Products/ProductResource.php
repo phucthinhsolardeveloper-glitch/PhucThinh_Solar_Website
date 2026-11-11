@@ -213,6 +213,8 @@ class ProductResource extends Resource
                 SelectFilter::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->preload(),
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
                 TernaryFilter::make('quote_only')->label('Chỉ báo giá'),
+                TernaryFilter::make('weight_kg')->label('Cân nặng đóng gói')->trueLabel('Đã có')->falseLabel('Chưa có')
+                    ->queries(true: fn (Builder $q) => $q->where('weight_kg', '>', 0), false: fn (Builder $q) => $q->where(fn ($q) => $q->whereNull('weight_kg')->orWhere('weight_kg', '<=', 0))),
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
             ])

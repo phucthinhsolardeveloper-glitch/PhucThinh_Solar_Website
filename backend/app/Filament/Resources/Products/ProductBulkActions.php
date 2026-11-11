@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products;
 use App\Domain\Catalog\Bulk\BulkCatalog;
 use App\Domain\Catalog\Bulk\BulkExporter;
 use App\Domain\Catalog\ProductBulkUpdate;
+use App\Domain\Content\PublishChecks;
 use App\Filament\Support\Options;
 use App\Models\Brand;
 use App\Models\Product;
@@ -27,7 +28,9 @@ final class ProductBulkActions
             BulkActionGroup::make([
                 self::flag('quoteOn', 'Chuyển sang Liên hệ báo giá', Heroicon::OutlinedChatBubbleLeftRight, ['quote_only' => true], 'Giá và nút mua của các sản phẩm đã chọn sẽ ẩn, thay bằng Liên hệ báo giá. Giá đã nhập vẫn được giữ.'),
                 self::flag('quoteOff', 'Hiện giá trở lại', Heroicon::OutlinedCurrencyDollar, ['quote_only' => false]),
-                self::flag('show', 'Hiện trên website', Heroicon::OutlinedEye, ['is_visible' => true]),
+                self::base('show', 'Hiện trên website', Heroicon::OutlinedEye)->requiresConfirmation()
+                    ->modalDescription('Sản phẩm chưa đủ điều kiện (thiếu ảnh, chưa có danh mục, giá sai…) được giữ ẩn và liệt kê lý do.')
+                    ->action(fn (Collection $records) => self::showReady($records)),
                 self::flag('hide', 'Ẩn khỏi website', Heroicon::OutlinedEyeSlash, ['is_visible' => false]),
                 self::flag('bestsellerOn', 'Đánh dấu Bán chạy', Heroicon::OutlinedFire, ['is_bestseller' => true]),
                 self::flag('bestsellerOff', 'Bỏ Bán chạy', Heroicon::OutlinedMinusCircle, ['is_bestseller' => false]),
@@ -66,6 +69,23 @@ final class ProductBulkActions
                         Notification::make()->success()->title('Đã xóa '.$result['deleted'].' sản phẩm')
                             ->body($result['kept'] > 0 ? 'Giữ lại '.$result['kept'].' sản phẩm có đánh giá hoặc đơn hàng.' : null)->send();
                     }),
+                self::base('setWeight', 'Điền cân nặng đóng gói', Heroicon::OutlinedScale)
+                    ->modalDescription('Dùng để tính phí giao hàng lúc khách đặt và cân nặng vận đơn. Chọn các sản phẩm cùng cỡ (ví dụ cùng dòng đèn 100W) rồi điền một lần.')
+                    ->schema([
+                        TextInput::make('kg')->label('Cân nặng khi đóng gói (kg / sản phẩm)')->numeric()->required()->minValue(0.01)->maxValue(5000),
+                        Select::make('only_empty')->label('Áp dụng cho')->required()->default('empty')
+                            ->options(['empty' => 'Chỉ sản phẩm chưa có cân nặng', 'all' => 'Tất cả sản phẩm đã chọn (ghi đè)']),
+                    ])
+                    ->action(function (Collection $records, array $data): void {
+                        $count = 0;
+                        foreach ($records as $product) {
+                            if ($product instanceof Product && ($data['only_empty'] === 'all' || (float) $product->weight_kg <= 0)) {
+                                $product->update(['weight_kg' => (float) $data['kg']]);
+                                $count++;
+                            }
+                        }
+                        self::changed($count);
+                    }),
             ])->label('Phân loại & xóa')->icon(Heroicon::OutlinedFolder),
         ];
     }
@@ -84,6 +104,31 @@ final class ProductBulkActions
     {
         return self::base($name, $label, $icon)->requiresConfirmation()->modalDescription($description)
             ->action(fn (Collection $records) => self::changed(app(ProductBulkUpdate::class)->set($records, $values)));
+    }
+
+    /** Bulk "Hiện": the same publish checks as one product; the ones not ready stay hidden and are named. */
+    private static function showReady(Collection $records): void
+    {
+        $shown = 0;
+        $held = [];
+        foreach ($records as $product) {
+            if (! $product instanceof Product || $product->is_visible) {
+                continue;
+            }
+            $errors = app(PublishChecks::class)->product($product)['errors'];
+            if ($errors !== []) {
+                $held[] = $product->name.': '.implode(', ', $errors);
+
+                continue;
+            }
+            $product->update(['is_visible' => true]);
+            $shown++;
+        }
+        $note = Notification::make()->title('Đã hiện '.$shown.' sản phẩm')->{$held === [] ? 'success' : 'warning'}();
+        if ($held !== []) {
+            $note->persistent();
+        }
+        $note->body($held === [] ? null : count($held)." sản phẩm chưa hiện được:\n· ".implode("\n· ", array_slice($held, 0, 12)).(count($held) > 12 ? "\n…" : ''))->send();
     }
 
     private static function rounding(): Select

@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Orders\Pages;
 
 use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\ManualPayment;
+use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
-use App\Domain\Commerce\OrderPdf;
 use App\Domain\Shipping\NhatTin\NtlClient;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
@@ -41,8 +41,8 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('pdf')->label('Tải PDF')->icon('heroicon-o-document-arrow-down')->color('gray')
-                ->action(fn (Order $record) => response()->streamDownload(fn () => print (app(OrderPdf::class)->render($record)), 'phieu-don-hang-'.$record->code.'.pdf', ['Content-Type' => 'application/pdf'])),
+            Action::make('excel')->label('Tải Excel')->icon('heroicon-o-arrow-down-tray')->color('gray')
+                ->action(fn (Order $record) => app(OrderExporter::class)->single($record)),
             Action::make('print')->label('In')->icon('heroicon-o-printer')->color('gray')->url(fn (Order $record) => route('order.print', $record), true),
             Action::make('confirmManualPayment')->label('Xác nhận đã nhận tiền')->icon('heroicon-o-banknotes')
                 ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'unpaid'

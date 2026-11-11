@@ -1,7 +1,6 @@
 <?php
 
 use App\Domain\Commerce\OrderExporter;
-use App\Domain\Commerce\OrderPdf;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Models\Order;
 use App\Models\User;
@@ -38,8 +37,10 @@ it('exports a list with totals and a single order with its lines', function () {
     expect(collect($list)->pluck(1)->all())->toContain('XT-1', 'XT-2')
         ->and((float) end($list)[12])->toBe(2060000.0);
     $single = sheetOf(app(OrderExporter::class)->single($first->load('items')));
-    expect(collect($single)->pluck(1)->all())->toContain('Đèn thử', 'Khách thử')
-        ->and(collect($single)->last()[5])->toEqual(1030000);
+    $text = collect($single)->flatten()->map(fn ($v) => (string) $v)->implode(' | ');
+    $total = collect($single)->first(fn ($row) => ($row[2] ?? null) === 'Tổng cộng');
+    expect($text)->toContain('Đèn thử')->toContain('Họ tên: Khách thử')->toContain('PHIẾU ĐƠN HÀNG')->toContain('XT-1')
+        ->and((float) $total[4])->toEqual(1030000.0);
 });
 
 it('filters orders by date and prints only for staff with the orders permission', function () {
@@ -53,13 +54,4 @@ it('filters orders by date and prints only for staff with the orders permission'
     $this->flushSession();
     $this->actingAs(orderAdmin(['catalog']), 'admin');
     $this->get('/admin/orders/'.$new->id.'/in')->assertForbidden();
-});
-
-it('downloads one order as a PDF sheet with Vietnamese text', function () {
-    $this->actingAs(orderAdmin(), 'admin');
-    $order = sampleOrder('XT-PDF');
-    $pdf = app(OrderPdf::class)->render($order);
-    expect(substr($pdf, 0, 5))->toBe('%PDF-')->and(strlen($pdf))->toBeGreaterThan(5000);
-
-    Livewire\Livewire::test(ListOrders::class)->callTableAction('pdf', $order)->assertFileDownloaded('phieu-don-hang-XT-PDF.pdf');
 });

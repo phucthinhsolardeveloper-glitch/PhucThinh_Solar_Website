@@ -259,6 +259,7 @@ class LeadSubmission
     {
         try {
             $this->leadId = (int) DB::table('leads')->insertGetId($row + ['status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
+            app(LeadRouting::class)->assign($this->leadId);
 
             return true;
         } catch (Throwable $e) {

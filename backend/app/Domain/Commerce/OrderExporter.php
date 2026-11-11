@@ -2,16 +2,21 @@
 
 namespace App\Domain\Commerce;
 
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Resources\Orders\OrderResource;
+use App\Mail\MailBrand;
 use App\Models\Order;
 use App\Support\SiteSettings;
 use Illuminate\Database\Eloquent\Builder;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -70,34 +75,197 @@ final class OrderExporter
         return $this->send($book, 'don-hang-'.date('Ymd-His'));
     }
 
+    /**
+     * One order as a printable sheet laid out like the printed "Phiếu đơn hàng": logo and company block, the order
+     * code, customer and delivery boxes, the item table, totals and signatures; A4 portrait, one page wide.
+     * Numbers stay real numbers so staff can still edit them in Excel.
+     */
     public function single(Order $order): BinaryFileResponse
     {
+        $order->loadMissing(['items', 'province', 'ward', 'paymentMethod']);
+        $navy = '09285E';
+        $gold = 'B5821A';
+        $muted = '5D6B84';
+        $line = 'D8DFEA';
         $book = new Spreadsheet;
-        $sheet = $book->getActiveSheet()->setTitle('DonHang');
-        $row = $this->heading($sheet, 'ĐƠN HÀNG '.$order->code, 'F');
-        foreach ([['Ngày đặt', $order->created_at?->format('H:i d/m/Y')], ['Tình trạng', OrderResource::STATUSES[$order->status] ?? $order->status],
-            ['Thanh toán', OrderResource::PAYMENT[$order->payment_status] ?? $order->payment_status], ['Khách hàng', $order->customer_name], ['Điện thoại', $order->phone],
-            ['Email', $order->email], ['Địa chỉ', self::address($order)], ['Yêu cầu', $order->requirements]] as [$label, $value]) {
-            $this->cells($sheet, $row++, [$label, (string) $value]);
-            $sheet->getStyle('A'.($row - 1))->getFont()->setBold(true);
+        $book->getDefaultStyle()->getFont()->setName('Arial')->setSize(10);
+        $sheet = $book->getActiveSheet()->setTitle('Phiếu '.$order->code);
+        $sheet->setShowGridlines(false);
+        foreach (['A' => 5, 'B' => 42, 'C' => 15, 'D' => 8, 'E' => 22] as $column => $width) {
+            $sheet->getColumnDimension($column)->setWidth($width);
         }
-        $this->headerRow($sheet, ++$row, ['STT', 'Sản phẩm', 'Phân loại', 'Đơn giá', 'Số lượng', 'Thành tiền']);
+        $brand = app(MailBrand::class)->data();
+
+        // Company (left) and document (right).
+        $logo = $this->logoFile($brand['logo']);
+        $row = 1;
+        if ($logo !== '') {
+            $drawing = new Drawing;
+            $drawing->setPath($logo)->setHeight(40)->setCoordinates('A1')->setOffsetX(4)->setOffsetY(4)->setWorksheet($sheet);
+            $sheet->getRowDimension(1)->setRowHeight(36);
+            $row = 2;
+        }
+        $company = [[$this->settings->siteName(), true, $navy, 10], [$brand['address'], false, $muted, 9],
+            [trim(($brand['hotline'] !== '' ? 'Hotline: '.$brand['hotline'] : '').($brand['email'] !== '' ? ' · '.$brand['email'] : ''), ' ·'), false, $muted, 9]];
+        foreach ($company as $i => [$text, $bold, $color, $size]) {
+            $r = $row + $i;
+            $sheet->mergeCells('A'.$r.':C'.$r);
+            $sheet->setCellValueExplicit('A'.$r, (string) $text, DataType::TYPE_STRING);
+            $sheet->getStyle('A'.$r)->getFont()->setBold($bold)->setSize($size)->getColor()->setRGB($color);
+        }
+        $doc = [['PHIẾU ĐƠN HÀNG', 15, $navy], [(string) $order->code, 13, $gold], ['Ngày đặt: '.$order->created_at?->format('H:i d/m/Y'), 9, $muted],
+            [(OrderResource::STATUSES[$order->status] ?? $order->status).' · '.(OrderResource::PAYMENT[$order->payment_status] ?? $order->payment_status), 9, $muted]];
+        foreach ($doc as $i => [$text, $size, $color]) {
+            $r = $i + 1;
+            $sheet->mergeCells('D'.$r.':E'.$r);
+            $sheet->setCellValueExplicit('D'.$r, $text, DataType::TYPE_STRING);
+            $sheet->getStyle('D'.$r)->getFont()->setBold($size > 10)->setSize($size)->getColor()->setRGB($color);
+            $sheet->getStyle('D'.$r)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        }
+        $row = max($row + count($company), count($doc) + 1);
+        $sheet->getStyle('A'.$row.':E'.$row)->getBorders()->getTop()->setBorderStyle(Border::BORDER_THICK)->getColor()->setRGB($navy);
+        $row++;
+
+        // Customer and delivery boxes.
+        $boxes = [
+            ['A', 'B', 'Khách hàng', [['Họ tên', (string) $order->customer_name], ['Điện thoại', (string) $order->phone], ['Email', (string) $order->email]]],
+            ['C', 'E', 'Giao hàng & thanh toán', [['Địa chỉ', self::address($order)], ['Hình thức', (string) ($order->paymentMethod->name ?? 'Chưa chọn')]]],
+        ];
+        $top = $row;
+        $height = 0;
+        foreach ($boxes as [$from, $to, $title, $lines]) {
+            $r = $top;
+            $sheet->mergeCells($from.$r.':'.$to.$r);
+            $sheet->setCellValueExplicit($from.$r, $title, DataType::TYPE_STRING);
+            $sheet->getStyle($from.$r)->getFont()->setBold(true)->getColor()->setRGB($navy);
+            foreach (array_filter($lines, fn ($l) => trim($l[1]) !== '') as [$label, $value]) {
+                $r++;
+                $sheet->mergeCells($from.$r.':'.$to.$r);
+                $text = new RichText;
+                $text->createTextRun($label.': ')->getFont()?->setName('Arial')->setColor(new Color($muted))->setSize(9.5);
+                $text->createTextRun($value)->getFont()?->setName('Arial')->setSize(10);
+                $sheet->getCell($from.$r)->setValue($text);
+                $sheet->getStyle($from.$r)->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_TOP);
+            }
+            $height = max($height, $r - $top);
+        }
+        foreach ($boxes as [$from, $to]) {
+            $box = $sheet->getStyle($from.$top.':'.$to.($top + $height));
+            $box->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB($line);
+        }
+        $sheet->getRowDimension($top + 1 + array_search('Địa chỉ', array_column($boxes[1][3], 0), true))->setRowHeight(30);
+        $row = $top + $height + 2;
+
+        // Items.
+        $head = $row;
+        foreach (['A' => 'STT', 'B' => 'Sản phẩm', 'C' => 'Đơn giá', 'D' => 'SL', 'E' => 'Thành tiền'] as $column => $title) {
+            $sheet->setCellValueExplicit($column.$row, $title, DataType::TYPE_STRING);
+        }
+        $style = $sheet->getStyle('A'.$row.':E'.$row);
+        $style->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $style->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($navy);
+        $style->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(22);
         $first = ++$row;
         foreach ($order->items as $index => $item) {
             $price = (float) ($item->getAttribute('sale_price') ?: $item->getAttribute('regular_price'));
-            $quantity = (int) $item->getAttribute('quantity');
-            $this->cells($sheet, $row++, [$index + 1, (string) $item->getAttribute('name'), trim($item->getAttribute('color').' '.$item->getAttribute('size')), $price, $quantity, $price * $quantity]);
+            $option = trim($item->getAttribute('color').' '.$item->getAttribute('size'));
+            $sheet->setCellValueExplicit('A'.$row, $index + 1, DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('B'.$row, (string) $item->getAttribute('name').($option !== '' ? "\n".$option : ''), DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('C'.$row, $price, DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('D'.$row, (int) $item->getAttribute('quantity'), DataType::TYPE_NUMERIC);
+            $sheet->setCellValue('E'.$row, '=C'.$row.'*D'.$row);
+            if ($index % 2 === 1) {
+                $sheet->getStyle('A'.$row.':E'.$row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F6F8FB');
+            }
+            $row++;
         }
-        foreach ([['Tạm tính', (float) $order->subtotal], ['Phí vận chuyển', (float) $order->shipping_fee], ['Tổng giá trị', (float) $order->total]] as [$label, $value]) {
-            $this->cells($sheet, $row++, ['', '', '', '', $label, $value]);
-            $sheet->getStyle('E'.($row - 1).':F'.($row - 1))->getFont()->setBold(true);
+        $end = max($first, $row - 1);
+        $items = $sheet->getStyle('A'.$first.':E'.$end);
+        $items->getAlignment()->setVertical(Alignment::VERTICAL_TOP)->setWrapText(true);
+        $items->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB($line);
+        $sheet->getStyle('A'.$first.':A'.$end)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('D'.$head.':D'.$end)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('C'.$head.':C'.$end)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E'.$head.':E'.$end)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E'.$first.':E'.$end)->getFont()->setBold(true);
+        $sheet->getStyle('C'.$first.':E'.$end)->getNumberFormat()->setFormatCode('#,##0"đ"');
+        $sheet->getStyle('D'.$first.':D'.$end)->getNumberFormat()->setFormatCode('0');
+
+        // Totals.
+        $row++;
+        $discount = max(0.0, (float) $order->subtotal + (float) $order->shipping_fee - (float) $order->total);
+        $totals = [['Tạm tính', (float) $order->subtotal], ['Phí vận chuyển', (float) $order->shipping_fee]];
+        if ($discount > 0) {
+            $totals[] = ['Giảm giá', -$discount];
         }
-        $sheet->getStyle('D'.$first.':F'.($row - 1))->getNumberFormat()->setFormatCode('#,##0');
-        foreach (['A' => 14, 'B' => 48, 'C' => 16, 'D' => 14, 'E' => 16, 'F' => 16] as $column => $width) {
-            $sheet->getColumnDimension($column)->setWidth($width);
+        $totals[] = ['Tổng cộng', (float) $order->total];
+        foreach ($totals as $i => [$label, $value]) {
+            $sheet->mergeCells('C'.$row.':D'.$row);
+            $sheet->setCellValueExplicit('C'.$row, $label, DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('E'.$row, $value, DataType::TYPE_NUMERIC);
+            $sheet->getStyle('E'.$row)->getNumberFormat()->setFormatCode('#,##0"đ"');
+            $sheet->getStyle('E'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            if ($label === 'Tổng cộng') {
+                $sum = $sheet->getStyle('C'.$row.':E'.$row);
+                $sum->getFont()->setBold(true)->setSize(12)->getColor()->setRGB($navy);
+                $sum->getBorders()->getTop()->setBorderStyle(Border::BORDER_MEDIUM)->getColor()->setRGB($navy);
+                $sheet->getRowDimension($row)->setRowHeight(22);
+            } else {
+                $sheet->getStyle('C'.$row)->getFont()->getColor()->setRGB($muted);
+            }
+            if ($label === 'Phí vận chuyển' && $value <= 0) {
+                $sheet->setCellValueExplicit('E'.$row, 'Chờ xác nhận', DataType::TYPE_STRING);
+            }
+            $row++;
         }
 
-        return $this->send($book, 'don-hang-'.$order->code);
+        if (trim((string) $order->requirements) !== '') {
+            $row++;
+            $sheet->mergeCells('A'.$row.':E'.$row);
+            $sheet->setCellValueExplicit('A'.$row, 'Yêu cầu của khách: '.$order->requirements, DataType::TYPE_STRING);
+            $note = $sheet->getStyle('A'.$row);
+            $note->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FDF7E8');
+            $note->getBorders()->getLeft()->setBorderStyle(Border::BORDER_THICK)->getColor()->setRGB('D9A326');
+            $note->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER)->setIndent(1);
+            $sheet->getRowDimension($row)->setRowHeight(30);
+            $row++;
+        }
+
+        // Signatures.
+        $row += 2;
+        foreach (['A' => ['B', 'Người lập phiếu'], 'C' => ['E', 'Người nhận hàng']] as $from => [$to, $who]) {
+            $sheet->mergeCells($from.$row.':'.$to.$row);
+            $sheet->setCellValueExplicit($from.$row, $who, DataType::TYPE_STRING);
+            $sheet->getStyle($from.$row)->getFont()->setBold(true)->getColor()->setRGB($navy);
+            $sheet->mergeCells($from.($row + 1).':'.$to.($row + 1));
+            $sheet->setCellValueExplicit($from.($row + 1), '(Ký, ghi rõ họ tên)', DataType::TYPE_STRING);
+            $sheet->getStyle($from.($row + 1))->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB($muted);
+            $sheet->getStyle($from.$row.':'.$to.($row + 1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        }
+        $row += 6;
+        $sheet->mergeCells('A'.$row.':E'.$row);
+        $sheet->setCellValueExplicit('A'.$row, $this->settings->siteName().' · Phiếu tạo ngày '.now()->format('H:i d/m/Y'), DataType::TYPE_STRING);
+        $sheet->getStyle('A'.$row)->getFont()->setSize(8.5)->getColor()->setRGB($muted);
+        $sheet->getStyle('A'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A'.$row.':E'.$row)->getBorders()->getTop()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB($line);
+
+        $setup = $sheet->getPageSetup();
+        $setup->setPaperSize(PageSetup::PAPERSIZE_A4)->setOrientation(PageSetup::ORIENTATION_PORTRAIT)->setFitToWidth(1)->setFitToHeight(0);
+        $setup->setPrintArea('A1:E'.$row);
+        $sheet->getPageMargins()->setTop(0.5)->setBottom(0.5)->setLeft(0.4)->setRight(0.4);
+        $sheet->getPageSetup()->setHorizontalCentered(true);
+
+        return $this->send($book, 'phieu-don-hang-'.$order->code);
+    }
+
+    /** The logo as a local file the sheet can embed, '' when there is none. */
+    private function logoFile(string $url): string
+    {
+        $path = (string) parse_url($url, PHP_URL_PATH);
+        $file = $path !== '' ? app(ProductMediaUrls::class)->absolute(ltrim($path, '/')) : '';
+
+        return $file !== '' && is_file($file) && preg_match('/\.(png|jpe?g)$/i', $file) ? $file : '';
     }
 
     /** Checkout already writes ward and province into `address`; older orders may hold the street only, so add each part once. */

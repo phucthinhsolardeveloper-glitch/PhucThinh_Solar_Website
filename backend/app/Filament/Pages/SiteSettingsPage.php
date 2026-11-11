@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Domain\Audit\Audit;
 use App\Domain\Catalog\Listing\SearchSynonyms;
 use App\Domain\Commerce\VietQr;
+use App\Domain\Leads\LeadRouting;
 use App\Domain\Site\SocialNetworks;
 use App\Models\Province;
 use App\Models\User;
@@ -62,7 +63,7 @@ class SiteSettingsPage extends Page
     /** Only the owner may change where customers send money. */
     public const OWNER_KEYS = ['bank_bin', 'bank_account_no', 'bank_account_name'];
 
-    public const SWITCH_KEYS = ['public_product_prices', 'review_require_order_code'];
+    public const SWITCH_KEYS = ['public_product_prices', 'review_require_order_code', LeadRouting::SETTING];
 
     /** @var array<string, mixed> */
     public ?array $data = [];
@@ -159,6 +160,8 @@ class SiteSettingsPage extends Page
             Section::make('Bán hàng')->columns(2)->schema([
                 Toggle::make('public_product_prices')->label('Hiện giá sản phẩm trên website'),
                 Toggle::make('review_require_order_code')->label('Đánh giá phải kèm mã đơn hàng'),
+                Toggle::make(LeadRouting::SETTING)->label('Tự chia liên hệ mới cho nhân viên')
+                    ->helperText('Giao cho người có quyền Liên hệ đang ít việc nhất, hẹn gọi lại sau 2 giờ làm việc. Tắt thì liên hệ mới để chưa phân công.'),
             ]),
             Section::make('Đo lường (Google Tag Manager)')->collapsed()->schema([
                 // Either the id alone or the whole snippet Google gives: only the GTM-XXXX id is kept.

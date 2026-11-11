@@ -22,3 +22,5 @@ Schedule::call(fn () => PageViews::prune())->name('page-views-prune')->dailyAt('
 Schedule::command('pts:data-quality --record')->dailyAt('04:10')->withoutOverlapping();
 // Journey of parcels on their way (backup to the Nhất Tín webhook); orders follow their shipment.
 Schedule::command('pts:shipments-track')->everyThirtyMinutes()->withoutOverlapping();
+// Monday morning summary of last week for the owner.
+Schedule::command('pts:weekly-report')->weeklyOn(1, '08:00')->withoutOverlapping();

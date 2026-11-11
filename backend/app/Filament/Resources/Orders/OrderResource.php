@@ -6,7 +6,6 @@ use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\CustomerHistory;
 use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
-use App\Domain\Commerce\OrderPdf;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Domain\Shipping\ShipmentAutomation;
@@ -225,8 +224,8 @@ class OrderResource extends Resource
                 EditAction::make()->label('Xem / xử lý'),
                 Action::make('print')->label('In')->icon(Heroicon::OutlinedPrinter)->iconButton()->tooltip('In đơn hàng')
                     ->url(fn (Order $record) => route('order.print', $record), true),
-                Action::make('pdf')->label('PDF')->icon(Heroicon::OutlinedDocumentArrowDown)->iconButton()->tooltip('Tải phiếu đơn hàng (PDF) để gửi khách')
-                    ->action(fn (Order $record) => response()->streamDownload(fn () => print (app(OrderPdf::class)->render($record)), 'phieu-don-hang-'.$record->code.'.pdf', ['Content-Type' => 'application/pdf'])),
+                Action::make('excel')->label('Excel')->icon(Heroicon::OutlinedArrowDownTray)->iconButton()->tooltip('Tải phiếu đơn hàng (Excel)')
+                    ->action(fn (Order $record) => app(OrderExporter::class)->single($record)),
             ])
             ->toolbarActions([
                 BulkAction::make('confirmSelected')->label('Xác nhận các đơn mới đã chọn')->icon(Heroicon::OutlinedCheckCircle)
