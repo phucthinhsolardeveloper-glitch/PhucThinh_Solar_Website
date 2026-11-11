@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Leads;
 
 use App\Domain\Commerce\CustomerHistory;
 use App\Domain\Commerce\LeadTriage;
+use App\Domain\Leads\LeadRouting;
 use App\Domain\Leads\LeadSource;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
@@ -16,6 +17,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -120,10 +122,10 @@ class LeadResource extends Resource
                     ->description(fn (Lead $record) => self::KINDS[$record->kind] ?? $record->kind),
                 TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])
                     ->description(fn (Lead $record) => trim($record->phone.(($h = app(CustomerHistory::class)->label($record->phone, exceptLead: (int) $record->id)) !== '' ? ' · '.$h : ''))),
-                TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(30)->toggleable()->searchable()->wrap(false)
+                TextColumn::make('source_url')->label('Trang nguồn')->visibleFrom('lg')->placeholder('—')->limit(30)->toggleable()->searchable()->wrap(false)
                     ->formatStateUsing(fn ($state) => LeadSource::normalize($state) ?? '—')
                     ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
-                TextColumn::make('message')->label('Nội dung')->limit(90)->placeholder('—')->toggleable()->grow()
+                TextColumn::make('message')->label('Nội dung')->visibleFrom('md')->limit(90)->placeholder('—')->toggleable()->grow()
                     ->description(fn (Lead $record) => data_get($record, 'product.name') ? 'Sản phẩm: '.data_get($record, 'product.name') : null),
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
@@ -143,6 +145,17 @@ class LeadResource extends Resource
             ])
             ->recordAction('edit')
             ->recordActions([
+                Action::make('takeLead')->label('Nhận xử lý')->icon(Heroicon::OutlinedHandRaised)->color('primary')
+                    ->visible(fn (Lead $record) => $record->assigned_to === null && ! in_array($record->status, ['done', 'spam'], true))
+                    ->action(function (Lead $record) {
+                        app(LeadTriage::class)->update($record, ['status' => $record->status, 'notes' => $record->notes, 'assigned_to' => AdminActor::current()->id,
+                            'follow_up_at' => $record->follow_up_at ?? LeadRouting::callBackAt(now())], AdminActor::current());
+                        Notification::make()->success()->title('Bạn đang phụ trách '.$record->name)->send();
+                    }),
+                Action::make('call')->label('Gọi')->icon(Heroicon::OutlinedPhone)->iconButton()->tooltip(fn (Lead $record) => 'Gọi '.$record->phone)
+                    ->url(fn (Lead $record) => 'tel:'.CustomerHistory::normalise($record->phone)),
+                Action::make('zalo')->label('Zalo')->icon(Heroicon::OutlinedChatBubbleLeftEllipsis)->iconButton()->tooltip('Nhắn Zalo')
+                    ->url(fn (Lead $record) => 'https://zalo.me/'.CustomerHistory::normalise($record->phone), shouldOpenInNewTab: true),
                 EditAction::make()->label('Xem / xử lý')
                     ->using(fn (Lead $record, array $data) => app(LeadTriage::class)->update($record, $data, AdminActor::current())),
                 Action::make('history')->label('Lịch sử')->icon(Heroicon::OutlinedClock)->iconButton()->tooltip('Lịch sử xử lý')

@@ -7,6 +7,7 @@ use App\Filament\Concerns\ReportsSavedChanges;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Models\Post;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 
@@ -82,7 +83,7 @@ trait ManagesPostPublication
             Action::make('history')->label('Lịch sử')->icon('heroicon-o-clock')->color('gray')
                 ->visible(fn () => $record instanceof Post && $record->revisions()->exists())
                 ->url(fn () => PostRevisionResource::getUrl('index', ['tableFilters' => ['post_id' => ['value' => $record->getKey()]]])),
-            DeleteAction::make(),
+            ActionGroup::make([DeleteAction::make()])->label('Thêm')->icon('heroicon-m-ellipsis-horizontal')->button()->color('gray'),
         ];
     }
 

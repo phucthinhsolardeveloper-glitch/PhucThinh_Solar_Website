@@ -7,6 +7,7 @@ use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Support\PublicLink;
 use App\Models\Category;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -25,6 +26,6 @@ class EditCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         // A category with sub-categories or products cannot be deleted; move or hide them first.
-        return [PublicLink::action(), DeleteAction::make()->hidden(fn (Category $record) => $record->children()->exists() || $record->products()->exists())];
+        return [PublicLink::action(), ActionGroup::make([DeleteAction::make()->hidden(fn (Category $record) => $record->children()->exists() || $record->products()->exists())])->label('Thêm')->icon('heroicon-m-ellipsis-horizontal')->button()->color('gray')];
     }
 }

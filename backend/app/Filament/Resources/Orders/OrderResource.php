@@ -23,10 +23,12 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -105,42 +107,37 @@ class OrderResource extends Resource
             Section::make('Xử lý')->columnSpan(1)->schema([
                 Select::make('status')->label('Trạng thái')->required()
                     ->options(fn (?Order $record) => $record ? OrderLifecycle::statusChoices((string) $record->status, self::STATUSES) : self::STATUSES),
-                Select::make('payment_status')->label('Thanh toán')->options(self::PAYMENT)->disabled()->dehydrated(false)
-                    ->helperText('Xác nhận thanh toán thủ công bằng thao tác riêng. VNPay chỉ cập nhật qua callback hợp lệ.'),
                 Textarea::make('notes')->label('Ghi chú nội bộ')->rows(4),
             ]),
+            // Read-only facts as text, not greyed-out inputs: what was ordered stays as placed.
             Section::make('Khách hàng')->columnSpan(2)->columns(2)->schema([
-                TextInput::make('code')->label('Mã đơn')->disabled(),
-                TextInput::make('created_at')->label('Đặt lúc')->disabled()->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('H:i d/m/Y') : ''),
-                TextInput::make('customer_name')->label('Họ tên')->disabled(),
-                TextInput::make('phone')->label('Điện thoại')->disabled(),
-                TextInput::make('email')->label('Email')->disabled(),
-                TextInput::make('address')->label('Địa chỉ giao')->disabled(),
-                TextInput::make('payment_method')->label('Hình thức thanh toán')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn (?Order $record) => $record?->paymentMethod->name ?? ($record?->payment_code === 'vnpay' ? 'VNPay' : '')),
-                TextInput::make('payment_reference')->label('Mã giao dịch')->disabled(),
-                TextInput::make('transfer')->label('Chuyển khoản cần nhận')->disabled()->dehydrated(false)->columnSpanFull()
+                TextEntry::make('customer_name')->label('Họ tên')->weight('bold')
+                    ->helperText(fn (Order $record) => app(CustomerHistory::class)->label($record->phone, exceptOrder: (int) $record->id) ?: 'Khách mua lần đầu'),
+                TextEntry::make('phone')->label('Điện thoại')->copyable()->copyMessage('Đã chép số')
+                    ->suffixActions([
+                        Action::make('call')->icon('heroicon-m-phone')->tooltip('Gọi')->url(fn (Order $record) => 'tel:'.CustomerHistory::normalise($record->phone)),
+                        Action::make('zalo')->icon('heroicon-m-chat-bubble-left-ellipsis')->tooltip('Nhắn Zalo')
+                            ->url(fn (Order $record) => 'https://zalo.me/'.CustomerHistory::normalise($record->phone), shouldOpenInNewTab: true),
+                    ]),
+                TextEntry::make('address_full')->label('Địa chỉ giao')->state(fn (Order $record) => OrderExporter::address($record->loadMissing('ward', 'province'))),
+                TextEntry::make('email')->label('Email')->placeholder('—')->copyable(),
+                TextEntry::make('code')->label('Mã đơn')->copyable()
+                    ->helperText(fn (Order $record) => 'Đặt lúc '.Carbon::parse($record->created_at)->format('H:i d/m/Y')),
+                TextEntry::make('payment_method')->label('Thanh toán')
+                    ->state(fn (Order $record) => ($record->paymentMethod->name ?? ($record->payment_code === 'vnpay' ? 'VNPay' : '—')).' · '.(self::PAYMENT[$record->payment_status] ?? $record->payment_status))
+                    ->helperText(fn (Order $record) => $record->payment_reference ? 'Mã giao dịch '.$record->payment_reference : null),
+                TextEntry::make('transfer')->label('Chuyển khoản cần nhận')->columnSpanFull()
                     ->visible(fn (?Order $record) => $record && app(BankTransfer::class)->active((int) $record->id) !== null)
-                    ->formatStateUsing(function (?Order $record) {
-                        $i = $record ? app(BankTransfer::class)->active((int) $record->id) : null;
+                    ->state(function (Order $record) {
+                        $i = app(BankTransfer::class)->active((int) $record->id);
 
                         return $i ? self::money($i->amount).' · nội dung '.$i->reference.' · '.$i->bank_name.' '.$i->account_no
                             .($record->transfer_reported_at ? ' · khách báo đã chuyển lúc '.Carbon::parse($record->transfer_reported_at)->format('H:i d/m') : '') : '';
                     }),
-                Textarea::make('requirements')->label('Yêu cầu của khách')->disabled()->columnSpanFull(),
+                TextEntry::make('requirements')->label('Yêu cầu của khách')->placeholder('Không có')->columnSpanFull(),
             ]),
             Section::make('Sản phẩm')->columnSpanFull()->schema([
-                Repeater::make('items')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)
-                    ->schema([
-                        TextInput::make('name')->label('Sản phẩm')->columnSpan(3),
-                        TextInput::make('quantity')->label('SL'),
-                        TextInput::make('unit')->label('Đơn giá')->dehydrated(false)
-                            ->formatStateUsing(fn ($record) => $record ? self::money($record->sale_price ?: $record->regular_price) : ''),
-                        TextInput::make('options')->label('Màu / cỡ')->dehydrated(false)
-                            ->formatStateUsing(fn ($record) => $record ? trim(($record->color ?? '').' '.($record->size ?? '')) : ''),
-                    ])->columns(6),
-                TextInput::make('totals')->label('Tạm tính · phí giao · tổng cộng')->disabled()->dehydrated(false)
-                    ->formatStateUsing(fn (?Order $record) => $record ? self::money($record->subtotal).' · '.self::money($record->shipping_fee).' · '.self::money($record->total) : ''),
+                View::make('filament.order-items')->viewData(fn (?Order $record) => ['order' => $record?->loadMissing('items')]),
             ]),
             Section::make('Vận chuyển')->columnSpanFull()->visible(fn (?Order $record) => $record?->shipments()->exists() ?? false)->schema([
                 Repeater::make('shipments')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)
@@ -175,10 +172,10 @@ class OrderResource extends Resource
             ->modifyQueryUsing(fn (Builder $query) => $query->with('latestShipment'))
             ->columns([
                 TextColumn::make('code')->label('Mã đơn')->searchable()->weight('bold'),
-                TextColumn::make('created_at')->label('Ngày đặt')->dateTime('H:i d/m/Y')->sortable(),
+                TextColumn::make('created_at')->label('Ngày đặt')->dateTime('H:i d/m/Y')->sortable()->visibleFrom('md'),
                 TextColumn::make('customer_name')->label('Khách hàng')->searchable(['customer_name', 'phone', 'email'])
                     ->description(fn (Order $record) => trim($record->phone.(($h = app(CustomerHistory::class)->label($record->phone, exceptOrder: (int) $record->id)) !== '' ? ' · '.$h : ''))),
-                TextColumn::make('total')->label('Tổng tiền')->formatStateUsing(fn ($state) => self::money($state))->sortable(),
+                TextColumn::make('total')->label('Tổng tiền')->visibleFrom('sm')->formatStateUsing(fn ($state) => self::money($state))->sortable(),
                 TextColumn::make('status')->label('Trạng thái')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => match ($state) {
                         'new' => 'warning', 'done' => 'success', 'cancelled' => 'gray', default => 'info'
@@ -197,7 +194,7 @@ class OrderResource extends Resource
                     ->icon(fn (Order $record) => $record->latestShipment ? 'heroicon-m-truck' : 'heroicon-m-plus')
                     ->tooltip('Bấm để tạo vận đơn hoặc xem hành trình')
                     ->action(self::shippingAction()),
-                TextColumn::make('payment_status')->label('Thanh toán')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
+                TextColumn::make('payment_status')->label('Thanh toán')->visibleFrom('lg')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
                     ->color(fn ($state) => $state === 'paid' ? 'success' : 'gray'),
             ])
             ->filters([

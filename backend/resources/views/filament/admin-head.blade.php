@@ -46,6 +46,17 @@
     .pts-dq__trend.is-worse { color: #dc2626; }
     .pts-dq__items { display: grid; gap: .3rem; padding: 0 0 .6rem 1.1rem; font-size: .85rem; }
     .pts-dq__items a:hover { text-decoration: underline; }
+    .pts-order-items table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .pts-order-items th { text-align: left; font-weight: 600; color: rgb(107 114 128); padding: 0 .5rem .5rem 0; border-bottom: 1px solid rgb(128 128 128 / .2); }
+    .pts-order-items td { padding: .6rem .5rem .6rem 0; border-bottom: 1px solid rgb(128 128 128 / .12); vertical-align: top; }
+    .pts-order-items td a { font-weight: 600; }
+    .pts-order-items td a:hover { text-decoration: underline; }
+    .pts-order-items td .pts-attention__sub { display: block; }
+    .pts-order-items .n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pts-order-items .c { text-align: center; width: 3rem; }
+    .pts-order-items__totals { display: grid; grid-template-columns: 1fr auto; gap: .35rem 1.5rem; width: min(22rem, 100%); margin: .9rem 0 0 auto; font-size: .875rem; }
+    .pts-order-items__totals dd { text-align: right; font-variant-numeric: tabular-nums; }
+    .pts-order-items__totals .is-sum { padding-top: .45rem; border-top: 2px solid currentColor; font-weight: 700; font-size: 1rem; }
     .pts-top-pages { width: 100%; font-size: .85rem; border-collapse: collapse; }
     .pts-top-pages th { text-align: left; font-weight: 500; color: rgb(107 114 128); padding: 0 0 .4rem; }
     .pts-top-pages th:not(:first-child), .pts-top-pages td:not(:first-child) { text-align: right; white-space: nowrap; padding-left: .75rem; width: 1%; }

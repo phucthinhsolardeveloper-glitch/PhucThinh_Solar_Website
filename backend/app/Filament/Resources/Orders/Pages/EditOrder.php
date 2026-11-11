@@ -14,9 +14,11 @@ use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Support\AdminActor;
 use App\Models\Order;
+use App\Models\Shipment;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -38,9 +40,70 @@ class EditOrder extends EditRecord
         return $record;
     }
 
+    public function getBreadcrumb(): string
+    {
+        return 'Xử lý';
+    }
+
+    public function getTitle(): string
+    {
+        /** @var Order $order */
+        $order = $this->getRecord();
+
+        return 'Đơn '.$order->code.' · '.(OrderResource::STATUSES[$order->status] ?? $order->status);
+    }
+
+    /** The one thing to do next on this order, as the main button; the rest stays in the other buttons. */
+    private function nextStep(): array
+    {
+        /** @var Order $order */
+        $order = $this->getRecord();
+        $order->loadMissing('latestShipment');
+        $after = function () {
+            $this->getRecord()->refresh()->unsetRelation('latestShipment');
+            $this->refreshFormData(['status', 'notes']);
+        };
+
+        return [
+            Action::make('confirmOrder')->label('Xác nhận đơn')->icon('heroicon-o-check-circle')->color('primary')
+                ->visible(fn () => $this->getRecord()->getAttribute('status') === 'new')
+                ->requiresConfirmation()->modalDescription('Đã gọi khách và chốt đơn? Đơn chuyển sang "Đã xác nhận", sau đó tạo vận đơn.')
+                ->action(function () use ($after) {
+                    /** @var Order $record */
+                    $record = $this->getRecord();
+                    app(OrderLifecycle::class)->update($record, 'confirmed', $record->notes);
+                    $after();
+                    Notification::make()->success()->title('Đã xác nhận đơn '.$record->code)->send();
+                }),
+            OrderResource::shippingAction()->name('shipNext')->label('Tạo vận đơn')->icon('heroicon-o-truck')->button()->color('primary')
+                ->visible(fn () => $this->getRecord()->getAttribute('status') === 'confirmed' && ! $this->hasActiveShipment())
+                ->after($after),
+            OrderResource::shippingAction()->name('trackNext')->label('Hành trình vận đơn')->icon('heroicon-o-map')->button()->color('gray')
+                ->visible(fn () => $this->hasActiveShipment())->after($after),
+            Action::make('cancelOrder')->label('Hủy đơn')->icon('heroicon-o-x-circle')->color('danger')->link()
+                ->visible(fn () => in_array($this->getRecord()->getAttribute('status'), ['new', 'confirmed', 'shipping'], true))
+                ->schema([Textarea::make('reason')->label('Lý do hủy')->required()->rows(2)
+                    ->helperText('Ghi vào ghi chú nội bộ. Vận đơn đang có (nếu có) cần hủy riêng ở nút Vận chuyển.')])
+                ->action(function (array $data) use ($after) {
+                    /** @var Order $record */
+                    $record = $this->getRecord();
+                    $notes = trim((string) $record->notes."\n".'Hủy '.now()->format('H:i d/m').': '.$data['reason']);
+                    app(OrderLifecycle::class)->update($record, 'cancelled', $notes);
+                    $after();
+                    Notification::make()->success()->title('Đã hủy đơn '.$record->code)->send();
+                }),
+        ];
+    }
+
+    private function hasActiveShipment(): bool
+    {
+        return Shipment::query()->where('order_id', $this->getRecord()->getKey())->whereIn('status', Shipments::ACTIVE)->exists();
+    }
+
     protected function getHeaderActions(): array
     {
         return [
+            ...$this->nextStep(),
             Action::make('excel')->label('Tải Excel')->icon('heroicon-o-arrow-down-tray')->color('gray')
                 ->action(fn (Order $record) => app(OrderExporter::class)->single($record)),
             Action::make('print')->label('In')->icon('heroicon-o-printer')->color('gray')->url(fn (Order $record) => route('order.print', $record), true),

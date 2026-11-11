@@ -5,6 +5,7 @@ use App\Filament\Resources\Brands\BrandResource;
 use App\Filament\Resources\Brands\Pages\EditBrand;
 use App\Filament\Resources\Brands\Pages\ListBrands;
 use App\Filament\Resources\Leads\Pages\ManageLeads;
+use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
@@ -116,4 +117,29 @@ it('edits price and category of a product from the list, and walks records from 
     if ($older) {
         $page->assertActionVisible(TestAction::make('nextRecord')->schemaComponent('form-actions', schema: 'content'));
     }
+});
+
+it('shows the next step on an order and cancels with a reason', function () {
+    $this->actingAs(quickAdmin(['orders']), 'admin');
+    $order = quickOrder();
+    $page = EditOrder::class;
+
+    Livewire::test($page, ['record' => $order->getKey()])->assertSee('Đơn '.$order->code.' · Mới')
+        ->assertActionVisible('confirmOrder')->assertActionHidden('shipNext')
+        ->callAction('confirmOrder')->assertHasNoActionErrors();
+    expect($order->fresh()->status)->toBe('confirmed');
+
+    Livewire::test($page, ['record' => $order->getKey()])->assertActionHidden('confirmOrder')->assertActionVisible('shipNext')
+        ->callAction('cancelOrder', ['reason' => 'Khách đổi ý'])->assertHasNoActionErrors();
+    expect($order->fresh()->status)->toBe('cancelled')->and($order->fresh()->notes)->toContain('Khách đổi ý');
+});
+
+it('lets a salesperson take an unassigned enquiry in one click', function () {
+    $me = quickAdmin(['leads']);
+    $this->actingAs($me, 'admin');
+    $lead = Lead::query()->create(['kind' => 'contact', 'name' => 'Chưa ai nhận', 'phone' => '0900000404', 'status' => 'new']);
+
+    Livewire::test(ManageLeads::class)->assertTableActionVisible('takeLead', $lead)->callTableAction('takeLead', $lead)->assertHasNoActionErrors();
+    expect($lead->fresh()->assigned_to)->toBe($me->id)->and($lead->fresh()->follow_up_at)->not->toBeNull();
+    Livewire::test(ManageLeads::class)->assertTableActionHidden('takeLead', $lead->fresh());
 });
