@@ -152,7 +152,7 @@ final class PostRevisions
             if ($profile['media']) {
                 $this->syncMedia($post, $payload['media'] ?? []);
             }
-            $draft->update(['payload' => $this->snapshot($post->refresh()), 'state' => 'published', 'published_by' => $actor->id, 'published_at' => now()]);
+            $draft->update(['payload' => $this->snapshot($post->refresh()), 'state' => 'published', 'published_by' => $actor->id, 'published_at' => now(), 'review_state' => null]);
 
             return $draft->refresh();
         });

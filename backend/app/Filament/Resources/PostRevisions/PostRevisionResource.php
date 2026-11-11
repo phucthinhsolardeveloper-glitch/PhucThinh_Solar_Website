@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PostRevisions;
 
+use App\Domain\Content\PostReview;
 use App\Domain\Content\PostRevisions;
 use App\Domain\Projects\ProjectSystem;
 use App\Filament\Concerns\RequiresPermission;
@@ -36,6 +37,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use UnitEnum;
 
 /**
@@ -163,11 +165,16 @@ class PostRevisionResource extends Resource
                 TextColumn::make('state')->label('Tình trạng')->badge()
                     ->formatStateUsing(fn ($state) => $state === 'draft' ? 'Bản nháp' : 'Đã xuất bản')
                     ->color(fn ($state) => $state === 'draft' ? 'warning' : 'success'),
+                TextColumn::make('review_state')->label('Duyệt')->badge()->placeholder('—')
+                    ->formatStateUsing(fn ($state) => PostReview::LABELS[$state] ?? $state)
+                    ->color(fn ($state) => $state === 'waiting' ? 'warning' : 'danger')
+                    ->description(fn (PostRevision $record) => $record->review_state ? Str::limit((string) $record->review_note, 60) : null),
                 TextColumn::make('editor.name')->label('Người sửa')->placeholder('Hệ thống')->toggleable(),
                 TextColumn::make('updated_at')->label('Cập nhật')->dateTime('d/m/Y H:i')->sortable(),
             ])
             ->filters([
                 SelectFilter::make('state')->label('Tình trạng')->options(['draft' => 'Bản nháp', 'published' => 'Đã xuất bản']),
+                SelectFilter::make('review_state')->label('Duyệt')->options(PostReview::LABELS),
                 SelectFilter::make('kind')->label('Loại')->options(self::KIND_LABELS)
                     ->query(fn (Builder $q, array $data) => filled($data['value'] ?? null) ? $q->whereHas('post', fn (Builder $p) => $p->where('kind', $data['value'])) : $q),
                 SelectFilter::make('post_id')->label('Nội dung')->searchable()

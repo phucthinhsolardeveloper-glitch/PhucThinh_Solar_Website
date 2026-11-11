@@ -15,7 +15,7 @@ class PostRevision extends Model
 
     protected function casts(): array
     {
-        return ['payload' => 'array', 'published_at' => 'datetime'];
+        return ['payload' => 'array', 'published_at' => 'datetime', 'review_requested_at' => 'datetime'];
     }
 
     /** @return BelongsTo<Post, $this> */
@@ -40,5 +40,10 @@ class PostRevision extends Model
     public function editor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'review_requested_by');
     }
 }

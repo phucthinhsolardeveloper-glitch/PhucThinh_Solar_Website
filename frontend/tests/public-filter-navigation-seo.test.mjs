@@ -52,7 +52,8 @@ test('header parent navigation remains active on bare category slug routes', () 
 test('catalog links stay in Nuxt preview while category pages are being migrated', () => {
   const source = read('../app/components/catalog/CatalogPage.vue')
   assert.match(source, /const links = usePublicLinks\(\)/)
-  assert.match(source, /links\.generic\(activeCategoryRoot\.value\?\.url \?\? '\/san-pham\/'\)/)
+  // "Tất cả" points at the selected category (or its parent when it has no children) through links.generic.
+  assert.match(source, /const categoryAllHref = computed\(\(\) => links\.generic\([^\n]*\?\? '\/san-pham\/'\)\)/)
   assert.match(source, /:to="links\.generic\(item\.url\)"/)
   assert.match(source, /item\.href \? links\.generic\(item\.href\) : undefined/)
   assert.match(source, /:fallback-href="catalogData\.support\.href \|\| '\/lien-he\/'"/)

@@ -18,3 +18,5 @@ Schedule::command('pts:media --scan')->dailyAt('03:30')->withoutOverlapping();
 
 // Page view rows older than about 13 months are deleted.
 Schedule::call(fn () => PageViews::prune())->name('page-views-prune')->dailyAt('03:50')->withoutOverlapping();
+// Data-quality counts per day, for the trend on "Chất lượng dữ liệu".
+Schedule::command('pts:data-quality --record')->dailyAt('04:10')->withoutOverlapping();
