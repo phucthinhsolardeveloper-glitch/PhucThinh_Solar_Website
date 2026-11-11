@@ -5,9 +5,14 @@ namespace App\Filament\Resources\Orders;
 use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\OrderExporter;
 use App\Domain\Commerce\OrderLifecycle;
+use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
+use App\Domain\Shipping\ShipmentAutomation;
+use App\Domain\Shipping\Shipments;
 use App\Filament\Concerns\RequiresPermission;
+use App\Filament\Support\AdminActor;
 use App\Models\Order;
+use App\Models\Shipment;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -19,6 +24,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -30,6 +36,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Throwable;
 use UnitEnum;
 
 /** Orders placed on the site. Staff change the status and notes; what the customer ordered stays as placed. */
@@ -163,6 +171,7 @@ class OrderResource extends Resource
     {
         return $table
             ->defaultSort('id', 'desc')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('latestShipment'))
             ->columns([
                 TextColumn::make('code')->label('Mã đơn')->searchable()->weight('bold'),
                 TextColumn::make('created_at')->label('Ngày đặt')->dateTime('H:i d/m/Y')->sortable(),
@@ -175,12 +184,32 @@ class OrderResource extends Resource
                     ->icon(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [] ? 'heroicon-m-pencil-square' : null)->iconPosition('after')
                     ->tooltip(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [] ? 'Bấm để đổi trạng thái' : null)
                     ->action(self::quickStatusAction('statusFromColumn')),
+                TextColumn::make('shipping')->label('Vận chuyển')->badge()
+                    ->state(fn (Order $record) => $record->latestShipment ? (NtlStatus::LABELS[$record->latestShipment->status] ?? $record->latestShipment->status)
+                        : (in_array($record->status, ['new', 'confirmed'], true) ? 'Tạo vận đơn' : null))
+                    ->placeholder('—')
+                    ->description(fn (Order $record) => $record->latestShipment?->bill_code)
+                    ->color(fn (Order $record) => match ($record->latestShipment?->status) {
+                        'delivered' => 'success', 'failed', 'returning', 'returned', 'unknown' => 'danger', 'cancelled' => 'gray', null => 'primary', default => 'info',
+                    })
+                    ->icon(fn (Order $record) => $record->latestShipment ? 'heroicon-m-truck' : 'heroicon-m-plus')
+                    ->tooltip('Bấm để tạo vận đơn hoặc xem hành trình')
+                    ->action(self::shippingAction()),
                 TextColumn::make('payment_status')->label('Thanh toán')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
                     ->color(fn ($state) => $state === 'paid' ? 'success' : 'gray'),
             ])
             ->filters([
                 SelectFilter::make('status')->label('Trạng thái')->options(self::STATUSES),
                 SelectFilter::make('payment_status')->label('Thanh toán')->options(self::PAYMENT),
+                SelectFilter::make('shipping')->label('Vận chuyển')->options([
+                    'none' => 'Chưa có vận đơn (đơn mới / đã xác nhận)', 'moving' => 'Đang trên đường', 'trouble' => 'Có sự cố / hoàn / chưa rõ', 'delivered' => 'Đã giao',
+                ])->query(fn (Builder $query, array $data) => match ($data['value'] ?? null) {
+                    'none' => $query->whereIn('status', ['new', 'confirmed'])->whereDoesntHave('shipments', fn (Builder $q) => $q->whereIn('status', Shipments::ACTIVE)),
+                    'moving' => $query->whereHas('shipments', fn (Builder $q) => $q->whereIn('status', ['draft', 'waiting_pickup', 'in_transit', 'out_for_delivery'])),
+                    'trouble' => $query->whereHas('shipments', fn (Builder $q) => $q->whereIn('status', ['failed', 'returning', 'returned', 'unknown'])),
+                    'delivered' => $query->whereHas('shipments', fn (Builder $q) => $q->where('status', 'delivered')),
+                    default => $query,
+                }),
                 SelectFilter::make('province_id')->label('Tỉnh / thành')->relationship('province', 'name')->searchable()->preload(),
                 Filter::make('created')->columns(2)->columnSpan(2)->schema([
                     DatePicker::make('from')->label('Từ ngày'),
@@ -197,6 +226,45 @@ class OrderResource extends Resource
                     ->action(fn (Order $record) => app(OrderExporter::class)->single($record->load('items', 'province', 'ward'))),
             ])
             ->toolbarActions([
+                BulkAction::make('confirmSelected')->label('Xác nhận các đơn mới đã chọn')->icon(Heroicon::OutlinedCheckCircle)
+                    ->requiresConfirmation()->modalDescription('Chỉ đơn đang "Mới" được chuyển sang "Đã xác nhận"; đơn khác giữ nguyên.')
+                    ->action(function (Collection $records) {
+                        $done = 0;
+                        foreach ($records as $order) {
+                            if ($order instanceof Order && $order->status === 'new') {
+                                app(OrderLifecycle::class)->update($order, 'confirmed', $order->notes);
+                                $done++;
+                            }
+                        }
+                        Notification::make()->success()->title('Đã xác nhận '.$done.' đơn')->send();
+                    })->deselectRecordsAfterCompletion(),
+                BulkAction::make('shipSelected')->label('Tạo vận đơn Nhất Tín cho các đơn đã chọn')->icon(Heroicon::OutlinedTruck)
+                    ->modalDescription('Mỗi đơn một vận đơn nháp. Cân nặng tính từ "Cân nặng khi đóng gói" của sản phẩm; dòng chưa có cân nặng dùng số kg bên dưới. Tiền thu hộ tự tính: đơn COD chưa thanh toán thu đúng tổng đơn. Đơn đã có vận đơn, đã hủy hoặc đã xong được bỏ qua.')
+                    ->schema([
+                        Select::make('service_id')->label('Dịch vụ')->required()->default('91')->options(config('shipping.nhattin.services')),
+                        Select::make('payer_id')->label('Ai trả cước')->required()->default('10')->options(config('shipping.nhattin.payers')),
+                        TextInput::make('fallback_kg')->label('Cân nặng mỗi sản phẩm chưa có cân nặng (kg)')->numeric()->minValue(0.1)->default(1)->required(),
+                        TextInput::make('note')->label('Ghi chú cho bưu tá')->maxLength(200),
+                    ])
+                    ->action(fn (Collection $records, array $data) => self::shipMany($records, $data))
+                    ->deselectRecordsAfterCompletion(),
+                BulkAction::make('trackSelected')->label('Cập nhật hành trình các đơn đã chọn')->icon(Heroicon::OutlinedArrowPath)
+                    ->action(function (Collection $records) {
+                        $count = 0;
+                        foreach ($records->filter(fn ($o) => $o instanceof Order) as $order) {
+                            foreach (Shipment::query()->where('order_id', $order->getKey())->whereNotNull('bill_code')->whereIn('status', Shipments::ACTIVE)->get() as $shipment) {
+                                try {
+                                    app(Shipments::class)->refresh($shipment);
+                                    $count++;
+                                } catch (NtlException) {
+                                    // Reported below as not refreshed.
+                                }
+                            }
+                        }
+                        Notification::make()->success()->title('Đã cập nhật '.$count.' vận đơn')->body('Đơn hàng tự chuyển "Đang giao" / "Hoàn tất" theo vận đơn.')->send();
+                    }),
+                BulkAction::make('printSelected')->label('In các đơn đã chọn')->icon(Heroicon::OutlinedPrinter)
+                    ->action(fn (Collection $records, $livewire) => $livewire->js('window.open('.json_encode(route('order.print-many', ['ids' => $records->pluck('id')->implode(',')])).', "_blank")')),
                 BulkAction::make('exportSelected')->label('Xuất Excel các đơn đã chọn')->icon(Heroicon::OutlinedArrowDownTray)
                     ->action(fn (Collection $records) => app(OrderExporter::class)->list(Order::query()->whereKey($records->pluck('id'))))
                     ->deselectRecordsAfterCompletion(),
@@ -221,6 +289,84 @@ class OrderResource extends Resource
                 app(OrderLifecycle::class)->update($record, (string) $data['status'], $data['notes'] ?? null);
                 Notification::make()->success()->title('Đơn '.$record->code.': '.(self::STATUSES[$record->status] ?? $record->status))->send();
             });
+    }
+
+    /** "Vận chuyển" cell: create the waybill when there is none, otherwise show the journey and refresh it. */
+    public static function shippingAction(): Action
+    {
+        return Action::make('shipping')->label('Vận chuyển')
+            ->visible(fn (Order $record) => $record->latestShipment !== null || in_array($record->status, ['new', 'confirmed'], true))
+            ->modalHeading(fn (Order $record) => 'Vận chuyển đơn '.$record->code)
+            ->modalDescription(fn (Order $record) => $record->customer_name.' · '.$record->phone.' · '.OrderExporter::address($record->loadMissing('ward', 'province')))
+            ->modalWidth('lg')
+            ->modalSubmitActionLabel(fn (Order $record) => self::activeShipment($record) ? 'Cập nhật hành trình' : 'Tạo vận đơn nháp')
+            ->modalContent(fn (Order $record) => self::activeShipment($record) || $record->latestShipment ? view('filament.order-shipment', ['shipment' => $record->latestShipment]) : null)
+            ->fillForm(function (Order $record) {
+                $weight = app(ShipmentAutomation::class)->weight($record);
+
+                return ['weight_kg' => $weight['kg'], 'service_id' => '91', 'payer_id' => '10', 'cod_amount' => app(Shipments::class)->codFor($record)];
+            })
+            ->schema(fn (Order $record) => self::activeShipment($record) ? [] : [
+                Grid::make(2)->schema([
+                    TextInput::make('weight_kg')->label('Cân nặng (kg)')->numeric()->required()->minValue(0.1)->maxValue(1000)
+                        ->helperText(fn () => app(ShipmentAutomation::class)->weight($record)['known'] ? 'Tính từ cân nặng sản phẩm.' : 'Có sản phẩm chưa nhập cân nặng: đang tính 1 kg mỗi cái, sửa nếu cần.'),
+                    TextInput::make('cod_amount')->label('Tiền thu hộ (đ)')->numeric()->minValue(0),
+                    Select::make('service_id')->label('Dịch vụ')->required()->options(config('shipping.nhattin.services')),
+                    Select::make('payer_id')->label('Ai trả cước')->required()->options(config('shipping.nhattin.payers')),
+                ]),
+                TextInput::make('note')->label('Ghi chú cho bưu tá')->maxLength(200),
+            ])
+            ->action(function (Order $record, array $data): void {
+                try {
+                    if ($active = self::activeShipment($record)) {
+                        $shipment = app(Shipments::class)->refresh($active);
+                        Notification::make()->success()->title(NtlStatus::LABELS[$shipment->status] ?? $shipment->status)->send();
+
+                        return;
+                    }
+                    $shipment = app(Shipments::class)->create($record, $data, AdminActor::current());
+                    Notification::make()->success()->title('Đã tạo vận đơn '.($shipment->bill_code ?? $shipment->ref_code))->send();
+                } catch (NtlException $error) {
+                    Notification::make()->danger()->title('Nhất Tín chưa trả lời được')->body($error->getMessage())->persistent()->send();
+                }
+            });
+    }
+
+    private static function activeShipment(Order $order): ?Shipment
+    {
+        $latest = $order->latestShipment;
+
+        return $latest && in_array($latest->status, Shipments::ACTIVE, true) ? $latest : null;
+    }
+
+    /** @param Collection<int, Order> $records */
+    private static function shipMany(Collection $records, array $data): void
+    {
+        $made = [];
+        $skipped = [];
+        $failed = [];
+        foreach ($records as $order) {
+            if (! in_array($order->status, ['new', 'confirmed'], true) || $order->shipments()->whereIn('status', Shipments::ACTIVE)->exists()) {
+                $skipped[] = $order->code;
+
+                continue;
+            }
+            $weight = app(ShipmentAutomation::class)->weight($order, (float) $data['fallback_kg']);
+            try {
+                $shipment = app(Shipments::class)->create($order, ['weight_kg' => $weight['kg'], 'service_id' => $data['service_id'], 'payer_id' => $data['payer_id'],
+                    'cod_amount' => app(Shipments::class)->codFor($order), 'note' => $data['note'] ?? null], AdminActor::current());
+                $made[] = $order->code.' → '.($shipment->bill_code ?? $shipment->ref_code).($weight['known'] ? '' : ' (cân nặng ước '.$weight['kg'].' kg)');
+            } catch (Throwable $error) {
+                $failed[] = $order->code.': '.Str::limit($error->getMessage(), 120);
+            }
+        }
+        $body = implode("\n", array_filter([
+            $made ? 'Đã tạo: '.implode('; ', $made) : null,
+            $skipped ? 'Bỏ qua (đã có vận đơn hoặc không còn cần giao): '.implode(', ', $skipped) : null,
+            $failed ? 'Lỗi: '.implode('; ', $failed) : null,
+        ]));
+        Notification::make()->title('Tạo '.count($made).'/'.$records->count().' vận đơn')->body($body)
+            ->{$failed ? 'warning' : 'success'}()->persistent()->send();
     }
 
     public static function getPages(): array

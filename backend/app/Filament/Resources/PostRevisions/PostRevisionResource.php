@@ -66,11 +66,18 @@ class PostRevisionResource extends Resource
 
     public const KIND_LABELS = ['article' => 'Bài viết', 'solution' => 'Giải pháp', 'project' => 'Dự án', 'policy' => 'Chính sách'];
 
+    /** Drafts waiting for review first (orange); otherwise all open drafts (grey). */
     public static function getNavigationBadge(): ?string
     {
-        $drafts = PostRevision::query()->where('state', 'draft')->count();
+        $waiting = PostRevision::query()->where('state', 'draft')->where('review_state', 'waiting')->count();
+        $drafts = $waiting > 0 ? $waiting : PostRevision::query()->where('state', 'draft')->count();
 
         return $drafts > 0 ? (string) $drafts : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return PostRevision::query()->where('state', 'draft')->where('review_state', 'waiting')->exists() ? 'warning' : 'gray';
     }
 
     public static function getNavigationBadgeTooltip(): ?string

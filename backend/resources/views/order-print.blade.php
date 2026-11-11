@@ -4,7 +4,8 @@
 
     $money = fn ($value) => number_format((float) $value, 0, ',', '.').'đ';
     $brand = app(App\Mail\MailBrand::class)->data();
-    $discount = max(0.0, (float) $order->subtotal + (float) $order->shipping_fee - (float) $order->total);
+    // One order (route order.print) or several (order.print-many), each on its own A4 page.
+    $orders = isset($orders) ? $orders : collect([$order]);
 @endphp
 <!doctype html>
 <html lang="vi">
@@ -12,7 +13,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
-    <title>Đơn hàng {{ $order->code }}</title>
+    <title>{{ $orders->count() === 1 ? 'Đơn hàng '.$orders->first()->code : 'In '.$orders->count().' đơn hàng' }}</title>
     <style>
         /* One A4 page for a normal order; a long one breaks between rows, never inside one. */
         @page { size: A4; margin: 12mm 10mm; }
@@ -73,14 +74,19 @@
         footer { margin-top: 22px; padding-top: 10px; border-top: 1px solid var(--line);
                  color: var(--muted); font-size: 11.5px; text-align: center; }
 
-        @media print { .bar { display: none; } body { padding: 0; max-width: none; } }
+        .sheet + .sheet { margin-top: 48px; padding-top: 24px; border-top: 2px dashed var(--line); }
+        @media print { .bar { display: none; } body { padding: 0; max-width: none; }
+                       .sheet + .sheet { break-before: page; margin-top: 0; padding-top: 0; border-top: 0; } }
     </style>
 </head>
 <body>
     <div class="bar">
-        <button type="button" onclick="window.print()">In đơn hàng</button>
+        <button type="button" onclick="window.print()">{{ $orders->count() === 1 ? 'In đơn hàng' : 'In '.$orders->count().' đơn hàng' }}</button>
         <button type="button" class="ghost" onclick="window.close()">Đóng</button>
     </div>
+@foreach ($orders as $order)
+    @php($discount = max(0.0, (float) $order->subtotal + (float) $order->shipping_fee - (float) $order->total))
+    <section class="sheet">
 
     <header>
         <div class="co">
@@ -168,5 +174,7 @@
     </div>
 
     <footer>{{ $settings->siteName() }} · Phiếu in ngày {{ now()->format('H:i d/m/Y') }}</footer>
+    </section>
+@endforeach
 </body>
 </html>

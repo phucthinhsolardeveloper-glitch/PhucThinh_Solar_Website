@@ -4,6 +4,7 @@ use App\Domain\Content\PostRevisions;
 use App\Filament\Resources\PostRevisions\Pages\EditPostRevision;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Models\Post;
+use App\Models\PostRevision;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -25,7 +26,8 @@ it('sends a draft for review, returns it with a note, then publishes it', functi
         ->callAction('requestReview', ['note' => 'Nhờ xem giúp đoạn mở bài'])->assertHasNoActionErrors();
     expect($draft->fresh()->review_state)->toBe('waiting')
         ->and($publisher->notifications()->count())->toBe(1)
-        ->and(PostRevisionResource::getNavigationBadge())->toBe('1');
+        ->and(PostRevisionResource::getNavigationBadge())->toBe((string) PostRevision::query()->where('review_state', 'waiting')->count())
+        ->and(PostRevisionResource::getNavigationBadgeColor())->toBe('warning');
 
     $this->actingAs($publisher, 'admin');
     Livewire::test(EditPostRevision::class, ['record' => $draft->getKey()])

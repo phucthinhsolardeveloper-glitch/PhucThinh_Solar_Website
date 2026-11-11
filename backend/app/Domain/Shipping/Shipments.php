@@ -3,6 +3,7 @@
 namespace App\Domain\Shipping;
 
 use App\Domain\Audit\Audit;
+use App\Domain\Commerce\OrderLifecycle;
 use App\Domain\Shipping\NhatTin\NtlClient;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
@@ -87,6 +88,11 @@ final class Shipments
             'status' => NtlStatus::normalise($data['status_id'] ?? null), 'fee' => isset($data['total_fee']) ? (int) round((float) $data['total_fee']) : null,
             'response' => $data, 'error' => null]);
         Audit::record('shipment.create', 'Order', $order->id, null, ['bill_code' => $shipment->bill_code, 'environment' => $shipment->environment]);
+        // Sending a parcel means the order was accepted.
+        $fresh = $order->fresh();
+        if ($fresh && $fresh->status === 'new') {
+            app(OrderLifecycle::class)->update($fresh, 'confirmed', $fresh->notes);
+        }
 
         return $shipment->refresh();
     }
@@ -186,6 +192,7 @@ final class Shipments
             return;
         }
         $shipment->update(['status' => $status, 'status_raw' => $raw]);
+        app(ShipmentAutomation::class)->follow($shipment);
     }
 
     /** Cash-on-delivery orders not yet paid have Nhất Tín collect the order total; other orders collect nothing. */

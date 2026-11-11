@@ -3,6 +3,7 @@
 namespace App\Domain\Admin;
 
 use App\Domain\Catalog\Health\CatalogHealth;
+use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\Orders\OrderResource;
@@ -35,6 +36,16 @@ final class WorkQueue
             $sections[] = $this->section('transfer', 'Khách báo đã chuyển khoản, chờ đối chiếu', 'danger', $transfer->clone()->oldest('transfer_reported_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, $this->money($o->total).' · báo lúc '.$this->when($o->transfer_reported_at), OrderResource::getUrl('edit', ['record' => $o])],
                 OrderResource::getUrl());
+            $sections[] = $this->section('shipment_trouble', 'Vận đơn có sự cố, đang hoàn hoặc chưa rõ kết quả', 'danger',
+                Order::query()->whereHas('latestShipment', fn ($q) => $q->whereIn('status', ['failed', 'returning', 'unknown']))->with('latestShipment')->oldest('updated_at'),
+                fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone,
+                    (NtlStatus::LABELS[$o->latestShipment->status] ?? '').' · '.($o->latestShipment->bill_code ?? $o->latestShipment->ref_code), OrderResource::getUrl('edit', ['record' => $o])],
+                OrderResource::getUrl().'?tableFilters[shipping][value]=trouble');
+            $sections[] = $this->section('cod', 'Đã giao, chờ đối soát tiền thu hộ', 'warning',
+                Order::query()->where('payment_status', 'unpaid')->whereHas('latestShipment', fn ($q) => $q->where('status', 'delivered')->where('cod_amount', '>', 0))
+                    ->with('latestShipment')->oldest('updated_at'),
+                fn (Order $o) => [$o->code.' · '.$o->customer_name, 'thu hộ '.$this->money($o->latestShipment->cod_amount).' · vận đơn '.$o->latestShipment->bill_code, OrderResource::getUrl('edit', ['record' => $o])],
+                OrderResource::getUrl().'?tableFilters[shipping][value]=delivered');
             $sections[] = $this->section('orders', 'Đơn hàng mới chưa xử lý', 'warning', Order::query()->where('status', 'new')->oldest(),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone, $this->money($o->total).' · đặt '.$this->when($o->created_at), OrderResource::getUrl('edit', ['record' => $o])],
                 OrderResource::getUrl().'?tableFilters[status][value]=new');
@@ -96,7 +107,7 @@ final class WorkQueue
     /** Count shown on the menu: things a customer is waiting on. */
     public function urgentCount(User $user): int
     {
-        return (int) collect($this->sections($user))->whereIn('key', ['transfer', 'orders', 'overdue', 'leads', 'review'])->sum('count');
+        return (int) collect($this->sections($user))->whereIn('key', ['transfer', 'orders', 'shipment_trouble', 'overdue', 'leads', 'review'])->sum('count');
     }
 
     /**
