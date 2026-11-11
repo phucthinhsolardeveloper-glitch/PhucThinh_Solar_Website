@@ -3,6 +3,7 @@
 namespace App\Domain\Seo;
 
 use App\Domain\Catalog\CategoryTree;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Solar\SolarEstimator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
@@ -54,7 +55,7 @@ class Sitemap
         }
         $paths = ['article' => fn ($slug) => '/'.$slug, 'project' => fn ($slug) => '/'.$slug, 'solution' => fn ($slug) => '/giai-phap/'.$slug.'/', 'policy' => fn ($slug) => '/ho-tro/'.$slug.'/'];
         foreach ($paths as $kind => $path) {
-            $this->add($entries, DB::table('posts')->where('kind', $kind)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id'), $path);
+            $this->add($entries, DB::table('posts')->where('kind', $kind)->where(PostVisibility::live())->orderBy('sort_order')->orderByDesc('id'), $path);
         }
         $this->add($entries, DB::table('albums')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/'.$slug.'/');
 

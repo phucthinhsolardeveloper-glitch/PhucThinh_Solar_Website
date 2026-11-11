@@ -19,9 +19,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -113,7 +113,8 @@ abstract class PostResource extends Resource
                 Fields::visible()->default($kind !== 'article'),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
-                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now()),
+                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())->seconds(false)
+                    ->helperText('Chọn ngày giờ trong tương lai để hẹn giờ: bài bật hiển thị sẽ tự lên website đúng lúc đó.'),
             ]))),
             Fields::seo('news'),
         ])));
@@ -128,12 +129,13 @@ abstract class PostResource extends Resource
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(44),
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->sortable()->limit(70),
                 TextColumn::make('category.name')->label('Nhóm')->toggleable()->visible(static::$kind !== 'policy'),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                PublicStatusColumn::make(),
                 TextColumn::make('published_at')->label('Ngày đăng')->sortable()->date('d/m/Y'),
             ])
             ->filters(array_values(array_filter([
                 static::$kind !== 'policy' ? SelectFilter::make('category_id')->label('Nhóm')->relationship('category', 'name', fn (Builder $query) => $query->where('kind', static::$kind)) : null,
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
+                Filter::make('scheduled')->label('Đang hẹn giờ đăng')->query(fn (Builder $query) => $query->where('is_visible', true)->where('published_at', '>', now())),
             ])))
             ->recordActions([PublicLink::action(), EditAction::make()]);
     }

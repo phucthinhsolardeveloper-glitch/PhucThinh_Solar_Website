@@ -3,6 +3,7 @@
 namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
 use App\Models\Post;
 use App\Models\PostRevision;
@@ -34,7 +35,7 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
-        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'article')->where('is_visible', true)->first(self::ARTICLE_FIELDS);
+        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'article')->where(PostVisibility::live())->first(self::ARTICLE_FIELDS);
 
         return $row ? $this->renderArticle((array) $row) : $notFound;
     }
@@ -158,7 +159,7 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'POLICY_NOT_FOUND']]];
-        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'policy')->where('is_visible', true)->first(self::ARTICLE_FIELDS);
+        $row = $this->db->table('posts')->where('slug', $slug)->where('kind', 'policy')->where(PostVisibility::live())->first(self::ARTICLE_FIELDS);
         $plain = fn ($v) => trim((string) preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode(is_scalar($v) ? (string) $v : '', ENT_QUOTES, 'UTF-8'))));
         if (! $row || ($title = $plain($row->title)) === '') {
             return $notFound;
@@ -192,7 +193,7 @@ class NewsDetail extends PageSupport
     /** Up to 12 other published posts of the same kind and group, in Admin order. */
     private function siblings(int $id, string $kind, mixed $categoryId, bool $withAuthor = true): array
     {
-        return $this->db->table('posts as n')->where('n.id', '<>', $id)->where('n.kind', $kind)->where('n.is_visible', true)->where('n.slug', '<>', '')
+        return $this->db->table('posts as n')->where('n.id', '<>', $id)->where('n.kind', $kind)->where(PostVisibility::live('n.'))->where('n.slug', '<>', '')
             ->when($categoryId, fn ($q) => $q->where('n.category_id', $categoryId), fn ($q) => $q->whereNull('n.category_id'))
             ->when($withAuthor, fn ($q) => $q->leftJoin('users as u', 'u.id', '=', 'n.author_id')->addSelect('u.name as author'))
             ->addSelect(['n.id', 'n.title', 'n.slug', 'n.image', 'n.summary', 'n.published_at'])

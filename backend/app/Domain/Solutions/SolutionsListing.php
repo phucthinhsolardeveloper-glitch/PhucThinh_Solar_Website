@@ -3,6 +3,7 @@
 namespace App\Domain\Solutions;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
 use App\Models\PostCategory;
 use App\Support\RichText;
@@ -54,7 +55,7 @@ class SolutionsListing extends PageSupport
         $ctaRows = $this->withImages($this->section('solutions.cta'));
         $products = array_map(fn ($row) => $row + ['_image' => $this->looseImage($row['image'], 'upload/product/')], SolutionHub::productGroups($this->db));
         $groups = $this->db->table('post_categories as c')->where('c.kind', 'solution')->where('c.is_visible', true)
-            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'solution')->where('p.is_visible', true)->where('p.slug', '<>', ''))
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'solution')->where(PostVisibility::live('p.'))->where('p.slug', '<>', ''))
             ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.summary', 'c.slug', 'c.image'])->map(fn ($row) => (array) $row)->all();
 
         $data = $this->payload($solutions, $introRows, $ctaRows, $products);

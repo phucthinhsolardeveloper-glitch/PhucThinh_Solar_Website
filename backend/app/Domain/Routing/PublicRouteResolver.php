@@ -3,6 +3,7 @@
 namespace App\Domain\Routing;
 
 use App\Domain\Catalog\CategoryTree;
+use App\Domain\Content\PostVisibility;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -68,7 +69,7 @@ class PublicRouteResolver
 
     private static function postOf(string $kind): Closure
     {
-        return fn ($q) => $q->where('kind', $kind);
+        return fn ($q) => $q->where('kind', $kind)->where(PostVisibility::live());
     }
 
     /** /danh-muc-san-pham/<path>/ when that path leads back to the same category. */

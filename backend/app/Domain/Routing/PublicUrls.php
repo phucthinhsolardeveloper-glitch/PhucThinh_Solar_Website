@@ -3,6 +3,7 @@
 namespace App\Domain\Routing;
 
 use App\Domain\Catalog\CategoryTree;
+use App\Domain\Content\PostVisibility;
 use App\Models\Album;
 use App\Models\Banner;
 use App\Models\Brand;
@@ -86,6 +87,9 @@ final class PublicUrls
     {
         if ($record instanceof Category) {
             return (bool) $record->is_visible && app(CategoryTree::class)->hasVisibleProducts((int) $record->getKey());
+        }
+        if ($record instanceof Post) {
+            return PostVisibility::isLive($record);
         }
         if (array_key_exists('is_visible', $record->getAttributes())) {
             return (bool) $record->getAttribute('is_visible');

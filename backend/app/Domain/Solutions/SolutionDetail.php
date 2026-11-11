@@ -2,6 +2,7 @@
 
 namespace App\Domain\Solutions;
 
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
 use App\Models\Post;
 use App\Support\RichText;
@@ -27,7 +28,7 @@ class SolutionDetail extends PageSupport
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
             return $bad;
         }
-        $post = $this->db->table('posts')->where('slug', $slug)->where('kind', 'solution')->where('is_visible', true)->first();
+        $post = $this->db->table('posts')->where('slug', $slug)->where('kind', 'solution')->where(PostVisibility::live())->first();
         if (! $post) {
             return [404, ['error' => ['code' => 'SOLUTION_NOT_FOUND']]];
         }

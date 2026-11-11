@@ -2,6 +2,7 @@
 
 namespace App\Domain\Solutions;
 
+use App\Domain\Content\PostVisibility;
 use Illuminate\Database\Connection;
 
 /**
@@ -19,7 +20,8 @@ final class SolutionHub
     public static function solutions(Connection $db): array
     {
         return $db->table('posts')->where('kind', 'solution')->orderBy('sort_order')->orderByDesc('id')
-            ->get(['id', 'category_id', 'title', 'nav_title', 'summary', 'image', 'cover_image', 'slug', 'is_visible', 'in_hub'])
+            ->select(['id', 'category_id', 'title', 'nav_title', 'summary', 'image', 'cover_image', 'slug', 'in_hub'])
+            ->selectRaw(PostVisibility::liveSql().' as is_visible', [now()])->get()
             ->map(fn ($row) => [
                 'id' => (int) $row->id, 'category_id' => (int) $row->category_id, 'title' => (string) $row->title, 'nav_title' => (string) $row->nav_title,
                 'summary' => (string) $row->summary, 'image' => (string) $row->image, 'cover_image' => (string) $row->cover_image, 'slug' => (string) $row->slug,

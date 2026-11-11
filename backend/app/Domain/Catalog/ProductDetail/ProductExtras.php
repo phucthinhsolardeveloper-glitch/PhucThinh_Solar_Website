@@ -6,6 +6,7 @@ use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\Listing\CatalogFilters;
 use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Media\MediaLibrary;
 use App\Domain\Pages\PageSupport;
 use App\Support\FormToken;
@@ -81,7 +82,7 @@ class ProductExtras extends PageSupport
         $override = Text::plain($row['purchase_policy']);
         $policies = [];
         if ($override === '') {
-            foreach ($this->db->table('posts')->where('kind', 'policy')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $policy) {
+            foreach ($this->db->table('posts')->where('kind', 'policy')->where(PostVisibility::live())->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $policy) {
                 $name = Text::plain($policy->title);
                 $policySlug = preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', (string) $policy->slug) ? $policy->slug : '';
                 if ($name !== '' && $policySlug !== '' && mb_stripos($name, 'bảo hành') !== false) {

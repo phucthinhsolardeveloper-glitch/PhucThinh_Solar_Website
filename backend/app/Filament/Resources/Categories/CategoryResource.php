@@ -7,6 +7,7 @@ use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
 use App\Filament\Support\PublicLink;
+use App\Filament\Support\PublicStatusColumn;
 use App\Models\Category;
 use App\Support\Slugs;
 use BackedEnum;
@@ -102,6 +103,7 @@ class CategoryResource extends Resource
                     ->tooltip('Sản phẩm đang hiện trong danh mục này và mọi danh mục con. 0 nghĩa là trang danh mục chưa hiện trên website.'),
                 TextColumn::make('slug')->label('Đường dẫn')->toggleable(isToggledHiddenByDefault: true),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
+                PublicStatusColumn::make(),
                 TextColumn::make('sort_order')->label('Thứ tự')->toggleable(),
             ])
             ->filters([

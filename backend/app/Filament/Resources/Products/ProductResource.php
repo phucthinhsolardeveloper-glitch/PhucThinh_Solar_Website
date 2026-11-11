@@ -8,6 +8,7 @@ use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
 use App\Filament\Support\PublicLink;
+use App\Filament\Support\PublicStatusColumn;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
@@ -200,6 +201,7 @@ class ProductResource extends Resource
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
                     })->wrap()->toggleable(),
                 ToggleColumn::make('is_visible')->label('Hiển thị')->disabled(fn () => ! self::canBulkImport()),
+                PublicStatusColumn::make(),
                 ToggleColumn::make('quote_only')->label('Báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(),
                 ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),

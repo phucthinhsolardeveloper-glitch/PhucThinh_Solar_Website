@@ -5,11 +5,13 @@ namespace App\Filament\Widgets;
 use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Media\MediaInventory;
 use App\Domain\Outbox\Outbox;
+use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\MediaFiles\MediaFileResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Reviews\ReviewResource;
+use App\Models\Post;
 use App\Models\Review;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Cache;
@@ -44,6 +46,12 @@ class AttentionWidget extends Widget
         }
         if (ReviewResource::canViewAny() && ($reviews = Review::query()->whereNull('parent_id')->where('status', 'pending')->count()) > 0) {
             $items[] = ['tone' => 'info', 'text' => $reviews.' đánh giá chờ duyệt', 'url' => ReviewResource::getUrl()];
+        }
+        if (ArticleResource::canViewAny()) {
+            $soon = Post::query()->where('kind', 'article')->where('is_visible', true)->whereBetween('published_at', [now(), now()->addDays(7)])->count();
+            if ($soon > 0) {
+                $items[] = ['tone' => 'info', 'text' => $soon.' bài viết hẹn giờ đăng trong 7 ngày tới', 'url' => ArticleResource::getUrl().'?tableFilters[scheduled][isActive]=1'];
+            }
         }
         $mail = Outbox::health();
         if (($failed = $mail['failed'] + $mail['failed_jobs']) > 0) {

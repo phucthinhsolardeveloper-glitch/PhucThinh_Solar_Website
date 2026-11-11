@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PostCategories;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\PublicLink;
+use App\Filament\Support\PublicStatusColumn;
 use App\Models\PostCategory;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -64,6 +65,7 @@ class PostCategoryResource extends Resource
                 TextColumn::make('kind')->label('Dùng cho')->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state)->badge(),
                 TextColumn::make('posts_count')->label('Số bài')->counts('posts'),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
+                PublicStatusColumn::make(),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('kind')->label('Dùng cho')->options(self::KINDS)])

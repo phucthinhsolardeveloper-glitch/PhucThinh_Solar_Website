@@ -4,6 +4,7 @@ namespace App\Domain\Site;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Solar\SolarEstimator;
 use App\Domain\Solutions\SolutionHub;
 use App\Support\RichText;
@@ -150,7 +151,7 @@ class SiteAssembler
 
         // Knowledge menu: article groups with published articles, then their sub-groups.
         $groups = $this->db->table('post_categories as c')->where('c.kind', 'article')->where('c.depth', 1)->where('c.is_visible', true)
-            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where('p.is_visible', true))
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where(PostVisibility::live('p.')))
             ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.slug']);
         $subGroups = $this->db->table('post_categories')->whereIn('kind', ['article', 'solution'])->where('depth', '>', 1)->where('is_visible', true)
             ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'parent_id', 'name', 'slug'])->groupBy('parent_id');
@@ -239,7 +240,7 @@ class SiteAssembler
     {
         $footer = $this->db->table('page_items')->where('section', 'site.footer')->where('is_visible', true)->first(['title', 'body']);
         $policies = [];
-        foreach ($this->db->table('posts')->where('kind', 'policy')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $row) {
+        foreach ($this->db->table('posts')->where('kind', 'policy')->where(PostVisibility::live())->orderBy('sort_order')->orderByDesc('id')->get(['title', 'slug']) as $row) {
             if ($link = self::link($row->title, 'ho-tro/'.self::slug($row).'/')) {
                 $policies[] = $link;
             }

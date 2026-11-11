@@ -2,6 +2,7 @@
 
 namespace App\Domain\Projects;
 
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
 use App\Models\Post;
 use App\Support\RichText;
@@ -21,7 +22,7 @@ class ProjectDetail extends PageSupport
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
             return $bad;
         }
-        $post = $this->db->table('posts')->where('slug', $slug)->where('kind', 'project')->where('is_visible', true)->first();
+        $post = $this->db->table('posts')->where('slug', $slug)->where('kind', 'project')->where(PostVisibility::live())->first();
         if (! $post) {
             return [404, ['error' => ['code' => 'PROJECT_NOT_FOUND']]];
         }
@@ -57,7 +58,7 @@ class ProjectDetail extends PageSupport
             }
         }
         $nearby = [];
-        $others = $this->db->table('posts')->where('id', '<>', $id)->where('kind', 'project')->where('is_visible', true)
+        $others = $this->db->table('posts')->where('id', '<>', $id)->where('kind', 'project')->where(PostVisibility::live())
             ->when($post->category_id, fn ($q) => $q->where('category_id', $post->category_id), fn ($q) => $q->whereNull('category_id'))
             ->orderBy('sort_order')->orderByDesc('id')->limit(3)->get(['id', 'title', 'slug', 'image', 'address', 'province_id', 'ward_id']);
         foreach ($others as $other) {

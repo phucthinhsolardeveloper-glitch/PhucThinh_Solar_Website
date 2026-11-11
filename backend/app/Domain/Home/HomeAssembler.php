@@ -4,6 +4,7 @@ namespace App\Domain\Home;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageLayouts;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -175,7 +176,7 @@ class HomeAssembler
     /** Four fixed solution slots, each filled by the first featured solution whose name matches the slot. */
     private function solutions(): array
     {
-        $rows = $this->db->table('posts')->where('kind', 'solution')->where('is_featured', true)->where('is_visible', true)
+        $rows = $this->db->table('posts')->where('kind', 'solution')->where('is_featured', true)->where(PostVisibility::live())
             ->orderBy('sort_order')->orderByDesc('id')->get(['title', 'nav_title', 'slug', 'summary', 'cover_image'])->map(fn ($row) => (array) $row)->all();
         $solutions = [];
         foreach (self::SOLUTION_SLOTS as $i => $slot) {

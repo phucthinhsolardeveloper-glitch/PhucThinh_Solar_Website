@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Brands;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\PublicLink;
+use App\Filament\Support\PublicStatusColumn;
 use App\Models\Brand;
 use BackedEnum;
 use Filament\Actions\EditAction;
@@ -65,6 +66,7 @@ class BrandResource extends Resource
                 TextColumn::make('name')->label('Thương hiệu')->searchable()->sortable(),
                 TextColumn::make('products_count')->label('Sản phẩm')->counts('products')->sortable(),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
+                PublicStatusColumn::make(),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->recordActions([PublicLink::action(), EditAction::make()]);

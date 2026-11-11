@@ -3,6 +3,7 @@
 namespace App\Domain\Projects;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\PageSupport;
 use App\Models\PostCategory;
@@ -65,7 +66,7 @@ class ProjectListing extends PageSupport
             ]);
         }
 
-        $listed = $this->db->table('posts')->where('kind', 'project')->where('is_visible', true)
+        $listed = $this->db->table('posts')->where('kind', 'project')->where(PostVisibility::live())
             ->when($selected !== null, fn ($q) => $q->where('category_id', $selected['id']));
         $total = (clone $listed)->count();
         $rows = $listed->orderBy('sort_order')->orderByDesc('id')->forPage($page, $perPage)

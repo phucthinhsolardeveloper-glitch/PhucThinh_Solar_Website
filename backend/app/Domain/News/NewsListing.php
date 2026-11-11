@@ -3,6 +3,7 @@
 namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
 use App\Models\PostCategory;
 use App\Support\SiteSettings;
@@ -65,7 +66,7 @@ class NewsListing extends PageSupport
 
         // Top groups that hold at least one published article.
         $categories = $this->db->table('post_categories as c')->where('c.kind', 'article')->where('c.depth', 1)->where('c.is_visible', true)
-            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where('p.is_visible', true)->where('p.slug', '<>', ''))
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'article')->where(PostVisibility::live('p.'))->where('p.slug', '<>', ''))
             ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.summary', 'c.slug', 'c.image'])->map(fn ($row) => (array) $row)->all();
         $selected = null;
         $field = null;
@@ -84,7 +85,7 @@ class NewsListing extends PageSupport
             ]];
         }
 
-        $published = fn () => $this->db->table('posts')->where('kind', 'article')->where('is_visible', true)->where('slug', '<>', '');
+        $published = fn () => $this->db->table('posts')->where('kind', 'article')->where(PostVisibility::live())->where('slug', '<>', '');
         $introRows = $this->section('news.intro');
         $intro = collect($introRows)->firstWhere('is_visible', true) ?? [];
         $heroEnabled = ! $introRows || in_array('hero', $intro['flags'] ?? [], true);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\UnicodeJson;
 use App\Domain\Catalog\SpecFormat;
+use App\Domain\Content\PostVisibility;
 use App\Models\Concerns\Audited;
 use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +66,7 @@ class Product extends Model
     public function visibleArticles(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_products')
-            ->where('posts.kind', 'article')->where('posts.is_visible', true)->wherePivot('is_visible', true);
+            ->where('posts.kind', 'article')->where(PostVisibility::live('posts.'))->wherePivot('is_visible', true);
     }
 
     public function images(): HasMany
