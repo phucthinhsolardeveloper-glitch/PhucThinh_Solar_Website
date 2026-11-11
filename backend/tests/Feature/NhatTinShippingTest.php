@@ -6,6 +6,7 @@ use App\Domain\Shipping\NhatTin\NtlClient;
 use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\Shipments;
 use App\Models\Order;
+use App\Models\Shipment;
 use App\Models\User;
 use App\Support\SiteSettings;
 use Illuminate\Http\Client\ConnectionException;
@@ -153,4 +154,37 @@ it('never shows a mock price or makes a mock waybill on the live site', function
     } finally {
         app()->detectEnvironment(fn () => 'testing');
     }
+});
+
+it('lets only the first of two reconciles settle a stuck waybill, and a repeat changes nothing', function () {
+    config(['shipping.nhattin.mode' => 'mock']);
+    $order = ntlOrder();
+    $stuck = $order->shipments()->create(['provider' => 'nhattin', 'environment' => 'mock', 'ref_code' => $order->code.'-1', 'status' => 'unknown',
+        'service_id' => '91', 'payer_id' => '10', 'weight_kg' => 1, 'cod_amount' => 0, 'cargo_value' => 0]);
+    $secondScreen = Shipment::query()->findOrFail($stuck->id); // loaded before the first person acted
+
+    $first = app(Shipments::class)->reconcile($stuck, 'FIRST-1001', ntlStaff());
+    expect($first->bill_code)->toBe('FIRST-1001');
+    expect(fn () => app(Shipments::class)->reconcile($secondScreen, 'SECOND-2002', ntlStaff()))->toThrow(ValidationException::class, 'đã được đối chiếu');
+    expect(fn () => app(Shipments::class)->reconcile($secondScreen, '', ntlStaff()))->toThrow(ValidationException::class, 'đã được đối chiếu');
+    expect(fn () => app(Shipments::class)->reconcile($secondScreen, 'FIRST-1001', ntlStaff()))->toThrow(ValidationException::class);
+
+    $saved = $stuck->fresh();
+    expect($saved->bill_code)->toBe('FIRST-1001')->and($saved->status)->not->toBe('cancelled')
+        ->and(DB::table('admin_audit_events')->where('action', 'shipment.reconcile')->count())->toBe(1);
+});
+
+it('cannot close a waybill another person has just attached, and one code goes to one waybill only', function () {
+    config(['shipping.nhattin.mode' => 'mock']);
+    $make = fn () => ($o = ntlOrder())->shipments()->create(['provider' => 'nhattin', 'environment' => 'mock', 'ref_code' => $o->code.'-1', 'status' => 'unknown',
+        'service_id' => '91', 'payer_id' => '10', 'weight_kg' => 1, 'cod_amount' => 0, 'cargo_value' => 0]);
+    $a = $make();
+    $b = $make();
+    $staleA = Shipment::query()->findOrFail($a->id);
+
+    app(Shipments::class)->reconcile($a, 'SHARED-3003', ntlStaff());
+    expect(fn () => app(Shipments::class)->reconcile($staleA, '', ntlStaff()))->toThrow(ValidationException::class, 'đã được đối chiếu');
+    expect($a->fresh()->status)->not->toBe('cancelled');
+    expect(fn () => app(Shipments::class)->reconcile($b, 'SHARED-3003', ntlStaff()))->toThrow(ValidationException::class, 'đã gắn với đơn khác');
+    expect($b->fresh()->bill_code)->toBeNull()->and($b->fresh()->status)->toBe('unknown');
 });

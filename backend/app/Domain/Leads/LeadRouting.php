@@ -46,14 +46,28 @@ final class LeadRouting
                 ->selectRaw('assigned_to, count(*) as n')->groupBy('assigned_to')->pluck('n', 'assigned_to');
             $chosen = $pool->sortBy(fn (User $u) => [(int) ($open[$u->id] ?? 0), $u->id])->first();
             $due = self::callBackAt(now());
-            // Conditional write: someone who pressed "Nhận xử lý" in the meantime keeps the enquiry.
-            $won = Lead::query()->whereKey($lead->id)->whereNull('assigned_to')->whereNotIn('status', ['done', 'spam'])
-                ->update(['assigned_to' => $chosen->id, 'follow_up_at' => $lead->follow_up_at ?? $due, 'updated_at' => now()]);
-            if ($won !== 1) {
+            // One transaction on the locked row, reading the current values: whoever took the enquiry or set
+            // a call-back time meanwhile keeps it; the SLA time is only filled when none is set.
+            $won = DB::transaction(function () use ($lead, $chosen, $due): bool {
+                $locked = Lead::query()->whereKey($lead->id)->lockForUpdate()->first();
+                if (! $locked || $locked->assigned_to !== null || in_array($locked->status, ['done', 'spam'], true)) {
+                    return false;
+                }
+                $setDue = $locked->follow_up_at === null;
+                $changes = ['assigned_to' => ['from' => null, 'to' => $chosen->id, 'to_name' => $chosen->name], 'auto' => true];
+                $fill = ['assigned_to' => $chosen->id];
+                if ($setDue) {
+                    $fill['follow_up_at'] = $due;
+                    $changes['follow_up_at'] = ['from' => null, 'to' => $due->toDateTimeString()];
+                }
+                $locked->forceFill($fill)->save();
+                $locked->events()->create(['actor_id' => null, 'changes' => $changes, 'created_at' => now()]);
+
+                return true;
+            });
+            if (! $won) {
                 return null;
             }
-            $lead->events()->create(['actor_id' => null, 'changes' => ['assigned_to' => ['from' => null, 'to' => $chosen->id, 'to_name' => $chosen->name],
-                'follow_up_at' => ['from' => null, 'to' => ($lead->follow_up_at ?? $due)->toDateTimeString()], 'auto' => true], 'created_at' => now()]);
 
             return $chosen;
         } catch (Throwable $e) {

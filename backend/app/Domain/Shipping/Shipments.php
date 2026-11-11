@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\User;
 use App\Support\SiteSettings;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -173,23 +174,39 @@ final class Shipments
     public function reconcile(Shipment $shipment, ?string $billCode, User $actor): Shipment
     {
         abort_unless($actor->hasPermission('orders'), 403);
-        $stuck = $shipment->bill_code === null && ($shipment->status === 'unknown'
-            || ($shipment->status === 'create_pending' && $shipment->updated_at?->lt(now()->subMinutes(2))));
-        if (! $stuck) {
-            throw ValidationException::withMessages(['shipment' => 'Vận đơn này không ở trạng thái chưa rõ kết quả.']);
-        }
         $billCode = trim((string) $billCode);
-        if ($billCode === '') {
-            $shipment->update(['status' => 'cancelled', 'error' => 'Đối chiếu: không có trên Nhất Tín']);
-            Audit::record('shipment.reconcile', 'Order', $shipment->order_id, null, ['ref_code' => $shipment->ref_code, 'found' => false]);
+        // Decided on the locked row, from the database and not from the model the screen loaded: of two people
+        // settling the same waybill only the first changes it; the second finds it settled and changes nothing.
+        $attached = DB::transaction(function () use ($shipment, $billCode): bool {
+            $locked = Shipment::query()->whereKey($shipment->id)->lockForUpdate()->firstOrFail();
+            $stuck = $locked->bill_code === null && ($locked->status === 'unknown'
+                || ($locked->status === 'create_pending' && $locked->updated_at?->lt(now()->subMinutes(2))));
+            if (! $stuck) {
+                throw ValidationException::withMessages(['shipment' => 'Vận đơn này đã được đối chiếu hoặc không ở trạng thái chưa rõ kết quả.']);
+            }
+            if ($billCode === '') {
+                $locked->update(['status' => 'cancelled', 'error' => 'Đối chiếu: không có trên Nhất Tín']);
+                Audit::record('shipment.reconcile', 'Order', $locked->order_id, null, ['ref_code' => $locked->ref_code, 'found' => false]);
 
-            return $shipment->refresh();
+                return false;
+            }
+            if (! preg_match('/^[A-Za-z0-9-]{4,40}$/', $billCode)
+                || Shipment::query()->where('bill_code', $billCode)->where('provider', $locked->provider)->where('environment', $locked->environment)->exists()) {
+                throw ValidationException::withMessages(['shipment' => 'Mã vận đơn không hợp lệ hoặc đã gắn với đơn khác.']);
+            }
+            try {
+                $locked->update(['bill_code' => $billCode, 'status' => 'draft', 'error' => null]);
+            } catch (UniqueConstraintViolationException) {
+                throw ValidationException::withMessages(['shipment' => 'Mã vận đơn không hợp lệ hoặc đã gắn với đơn khác.']);
+            }
+            Audit::record('shipment.reconcile', 'Order', $locked->order_id, null, ['ref_code' => $locked->ref_code, 'bill_code' => $billCode, 'found' => true]);
+
+            return true;
+        });
+        $shipment->refresh();
+        if (! $attached) {
+            return $shipment;
         }
-        if (! preg_match('/^[A-Za-z0-9-]{4,40}$/', $billCode) || Shipment::query()->where('bill_code', $billCode)->where('environment', $shipment->environment)->exists()) {
-            throw ValidationException::withMessages(['shipment' => 'Mã vận đơn không hợp lệ hoặc đã gắn với đơn khác.']);
-        }
-        $shipment->update(['bill_code' => $billCode, 'status' => 'draft', 'error' => null]);
-        Audit::record('shipment.reconcile', 'Order', $shipment->order_id, null, ['ref_code' => $shipment->ref_code, 'bill_code' => $billCode, 'found' => true]);
         try {
             $this->refresh($shipment);
         } catch (NtlException) {

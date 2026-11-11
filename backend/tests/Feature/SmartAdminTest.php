@@ -4,6 +4,7 @@ use App\Domain\Admin\WorkQueue;
 use App\Domain\Leads\LeadRouting;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Models\Lead;
+use App\Models\LeadEvent;
 use App\Models\Product;
 use App\Models\User;
 use App\Support\SiteSettings;
@@ -90,4 +91,43 @@ it('drops the cached quality report when a product is saved', function () {
     $p->name .= ' ';
     $p->save();
     expect(Cache::has('data-quality'))->toBeFalse()->and(Cache::has('catalog-health'))->toBeFalse();
+});
+
+it('auto-assign keeps a call-back time staff set after the enquiry was read, and fills the SLA only when empty', function () {
+    User::query()->where('role', '!=', User::ROLE_OWNER)->update(['is_active' => false]);
+    $staff = smartUser(['leads']);
+    DB::table('settings')->updateOrInsert(['key' => LeadRouting::SETTING], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+
+    $empty = Lead::query()->create(['kind' => 'contact', 'name' => 'Trống', 'phone' => '0900000501', 'status' => 'new']);
+    app(LeadRouting::class)->assign($empty->id);
+    $event = $empty->fresh()->events()->firstOrFail();
+    expect($empty->fresh()->assigned_to)->toBe($staff->id)->and($empty->fresh()->follow_up_at)->not->toBeNull()
+        ->and($event->changes['auto'])->toBeTrue()->and($event->changes)->toHaveKey('follow_up_at');
+
+    // Staff set a time between the read and the write: simulated by a time already in the row.
+    $set = Lead::query()->create(['kind' => 'contact', 'name' => 'Đã hẹn', 'phone' => '0900000502', 'status' => 'new']);
+    Lead::query()->whereKey($set->id)->update(['follow_up_at' => '2030-01-02 10:00:00']);
+    app(LeadRouting::class)->assign($set->id);
+    $saved = $set->fresh();
+    expect($saved->assigned_to)->toBe($staff->id)->and($saved->follow_up_at->format('Y-m-d H:i'))->toBe('2030-01-02 10:00')
+        ->and($saved->events()->count())->toBe(1)->and($saved->events()->first()->changes)->not->toHaveKey('follow_up_at');
+});
+
+it('auto-assign writes nothing, history included, when the event cannot be saved', function () {
+    User::query()->where('role', '!=', User::ROLE_OWNER)->update(['is_active' => false]);
+    smartUser(['leads']);
+    DB::table('settings')->updateOrInsert(['key' => LeadRouting::SETTING], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    $lead = Lead::query()->create(['kind' => 'contact', 'name' => 'Lỗi', 'phone' => '0900000503', 'status' => 'new']);
+    $armed = true;
+    LeadEvent::creating(function () use (&$armed) {
+        if ($armed) {
+            throw new RuntimeException('event failed');
+        }
+    });
+
+    expect(app(LeadRouting::class)->assign($lead->id))->toBeNull();
+    $armed = false;
+    expect($lead->fresh()->assigned_to)->toBeNull()->and($lead->fresh()->follow_up_at)->toBeNull();
 });
