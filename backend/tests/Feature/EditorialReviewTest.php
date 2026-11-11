@@ -33,7 +33,7 @@ it('sends a draft for review, returns it with a note, then publishes it', functi
     Livewire::test(EditPostRevision::class, ['record' => $draft->getKey()])
         ->callAction('returnDraft', ['note' => 'Thiếu ảnh minh họa'])->assertHasNoActionErrors();
     expect($draft->fresh()->review_state)->toBe('returned')->and($draft->fresh()->review_note)->toBe('Thiếu ảnh minh họa')
-        ->and($writer->notifications()->first()->data['title'])->toContain('Bài bị trả lại');
+        ->and($writer->notifications()->get()->pluck('data.title')->implode(' | '))->toContain('Bài bị trả lại')->not->toContain('Bài chờ duyệt');
 
     $this->actingAs($writer, 'admin');
     Livewire::test(EditPostRevision::class, ['record' => $draft->getKey()])->callAction('requestReview')->assertHasNoActionErrors();

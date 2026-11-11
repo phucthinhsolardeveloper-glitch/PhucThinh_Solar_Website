@@ -17,7 +17,7 @@ class TrafficChartWidget extends ChartWidget
 
     protected ?string $maxHeight = '280px';
 
-    public ?string $filter = '30d';
+    public ?string $filter = '7d';
 
     protected function getFilters(): ?array
     {
@@ -45,9 +45,9 @@ class TrafficChartWidget extends ChartWidget
             'labels' => $period['labels'],
             'datasets' => [
                 ['label' => 'Người xem', 'data' => Periods::fill($period, $rows->map(fn ($r) => (int) $r->visitors)->all()),
-                    'borderColor' => Periods::NAVY, 'backgroundColor' => 'rgba(22,54,95,0.12)', 'fill' => true, 'tension' => 0.3, 'pointRadius' => 2],
+                    'borderColor' => Periods::NAVY, 'backgroundColor' => Periods::NAVY, 'borderWidth' => 2, 'tension' => 0, 'pointRadius' => 3],
                 ['label' => 'Lượt xem trang', 'data' => Periods::fill($period, $rows->map(fn ($r) => (int) $r->views)->all()),
-                    'borderColor' => Periods::GOLD, 'backgroundColor' => Periods::GOLD, 'tension' => 0.3, 'pointRadius' => 2, 'borderDash' => [4, 3]],
+                    'borderColor' => Periods::GOLD, 'backgroundColor' => Periods::GOLD, 'borderWidth' => 2, 'tension' => 0, 'pointRadius' => 3],
             ],
         ];
     }
@@ -59,7 +59,8 @@ class TrafficChartWidget extends ChartWidget
 
     protected function getOptions(): array
     {
-        return ['plugins' => ['legend' => ['position' => 'bottom']], 'scales' => ['y' => ['beginAtZero' => true, 'ticks' => ['precision' => 0]]],
+        return ['plugins' => ['legend' => ['position' => 'bottom', 'labels' => ['usePointStyle' => true]]],
+            'scales' => ['y' => ['beginAtZero' => true, 'ticks' => ['precision' => 0], 'grid' => ['color' => 'rgba(128,128,128,0.12)']], 'x' => ['grid' => ['display' => false]]],
             'interaction' => ['mode' => 'index', 'intersect' => false]];
     }
 

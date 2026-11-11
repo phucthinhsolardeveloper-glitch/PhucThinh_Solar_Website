@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 /** Orders placed and their value, cancelled orders left out. */
 class SalesChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Đơn hàng và doanh số';
+    protected ?string $heading = 'Doanh số';
 
     protected static ?int $sort = 3;
 
@@ -47,10 +47,8 @@ class SalesChartWidget extends ChartWidget
         return [
             'labels' => $period['labels'],
             'datasets' => [
-                ['type' => 'line', 'label' => 'Doanh số (triệu đ)', 'yAxisID' => 'money', 'data' => Periods::fill($period, $rows->map(fn ($r) => round((float) $r->total / 1_000_000, 1))->all()),
-                    'borderColor' => Periods::GOLD, 'backgroundColor' => Periods::GOLD, 'tension' => 0.3, 'pointRadius' => 2],
-                ['label' => 'Số đơn', 'yAxisID' => 'count', 'data' => Periods::fill($period, $rows->map(fn ($r) => (int) $r->orders)->all()),
-                    'backgroundColor' => 'rgba(22,54,95,0.75)', 'borderRadius' => 3],
+                ['label' => 'Doanh số (triệu đ)', 'data' => Periods::fill($period, $rows->map(fn ($r) => round((float) $r->total / 1_000_000, 2))->all()),
+                    'backgroundColor' => Periods::NAVY, 'borderRadius' => 4, 'maxBarThickness' => 18],
             ],
         ];
     }
@@ -62,9 +60,10 @@ class SalesChartWidget extends ChartWidget
 
     protected function getOptions(): array
     {
-        return ['plugins' => ['legend' => ['position' => 'bottom']], 'interaction' => ['mode' => 'index', 'intersect' => false],
-            'scales' => ['y' => ['display' => false], 'count' => ['position' => 'left', 'beginAtZero' => true, 'ticks' => ['precision' => 0]],
-                'money' => ['position' => 'right', 'beginAtZero' => true, 'grid' => ['drawOnChartArea' => false]]]];
+        // One measure on one axis: the order count is in the description, never on a second scale.
+        return ['plugins' => ['legend' => ['display' => false]], 'interaction' => ['mode' => 'index', 'intersect' => false],
+            'scales' => ['y' => ['beginAtZero' => true, 'title' => ['display' => true, 'text' => 'triệu đồng'], 'grid' => ['color' => 'rgba(128,128,128,0.12)']],
+                'x' => ['grid' => ['display' => false], 'ticks' => ['maxRotation' => 0, 'autoSkipPadding' => 12]]]];
     }
 
     /** @return array{orders: int, total: float} */

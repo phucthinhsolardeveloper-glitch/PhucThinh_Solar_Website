@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Leads;
 
+use App\Domain\Commerce\CustomerHistory;
 use App\Domain\Commerce\LeadTriage;
 use App\Domain\Leads\LeadSource;
 use App\Filament\Concerns\RequiresPermission;
@@ -117,7 +118,8 @@ class LeadResource extends Resource
             ->columns([
                 TextColumn::make('created_at')->label('Gửi lúc')->dateTime('d/m H:i')->sortable()->wrap(false)
                     ->description(fn (Lead $record) => self::KINDS[$record->kind] ?? $record->kind),
-                TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])->description(fn (Lead $record) => $record->phone),
+                TextColumn::make('name')->label('Khách')->searchable(['name', 'phone', 'email'])
+                    ->description(fn (Lead $record) => trim($record->phone.(($h = app(CustomerHistory::class)->label($record->phone, exceptLead: (int) $record->id)) !== '' ? ' · '.$h : ''))),
                 TextColumn::make('source_url')->label('Trang nguồn')->placeholder('—')->limit(30)->toggleable()->searchable()->wrap(false)
                     ->formatStateUsing(fn ($state) => LeadSource::normalize($state) ?? '—')
                     ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
@@ -154,7 +156,7 @@ class LeadResource extends Resource
     {
         return Action::make('quickStatus')->label('Đổi tình trạng')
             ->modalHeading(fn (Lead $record) => $record->name.' · '.$record->phone)
-            ->modalDescription(fn (Lead $record) => str((string) $record->message)->limit(160)->toString() ?: null)
+            ->modalDescription(fn (Lead $record) => trim(app(CustomerHistory::class)->label($record->phone, exceptLead: (int) $record->id).' '.str((string) $record->message)->limit(160)->toString()) ?: null)
             ->modalWidth('md')->modalSubmitActionLabel('Lưu')
             ->fillForm(fn (Lead $record) => [
                 'status' => $record->status, 'follow_up_at' => $record->follow_up_at, 'notes' => $record->notes,

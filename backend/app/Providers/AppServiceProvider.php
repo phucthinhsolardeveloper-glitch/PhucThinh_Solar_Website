@@ -6,6 +6,7 @@ use App\Auth\AdminUserProvider;
 use App\Auth\PasswordVerifier;
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Commerce\CustomerHistory;
 use App\Mail\MailBrand;
 use App\Support\SiteSettings;
 use Filament\Forms\Components\DatePicker;
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // One copy per request: the tree is read once and shared by every API part.
         $this->app->scoped(CategoryTree::class);
+        $this->app->scoped(CustomerHistory::class);
         $this->app->scoped(SiteSettings::class);
         $this->app->singleton(PasswordVerifier::class, fn () => new PasswordVerifier(
             (string) config('site.admin_password.secret'),

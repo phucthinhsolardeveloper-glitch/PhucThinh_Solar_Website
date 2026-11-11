@@ -10,7 +10,7 @@
                     @foreach ($rows as $row)
                         <tr>
                             <td>
-                                <a href="{{ $row['url'] }}" target="_blank" rel="noopener">{{ $row['path'] === '/' ? 'Trang chủ' : $row['path'] }}</a>
+                                <a href="{{ $row['url'] }}" target="_blank" rel="noopener" title="{{ $row['path'] }}">{{ $row['title'] !== '' ? $row['title'] : $row['path'] }}</a>
                                 <span class="pts-top-pages__bar" style="width: {{ $row['share'] }}%"></span>
                             </td>
                             <td>{{ number_format($row['views'], 0, ',', '.') }}</td>

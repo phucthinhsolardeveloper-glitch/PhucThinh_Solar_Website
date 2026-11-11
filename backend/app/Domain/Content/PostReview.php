@@ -30,7 +30,7 @@ final class PostReview
             'review_requested_at' => now(), 'reviewed_by' => null]);
         AdminBell::ring('content', 'review:'.$revision->id.':'.now()->timestamp, 'Bài chờ duyệt: '.$revision->post->title,
             $actor->name.' gửi bản nháp #'.$revision->version.($note ? ' · '.$note : ''), PostRevisionResource::getUrl('edit', ['record' => $revision]),
-            'heroicon-o-clipboard-document-check', 'warning');
+            'heroicon-o-clipboard-document-check', 'warning', fn (User $user) => $user->id !== $actor->id && $user->canPerform('content_publish'));
     }
 
     public function returnToWriter(PostRevision $revision, User $actor, string $note): void

@@ -20,13 +20,14 @@ final class AdminBell
      * @param  string  $area  permission area (orders, leads, reviews…); owners always receive
      * @param  string  $key  dedupe key, e.g. "order:12": the same event never rings twice
      */
-    public static function ring(string $area, string $key, string $title, string $body, ?string $url, string $icon = 'heroicon-o-bell', string $color = 'primary'): void
+    /** @param (callable(User): bool)|null $who narrows the receivers further (e.g. only publishers, not the sender) */
+    public static function ring(string $area, string $key, string $title, string $body, ?string $url, string $icon = 'heroicon-o-bell', string $color = 'primary', ?callable $who = null): void
     {
         try {
             if (DB::table('notifications')->where('data', 'like', '%"key":"'.addcslashes($key, '%_').'"%')->exists()) {
                 return;
             }
-            $users = User::query()->where('is_active', true)->get()->filter(fn (User $user) => $user->hasPermission($area));
+            $users = User::query()->where('is_active', true)->get()->filter(fn (User $user) => $user->hasPermission($area) && ($who === null || $who($user)));
             if ($users->isEmpty()) {
                 return;
             }

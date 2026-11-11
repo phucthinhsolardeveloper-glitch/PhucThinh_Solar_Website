@@ -2,13 +2,17 @@
 
 namespace App\Domain\Commerce;
 
+use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Support\SiteSettings;
 use Illuminate\Database\Eloquent\Builder;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -22,25 +26,46 @@ final class OrderExporter
     public function list(Builder $orders): BinaryFileResponse
     {
         $book = new Spreadsheet;
-        $sheet = $book->getActiveSheet()->setTitle('DonHang');
-        $row = $this->heading($sheet, 'DANH SÁCH ĐƠN HÀNG', 'N');
-        $this->headerRow($sheet, $row, ['STT', 'Mã đơn hàng', 'Ngày đặt', 'Tình trạng', 'Thanh toán', 'Hình thức thanh toán', 'Họ tên', 'Điện thoại', 'Email', 'Địa chỉ', 'Tạm tính', 'Phí vận chuyển', 'Tổng giá trị', 'Ghi chú']);
+        $sheet = $book->getActiveSheet()->setTitle('Đơn hàng');
+        $titles = ['STT', 'Mã đơn', 'Ngày đặt', 'Tình trạng', 'Thanh toán', 'Hình thức', 'Khách hàng', 'Điện thoại', 'Địa chỉ giao', 'Sản phẩm',
+            'Tạm tính', 'Phí giao', 'Tổng tiền', 'Vận đơn', 'Ghi chú nội bộ'];
+        $last = chr(64 + count($titles));
+        $row = $this->heading($sheet, 'DANH SÁCH ĐƠN HÀNG · xuất lúc '.now()->format('H:i d/m/Y'), $last);
+        $this->headerRow($sheet, $row, $titles);
+        $headerRow = $row;
         $first = ++$row;
         $number = 0;
-        foreach ($orders->clone()->with(['province', 'ward', 'paymentMethod'])->reorder('id', 'desc')->cursor() as $order) {
-            $this->cells($sheet, $row++, [++$number, (string) $order->code, $order->created_at?->format('H:i d/m/Y'), OrderResource::STATUSES[$order->status] ?? $order->status,
-                OrderResource::PAYMENT[$order->payment_status] ?? $order->payment_status, (string) ($order->paymentMethod->name ?? ''), (string) $order->customer_name, (string) $order->phone,
-                (string) $order->email, self::address($order), (float) $order->subtotal, (float) $order->shipping_fee, (float) $order->total, (string) $order->notes]);
+        foreach ($orders->clone()->with(['province', 'ward', 'paymentMethod', 'items', 'latestShipment'])->reorder('id', 'desc')->cursor() as $order) {
+            $items = $order->items->map(fn ($i) => $i->getAttribute('quantity').' × '.$i->getAttribute('name'))->implode("\n");
+            $shipment = $order->latestShipment;
+            $this->cells($sheet, $row++, [++$number, (string) $order->code, $order->created_at?->format('d/m/Y H:i'), OrderResource::STATUSES[$order->status] ?? $order->status,
+                OrderResource::PAYMENT[$order->payment_status] ?? $order->payment_status, (string) ($order->paymentMethod->name ?? ''), (string) $order->customer_name,
+                (string) $order->phone, self::address($order), $items, (float) $order->subtotal, (float) $order->shipping_fee, (float) $order->total,
+                $shipment ? trim(($shipment->bill_code ?? $shipment->ref_code).' · '.(NtlStatus::LABELS[$shipment->status] ?? $shipment->status)) : '', (string) $order->notes]);
         }
-        $last = max($first, $row - 1);
-        $sheet->getStyle('K'.$first.':M'.$last)->getNumberFormat()->setFormatCode('#,##0');
-        $this->cells($sheet, $row, ['', '', '', '', '', '', '', '', '', 'Tổng cộng', '=SUM(K'.$first.':K'.$last.')', '=SUM(L'.$first.':L'.$last.')', '=SUM(M'.$first.':M'.$last.')'], true);
-        $sheet->getStyle('J'.$row.':M'.$row)->getFont()->setBold(true);
+        $end = max($first, $row - 1);
+        $body = $sheet->getStyle('A'.$first.':'.$last.$end);
+        $body->getAlignment()->setVertical(Alignment::VERTICAL_TOP)->setWrapText(true);
+        $body->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('D8DFEA');
+        for ($r = $first + 1; $r <= $end; $r += 2) {
+            $sheet->getStyle('A'.$r.':'.$last.$r)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F6F8FB');
+        }
+        $sheet->getStyle('A'.$first.':A'.$end)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('K'.$first.':M'.$end)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('B'.$first.':B'.$end)->getFont()->setBold(true);
+        $this->cells($sheet, $row, ['', '', '', '', '', '', '', '', '', 'Tổng cộng '.$number.' đơn', '=SUM(K'.$first.':K'.$end.')', '=SUM(L'.$first.':L'.$end.')', '=SUM(M'.$first.':M'.$end.')'], true);
+        $total = $sheet->getStyle('J'.$row.':M'.$row);
+        $total->getFont()->setBold(true);
+        $total->getBorders()->getTop()->setBorderStyle(Border::BORDER_MEDIUM)->getColor()->setRGB('09285E');
         $sheet->getStyle('K'.$row.':M'.$row)->getNumberFormat()->setFormatCode('#,##0');
-        foreach (['A' => 6, 'B' => 16, 'C' => 18, 'D' => 14, 'E' => 16, 'F' => 22, 'G' => 24, 'H' => 14, 'I' => 26, 'J' => 44, 'K' => 14, 'L' => 14, 'M' => 16, 'N' => 30] as $column => $width) {
+        foreach (['A' => 5, 'B' => 13, 'C' => 16, 'D' => 13, 'E' => 15, 'F' => 18, 'G' => 22, 'H' => 13, 'I' => 38, 'J' => 42, 'K' => 13, 'L' => 11, 'M' => 14, 'N' => 24, 'O' => 28] as $column => $width) {
             $sheet->getColumnDimension($column)->setWidth($width);
         }
-        $sheet->freezePane('A'.$first);
+        $sheet->getRowDimension($headerRow)->setRowHeight(22);
+        $sheet->setAutoFilter('A'.$headerRow.':'.$last.$end);
+        $sheet->freezePane('C'.$first);
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)->setPaperSize(PageSetup::PAPERSIZE_A4)->setFitToWidth(1)->setFitToHeight(0);
+        $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd($headerRow, $headerRow);
 
         return $this->send($book, 'don-hang-'.date('Ymd-His'));
     }
@@ -99,8 +124,9 @@ final class OrderExporter
             $sheet->setCellValueExplicit('A'.($index + 1), (string) $text, DataType::TYPE_STRING);
             $sheet->mergeCells('A'.($index + 1).':'.$lastColumn.($index + 1));
         }
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
-        $sheet->getStyle('A5')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13)->getColor()->setRGB('09285E');
+        $sheet->getStyle('A2:A4')->getFont()->getColor()->setRGB('5D6B84');
+        $sheet->getStyle('A5')->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('B5821A');
 
         return 7;
     }
@@ -112,7 +138,7 @@ final class OrderExporter
         $style = $sheet->getStyle('A'.$row.':'.chr(64 + count($titles)).$row);
         $style->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
         $style->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('0B2A5B');
-        $style->getAlignment()->setWrapText(true);
+        $style->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER);
     }
 
     /** @param list<mixed> $values */

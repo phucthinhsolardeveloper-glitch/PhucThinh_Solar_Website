@@ -61,6 +61,7 @@ class LeadsChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return ['plugins' => ['legend' => ['position' => 'bottom']], 'interaction' => ['mode' => 'index', 'intersect' => false],
-            'scales' => ['x' => ['stacked' => true], 'y' => ['stacked' => true, 'beginAtZero' => true, 'ticks' => ['precision' => 0]]]];
+            'scales' => ['x' => ['stacked' => true, 'grid' => ['display' => false], 'ticks' => ['maxRotation' => 0, 'autoSkipPadding' => 12]],
+                'y' => ['stacked' => true, 'beginAtZero' => true, 'ticks' => ['precision' => 0], 'grid' => ['color' => 'rgba(128,128,128,0.12)']]]];
     }
 }

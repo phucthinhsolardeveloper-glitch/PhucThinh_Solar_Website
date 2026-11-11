@@ -32,17 +32,18 @@ class TrafficSourcesWidget extends ChartWidget
 
         return [
             'labels' => $rows->keys()->map(fn ($key) => PageViews::SOURCES[$key] ?? $key)->all(),
-            'datasets' => [['data' => $rows->values()->map(fn ($n) => (int) $n)->all(), 'backgroundColor' => array_slice(Periods::PALETTE, 0, $rows->count()), 'borderWidth' => 0]],
+            'datasets' => [['label' => 'Lượt vào', 'data' => $rows->values()->map(fn ($n) => (int) $n)->all(), 'backgroundColor' => Periods::NAVY, 'borderRadius' => 4, 'maxBarThickness' => 22]],
         ];
     }
 
     protected function getType(): string
     {
-        return 'doughnut';
+        return 'bar';
     }
 
     protected function getOptions(): array
     {
-        return ['plugins' => ['legend' => ['position' => 'right']], 'cutout' => '62%', 'scales' => ['x' => ['display' => false], 'y' => ['display' => false]]];
+        return ['indexAxis' => 'y', 'plugins' => ['legend' => ['display' => false]],
+            'scales' => ['x' => ['beginAtZero' => true, 'ticks' => ['precision' => 0], 'grid' => ['color' => 'rgba(128,128,128,0.12)']], 'y' => ['grid' => ['display' => false]]]];
     }
 }

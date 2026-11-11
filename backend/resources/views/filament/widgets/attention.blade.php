@@ -12,17 +12,11 @@
                             @else
                                 <span>{{ $item['text'] }}</span>
                             @endif
-                            @if (! empty($item['items']))
-                                <div class="pts-attention__sub">
-                                    @foreach ($item['items'] as $sub)
-                                        <a href="{{ $sub['url'] }}">{{ $sub['name'] }}</a>@if (! $loop->last)<span aria-hidden="true"> · </span>@endif
-                                    @endforeach
-                                </div>
-                            @endif
                         </div>
                     </li>
                 @endforeach
             </ul>
+            <a href="{{ App\Filament\Pages\WorkQueuePage::getUrl() }}" class="pts-queue__more">Mở "Việc cần làm" để xử lý từng mục</a>
         @endif
     </x-filament::section>
 </x-filament-widgets::widget>

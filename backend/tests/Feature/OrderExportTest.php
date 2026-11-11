@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Commerce\OrderExporter;
+use App\Domain\Commerce\OrderPdf;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Models\Order;
 use App\Models\User;
@@ -52,4 +53,13 @@ it('filters orders by date and prints only for staff with the orders permission'
     $this->flushSession();
     $this->actingAs(orderAdmin(['catalog']), 'admin');
     $this->get('/admin/orders/'.$new->id.'/in')->assertForbidden();
+});
+
+it('downloads one order as a PDF sheet with Vietnamese text', function () {
+    $this->actingAs(orderAdmin(), 'admin');
+    $order = sampleOrder('XT-PDF');
+    $pdf = app(OrderPdf::class)->render($order);
+    expect(substr($pdf, 0, 5))->toBe('%PDF-')->and(strlen($pdf))->toBeGreaterThan(5000);
+
+    Livewire\Livewire::test(ListOrders::class)->callTableAction('pdf', $order)->assertFileDownloaded('phieu-don-hang-XT-PDF.pdf');
 });

@@ -263,7 +263,8 @@ class ProductBulkPage extends Page
             return;
         }
         try {
-            $counts = app(BulkApplier::class)->apply($read['rows'], $read['baseline'], $this->choices(), $hiddenConfirmed);
+            $applier = app(BulkApplier::class);
+            $counts = $applier->apply($read['rows'], $read['baseline'], $this->choices(), $hiddenConfirmed);
         } catch (ValidationException $error) {
             $this->fail(collect($error->errors())->flatten()->implode(' '));
             $this->replan();
@@ -272,6 +273,10 @@ class ProductBulkPage extends Page
         }
         $this->cancel();
         Notification::make()->success()->title('Đã áp dụng')->body('Tạo mới '.$counts['create'].', cập nhật '.$counts['update'].', ẩn '.$counts['archive'].', thương hiệu mới '.$counts['brand_create'].'.')->persistent()->send();
+        if ($applier->heldBack !== []) {
+            Notification::make()->warning()->persistent()->title(count($applier->heldBack).' sản phẩm đã nhập nhưng CHƯA bật hiển thị')
+                ->body("Cần sửa trước khi lên website:\n· ".implode("\n· ", array_slice($applier->heldBack, 0, 15)).(count($applier->heldBack) > 15 ? "\n… và ".(count($applier->heldBack) - 15).' sản phẩm khác' : ''))->send();
+        }
     }
 
     /** @return array{overwrite: array<string, bool>, brands: array<string, string>, products: array<string, string>} */

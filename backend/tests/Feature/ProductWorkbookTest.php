@@ -111,6 +111,8 @@ it('creates a product with a new brand only after a choice, and rolls everything
         ->and($made->slug)->toBe('den-excel-moi')->and(Brand::query()->find($made->brand_id)?->name)->toBe('Hãng Chưa Có')
         ->and($made->seo->title)->toBe('SEO mới')
         ->and(json_decode(DB::table('content_sections')->where('owner_id', $made->id)->where('owner_type', Product::class)->value('blocks'), true)[1]['type'])->toBe('faq');
+    // No picture in the file: the product is imported but kept off the site, with the reason.
+    expect($counts['held_back'])->toBe(1)->and($made->is_visible)->toBeFalse();
 });
 
 it('blocks bad data row by row and suggests the right picture name', function () {
