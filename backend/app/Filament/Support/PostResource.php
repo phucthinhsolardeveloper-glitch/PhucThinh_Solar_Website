@@ -126,7 +126,8 @@ abstract class PostResource extends Resource
             ->defaultSort('id', 'desc')
             ->reorderable('sort_order', fn () => AdminActor::current()->canPerform('content_publish'))->paginatedWhileReordering(false)
             ->columns([
-                ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(44),
+                ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(44)
+                    ->checkFileExistence(static::$kind !== 'article'),
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->sortable()->limit(70),
                 TextColumn::make('category.name')->label('Nhóm')->toggleable()->visible(static::$kind !== 'policy'),
                 PublicStatusColumn::make(),

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Media;
 
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Support\RichText;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +121,12 @@ final class MediaReferences
             $value = (string) ($parts['path'] ?? '');
         }
         $value = ltrim($value, '/');
+        if (in_array('news', $folders, true) && preg_match('/^pts-[a-z0-9-]+\\.webp$/', $value)
+            && ! $this->uploads->exists('news/'.$value)
+            && app(ProductMediaUrls::class)->exists('upload/news/'.$value)) {
+            // Locally bundled editorial photos live under public assets, not the read-only upload volume.
+            return null;
+        }
         if (str_starts_with($value, 'upload/')) {
             return self::clean(rawurldecode(substr($value, 7)));
         }

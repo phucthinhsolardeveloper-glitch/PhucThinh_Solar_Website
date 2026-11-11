@@ -71,7 +71,19 @@ final class ProductMediaUrls
             return '';
         }
         if (str_starts_with($publicPath, 'upload/')) {
-            return $this->uploadRoot.'/'.substr($publicPath, 7);
+            $uploaded = $this->uploadRoot.'/'.substr($publicPath, 7);
+            // Source-controlled editorial media is served on local without modifying the
+            // read-only legacy upload volume. Production release imports it to shared/upload.
+            if (! is_file($uploaded)
+                && $this->assetsRoot !== ''
+                && preg_match('#^upload/news/(pts-[a-z0-9-]+\\.webp)$#', $publicPath, $matches)) {
+                $packaged = $this->assetsRoot.'/images/editorial/'.$matches[1];
+                if (is_file($packaged)) {
+                    return $packaged;
+                }
+            }
+
+            return $uploaded;
         }
 
         return $this->assetsRoot !== '' && str_starts_with($publicPath, 'assets/') ? $this->assetsRoot.'/'.substr($publicPath, 7) : '';

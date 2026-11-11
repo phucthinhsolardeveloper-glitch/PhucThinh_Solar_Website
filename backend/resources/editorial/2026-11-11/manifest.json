@@ -1,0 +1,92 @@
+{
+  "batch": "pts-editorial-2026-11-11",
+  "default_visibility": "draft",
+  "articles": [
+    {
+      "slug": "dien-mat-troi-hoat-dong-nhu-the-nao",
+      "title": "Điện mặt trời hoạt động như thế nào? Từ ánh nắng đến điện sử dụng trong nhà",
+      "category": "kien-thuc-san-pham",
+      "summary": "Tìm hiểu nguyên lý hoạt động của điện mặt trời, vai trò tấm pin và inverter, cách dùng điện ban ngày, ban đêm và khi mất điện.",
+      "meta_title": "Điện mặt trời hoạt động như thế nào? | Phúc Thịnh Solar",
+      "meta_description": "Giải thích nguyên lý điện mặt trời: tấm pin, inverter, hệ hòa lưới, hybrid, pin lưu trữ và lý do mất điện lưới hệ thống có thể ngừng phát.",
+      "keywords": "nguyên lý điện mặt trời, điện mặt trời hoạt động như thế nào, inverter",
+      "image": "pts-solar-how-it-works.webp",
+      "markdown": "dien-mat-troi-hoat-dong-nhu-the-nao.md",
+      "inline_images": [
+        "pts-diagram-solar-workflow.webp"
+      ],
+      "previous_html_sha256": "2a716d4dad0d748e10fd785feb48f8342d3b41a8de4e4d970850de02f0234bcb"
+    },
+    {
+      "slug": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi",
+      "title": "Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng",
+      "category": "kien-thuc-san-pham",
+      "summary": "Hướng dẫn đọc Pmax, STC/NOCT, hiệu suất, Voc, Vmp, Isc, Imp, hệ số nhiệt và kích thước bằng ví dụ LONGi 650W.",
+      "meta_title": "Cách đọc datasheet tấm pin: 10 thông số quan trọng",
+      "meta_description": "Hướng dẫn đọc datasheet tấm pin: Pmax, hiệu suất, Voc, Vmp, Isc, Imp, STC, NOCT và hệ số nhiệt, với ví dụ LONGi Hi-MO X10 650W.",
+      "keywords": "datasheet tấm pin, LONGi Hi-MO X10 650W, Pmax, Voc, Isc, NOCT",
+      "image": "pts-solar-datasheet-guide.webp",
+      "markdown": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi.md",
+      "inline_images": [
+        "pts-infographic-panel-650w.webp"
+      ],
+      "previous_html_sha256": "bb4b147d273d2f3950e90f0add624cb2e9d2b5e8bdd8a1c6e63f7b05d91a4549"
+    },
+    {
+      "slug": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps",
+      "title": "Điện mặt trời toàn cầu đạt 2,96 TW: Xu hướng nổi bật từ IEA PVPS 2026",
+      "category": "tin-moi-nhat",
+      "summary": "Báo cáo IEA PVPS tháng 9/2026: công suất điện mặt trời toàn cầu đạt 2,96 TW cuối năm 2025, khoảng 690 GW lắp mới và những xu hướng đáng chú ý.",
+      "meta_title": "Thị trường điện mặt trời 2026: IEA PVPS ghi nhận 2,96 TW",
+      "meta_description": "Báo cáo IEA PVPS 2026 ghi nhận công suất điện mặt trời toàn cầu 2,96 TW cuối năm 2025 và khoảng 690 GW lắp mới. Khám phá các xu hướng công nghệ.",
+      "keywords": "IEA PVPS 2026, thị trường điện mặt trời, 2,96 TW, 690 GW",
+      "image": "pts-global-pv-trends-2026.webp",
+      "markdown": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps.md",
+      "inline_images": [
+        "pts-infographic-global-pv-2026.webp"
+      ],
+      "previous_html_sha256": "f95dff44bbf42a5724023319ada1bdae3a6ec187260497639bec113e6b680bc2"
+    }
+  ],
+  "cover_replacements": [
+    {
+      "slug": "den-nang-luong-mat-troi-nhung-ly-do-nen-chon",
+      "expected_image": "2920341-5663.jpg",
+      "image": "pts-light-benefits.webp"
+    },
+    {
+      "slug": "top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi",
+      "expected_image": "loi-ich-su-dung-den-nlmt-3203.jpg",
+      "image": "pts-light-advantages.webp"
+    },
+    {
+      "slug": "4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi",
+      "expected_image": "luu-y-thi-cong-lap-dat-7804.jpg",
+      "image": "pts-light-installation.webp"
+    },
+    {
+      "slug": "den-nang-luong-mat-troi-nhung-ly-do-ban-nen-chon",
+      "expected_image": "2-3-6245.png",
+      "image": "pts-light-choice.webp"
+    },
+    {
+      "slug": "8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio",
+      "expected_image": "loi-ich-su-dung-den-nlmt-1-9796.jpg",
+      "image": "pts-light-why.webp"
+    }
+  ],
+  "obsolete_inline_banners": [
+    {
+      "slug": "top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi",
+      "expected_body_sha256": "e8edc441ebf039aeec8157d8e3c4ffc1cc9e2590108706d0b1fd44e8e7f89340",
+      "image_src": "http://phucthinhsolar.com/upload/filemanager/Loi-ich-su-dung-den-NLMT.jpg",
+      "expected_cover": "pts-light-advantages.webp"
+    },
+    {
+      "slug": "4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi",
+      "expected_body_sha256": "1c0fbbca1fcc1a19cf7e9f62fd318942e6d2970bb71a673eef612810d08ae548",
+      "image_src": "http://phucthinhsolar.com/upload/filemanager/LUU-Y-THI-CONG-LAP-DAT.jpg",
+      "expected_cover": "pts-light-installation.webp"
+    }
+  ]
+}

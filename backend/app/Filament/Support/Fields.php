@@ -2,6 +2,7 @@
 
 namespace App\Filament\Support;
 
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Models\Province;
 use App\Models\Ward;
 use App\Support\Slugs;
@@ -104,7 +105,18 @@ final class Fields
             ->hint(fn (FileUpload $component): ?string => ($missing = self::missingFiles($component)) === []
                 ? null : 'Không còn file trên máy chủ: '.implode(', ', $missing).'. Tải ảnh khác hoặc xóa.')
             ->hintColor('danger')
-            ->hintAction(self::pickExisting($folder));
+            ->hintAction(self::pickExisting($folder))
+            ->getUploadedFileUsing(function (FileUpload $component, string $file, string|array|null $storedFileNames): ?array {
+                if ($component->getDiskName() === 'upload_news' && preg_match('/^pts-[a-z0-9-]+\\.webp$/', $file)) {
+                    $path = app(ProductMediaUrls::class)->absolute('upload/news/'.$file);
+                    if (is_file($path)) {
+                        return ['name' => $file, 'size' => filesize($path), 'type' => 'image/webp',
+                            'url' => url('/upload/news/'.$file)];
+                    }
+                }
+
+                return $component->getUploadedFile($file, $storedFileNames);
+            });
     }
 
     /** @return list<string> stored file names of the field that are not on its disk */
@@ -119,6 +131,9 @@ final class Fields
                 $exists = $component->getDisk()->exists($file);
             } catch (Throwable) {
                 $exists = false;
+            }
+            if (! $exists && $component->getDiskName() === 'upload_news') {
+                $exists = app(ProductMediaUrls::class)->exists('upload/news/'.$file);
             }
             if (! $exists) {
                 $missing[] = $file;
