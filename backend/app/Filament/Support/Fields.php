@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -93,7 +94,55 @@ final class Fields
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
             ->getUploadedFileNameForStorageUsing(fn ($file) => Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).'-'.Str::lower(Str::random(6)).'.'.strtolower($file->getClientOriginalExtension()))
             ->imagePreviewHeight('160')
-            ->openable();
+            ->openable()
+            ->hintAction(self::pickExisting($folder));
+    }
+
+    /**
+     * "Chọn ảnh có sẵn": reuse a picture already in the same upload folder instead of uploading it again.
+     * The field then stores that file name, exactly as if it had been uploaded.
+     */
+    public static function pickExisting(string $folder): Action
+    {
+        return Action::make('pickExisting')->label('Chọn ảnh có sẵn')->icon('heroicon-o-photo')->link()
+            ->modalHeading('Chọn ảnh đã có trên máy chủ')->modalWidth('lg')->modalSubmitActionLabel('Dùng ảnh này')
+            ->schema([
+                Select::make('file')->label('Ảnh')->required()->searchable()->allowHtml()
+                    ->helperText('Gõ một phần tên file (vd. "den-pha", "longi"). Mới nhất ở đầu.')
+                    ->options(fn () => self::libraryOptions($folder, ''))
+                    ->getSearchResultsUsing(fn (string $search) => self::libraryOptions($folder, $search)),
+            ])
+            ->action(fn (array $data, FileUpload $component) => $component->state([(string) Str::uuid() => (string) $data['file']]));
+    }
+
+    /** @return array<string, string> file name => small picture and name, newest first */
+    public static function libraryOptions(string $folder, string $search): array
+    {
+        $files = Cache::remember('upload-library:'.$folder, 120, function () use ($folder) {
+            $disk = Storage::disk('upload_'.$folder);
+            $list = [];
+            foreach ($disk->files() as $file) {
+                if (preg_match('/\.(jpe?g|png|webp|gif)$/i', $file)) {
+                    $list[$file] = $disk->lastModified($file);
+                }
+            }
+            arsort($list);
+
+            return array_keys($list);
+        });
+        $needle = Str::lower(Str::ascii(trim($search)));
+        $out = [];
+        foreach ($files as $file) {
+            if ($needle === '' || str_contains(Str::lower(Str::ascii($file)), $needle)) {
+                $out[$file] = '<span style="display:flex;align-items:center;gap:.6rem"><img src="/thumbs/96x96x1/upload/'.e($folder).'/'.rawurlencode($file)
+                    .'" alt="" loading="lazy" style="width:48px;height:48px;object-fit:cover;border-radius:4px;flex:none"> <span>'.e($file).'</span></span>';
+                if (count($out) >= 40) {
+                    break;
+                }
+            }
+        }
+
+        return $out;
     }
 
     /**
