@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
+import { checkoutViewState } from '#shared/checkout-state'
 import { CART_CHECKOUT_POST_PATH } from '#shared/public-route-gate'
 import CommerceSteps from '~/components/commerce/CommerceSteps.vue'
 import AnimatedMoney from '~/components/commerce/AnimatedMoney.vue'
@@ -28,6 +29,7 @@ const { data: cartData } = await useFetch<unknown>('/_api/cart', { key: 'checkou
 const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_api/checkout', { key: 'checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
 const checkout = computed<PublicCheckoutPayload | null>(() => isPublicCheckoutPayload(checkoutData.value) ? checkoutData.value : null)
+const viewState = computed(() => checkoutViewState({ loadError: !!checkoutLoadError.value, cart: cart.value, checkout: checkout.value }))
 
 const form = reactive({
   fullname: '',
@@ -239,18 +241,35 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
     <main class="pts-container py-8 max-ph:py-6 checkout-main">
       <header class="checkout-head">
         <h1 class="m-0 text-[clamp(30px,4vw,46px)] font-black tracking-tight text-navy-950">Thông tin thanh toán</h1>
-        <CommerceSteps current="checkout" />
+        <CommerceSteps :current="viewState === 'empty' ? 'cart' : 'checkout'" />
       </header>
 
-      <div v-if="checkoutLoadError || !checkout || !cart" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
+      <div v-if="viewState === 'error' || !checkout || !cart" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
         Chưa tải được thông tin thanh toán. Vui lòng tải lại trang hoặc gọi hotline để đặt hàng.
       </div>
-      <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="checkout-card p-6 sm:p-8">
+      <div v-else-if="viewState === 'empty'" class="checkout-card p-6 sm:p-8" role="status">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h2 class="mb-2 text-xl font-black text-navy-950">Giỏ hàng chưa thể thanh toán</h2>
+            <h2 class="mb-2 text-xl font-black text-navy-950">Giỏ hàng đang trống</h2>
+            <p class="mb-0 text-sm leading-relaxed text-slate-600 sm:text-base">Hãy chọn sản phẩm trước khi thanh toán.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <NuxtLink to="/san-pham/" class="inline-flex min-h-11 items-center justify-center rounded-md pts-gold-fill px-5 py-2.5 text-sm font-bold no-underline transition-colors">
+              Xem sản phẩm
+            </NuxtLink>
+            <a v-if="site.brand.hotline" :href="`tel:${site.brand.hotline.replace(/\D/g, '')}`" class="inline-flex min-h-11 items-center justify-center rounded-md px-5 py-2.5 text-sm font-bold text-navy-950 no-underline">
+              Gọi {{ site.brand.hotline }}
+            </a>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="viewState === 'quote' || viewState === 'blocked'" class="checkout-card p-6 sm:p-8">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 class="mb-2 text-xl font-black text-navy-950">{{ viewState === 'quote' ? 'Giỏ hàng có sản phẩm cần báo giá' : 'Giỏ hàng chưa thể thanh toán' }}</h2>
             <p class="mb-0 text-sm leading-relaxed text-slate-600 sm:text-base">
-              Giỏ đang trống hoặc có sản phẩm cần liên hệ báo giá. Vui lòng kiểm tra lại giỏ hàng hoặc gửi yêu cầu để bộ phận kinh doanh báo giá trực tiếp.
+              <template v-if="viewState === 'quote'">Sản phẩm báo giá chưa thể đặt trực tuyến. Hãy gửi yêu cầu để bộ phận kinh doanh báo giá trực tiếp, hoặc quay lại giỏ hàng để điều chỉnh.</template>
+              <template v-else>Phiên giỏ hàng đã thay đổi. Vui lòng quay lại giỏ hàng để kiểm tra rồi thanh toán lại.</template>
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-3">
@@ -258,6 +277,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
               Quay lại giỏ hàng
             </NuxtLink>
             <button
+              v-if="viewState === 'quote'"
               type="button"
               class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
               @click="openConsultation('Thanh toán: Yêu cầu báo giá đơn hàng')"
@@ -268,11 +288,11 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
           </div>
         </div>
 
-        <ul class="checkout-assure">
+        <ul v-if="viewState === 'quote'" class="checkout-assure">
           <li>
             <UIcon name="i-lucide-scan-search" class="size-6" aria-hidden="true" />
             <strong>Đơn hàng có sản phẩm báo giá</strong>
-            <p>Sản phẩm cần báo giá chưa thể đặt trực tuyến. Liên hệ để xác nhận cấu hình và giá trước khi đặt hàng.</p>
+            <p>Liên hệ để xác nhận cấu hình và giá trước khi đặt hàng.</p>
           </li>
           <li>
             <UIcon name="i-lucide-file-check" class="size-6" aria-hidden="true" />
