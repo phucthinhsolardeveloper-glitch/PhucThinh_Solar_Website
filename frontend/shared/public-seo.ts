@@ -16,6 +16,62 @@ export function publicSeoDescription(value: unknown, fallback = PUBLIC_SEO_SITE_
   return siteDescription || PUBLIC_SEO_SITE_NAME
 }
 
+export const PUBLIC_SEO_DESCRIPTION_MAX = 160
+
+const HTML_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' }
+
+/** Plain text from CMS/HTML input: tags dropped, entities decoded, whitespace collapsed. */
+export function plainSeoText(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  return value
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity: string) => {
+      const lower = entity.toLowerCase()
+      if (lower.startsWith('#x')) return String.fromCodePoint(parseInt(lower.slice(2), 16) || 32)
+      if (lower.startsWith('#')) return String.fromCodePoint(parseInt(lower.slice(1), 10) || 32)
+      return HTML_ENTITIES[lower] ?? match
+    })
+    .replace(/[<>]/g, ' ')
+    .replace(/[\u0000-\u001F\u007F\s]+/g, ' ')
+    .trim()
+}
+
+/** Plain text cut at a word boundary to at most `max` characters. */
+export function conciseSeoDescription(value: unknown, max = PUBLIC_SEO_DESCRIPTION_MAX): string {
+  const text = plainSeoText(value)
+  if (text.length <= max) return text
+  const cut = text.slice(0, max - 1)
+  const lastSpace = cut.lastIndexOf(' ')
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.\-–—]+$/, '')}…`
+}
+
+/** Explicit SEO text, else the product summary, else a sentence built only from the product name and category. */
+export function productSeoDescription(input: { seo?: unknown; summary?: unknown; name?: unknown; category?: unknown }): string {
+  const explicit = conciseSeoDescription(input.seo)
+  if (explicit) return explicit
+  const summary = conciseSeoDescription(input.summary)
+  if (summary) return summary
+  const name = plainSeoText(input.name)
+  if (!name) return ''
+  const category = plainSeoText(input.category)
+  const lead = category && !name.toLocaleLowerCase('vi').includes(category.toLocaleLowerCase('vi')) ? `${name} (${category})` : name
+  return conciseSeoDescription(`${lead} tại ${PUBLIC_SEO_SITE_NAME}. Xem hình ảnh, thông số và liên hệ để được tư vấn.`)
+}
+
+export const PUBLIC_CATALOG_ROOT_DESCRIPTION = `Sản phẩm năng lượng mặt trời tại ${PUBLIC_SEO_SITE_NAME}: đèn năng lượng mặt trời, tấm pin, biến tần và pin lưu trữ.`
+
+/** Explicit SEO text, else a sentence naming the actual category; the root listing gets its own short text. */
+export function catalogSeoDescription(input: { seo?: unknown; categoryName?: unknown; total?: unknown }): string {
+  const categoryName = plainSeoText(input.categoryName)
+  // The root listing has no category; the CMS text there is a long company intro, so use the topical text.
+  if (!categoryName) return PUBLIC_CATALOG_ROOT_DESCRIPTION
+  const explicit = conciseSeoDescription(input.seo)
+  if (explicit) return explicit
+  const total = typeof input.total === 'number' && Number.isInteger(input.total) && input.total > 0 ? `${input.total} sản phẩm ` : 'sản phẩm '
+  return conciseSeoDescription(`${categoryName} tại ${PUBLIC_SEO_SITE_NAME}: xem ${total}kèm hình ảnh, thông số và nhận tư vấn.`)
+}
+
 /** Append the brand once to page titles. */
 export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
   const title = typeof value === 'string' ? value.trim() : ''

@@ -53,7 +53,7 @@ test('catalog listing exposes a stable canonical URL for SEO', () => {
   const catalog = read('app/components/catalog/CatalogPage.vue')
   assert.match(catalog, /usePublicSocialMeta/)
   assert.match(catalog, /canonicalPath: metadataCanonicalPath/)
-  assert.match(catalog, /\|\| 'Khám phá thiết bị chiếu sáng/)
+  assert.match(catalog, /catalogSeoDescription\(/)
 })
 
 test('home SEO keeps a non-empty description when CMS metadata is blank', () => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isPublicSeoIndexable } from '#shared/public-seo'
+import { isPublicSeoIndexable, productSeoDescription } from '#shared/public-seo'
 import ProductDetailPage from '~/components/product-detail/ProductDetailPage.vue'
 definePageMeta({
   layout: false,
@@ -16,7 +16,12 @@ const productErrorStatus = (error.value as { statusCode?: unknown } | null)?.sta
 if (import.meta.server && productErrorStatus === 404) setResponseStatus(404, 'Not Found')
 else if (import.meta.server && (error.value || !product.value)) setResponseStatus(502, 'Bad Gateway')
 const productTitle = computed(() => payload.value?.seo.title || product.value?.name || 'Sản phẩm — Phúc Thịnh Solar')
-const productDescription = computed(() => payload.value?.seo.description ?? '')
+const productDescription = computed(() => productSeoDescription({
+  seo: payload.value?.seo.description,
+  summary: product.value?.summary,
+  name: product.value?.name,
+  category: payload.value?.breadcrumbs?.at(-1)?.label,
+}))
 const productKeywords = computed(() => payload.value?.seo.keywords ?? '')
 const breadcrumbItems = computed(() => [
   ...(payload.value?.breadcrumbs ?? [{ label: 'Sản phẩm', url: '/san-pham/' }]).map((item) => ({ label: item.label, to: item.url })),

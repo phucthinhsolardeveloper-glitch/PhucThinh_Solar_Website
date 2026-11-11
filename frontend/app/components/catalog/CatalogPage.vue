@@ -9,7 +9,7 @@ import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
-import { isPublicSeoIndexable, publicSeoDescription, publicSeoRobots } from '#shared/public-seo'
+import { catalogSeoDescription, isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
 import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
@@ -227,8 +227,12 @@ const catalogBreadcrumbItems = computed(() => {
   return category.value ? [root, ...parents, { label: heading.value }] : [root]
 })
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
-const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')
-const socialDescription = computed(() => publicSeoDescription(catalogData.value?.seo.description, siteData.value?.brand.name))
+const metadataDescription = computed(() => catalogSeoDescription({
+  seo: catalogData.value?.seo.description,
+  categoryName: catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : '',
+  total: catalogData.value?.pagination.total,
+}))
+const socialDescription = metadataDescription
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
 const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
 const catalogFilterKeys = new Set(['category', 'page', 'p', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { isSizedSocialImage, canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicBreadcrumbStructuredData, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
+import { isSizedSocialImage, canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicBreadcrumbStructuredData, publicSeoDescription, productSeoDescription, catalogSeoDescription, conciseSeoDescription, PUBLIC_CATALOG_ROOT_DESCRIPTION, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '../shared/editorial-public-route.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
@@ -56,11 +56,13 @@ test('catalog and editorial category Open Graph descriptions use PHP empty-value
   const catalog = read('app/components/catalog/CatalogPage.vue')
   const projects = read('app/components/projects/ProjectCategoryPage.vue')
   const solutions = read('app/components/solutions/SolutionCategoryPage.vue')
-  for (const source of [catalog, projects, solutions]) {
+  for (const source of [projects, solutions]) {
     assert.match(source, /import \{[^\n]*publicSeoDescription[^\n]*\} from '#shared\/public-seo'/)
     assert.match(source, /const socialDescription = computed\(\(\) => publicSeoDescription\(/)
     assert.match(source, /usePublicSocialMeta\(\{[\s\S]*description: socialDescription/)
   }
+  assert.match(catalog, /const socialDescription = metadataDescription/)
+  assert.match(catalog, /usePublicSocialMeta\(\{[\s\S]*description: socialDescription/)
   assert.match(catalog, /useSeoMeta\(\{[\s\S]*description: metadataDescription/)
   assert.match(projects, /useSeoMeta\(\{[\s\S]*description: pageDescription/)
   assert.match(solutions, /useSeoMeta\(\{[\s\S]*description: pageDescription/)
@@ -223,4 +225,55 @@ test('shared public shell renders the canonical Organization schema from the PHP
   const header = read('app/components/SiteHeader.vue')
   assert.match(header, /publicSiteStructuredData\(config\.public\.canonicalSiteOrigin, route\.path, props\.site\)/)
   assert.match(header, /key: 'pts-public-organization-schema'/)
+})
+
+test('product meta description: explicit SEO, then sanitized summary, then name/category only', () => {
+  assert.equal(productSeoDescription({ seo: '  Mô tả SEO riêng  ', summary: 'x', name: 'Đèn A' }), 'Mô tả SEO riêng')
+  for (const blank of ['', '   ', '\n\t', null, undefined]) {
+    assert.equal(productSeoDescription({ seo: blank, summary: 'Tóm tắt thật', name: 'Đèn A' }), 'Tóm tắt thật')
+  }
+  const html = productSeoDescription({ seo: ' ', summary: '<p>Đèn <strong>mạnh</strong>&nbsp;&amp; bền</p><script>alert(1)</script><br>Dùng ngoài trời</p>', name: 'Đèn A' })
+  assert.equal(html, 'Đèn mạnh & bền Dùng ngoài trời')
+  assert.doesNotMatch(html, /[<>]|&nbsp;|alert/)
+  const fallback = productSeoDescription({ seo: '', summary: '<p> </p>', name: 'Đèn Pha 200W', category: 'Đèn NLMT' })
+  assert.match(fallback, /Đèn Pha 200W/)
+  assert.match(fallback, /Đèn NLMT/)
+  assert.match(fallback, /Phúc Thịnh Solar/)
+  assert.doesNotMatch(fallback, /\d+\s?(đ|VND|năm)|bảo hành|xuất xứ|chính hãng/i)
+  assert.equal(productSeoDescription({ seo: '', summary: '', name: '' }), '')
+})
+
+test('meta descriptions are concise and cut at a word boundary', () => {
+  const long = productSeoDescription({ summary: 'từ '.repeat(200) })
+  assert.ok(long.length <= 160, String(long.length))
+  assert.ok(long.endsWith('…'))
+  assert.equal(conciseSeoDescription('ngắn gọn'), 'ngắn gọn')
+})
+
+test('catalog meta description names the real category and never repeats the generic text', () => {
+  const a = catalogSeoDescription({ seo: '', categoryName: 'Đèn năng lượng mặt trời', total: 12 })
+  const b = catalogSeoDescription({ seo: ' ', categoryName: 'Biến tần inverter', total: 5 })
+  assert.match(a, /Đèn năng lượng mặt trời/)
+  assert.match(a, /12 sản phẩm/)
+  assert.match(b, /Biến tần inverter/)
+  assert.notEqual(a, b)
+  assert.ok(a.length <= 160 && b.length <= 160)
+  assert.equal(catalogSeoDescription({ seo: '<p>Mô tả   riêng</p>', categoryName: 'Pin' }), 'Mô tả riêng')
+  assert.doesNotMatch(catalogSeoDescription({ categoryName: 'Pin lưu trữ' }), /undefined|null|\{|\}|0 sản phẩm/)
+})
+
+test('root /san-pham description is concise and topical even when the CMS sends the company intro', () => {
+  const root = catalogSeoDescription({ seo: 'Ngọn cờ đầu '.repeat(40), categoryName: '' })
+  assert.equal(root, PUBLIC_CATALOG_ROOT_DESCRIPTION)
+  assert.ok(root.length <= 160)
+  assert.match(root, /năng lượng mặt trời/)
+})
+
+test('product page and catalog feed one consistent description to meta, og and twitter', () => {
+  const product = read('app/pages/san-pham/[slug].vue')
+  assert.match(product, /productSeoDescription\(/)
+  assert.doesNotMatch(product, /seo\.description \?\? ''/)
+  assert.match(product, /useSeoMeta\(\{[\s\S]*description: productDescription/)
+  assert.match(product, /usePublicSocialMeta\(\{[\s\S]*description: productDescription/)
+  assert.doesNotMatch(read('app/components/catalog/CatalogPage.vue'), /Khám phá thiết bị chiếu sáng/)
 })
