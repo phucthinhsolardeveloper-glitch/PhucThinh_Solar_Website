@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Support\Text;
 
 /**
@@ -18,11 +19,37 @@ class ProductSpecs
         if (! empty($product['pdp_profile'])) {
             return $this->normaliseProfile((string) $product['pdp_profile']);
         }
+        if (! empty($product['category_profile'])) {
+            return $this->normaliseProfile((string) $product['category_profile']);
+        }
         if (! empty($list['pdp_profile'])) {
             return $this->normaliseProfile((string) $list['pdp_profile']);
         }
 
         return config('pdp.list_slug_profiles')[trim((string) ($list['slug'] ?? ''), '/ ')] ?? 'general';
+    }
+
+    /** The page type set on the product's own category or the nearest one above it below the top ("Kiểu trang sản phẩm"). */
+    public static function categoryProfile(CategoryTree $tree, int $categoryId): string
+    {
+        $chain = $categoryId > 0 ? $tree->chain($categoryId) : [];
+        foreach (array_reverse(array_slice($chain, 1)) as $node) {
+            if (! empty($node['pdp_profile'])) {
+                return (string) $node['pdp_profile'];
+            }
+        }
+
+        return '';
+    }
+
+    /** Same answer as the product page, from what the Admin form holds (product override, then category chain). */
+    public function profileForCategory(?string $productProfile, int $categoryId): string
+    {
+        $tree = app(CategoryTree::class);
+        $root = $categoryId > 0 ? ($tree->chain($categoryId)[0] ?? null) : null;
+
+        return $this->profileKey(['pdp_profile' => (string) $productProfile, 'category_profile' => self::categoryProfile($tree, $categoryId)],
+            $root ? ['slug' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : []);
     }
 
     /** @return array<string, mixed> */

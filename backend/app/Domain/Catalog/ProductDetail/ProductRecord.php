@@ -47,6 +47,7 @@ final class ProductRecord
             'category_id' => $category,
             'top_category_id' => $level(1),
             'second_category_id' => $level(2),
+            'category_profile' => ProductSpecs::categoryProfile($tree, $category),
         ];
         foreach (self::SPECS as $field) {
             $record[$field] = (string) ($row[$field] ?? '');

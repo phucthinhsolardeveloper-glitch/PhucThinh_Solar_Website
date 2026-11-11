@@ -108,7 +108,7 @@ class LeadSubmission
         $db = DB::connection();
         $product = $productId > 0 ? (array) ($db->table('products')->where('id', $productId)->where('is_visible', true)->first(['id', 'name', 'pdp_profile', 'category_id']) ?? []) : [];
         $root = ! empty($product['category_id']) ? app(CategoryTree::class)->atDepth((int) $product['category_id'], 1) : null;
-        $profileKey = $product ? $this->specs->profileKey(['pdp_profile' => (string) $product['pdp_profile']], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slug' => $root['slug'] ?? '']) : 'general';
+        $profileKey = $product ? $this->specs->profileKey(['pdp_profile' => (string) $product['pdp_profile'], 'category_profile' => ProductSpecs::categoryProfile(app(CategoryTree::class), (int) $product['category_id'])], ['pdp_profile' => $root['pdp_profile'] ?? '', 'slug' => $root['slug'] ?? '']) : 'general';
         $needs = (array) ($this->specs->profile($profileKey)['needs'] ?? []);
         $place = $cityId > 0 && $wardId > 0 ? (array) ($db->selectOne('select p.name city_name, w.name ward_name from wards w inner join provinces p on p.id=w.province_id where w.id=? and w.province_id=? and w.is_visible=1 and p.is_visible=1 limit 1', [$wardId, $cityId]) ?? []) : [];
 

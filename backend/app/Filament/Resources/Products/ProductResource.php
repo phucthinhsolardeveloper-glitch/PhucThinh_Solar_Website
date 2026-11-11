@@ -10,6 +10,7 @@ use App\Filament\Support\Options;
 use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublicStatusColumn;
 use App\Filament\Support\PublishGate;
+use App\Filament\Support\TypedSpecsForm;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
@@ -85,9 +86,9 @@ class ProductResource extends Resource
                     Fields::title(),
                     Fields::publicSlug('products'),
                     TextInput::make('code')->label('Mã sản phẩm'),
-                    Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required(),
+                    Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required()->live(),
                     Select::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->searchable()->preload(),
-                    Select::make('pdp_profile')->label('Kiểu trang sản phẩm')->options(Options::pdpProfiles())
+                    Select::make('pdp_profile')->label('Kiểu trang sản phẩm')->options(Options::pdpProfiles())->live()
                         ->placeholder('Theo danh mục')->helperText('Để trống thì dùng kiểu của danh mục.'),
                     Textarea::make('summary')->label('Mô tả ngắn')->rows(3)->columnSpanFull(),
                     Grid::make(4)->columnSpanFull()->schema([
@@ -116,14 +117,9 @@ class ProductResource extends Resource
                     TextInput::make('video_url')->label('Video YouTube')->url()->placeholder('https://www.youtube.com/watch?v=…'),
                 ]),
                 Tab::make('Thông số')->schema([
-                    TextInput::make('power_watts')->label('Công suất (W)')->numeric()->minValue(0),
-                    // Measured specs are rewritten one way as soon as the field is left ("4-6H" → "4–6 giờ"); the model does it again on save.
-                    Grid::make(3)->schema(collect(self::SPECS)->map(fn ($label, $column) => isset(SpecFormat::COLUMNS[$column])
-                        ? TextInput::make($column)->label($label)->live(onBlur: true)->placeholder(SpecFormat::EXAMPLES[SpecFormat::COLUMNS[$column]])
-                            ->afterStateUpdated(fn ($state, $set) => is_string($state) && $state !== '' ? $set($column, SpecFormat::apply($state, SpecFormat::COLUMNS[$column])) : null)
-                        : TextInput::make($column)->label($label))->values()->all()),
+                    ...TypedSpecsForm::components(),
                     Textarea::make('package_contents')->label('Bộ sản phẩm gồm')->rows(2),
-                    Repeater::make('additional_specs')->label('Thông số thêm')->schema([
+                    Repeater::make('additional_specs')->label('Thông số thêm (ngoài các ô trên)')->schema([
                         TextInput::make('label')->label('Tên thông số')->required(),
                         TextInput::make('value')->label('Giá trị')->required()->live(onBlur: true)
                             ->afterStateUpdated(fn ($state, $get, $set) => is_string($state) && ($kind = SpecFormat::kindOfLabel((string) $get('label'))) !== null ? $set('value', SpecFormat::apply($state, $kind)) : null),

@@ -8,6 +8,7 @@ use App\Filament\Concerns\SavesAndStays;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\PublicLink;
 use App\Filament\Support\PublishGate;
+use App\Filament\Support\TypedSpecsForm;
 use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -21,6 +22,18 @@ class EditProduct extends EditRecord
     protected static string $resource = ProductResource::class;
 
     protected bool $wasVisible = false;
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        return TypedSpecsForm::fill($data);
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $record = $this->getRecord();
+
+        return TypedSpecsForm::save($data, $record instanceof Product ? $record : null);
+    }
 
     protected function beforeSave(): void
     {

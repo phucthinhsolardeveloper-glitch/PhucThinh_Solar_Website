@@ -238,6 +238,38 @@ return [
                 'bao-gia' => 'Nhận báo giá',
             ],
         ],
+        'charge_controller' => [
+            'label' => 'Bộ điều khiển sạc',
+            'application_title' => 'Dùng cho hệ thống nào?',
+            'metrics' => [
+                0 => 'system_voltage',
+                1 => 'rated_charge_current',
+                2 => 'max_pv_voltage',
+                3 => 'warranty',
+            ],
+            'fields' => [
+                'controller_type' => 'Công nghệ sạc',
+                'system_voltage' => 'Điện áp hệ thống',
+                'rated_charge_current' => 'Dòng sạc định mức',
+                'max_charge_current' => 'Dòng sạc tối đa',
+                'rated_discharge_current' => 'Dòng xả định mức',
+                'max_discharge_current' => 'Dòng xả tối đa',
+                'max_pv_voltage' => 'Điện áp đầu vào PV tối đa',
+                'max_pv_power' => 'Công suất đầu vào PV tối đa',
+                'working_voltage_range' => 'Dải điện áp làm việc',
+                'usb_output' => 'Đầu ra USB',
+                'waterproof_rating' => 'Cấp bảo vệ',
+                'dimensions' => 'Kích thước',
+                'weight' => 'Trọng lượng',
+                'warranty' => 'Bảo hành',
+            ],
+            'needs' => [
+                'chon-dong-sac' => 'Chọn dòng sạc phù hợp',
+                'tuong-thich' => 'Kiểm tra tương thích pin và tấm pin',
+                'lap-dat' => 'Tư vấn lắp đặt',
+                'bao-gia' => 'Nhận báo giá',
+            ],
+        ],
         'accessory' => [
             'label' => 'Phụ kiện điện mặt trời',
             'application_title' => 'Dùng trong vị trí nào của hệ thống?',
@@ -404,6 +436,18 @@ return [
                     'title' => 'Nhà kính & ao hồ',
                     'text' => 'Chọn máy bơm theo nguồn nước, cột áp, lưu lượng và công suất phù hợp.',
                     'photo' => 'assets/images/site-visuals/pdp-usecase-v2/pump-greenhouse-pond.webp',
+                ],
+            ],
+            'charge_controller' => [
+                0 => [
+                    'title' => 'Hệ đèn & điện độc lập',
+                    'text' => 'Điều khiển sạc từ tấm pin vào ắc quy cho hệ đèn, camera và điện nhỏ không nối lưới.',
+                    'photo' => 'assets/images/site-visuals/pdp-usecase-v2/accessory-outdoor-connectors.webp',
+                ],
+                1 => [
+                    'title' => 'Tủ điện năng lượng mặt trời',
+                    'text' => 'Chọn theo điện áp hệ thống, dòng sạc và điện áp PV tối đa của dàn pin.',
+                    'photo' => 'assets/images/site-visuals/pdp-usecase-v2/accessory-distribution-cabinet.webp',
                 ],
             ],
             'accessory' => [
