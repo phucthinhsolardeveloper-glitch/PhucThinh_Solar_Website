@@ -13,8 +13,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -55,7 +55,7 @@ class PaymentMethodResource extends Resource
             ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 TextColumn::make('name')->label('Hình thức'),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự'),
             ])
             ->recordActions([EditAction::make()]);

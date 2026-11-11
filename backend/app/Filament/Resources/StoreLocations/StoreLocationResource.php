@@ -14,8 +14,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -56,7 +56,7 @@ class StoreLocationResource extends Resource
             ->columns([
                 TextColumn::make('name')->label('Chi nhánh'),
                 TextColumn::make('address')->label('Địa chỉ')->limit(60),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
             ])
             ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);
     }

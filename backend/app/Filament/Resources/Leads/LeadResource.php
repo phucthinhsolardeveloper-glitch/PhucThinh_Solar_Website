@@ -108,7 +108,9 @@ class LeadResource extends Resource
                 TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
                     ->description(fn (Lead $record) => (data_get($record, 'assignee.name') ?? 'Chưa phân công')
-                        .($record->follow_up_at ? ' · hẹn '.Carbon::parse($record->follow_up_at)->format('d/m H:i') : '')),
+                        .($record->follow_up_at ? ' · hẹn '.Carbon::parse($record->follow_up_at)->format('d/m H:i') : ''))
+                    ->tooltip('Bấm để đổi tình trạng')
+                    ->action(self::quickStatusAction()),
                 TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('d/m/Y H:i')->sortable()->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -127,6 +129,28 @@ class LeadResource extends Resource
                     ->modal()->modalHeading('Lịch sử xử lý')->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
                     ->modalContent(fn (Lead $record) => view('filament.lead-history', ['events' => $record->events()->with('actor')->latest()->limit(100)->get()])),
             ]);
+    }
+
+    /** Status, follow-up and notes from the list; assignment and everything else stay in "Xem / xử lý". */
+    public static function quickStatusAction(): Action
+    {
+        return Action::make('quickStatus')->label('Đổi tình trạng')
+            ->modalHeading(fn (Lead $record) => $record->name.' · '.$record->phone)
+            ->modalDescription(fn (Lead $record) => str((string) $record->message)->limit(160)->toString() ?: null)
+            ->modalWidth('md')->modalSubmitActionLabel('Lưu')
+            ->fillForm(fn (Lead $record) => [
+                'status' => $record->status, 'follow_up_at' => $record->follow_up_at, 'notes' => $record->notes,
+            ])
+            ->schema([
+                Select::make('status')->label('Tình trạng')->options(self::STATUSES)->required()->selectablePlaceholder(false)->live(),
+                DateTimePicker::make('follow_up_at')->label('Hẹn theo dõi')->seconds(false)
+                    ->visible(fn ($get) => ! in_array($get('status'), ['done', 'spam'], true)),
+                Textarea::make('notes')->label('Ghi chú xử lý')->rows(3),
+            ])
+            ->action(fn (Lead $record, array $data) => app(LeadTriage::class)->update($record, [
+                'assigned_to' => $record->assigned_to,
+                'follow_up_at' => $data['follow_up_at'] ?? null,
+            ] + $data, AdminActor::current()));
     }
 
     public static function getPages(): array

@@ -75,9 +75,20 @@ final class OrderExporter
         return $this->send($book, 'don-hang-'.$order->code);
     }
 
+    /** Checkout already writes ward and province into `address`; older orders may hold the street only, so add each part once. */
     public static function address(Order $order): string
     {
-        return implode(', ', array_filter([trim((string) $order->address), (string) ($order->ward->name ?? ''), (string) ($order->province->name ?? '')]));
+        $parts = array_values(array_filter(array_map('trim', explode(',', (string) $order->address)), fn ($part) => $part !== ''));
+        $seen = array_map(fn ($part) => mb_strtolower($part), $parts);
+        foreach ([(string) ($order->ward->name ?? ''), (string) ($order->province->name ?? '')] as $name) {
+            $name = trim($name);
+            if ($name !== '' && ! in_array(mb_strtolower($name), $seen, true)) {
+                $parts[] = $name;
+                $seen[] = mb_strtolower($name);
+            }
+        }
+
+        return implode(', ', $parts);
     }
 
     /** @return int the row after the heading block */

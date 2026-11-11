@@ -13,9 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -64,7 +64,7 @@ class BrandResource extends Resource
                 ImageColumn::make('image')->label('Logo')->disk('upload_product')->height(36),
                 TextColumn::make('name')->label('Thương hiệu')->searchable()->sortable(),
                 TextColumn::make('products_count')->label('Sản phẩm')->counts('products')->sortable(),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->recordActions([PublicLink::action(), EditAction::make()]);

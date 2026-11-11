@@ -13,8 +13,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -53,7 +53,7 @@ class VideoResource extends Resource
             ->columns([
                 TextColumn::make('title')->label('Video')->searchable(),
                 TextColumn::make('url')->label('Link')->limit(40)->url(fn (Video $record) => $record->url, true),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->recordActions([PublicLink::action(), EditAction::make(), DeleteAction::make()]);

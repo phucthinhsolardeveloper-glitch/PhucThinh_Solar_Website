@@ -14,8 +14,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use UnitEnum;
@@ -63,7 +63,7 @@ class PostCategoryResource extends Resource
                 TextColumn::make('name')->label('Nhóm')->searchable(),
                 TextColumn::make('kind')->label('Dùng cho')->formatStateUsing(fn ($state) => self::KINDS[$state] ?? $state)->badge(),
                 TextColumn::make('posts_count')->label('Số bài')->counts('posts'),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('kind')->label('Dùng cho')->options(self::KINDS)])

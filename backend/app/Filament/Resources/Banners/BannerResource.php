@@ -18,9 +18,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
@@ -88,7 +88,7 @@ class BannerResource extends Resource
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_photo')->height(48),
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(50)->placeholder('—'),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('placement')->label('Vị trí')->options(self::PLACEMENTS)])

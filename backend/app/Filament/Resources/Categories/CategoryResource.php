@@ -21,8 +21,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -101,7 +101,7 @@ class CategoryResource extends Resource
                     ->state(fn (Category $record) => DB::table('products')->whereIn('category_id', app(CategoryTree::class)->descendantIds((int) $record->getKey()))->where('is_visible', true)->count())
                     ->tooltip('Sản phẩm đang hiện trong danh mục này và mọi danh mục con. 0 nghĩa là trang danh mục chưa hiện trên website.'),
                 TextColumn::make('slug')->label('Đường dẫn')->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
                 TextColumn::make('sort_order')->label('Thứ tự')->toggleable(),
             ])
             ->filters([

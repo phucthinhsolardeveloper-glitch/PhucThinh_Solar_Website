@@ -17,6 +17,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -159,7 +160,9 @@ class OrderResource extends Resource
                 TextColumn::make('status')->label('Trạng thái')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => match ($state) {
                         'new' => 'warning', 'done' => 'success', 'cancelled' => 'gray', default => 'info'
-                    }),
+                    })
+                    ->tooltip(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [] ? 'Bấm để đổi trạng thái' : null)
+                    ->action(self::quickStatusAction('statusFromColumn')),
                 TextColumn::make('payment_status')->label('Thanh toán')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
                     ->color(fn ($state) => $state === 'paid' ? 'success' : 'gray'),
             ])
@@ -175,6 +178,7 @@ class OrderResource extends Resource
                     ->when($data['until'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date))),
             ])
             ->recordActions([
+                self::quickStatusAction('quickStatus')->iconButton(),
                 EditAction::make()->label('Xem / xử lý'),
                 Action::make('print')->label('In')->icon(Heroicon::OutlinedPrinter)->iconButton()->tooltip('In đơn hàng')
                     ->url(fn (Order $record) => route('order.print', $record), true),
@@ -186,6 +190,26 @@ class OrderResource extends Resource
                     ->action(fn (Collection $records) => app(OrderExporter::class)->list(Order::query()->whereKey($records->pluck('id'))))
                     ->deselectRecordsAfterCompletion(),
             ]);
+    }
+
+    /** Status and internal notes from the list, through the same lifecycle rules and audit log as the edit page. */
+    public static function quickStatusAction(string $name): Action
+    {
+        return Action::make($name)->label('Đổi trạng thái')->icon(Heroicon::OutlinedArrowPathRoundedSquare)->tooltip('Đổi trạng thái nhanh')
+            ->visible(fn (Order $record) => (OrderLifecycle::STATUS_TRANSITIONS[$record->status] ?? []) !== [])
+            ->modalHeading(fn (Order $record) => 'Đơn '.$record->code)
+            ->modalDescription(fn (Order $record) => $record->customer_name.' · '.$record->phone.' · '.self::money($record->total))
+            ->modalWidth('md')->modalSubmitActionLabel('Lưu')
+            ->fillForm(fn (Order $record) => ['status' => $record->status, 'notes' => $record->notes])
+            ->schema([
+                Select::make('status')->label('Trạng thái')->required()->selectablePlaceholder(false)
+                    ->options(fn (Order $record) => OrderLifecycle::statusChoices((string) $record->status, self::STATUSES)),
+                Textarea::make('notes')->label('Ghi chú nội bộ')->rows(3),
+            ])
+            ->action(function (Order $record, array $data): void {
+                app(OrderLifecycle::class)->update($record, (string) $data['status'], $data['notes'] ?? null);
+                Notification::make()->success()->title('Đơn '.$record->code.': '.(self::STATUSES[$record->status] ?? $record->status))->send();
+            });
     }
 
     public static function getPages(): array

@@ -15,9 +15,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -64,7 +64,7 @@ class AlbumResource extends Resource
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->height(48),
                 TextColumn::make('title')->label('Album')->searchable(),
                 TextColumn::make('images_count')->label('Số ảnh')->counts('images'),
-                IconColumn::make('is_visible')->label('Hiển thị')->boolean(),
+                ToggleColumn::make('is_visible')->label('Hiển thị'),
             ])
             ->recordActions([PublicLink::action(), EditAction::make()]);
     }
