@@ -1,0 +1,47 @@
+## Khảo sát mái trước khi chọn số tấm
+
+Mái tôn, mái ngói và mái bằng không chỉ khác nhau ở hình thức. Chúng khác về kết cấu, cách chống dột, đường đi cáp, cách neo giữ và khả năng chịu gió. Tấm pin không được đặt lên mái chỉ vì còn khoảng trống; hệ khung phải truyền tải đúng vào kết cấu và vẫn cho phép kiểm tra, bảo trì. DOE mô tả giá đỡ PV phải ổn định, bền và chịu được gió, mưa, mưa đá, ăn mòn trong thời gian dài.
+
+### Mái tôn: nhẹ, nhanh nhưng nhạy với điểm xuyên
+
+Mái tôn thường có xà gồ và lớp tôn mỏng. Người khảo sát cần xác định vị trí xà gồ, tình trạng rỉ sét, độ võng, lớp cách nhiệt và các điểm vít hiện hữu. Không bắt vít tùy tiện vào tôn rồi phủ keo như một giải pháp lâu dài. Vị trí xuyên mái phải dùng phụ kiện đúng hệ, tạo mặt kín nước và được kiểm tra sau mưa.
+
+Khoảng hở dưới module giúp thông gió và giảm tích nhiệt, nhưng không thể lấy một kích thước tùy tiện làm tải trọng thiết kế. Tải gió phụ thuộc độ cao, mép mái, hướng gió, địa hình và hệ khung. Đơn vị thi công phải tính neo, kẹp, giằng và đường đi an toàn; không tháo tấm tôn để “lắp cho nhanh”.
+
+### Mái ngói: ưu tiên bảo toàn lớp chống dột
+
+Mái ngói thường có độ dốc và nhiều mối nối. Khi khảo sát, chụp lại loại ngói, khoảng cách vì kèo, vị trí xà và các viên đã nứt. Hệ móc phải đi vào kết cấu chịu lực, không tỳ lên viên ngói. Cần dự phòng viên thay thế và lối thao tác để không đạp vỡ ngói trong bảo trì.
+
+Mái ngói có thể tạo góc nghiêng tốt, nhưng hướng mái và bóng cây vẫn quyết định sản lượng. Không nên nâng khung quá cao chỉ để “đón nắng” mà làm tăng lực gió. Cáp phải được cố định tránh cọ vào cạnh kim loại, tránh đọng nước và không để đầu nối nằm trên bề mặt mái.
+
+### Mái bằng: linh hoạt nhưng phải tính tải và bóng
+
+Mái bằng cho phép chọn hướng và góc, song hàng tấm phía trước có thể che hàng sau. Khoảng cách hàng cần được mô phỏng theo vị trí mặt trời, đặc biệt trong mùa đông và các giờ sáng sớm/chiều. Kết cấu đỡ có thể là neo cơ khí hoặc hệ ballast; phương án nào cũng phải xét tải trọng tập trung, chống trượt, chống lật, thoát nước và chống thấm.
+
+Không tự đặt khối bê tông lên mái rồi gọi đó là ballast an toàn. Tải trọng phải được tính vào kết cấu thực, gồm cả gió nâng và lực ngang. Khu vực quanh máng xối, cửa thăm, bồn nước và thiết bị HVAC cần chừa lối tiếp cận. Một hệ che mất đường thoát nước có thể gây hư mái trước khi tạo đủ tiền điện.
+
+### Bốn lớp cần kiểm tra trong buổi khảo sát
+
+Lớp thứ nhất là kết cấu: loại mái, vì kèo, xà gồ, rỉ sét, nứt, võng và lịch sử sửa chữa. Lớp thứ hai là nước: hướng thoát, máng, điểm xuyên, chống dột và cách kiểm tra sau thi công. Lớp thứ ba là điện: vị trí tủ, đường cáp, tiếp địa, chống sét, khoảng cách inverter và thiết bị bảo vệ. Lớp thứ tư là vận hành: lối đi, vùng cần tháo tấm, khả năng vệ sinh và ứng phó cháy.
+
+DOE nhấn mạnh hệ PV là một tập hợp gồm module, giá đỡ và các công nghệ điện khác; module chỉ là một phần. Hướng dẫn an toàn cháy cũng khuyến cáo lực lượng ứng cứu cần nhận diện hệ thống, cô lập và xử lý nguy cơ khi có sự cố. Vì vậy, thiết kế không nên bị rút gọn thành bản vẽ chia tấm kín mái.
+
+### Chống dột và an toàn điện
+
+Yêu cầu nhà thầu mô tả từng điểm xuyên mái, vật liệu làm kín, thời hạn bảo hành và quy trình thử nước. Sau lắp đặt, chụp ảnh vị trí cáp và phụ kiện trước khi đóng lớp che. Không che mất các điểm kiểm tra. Dùng máng/cáp ngoài trời đúng cấp, kẹp chống UV và bán kính uốn phù hợp.
+
+Phần DC vẫn có điện khi có nắng, kể cả khi đã ngắt AC. Không cắt nối đầu MC4 khác hãng bằng kìm tại công trường nếu chưa xác nhận tương thích. Tủ bảo vệ phải có phân loại đúng, dây tiếp địa liên tục, chống sét lan truyền và nhãn cảnh báo để người vận hành nhận biết. Khi đấu nối với lưới, phải có bảo vệ chống đảo lưới và thủ tục theo yêu cầu hiện hành.
+
+### Checklist cho mái ở Gia Lai
+
+Trước khi nhận báo giá, hãy yêu cầu ảnh khảo sát xà/kèo, bản vẽ bố trí không che máng xối, tải gió và phương án cáp. Ghi rõ mùa mưa, giông sét, cây sẽ lớn thêm và lịch bảo trì. Nếu mái cũ hoặc đã rỉ, sửa mái trước rồi mới lắp PV; không dùng tấm pin để che một vấn đề kết cấu.
+
+### Kết luận dễ nhớ
+
+Mái tôn cần kiểm soát điểm xuyên và neo; mái ngói cần bảo vệ ngói và vì kèo; mái bằng cần tính tải, gió và bóng hàng. Không có loại mái “lắp dễ nhất” nếu chưa khảo sát. Với công trình ở Gia Lai, hãy đặt an toàn kết cấu, chống dột, chống sét và lối bảo trì vào hồ sơ ngay từ đầu.
+
+### Nguồn tham khảo
+
+* [Solar Photovoltaic System Design Basics — U.S. Department of Energy](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
+* [A Guide to Fire Safety with Solar Systems — U.S. Department of Energy](https://www.energy.gov/cmei/systems/guide-fire-safety-solar-systems)
+* [Solar Rooftop Potential — U.S. Department of Energy](https://www.energy.gov/cmei/systems/solar-rooftop-potential)

@@ -60,6 +60,36 @@
       "id": "PTS-KT-015",
       "summary": "Tấm pin màu đen không mặc định tốt hơn màu xanh; hãy so thông số module, hiệu suất, hệ số nhiệt độ, bảo hành và nhu cầu mái.",
       "keywords": "tấm pin màu đen, tấm pin màu xanh, hiệu suất module, all black solar panel"
+    },
+    {
+      "id": "PTS-KT-016",
+      "summary": "Hướng dẫn đọc hóa đơn điện theo kWh, số ngày và thời điểm dùng điện để đặt mục tiêu thiết kế solar, kiểm tra mái và đấu nối an toàn tại Gia Lai.",
+      "keywords": "đọc hóa đơn tiền điện, thiết kế điện mặt trời, phụ tải theo giờ, kWh, Gia Lai"
+    },
+    {
+      "id": "PTS-KT-017",
+      "summary": "Phân biệt watt, lumen và lux khi chọn đèn năng lượng mặt trời; cách đọc datasheet, tính pin và kiểm tra độ sáng thực tế cho sân vườn, lối đi.",
+      "keywords": "lumen lux watt, đèn năng lượng mặt trời, hiệu suất lm/W, pin solar, độ rọi"
+    },
+    {
+      "id": "PTS-KT-018",
+      "summary": "Lắp thêm tấm pin chỉ rút ngắn hoàn vốn khi phụ tải, inverter, mái và giá trị điện tự dùng cùng phù hợp; có ví dụ phần điện dư và an toàn đấu nối.",
+      "keywords": "lắp nhiều tấm pin, thời gian hoàn vốn solar, điện dư, tỷ lệ tự dùng, inverter"
+    },
+    {
+      "id": "PTS-KT-019",
+      "summary": "So sánh lưu ý khảo sát mái tôn, mái ngói và mái bằng: kết cấu, tải gió, chống dột, thoát nước, cáp, tiếp địa và lối bảo trì.",
+      "keywords": "mái tôn mái ngói mái bằng, khảo sát mái solar, chống dột, tải gió, an toàn điện"
+    },
+    {
+      "id": "PTS-KT-020",
+      "summary": "Giải thích TOPCon, HJT và BC theo kiến trúc cell, ưu nhược điểm và cách so datasheet, hệ số nhiệt, bảo hành, inverter thay vì chạy theo tên công nghệ.",
+      "keywords": "TOPCon HJT BC, Back Contact, công nghệ cell, hiệu suất module, hệ số nhiệt"
+    },
+    {
+      "id": "PTS-KT-021",
+      "summary": "Giải thích khi nào tấm pin có thể giúp mái bớt nhận nắng và khe thông gió thoát nhiệt, vì sao không nên khẳng định mọi mái đều mát hơn.",
+      "keywords": "điện mặt trời mái nóng mát, khe thông gió mái, cách nhiệt mái, nhiệt độ module"
     }
   ]
 }

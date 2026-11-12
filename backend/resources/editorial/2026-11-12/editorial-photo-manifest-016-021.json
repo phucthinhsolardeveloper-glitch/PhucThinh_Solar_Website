@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "status": "needs_photo",
+  "note": "Chưa chọn ảnh xuất bản cuối; không tải hoặc nhúng ảnh stock chỉ từ trang tìm kiếm. Các bài đã có gợi ý infographic gốc để biên tập viên duyệt và thiết kế riêng.",
+  "entries": [
+    { "plan_key": "PTS-KT-016", "status": "needs_photo", "preferred": "infographic gốc về hóa đơn → phụ tải → khảo sát mái", "credit": "Hình minh họa: Phúc Thịnh Solar khi được duyệt" },
+    { "plan_key": "PTS-KT-017", "status": "needs_photo", "preferred": "ảnh đèn solar ngoài trời có nguồn ảnh cụ thể hoặc infographic lumen/lux/watt", "credit": "Chưa chọn" },
+    { "plan_key": "PTS-KT-018", "status": "needs_photo", "preferred": "infographic phụ tải theo giờ và phần điện tự dùng/điện dư", "credit": "Hình minh họa: Phúc Thịnh Solar khi được duyệt" },
+    { "plan_key": "PTS-KT-019", "status": "needs_photo", "preferred": "ảnh khảo sát mái thật có quyền sử dụng hoặc sơ đồ ba loại mái", "credit": "Chưa chọn" },
+    { "plan_key": "PTS-KT-020", "status": "needs_photo", "preferred": "sơ đồ cell TOPCon/HJT/BC có kiểm chứng, không dùng ảnh hãng chưa rõ quyền", "credit": "Hình minh họa: Phúc Thịnh Solar khi được duyệt" },
+    { "plan_key": "PTS-KT-021", "status": "needs_photo", "preferred": "infographic mặt cắt mái–khe thông gió–module", "credit": "Hình minh họa: Phúc Thịnh Solar khi được duyệt" }
+  ]
+}
