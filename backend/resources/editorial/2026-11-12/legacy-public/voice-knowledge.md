@@ -36,16 +36,16 @@ So sánh trực tiếp HTML/text DB đã xác nhận **102 và 107 giống 100%*
 
 ## Before / after giọng văn
 
-**102 — trước:** “Có phải bạn đang cố gắng để giảm hóa đơn… đèn… không tốn tiền điện.”  
-**Sau:** “Đèn năng lượng mặt trời phù hợp khi vị trí cần sáng ở ngoài trời, khó kéo dây hoặc muốn tách khỏi mạch điện lưới… chọn đúng bắt đầu từ vị trí, thời lượng và điều kiện nắng.”  
+**102 — trước:** “Có phải bạn đang cố gắng để giảm hóa đơn… đèn… không tốn tiền điện.”
+**Sau:** “Đèn năng lượng mặt trời phù hợp khi vị trí cần sáng ở ngoài trời, khó kéo dây hoặc muốn tách khỏi mạch điện lưới… chọn đúng bắt đầu từ vị trí, thời lượng và điều kiện nắng.”
 Thay lời hứa chung bằng điều kiện ra quyết định.
 
-**105 — trước:** “nên lắp đặt… ánh sáng trực tiếp từ 6 đến 8 giờ mỗi ngày” và “hoạt động kéo dài ít nhất 8 giờ”.  
-**Sau:** “Thời gian sáng phụ thuộc dung lượng pin, chế độ điều khiển, nhiệt độ, mây và mức tiêu thụ; không dùng mốc… nếu datasheet không ghi rõ điều kiện.”  
+**105 — trước:** “nên lắp đặt… ánh sáng trực tiếp từ 6 đến 8 giờ mỗi ngày” và “hoạt động kéo dài ít nhất 8 giờ”.
+**Sau:** “Thời gian sáng phụ thuộc dung lượng pin, chế độ điều khiển, nhiệt độ, mây và mức tiêu thụ; không dùng mốc… nếu datasheet không ghi rõ điều kiện.”
 Giữ cảnh báo, bỏ số chưa gắn model.
 
-**110 — trước:** “CHIP LED CREE THƯƠNG HIỆU TOP 1!!”  
-**Sau:** “Tên chip là một tín hiệu để bắt đầu tìm hiểu, không phải kết luận rằng toàn bộ đèn sẽ sáng hơn hoặc bền hơn.”  
+**110 — trước:** “CHIP LED CREE THƯƠNG HIỆU TOP 1!!”
+**Sau:** “Tên chip là một tín hiệu để bắt đầu tìm hiểu, không phải kết luận rằng toàn bộ đèn sẽ sáng hơn hoặc bền hơn.”
 Loại superlative và chuyển sang tiêu chí kiểm tra.
 
 ## Checklist reviewer (0–5)
