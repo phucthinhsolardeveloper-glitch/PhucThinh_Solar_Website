@@ -1,0 +1,37 @@
+[
+  {
+    "id": 61,
+    "title": "Điện mặt trời cho doanh nghiệp và nhà xưởng",
+    "summary": "Bắt đầu từ phụ tải ban ngày, hiện trạng mái và điểm đấu nối để chọn phương án điện mặt trời có thể kiểm chứng; không mặc định hệ thống là nguồn dự phòng.",
+    "seo_description": "Giải pháp điện mặt trời cho doanh nghiệp và nhà xưởng: phân tích phụ tải, khảo sát mái, đấu nối, an toàn và các giới hạn cần biết trước khi đầu tư.",
+    "notes": "Giữ slug dien-mat-troi-doanh-nghiep, image layer92-2680.png, cover aerial-top-view-solar-cells-roof-solar-panels-installed-roof-large-industrial-building-warehouse-scaled-5589.jpg; draft chưa xuất bản."
+  },
+  {
+    "id": 132,
+    "title": "Điện mặt trời cho hộ gia đình",
+    "summary": "Ghép hiện trạng mái và thói quen dùng điện với cấu hình phù hợp; giải thích rõ điện mặt trời nối lưới không tự tạo điện khi mất lưới.",
+    "seo_description": "Điện mặt trời cho hộ gia đình: xem thói quen dùng điện, hướng và bóng mái, lưu trữ, an toàn và cách đọc báo giá trước khi lắp đặt.",
+    "notes": "Giữ slug dien-mat-troi-ho-gia-dinh và trạng thái hiện tại; snapshot không có image/cover/product liên kết. Draft chưa xuất bản."
+  },
+  {
+    "id": 133,
+    "title": "Giải pháp lưu trữ năng lượng & BESS",
+    "summary": "Phân biệt pin lưu trữ với BESS, tách rõ kWh và kW, rồi kiểm tra tải ưu tiên, khả năng tương thích và các lớp bảo vệ.",
+    "seo_description": "Pin lưu trữ và BESS khác nhau thế nào? Tìm hiểu kWh, kW, tải ưu tiên, khả năng tương thích, an toàn và tiêu chí chọn hệ thống.",
+    "notes": "Giữ slug he-thong-luu-tru-bess và title đầy đủ; menu đổi có điều kiện từ Lưu trữ điện sang Pin lưu trữ bằng migration riêng. Snapshot không có image/cover/product liên kết. Draft chưa xuất bản."
+  },
+  {
+    "id": 134,
+    "title": "Giải pháp chiếu sáng năng lượng mặt trời",
+    "summary": "Thiết kế từ mặt bằng, độ rọi và độ đồng đều, rồi kiểm tra IP, bóng che, thời lượng và điều kiện bảo trì theo từng loại khu vực.",
+    "seo_description": "Chiếu sáng năng lượng mặt trời cho đường nội bộ, khu dân cư, sân vườn và khu công nghiệp: tiêu chí quang học, IP, thời lượng và bảo trì.",
+    "notes": "Giữ slug chieu-sang-nang-luong-mat-troi, image layer91-2078.png và cover anhthumbtylq-5086.png; draft chưa xuất bản. Nhãn menu hiện tại giữ nguyên, đề xuất ngắn hơn: Chiếu sáng solar."
+  },
+  {
+    "id": 135,
+    "title": "Giải pháp bơm nước năng lượng mặt trời",
+    "summary": "Tính theo lưu lượng, cột áp, đường ống và mùa tưới; bổ sung bể đệm cùng bảo vệ chạy khô, quá tải và nguồn nước.",
+    "seo_description": "Bơm nước năng lượng mặt trời cho nông nghiệp: tính lưu lượng, cột áp, mùa vụ, bể chứa và bảo vệ bơm theo hiện trạng nguồn nước.",
+    "notes": "Giữ slug bom-nuoc-nang-luong-mat-troi và trạng thái hiện tại; snapshot không có image/cover/product liên kết. Draft chưa xuất bản. Nhãn menu hiện tại giữ nguyên, đề xuất ngắn hơn: Bơm nước solar."
+  }
+]
