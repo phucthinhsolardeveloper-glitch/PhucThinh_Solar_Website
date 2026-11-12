@@ -1,8 +1,8 @@
 [
-  {"id":"PTS-KT-016","summary":"Cầm hóa đơn, đánh dấu bốn vùng và điền bảng 12 tháng để chuẩn bị dữ liệu thật cho buổi tư vấn.","keywords":"đọc hóa đơn điện, bảng 12 tháng, kWh, giờ dùng điện, khảo sát solar"},
-  {"id":"PTS-KT-017","summary":"Hiểu ba đơn vị qua một lối đi sân vườn, rồi chuyển sang checklist chọn đèn ở bài 008.","keywords":"watt lumen lux, độ rọi, đèn năng lượng mặt trời, lối đi, quang thông"},
-  {"id":"PTS-KT-018","summary":"Đặt hai kịch bản giả định cạnh nhau để thấy vì sao điện tự dùng quan trọng hơn việc tăng số tấm theo cảm tính.","keywords":"thêm tấm pin, điện tự dùng, điện dư, inverter, kịch bản giả định"},
-  {"id":"PTS-KT-019","summary":"Nhìn dấu hiệu trên mái tôn, mái ngói và mái bằng để biết lúc nào phải kiểm tra kết cấu trước khi chọn số tấm.","keywords":"khảo sát mái, mái tôn, mái ngói, mái bằng, chống dột, tải gió"},
-  {"id":"PTS-KT-020","summary":"Mở bằng ba điều người mua cần nhớ, sau đó giải thích glossary và kiến trúc TOPCon, HJT, BC ở lớp chuyên sâu.","keywords":"TOPCon HJT BC, Back Contact, kiến trúc cell, hệ số nhiệt, bảng thông số"},
-  {"id":"PTS-KT-021","summary":"Phân biệt mái có khe thông gió với mái giữ nhiệt để hiểu vì sao tấm pin có thể che nắng nhưng không làm mọi căn phòng mát hơn.","keywords":"mái nhà nóng mát, khe thông gió, mái tôn, cách nhiệt, module"}
+  {"id":"PTS-KT-016","summary":"Cầm hóa đơn lên, đánh dấu bốn vùng và điền bảng 12 tháng để biết nên mang gì đến buổi khảo sát.","keywords":"đọc hóa đơn điện, bảng 12 tháng, kWh, giờ dùng điện, khảo sát solar"},
+  {"id":"PTS-KT-017","summary":"Nhìn một lối đi sân vườn để hiểu vì sao đèn nhiều watt chưa chắc sáng đúng chỗ, rồi chọn theo nhu cầu thật.","keywords":"watt lumen lux, độ rọi, đèn năng lượng mặt trời, lối đi, quang thông"},
+  {"id":"PTS-KT-018","summary":"Hai gia đình có thể lắp thêm cùng số tấm nhưng nhận giá trị khác nhau: mấu chốt là điện tạo ra có được dùng ngay không.","keywords":"thêm tấm pin, điện tự dùng, điện dư, inverter, kịch bản giả định"},
+  {"id":"PTS-KT-019","summary":"Mái tôn, mái ngói hay mái bằng đều có dấu hiệu cần nhìn trước khi đặt tấm pin; biết lúc nào phải dừng để kiểm tra kết cấu.","keywords":"khảo sát mái, mái tôn, mái ngói, mái bằng, chống dột, tải gió"},
+  {"id":"PTS-KT-020","summary":"TOPCon, HJT và BC khác nhau ở đâu, và người mua nên nhìn gì trên hai bảng thông số trước khi chọn tấm pin?","keywords":"TOPCon HJT BC, Back Contact, kiến trúc cell, hệ số nhiệt, bảng thông số"},
+  {"id":"PTS-KT-021","summary":"Tấm pin có thể che nắng cho mái, nhưng căn phòng có mát hơn hay không còn tùy khe thoáng, trần và vật liệu xây dựng.","keywords":"mái nhà nóng mát, khe thông gió, mái tôn, cách nhiệt, module"}
 ]

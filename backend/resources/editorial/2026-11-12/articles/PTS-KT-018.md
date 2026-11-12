@@ -6,7 +6,7 @@ Lắp thêm tấm pin chỉ rút ngắn hoàn vốn khi phần điện tạo ra 
 
 Hai ví dụ dưới đây chỉ là kịch bản giả định, không phải báo giá, sản lượng hay lời hứa hoàn vốn. Cả hai đều cần được tính lại bằng dữ liệu mái thật, giá điện áp dụng và lịch chạy thiết bị tại thời điểm tư vấn.
 
-**Kịch bản A — nhà dùng điện chủ yếu buổi tối.** Giả sử nhà dùng 25 kWh/ngày nhưng 18 kWh rơi vào buổi tối. Một cấu hình lớn hơn có thể tạo thêm điện vào buổi trưa, song nếu không có pin hoặc cách chuyển tải sang ban ngày, phần tăng thêm dễ thành điện dư. Chi phí tăng nhưng lượng điện thực sự thay thế điện mua không tăng tương ứng.
+**Kịch bản A — nhà dùng điện chủ yếu buổi tối.** Giả sử nhà dùng 25 kWh/ngày nhưng 18 kWh rơi vào buổi tối. Nếu cứ thêm tấm để lấp phần mái còn trống, hệ có thể tạo thêm điện vào buổi trưa nhưng phần tăng thêm dễ thành điện dư khi không có pin hoặc cách chuyển tải sang ban ngày. Chi phí tăng nhưng lượng điện thực sự thay thế điện mua không tăng tương ứng.
 
 **Kịch bản B — xưởng dùng điện giữa ngày.** Giả sử xưởng chạy bơm, quạt hoặc máy nén trong giờ có nắng. Cùng lượng điện/ngày, nhiều sản lượng hơn có thể được dùng ngay tại chỗ; việc thêm một nhóm tấm có cơ sở hơn, nhưng vẫn phải kiểm tra giới hạn inverter, mái, cáp và bảo vệ. Đây là lý do tự dùng quan trọng: giá trị nằm ở kWh tạo ra đúng lúc tải đang chạy, không nằm ở số tấm nhìn trên mái.
 

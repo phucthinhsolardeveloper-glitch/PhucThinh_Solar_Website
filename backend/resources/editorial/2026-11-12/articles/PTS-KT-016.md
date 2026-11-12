@@ -1,6 +1,6 @@
 ## Cầm hóa đơn lên và chuẩn bị gì trước khi gặp tư vấn?
 
-Bạn không cần tự tính số tấm pin từ một hóa đơn điện. Việc hữu ích hơn là lấy hóa đơn ra, đánh dấu đúng bốn vùng, rồi gom đủ thông tin để người tư vấn hiểu nhà đang dùng điện như thế nào. Bài này là một phiếu chuẩn bị; nó khác PTS-KT-013, bài so sánh các gia đình có cùng lượng điện nhưng dùng vào những thời điểm khác nhau.
+Bạn không cần tự tính số tấm pin từ một hóa đơn điện. Việc hữu ích hơn là lấy hóa đơn ra, đánh dấu đúng bốn vùng, rồi gom đủ thông tin để người tư vấn hiểu nhà đang dùng điện như thế nào. Đây là một phiếu chuẩn bị trước buổi khảo sát, tập trung vào dữ liệu bạn có thể tự gom ở nhà.
 
 ### Bốn vùng cần đọc trên một hóa đơn
 
@@ -53,7 +53,7 @@ Gửi một thư mục gồm:
 - thông tin nhà có bơm, cửa hàng, xưởng hay tải chạy liên tục;
 - mục tiêu chính: giảm tiền điện ban ngày, dùng điện ban đêm, hay có nguồn dự phòng khi mất điện.
 
-Bạn có thể gửi thêm [PTS-KT-013 — Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?](/kien-thuc/nha-dung-bao-nhieu-dien-moi-thang-thi-phu-hop-lap-nang-luong-mat-troi) nếu muốn so sánh trường hợp “cùng kWh nhưng khác giờ dùng”. Khi gửi ảnh hóa đơn, che mã khách hàng, địa chỉ và thông tin cá nhân không cần thiết.
+Nếu muốn xem vì sao hai nhà có cùng lượng điện vẫn có thể chọn cấu hình khác nhau, đọc thêm [bài về lượng điện và giờ sử dụng](/nha-dung-bao-nhieu-dien-moi-thang-thi-phu-hop-lap-nang-luong-mat-troi/). Khi gửi ảnh hóa đơn, che mã khách hàng, địa chỉ và thông tin cá nhân không cần thiết.
 
 ### Hóa đơn không trả lời được điều gì?
 

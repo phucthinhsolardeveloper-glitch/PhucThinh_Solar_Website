@@ -42,13 +42,13 @@ Yêu cầu nhà thầu mô tả từng điểm xuyên mái, vật liệu làm k�
 
 Phần DC vẫn có điện khi có nắng, kể cả khi đã ngắt AC. Không cắt nối đầu MC4 khác hãng bằng kìm tại công trường nếu chưa xác nhận tương thích. Tủ bảo vệ phải có phân loại đúng, dây tiếp địa liên tục, chống sét lan truyền và nhãn cảnh báo để người vận hành nhận biết. Khi đấu nối với lưới, phải có bảo vệ chống đảo lưới và thủ tục theo yêu cầu hiện hành.
 
-### Checklist cho mái ở Gia Lai
+### Checklist trước khi nhận báo giá
 
-Trước khi nhận báo giá, hãy yêu cầu ảnh khảo sát xà/kèo, bản vẽ bố trí không che máng xối, tải gió và phương án cáp. Ghi rõ mùa mưa, giông sét, cây sẽ lớn thêm và lịch bảo trì. Nếu mái cũ hoặc đã rỉ, sửa mái trước rồi mới lắp PV; không dùng tấm pin để che một vấn đề kết cấu.
+Trước khi nhận báo giá, hãy yêu cầu ảnh khảo sát xà/kèo, bản vẽ không che máng xối, giả định tải gió và phương án cáp. Ghi rõ cây sẽ lớn thêm, đường tiếp cận và lịch bảo trì. Nếu mái cũ hoặc đã rỉ, sửa mái trước rồi mới lắp PV; tấm pin không phải cách che một vấn đề kết cấu.
 
 ### Kết luận dễ nhớ
 
-Mái tôn cần kiểm soát điểm xuyên và neo; mái ngói cần bảo vệ ngói và vì kèo; mái bằng cần tính tải, gió và bóng hàng. Không có loại mái “lắp dễ nhất” nếu chưa khảo sát. Với công trình ở Gia Lai, hãy đặt an toàn kết cấu, chống dột, chống sét và lối bảo trì vào hồ sơ ngay từ đầu.
+Mái tôn cần kiểm soát điểm xuyên và neo; mái ngói cần bảo vệ ngói và vì kèo; mái bằng cần tính tải, gió và bóng hàng. Không có loại mái “lắp dễ nhất” nếu chưa khảo sát. Bản báo giá đáng tin phải nói rõ kết cấu, chống dột, chống sét và lối bảo trì ngay từ đầu.
 
 ### Nguồn tham khảo
 
