@@ -4,15 +4,15 @@ Ngày rà soát: 12/11/2026. Phạm vi thân bài chỉ gồm 001–010; metadat
 
 ## Quyết định source-of-truth
 
-001–003 được giữ nguyên ở vòng này theo yêu cầu QA mới nhất: đây là bản HTML trong DB cũ, cần đối chiếu tương thích trước khi nhận Markdown mới. Vì vậy ba bài có ghi nhận biên tập nhưng không có after-body và không tự chấm PASS. 004–010 đã viết lại theo góc riêng, giữ title canonical, ảnh và link nguồn hiện hữu.
+001–003 đã được kiểm tra lại trực tiếp trên Markdown hiện hành. Cả ba đạt về góc độc giả và cấu trúc; không lặp khái niệm đến mức gây nhiễu, nên **giữ vì đạt**. 004–010 đã viết lại theo góc riêng, giữ title canonical, ảnh và link nguồn hiện hữu.
 
 ## Nhật ký theo bài
 
 | Bài | Góc độc giả và dạng trình bày | Before → after (trích đoạn) | Claim/QA và lợi ích |
 |---|---|---|---|
-| 001 | Người mới; hành trình một kWh + bảng bốn chặng | Chưa đổi thân bài ở vòng này; bản hiện hành mở bằng “Buổi trưa, mái nhà nhận ánh nắng...” | Giữ nguyên ảnh `/upload/news/pts-diagram-solar-workflow.webp` và 2 link DOE; cần đối chiếu HTML DB trước khi sửa. Người đọc biết hỏi về giờ dùng điện, backup và giới hạn hệ hòa lưới. |
-| 002 | Người kỹ thuật; quy trình đọc datasheet và phép kiểm chuỗi | Chưa đổi thân bài ở vòng này; bản hiện hành mở bằng “Hai tấm pin cùng ghi…” | Giữ nguyên ảnh infographic và 3 link LONGi/datasheet; các số LONGi hiện hữu không tự sửa. Cần fact-check đúng phiên bản/lô trước publish. Người đọc có thứ tự kiểm model → Voc/Vmp → Isc/Imp → nhiệt độ → mái. |
-| 003 | Độc giả tin ngành; bản tin theo mốc thời gian + bảng “không nên suy ra” | Chưa đổi thân bài ở vòng này; bản hiện hành mở bằng “Báo cáo Trends…” | Giữ nguyên ảnh và 2 link IEA PVPS; không trộn Trends tháng 9 với Snapshot tháng 4. Cần xác minh lại bảng số liệu quốc gia trước publish. Người đọc phân biệt năm dữ liệu, năm công bố, lũy kế và lắp mới. |
+| 001 | Người mới; hành trình một kWh + bảng bốn chặng | “Buổi trưa, mái nhà nhận ánh nắng…” → giữ, vì đi thẳng vào dòng điện; chỉnh nhẹ câu ví dụ để bớt mệnh lệnh | Giữ nguyên ảnh `/upload/news/pts-diagram-solar-workflow.webp` và 2 link DOE. Không lặp khái niệm: phần pin, lịch tải, mây/pin và chống đảo lưới có vai trò riêng. Cần fact-check ảnh Pexels/licence trước publish. |
+| 002 | Người kỹ thuật; quy trình đọc datasheet và phép kiểm chuỗi | “Hai tấm pin cùng ghi…” → giữ, đổi sang giọng ghi chú kỹ thuật; bỏ “Bài này dùng” | Đã đối chiếu LONGi BGV02: 650 W, 24,1%, NOCT 495 W, Voc 53,90 V, Vmp 44,56 V, Isc 15,29 A, Imp 14,59 A, -0,260%/°C, 2.382 × 1.134 × 30 mm, 28,5 kg đều khớp nguồn chính thức. Vẫn cần xác minh datasheet đúng lô hàng và quyền dùng infographic/ảnh. |
+| 003 | Độc giả tin ngành; bản tin theo mốc thời gian + bảng “không nên suy ra” | “Trong bản Trends…” → giọng bản tin rõ thời điểm, tách Trends và Snapshot | IEA PVPS xác nhận 2,96 TW, khoảng 690 GW, tăng 15%, Trung Quốc 415 GW, Ấn Độ 54, Mỹ 43, Đức 18, Pakistan 14 và khoảng 36 quốc gia trên 1 GW. Cần fact-check credit/giấy phép infographic; giữ mốc Snapshot 698 GW như số sơ bộ, không trộn hai báo cáo. |
 | 004 | Người đọc báo giá; bảng đơn vị + bảy tình huống | “Ba ký hiệu này cùng xuất hiện…” → “Muốn đọc một báo giá, chỉ cần tách ba câu hỏi…” | Giữ title, 1 link DOE; bỏ nhịp giáo trình và biến công thức thành phép đọc hóa đơn. Ví dụ 2 kW × 3 giờ được ghi rõ là giả định. Người đọc có bốn dòng cần tách khi so báo giá. |
 | 005 | Người chọn thiết bị; bảng tình huống mái và câu hỏi trước khi chốt model | “Phần quan trọng nhất của inverter…” → “Nếu tấm pin là nơi tạo DC…” | Giữ title, nguồn Fronius/DOE; không lặp bài 007 về loại hệ. MPPT, giới hạn DC và anti-islanding vẫn được giải thích. Người đọc biết hỏi đúng dải điện áp, dòng vào, backup và tải khởi động. |
 | 006 | Hộ gia đình; bài tập hóa đơn 15 phút | “Có thể, nhưng hệ hòa lưới…” → “Một gia đình có thể dùng 600 kWh/tháng…” | Giữ title, 3 link DOE; ví dụ 600 kWh được gắn nhãn minh họa, không hứa hoàn vốn. Người đọc tách mục tiêu tiết kiệm khỏi mục tiêu backup và có cách ghi lịch tải. |
@@ -31,7 +31,11 @@ Ngày rà soát: 12/11/2026. Phạm vi thân bài chỉ gồm 001–010; metadat
 
 ## Chấm QA vòng này
 
-001–003: `needs_revision` — giữ nguyên thân bài chờ đối chiếu HTML DB; 002/003 tiếp tục cần xác minh source-specific trước publish.
+001: `pass_editorial`, chờ kiểm tra licence ảnh Pexels và đối chiếu HTML-to-Markdown CMS trước sync.
+
+002: `pass_editorial`, specs khớp LONGi BGV02; vẫn cần xác minh đúng lô hàng, phiên bản datasheet và licence ảnh/infographic.
+
+003: `pass_editorial`, giọng bản tin và thống kê khớp IEA PVPS Trends 2026; vẫn cần xác minh licence infographic và giữ rõ phân biệt Trends 690 GW với Snapshot sơ bộ 698 GW.
 
 004–010: `needs_revision` cho đến khi owner duyệt vòng copy và kiểm tra claim theo model/điều kiện thực tế; không phát hiện thay đổi URL, ảnh, slug hay trạng thái. Riêng 010 phải giữ nguyên yêu cầu anti-islanding trong mọi lần chỉnh sau.
 

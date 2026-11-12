@@ -28,7 +28,7 @@ Ba loại hệ thống thường gặp có vai trò khác nhau:
 
 Ở hệ hòa lưới, điện mặt trời trước hết có thể cấp cho các thiết bị đang chạy. Nếu tải cần nhiều hơn, phần thiếu lấy từ lưới. Nếu tạo ra nhiều hơn nhu cầu, phần dư có thể bị giới hạn, lưu vào pin hoặc đưa lên lưới tùy cấu hình, quy định và điều kiện đấu nối. Không nên mặc định điện dư luôn được bán lên lưới.
 
-Hãy hình dung một gia đình dùng điều hòa, tủ lạnh, máy bơm và thiết bị văn phòng vào buổi trưa: họ có cơ hội dùng trực tiếp nhiều điện mặt trời hơn gia đình vắng nhà ban ngày. Cùng một số kWh mỗi tháng nhưng thời điểm sử dụng khác nhau có thể dẫn tới cấu hình khác nhau.
+Một gia đình dùng điều hòa, tủ lạnh, máy bơm và thiết bị văn phòng vào buổi trưa có cơ hội dùng trực tiếp nhiều điện mặt trời hơn gia đình vắng nhà ban ngày. Cùng một số kWh mỗi tháng nhưng thời điểm sử dụng khác nhau có thể dẫn tới cấu hình khác nhau.
 
 ## 4. Ban đêm, mây và pin lưu trữ
 
@@ -48,7 +48,7 @@ Muốn giữ điện cho một số tải quan trọng, cần thiết kế nhán
 
 Ngoài tấm pin và inverter, hệ thống cần dây DC/AC, thiết bị đóng cắt, chống sét lan truyền, tiếp địa, kết cấu khung, thông gió và phương án bảo trì. Với mái tôn hoặc mái cũ, cần kiểm tra kết cấu và chống thấm trước khi chốt số lượng tấm.
 
-Để ước lượng cấu hình, hãy chuẩn bị:
+Khi ước lượng cấu hình, nên có sẵn:
 
 1. Sản lượng điện theo tháng trên hóa đơn.
 2. Thời điểm sử dụng điện, nhất là ban ngày hay buổi tối.

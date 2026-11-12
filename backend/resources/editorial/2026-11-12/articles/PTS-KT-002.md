@@ -1,8 +1,8 @@
 # Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng
 
-Hai tấm pin cùng ghi “650 W” chưa chắc phù hợp với cùng một mái nhà hay inverter. Nếu chỉ có 30 giây, hãy tìm trước **năm thông số**: mã model, Pmax, hiệu suất, Voc/Vmp và Isc/Imp. Sau đó mới đọc nhiệt độ, kích thước, tải cơ học và bảo hành.
+Hai tấm pin cùng ghi “650 W” chưa chắc phù hợp với cùng một mái nhà hay inverter. Trong lần đọc đầu, năm thông tin đáng tìm là **mã model**, Pmax, hiệu suất, Voc/Vmp và Isc/Imp; sau đó mới đến nhiệt độ, kích thước, tải cơ học và bảo hành.
 
-Bài này dùng **LONGi Hi-MO X10 Explorer LR7-72HVH-650M** làm ví dụ. Các số dưới đây phải được đối chiếu với đúng mã hàng và phiên bản datasheet trước khi báo giá, thiết kế hoặc thi công.
+Ví dụ dưới đây là **LONGi Hi-MO X10 Explorer LR7-72HVH-650M**. Các số phải được đối chiếu với đúng mã hàng và phiên bản datasheet trước khi báo giá, thiết kế hoặc thi công.
 
 ![Infographic các thông số datasheet LONGi 650W gồm Pmax hiệu suất Voc Vmp Isc và Imp](/upload/news/pts-infographic-panel-650w.webp)
 
