@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { PublicNewsPayload } from '#shared/contracts/public-news'
 import { isPublicNewsPayload } from '#shared/contracts/public-news'
-import type { PublicSitePayload } from '#shared/contracts/public-site'
-import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import NewsCard from '~/components/news/NewsCard.vue'
@@ -16,8 +14,8 @@ const config = useRuntimeConfig()
 const { openConsultation } = useStorefrontModal()
 const slug = computed(() => props.slugOverride || (typeof route.params.slug === 'string' ? route.params.slug : ''))
 const searchInput = ref(typeof route.query.q === 'string' ? route.query.q : '')
-const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
-const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
+// Same 'site' entry the app shell already loaded: no second /_api/site request per render.
+const { site } = await usePublicSite()
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `public-news-category-${slug.value}-${String(route.query.p || '1')}-${String(route.query.q || '')}`,
   () => $fetch('/_api/news', { query: {
@@ -27,7 +25,6 @@ const { data, error, pending } = await useAsyncData<unknown>(
   } }),
   { watch: [slug, () => route.query.p, () => route.query.q] },
 )
-const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const matchingNews = computed<PublicNewsPayload | null>(() => {
   const payload = isPublicNewsPayload(data.value) ? data.value : null
   return payload?.category?.slug === slug.value ? payload : null

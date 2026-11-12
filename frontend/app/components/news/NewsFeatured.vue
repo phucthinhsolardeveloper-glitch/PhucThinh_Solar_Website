@@ -31,7 +31,14 @@ defineProps<{ articles: PublicNewsArticle[]; label: string; readLabel: string; r
 .featured-aside { display: flex; min-width: 0; flex-direction: column; gap: clamp(20px, 2vw, 32px); }
 .featured-side { min-width: 0; padding-bottom: clamp(18px, 2vw, 28px); border-bottom: 1px solid rgb(10 34 81 / 10%); }
 .featured-side:last-child { border-bottom: 0; padding-bottom: 0; }
-.featured-side :deep(.line-clamp-3) { font-size: 15px; line-height: 1.6; }
+/*
+ * Wider than a phone only. At <=820px NewsCard turns every non-lead card into a compact row with a 13.5px excerpt;
+ * both rules have equal specificity, so the winner depended on stylesheet order, which differs between the SSR
+ * inline styles and the client CSS chunks: the excerpt rendered 13.5px, then grew to 15px after hydration.
+ */
+@media (min-width: 821px) {
+  .featured-side :deep(.line-clamp-3) { font-size: 15px; line-height: 1.6; }
+}
 .featured-lead :deep(h2) { font-size: clamp(24px, 2.2vw, 34px); font-weight: 900; letter-spacing: -0.02em; }
 @media (max-width: 960px) {
   .featured { grid-template-columns: minmax(0, 1fr); }
