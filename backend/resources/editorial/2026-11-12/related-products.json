@@ -1,0 +1,160 @@
+{
+  "version": 1,
+  "note": "Sản phẩm liên quan cho 15 bài đã viết. Sản phẩm khai báo bằng slug công khai; expected_id là ID trên DB local ngày 12/11/2026, chỉ dùng để đối chiếu. Lý do chỉ dựa trên nội dung bài và dữ liệu đang có trên trang sản phẩm.",
+  "articles": [
+    {
+      "plan_key": "PTS-KT-001",
+      "slug": "dien-mat-troi-hoat-dong-nhu-the-nao",
+      "decision": "link",
+      "reason": "Bài giải thích chuỗi tấm pin → inverter → tải, có mục riêng về hệ hòa lưới và nhắc nhiều lần hệ hybrid, pin lưu trữ.",
+      "products": [
+        {"slug": "inverter-solax-x1-boost-5-g4", "expected_id": 820, "topic": "grid_inverter", "reason": "Inverter hòa lưới 1 pha 5 kW (thông số trên trang sản phẩm), minh họa thiết bị chuyển DC sang AC mà bài mô tả."},
+        {"slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw", "expected_id": 805, "topic": "hybrid_inverter", "reason": "Inverter hybrid 5 kW cho phương án có pin lưu trữ mà bài nhắc tới."},
+        {"slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-d53-ap-thap-triple-ld-53", "expected_id": 846, "topic": "battery_storage", "reason": "Pin lưu trữ áp thấp LiFePO4 thuộc nhóm thiết bị lưu trữ bài giải thích."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-002",
+      "slug": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi",
+      "decision": "link",
+      "reason": "Bài hướng dẫn đọc datasheet tấm pin (Pmax, Voc, Isc, Vmp, hiệu suất); liên kết các module có thông số này trên trang sản phẩm để người đọc thực hành.",
+      "products": [
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-620wp-2-mat-kinh", "expected_id": 741, "topic": "pv_module", "reason": "Trang sản phẩm ghi Voc 48.78 V, Isc 16.05 A, hiệu suất 23% — đúng nhóm thông số bài hướng dẫn đọc."},
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-1-mat-kinh", "expected_id": 744, "topic": "pv_module", "reason": "Trang sản phẩm ghi Voc 53.9 V, Isc 15.29 A, hiệu suất 24.1%, có thể đối chiếu với cách đọc trong bài."},
+        {"slug": "tam-pin-nang-luong-mat-troi-astronergy-625wp", "expected_id": 755, "topic": "pv_module", "reason": "Trang sản phẩm có cả Voc, Isc, Vmp 41.69 V và loại cell N-Type TOPCon — đủ để luyện đọc Vmp mà bài nêu."},
+        {"slug": "tam-pin-nang-luong-mat-troi-astronergy-610wp-2-mat-kinh", "expected_id": 753, "topic": "pv_module", "reason": "Module 2 mặt kính có Voc, Isc, hiệu suất 22.6% để so với module 1 mặt kính khi đọc datasheet."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-003",
+      "slug": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps",
+      "decision": "none",
+      "reason": "Tin thị trường toàn cầu theo số liệu IEA PVPS, không bàn về chọn thiết bị; gắn sản phẩm sẽ là khớp theo từ chung.",
+      "products": []
+    },
+    {
+      "plan_key": "PTS-KT-004",
+      "slug": "kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+      "decision": "link",
+      "reason": "Bài dùng ví dụ 8 tấm pin 625 Wp tạo dàn 5 kWp; liên kết đúng một module cùng mức công suất có trong catalog, không gắn thêm thiết bị bài không bàn.",
+      "products": [
+        {"slug": "tam-pin-nang-luong-mat-troi-astronergy-625wp", "expected_id": 755, "topic": "pv_module", "reason": "Module 625 Wp trùng mức công suất trong ví dụ tính kWp của bài."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-005",
+      "slug": "inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao",
+      "decision": "link",
+      "reason": "Bài giải thích chức năng inverter và phân biệt inverter hòa lưới với hybrid; liên kết mỗi loại một model 1 pha và một model 3 pha.",
+      "products": [
+        {"slug": "inverter-solax-x1-boost-5-g4", "expected_id": 820, "topic": "grid_inverter", "reason": "Inverter hòa lưới 1 pha 5 kW, 2 MPPT (theo trang sản phẩm) — minh họa mục MPPT và chuyển DC/AC."},
+        {"slug": "inverter-solax-x3-mic-10", "expected_id": 825, "topic": "grid_inverter", "reason": "Inverter hòa lưới 3 pha 10 kW, 2 MPPT, giám sát WiFi — minh họa mục giám sát và số pha."},
+        {"slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw", "expected_id": 805, "topic": "hybrid_inverter", "reason": "Inverter hybrid 5 kW có thông số công suất dự phòng trên trang sản phẩm, đúng nhóm hybrid bài phân biệt."},
+        {"slug": "inverter-solax-x3-neo-10k-lv-hybrid-10kw", "expected_id": 811, "topic": "hybrid_inverter", "reason": "Inverter hybrid 10 kW, công suất dự phòng 11 kW theo trang sản phẩm."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-006",
+      "slug": "co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi",
+      "decision": "link",
+      "reason": "Bài bàn dùng pin lưu trữ và hệ hybrid để chuyển điện ban ngày sang buổi tối; liên kết pin lưu trữ áp thấp và inverter hybrid hộ gia đình.",
+      "products": [
+        {"slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-d53-ap-thap-triple-ld-53", "expected_id": 846, "topic": "battery_storage", "reason": "Pin lưu trữ áp thấp LiFePO4, tuổi thọ 6000 chu kỳ theo trang sản phẩm — nhóm thiết bị bài mục 3 bàn tới."},
+        {"slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro", "expected_id": 847, "topic": "battery_storage", "reason": "Pin lưu trữ áp thấp khác trong cùng danh mục Pin / Battery để so sánh dung lượng."},
+        {"slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw", "expected_id": 805, "topic": "hybrid_inverter", "reason": "Inverter hybrid 5 kW cho kịch bản có pin mà bài so sánh."},
+        {"slug": "inverter-solax-x1-hyb-60-lv-hybrid-6kw", "expected_id": 806, "topic": "hybrid_inverter", "reason": "Inverter hybrid 6 kW, công suất dự phòng 6.6 kW theo trang sản phẩm."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-007",
+      "slug": "he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao",
+      "decision": "link",
+      "reason": "Bài so sánh hệ hòa lưới, hybrid và độc lập; liên kết thiết bị chính của hai cấu hình phổ biến (inverter hòa lưới, inverter hybrid + pin lưu trữ).",
+      "products": [
+        {"slug": "inverter-solax-x1-boost-5-g4", "expected_id": 820, "topic": "grid_inverter", "reason": "Inverter hòa lưới 1 pha 5 kW cho mục hệ hòa lưới."},
+        {"slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw", "expected_id": 805, "topic": "hybrid_inverter", "reason": "Inverter hybrid 5 kW cho mục hệ hybrid."},
+        {"slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-d53-ap-thap-triple-ld-53", "expected_id": 846, "topic": "battery_storage", "reason": "Pin lưu trữ áp thấp cho mục hệ hybrid có lưu trữ."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-008",
+      "slug": "mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao",
+      "decision": "link",
+      "reason": "Bài hướng dẫn chọn đèn theo lumen, dung lượng pin, tấm pin sạc thay vì watt quảng cáo; liên kết đèn có các thông số đó trên trang sản phẩm.",
+      "products": [
+        {"slug": "den-duong-nang-luong-mat-troi-jindian-jd-19600l-600w", "expected_id": 2201, "topic": "solar_light", "reason": "Tên ghi 600W nhưng trang sản phẩm ghi quang thông 2800 lm, pin 3.2V/22.000mAh — đúng tình huống bài khuyên đọc lumen thay vì watt."},
+        {"slug": "den-duong-nang-luong-mat-troi-oriana-db02-2-60w", "expected_id": 507, "topic": "solar_light", "reason": "Tên ghi 60W, trang sản phẩm ghi quang thông 7800–8400 lm, pin 3.2V/100Ah, tấm pin 6V/120W để so với mẫu ghi watt cao."},
+        {"slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-100w", "expected_id": 610, "topic": "solar_light", "reason": "Trang sản phẩm ghi 8000 lm, pin 3.2V/200Ah, khoảng cách lắp 45–50 m — đủ dữ kiện bài yêu cầu hỏi người bán."},
+        {"slug": "den-duong-nang-luong-mat-troi-300w-jindian-jd-369", "expected_id": 629, "topic": "solar_light", "reason": "Trang sản phẩm ghi diện tích chiếu 300 m², pin 25Ah, tấm pin 6V/25W để đối chiếu dung lượng pin với tấm sạc."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-009",
+      "slug": "troi-nhieu-may-anh-sang-yeu-pin-con-tao-dien-the-nao",
+      "decision": "none",
+      "reason": "Bài giải thích bức xạ, nhiệt độ và giám sát sản lượng theo mùa, không đề xuất loại thiết bị cụ thể.",
+      "products": []
+    },
+    {
+      "plan_key": "PTS-KT-010",
+      "slug": "vi-sao-co-tam-pin-nhung-mat-dien-luoi-van-co-the-bi-cup",
+      "decision": "link",
+      "reason": "Bài giải thích chống đảo lưới của inverter hòa lưới và thành phần cần có để cấp tải dự phòng khi mất lưới (bài khuyên hỏi rõ cổng EPS/backup của inverter).",
+      "products": [
+        {"slug": "inverter-solax-x1-boost-5-g4", "expected_id": 820, "topic": "grid_inverter", "reason": "Inverter hòa lưới 1 pha — loại thiết bị bài giải thích sẽ ngừng phát khi mất lưới."},
+        {"slug": "inverter-solax-x1-hyb-60-lv-hybrid-6kw", "expected_id": 806, "topic": "hybrid_inverter", "reason": "Inverter hybrid có thông số công suất dự phòng 6.6 kW trên trang sản phẩm, liên quan mục tải dự phòng."},
+        {"slug": "inverter-solax-x3-neo-10k-lv-hybrid-10kw", "expected_id": 811, "topic": "hybrid_inverter", "reason": "Inverter hybrid có thông số công suất dự phòng 11 kW trên trang sản phẩm, cho mục công suất dự phòng."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-011",
+      "slug": "tam-pin-600w-620w-650w-va-720w-watt-cao-co-tot-hon",
+      "decision": "link",
+      "reason": "Bài so sánh tấm pin 600–720 W; liên kết module có công suất trùng mức bài nêu (620 Wp, 650 Wp) với các cấu tạo khác nhau.",
+      "products": [
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-620wp-2-mat-kinh", "expected_id": 741, "topic": "pv_module", "reason": "Module 620 Wp, 132 cell, trùng mức 620 W bài so sánh."},
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-1-mat-kinh", "expected_id": 744, "topic": "pv_module", "reason": "Module 650 Wp 1 mặt kính, 144 cell, trùng mức 650 W bài so sánh."},
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-2-mat-kinh", "expected_id": 746, "topic": "pv_module", "reason": "Module 650 Wp 2 mặt kính: cùng công suất nhưng Isc 19,03 A khác bản 1 mặt kính — minh họa mục giới hạn dòng với inverter."},
+        {"slug": "tam-pin-nang-luong-mat-troi-astronergy-610wp-2-mat-kinh", "expected_id": 753, "topic": "pv_module", "reason": "Module 610 Wp nằm trong dải 600–650 W, hãng khác để so hiệu suất (22.6%)."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-012",
+      "slug": "iea-cong-bo-renewables-2026-trien-vong-dien-mat-troi-den-2031",
+      "decision": "none",
+      "reason": "Tin dự báo thị trường IEA Renewables 2026, không bàn về thiết bị.",
+      "products": []
+    },
+    {
+      "plan_key": "PTS-KT-013",
+      "slug": "nha-dung-bao-nhieu-dien-moi-thang-thi-phu-hop-lap-nang-luong-mat-troi",
+      "decision": "none",
+      "reason": "Bài hướng dẫn xác định quy mô từ hóa đơn và biểu đồ tải trước khi tư vấn; chưa đến bước chọn model, gắn sản phẩm sẽ gợi ý cấu hình chưa được khảo sát.",
+      "products": []
+    },
+    {
+      "plan_key": "PTS-KT-014",
+      "slug": "inverter-hoa-luoi-va-hybrid-khac-nhau-the-nao",
+      "decision": "link",
+      "reason": "Bài so sánh trực tiếp inverter hòa lưới và hybrid, có mục pin lưu trữ và tải dự phòng.",
+      "products": [
+        {"slug": "inverter-solax-x1-boost-5-g4", "expected_id": 820, "topic": "grid_inverter", "reason": "Inverter hòa lưới 1 pha 5 kW để so với hybrid cùng công suất."},
+        {"slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw", "expected_id": 805, "topic": "hybrid_inverter", "reason": "Inverter hybrid 5 kW cùng mức công suất AC với model hòa lưới bên cạnh, có thêm thông số công suất dự phòng."},
+        {"slug": "inverter-solax-x3-mic-10", "expected_id": 825, "topic": "grid_inverter", "reason": "Inverter hòa lưới 3 pha 10 kW."},
+        {"slug": "inverter-solax-x3-neo-10k-lv-hybrid-10kw", "expected_id": 811, "topic": "hybrid_inverter", "reason": "Inverter hybrid 10 kW, công suất dự phòng 11 kW, để so với model hòa lưới 10 kW."}
+      ]
+    },
+    {
+      "plan_key": "PTS-KT-015",
+      "slug": "tam-pin-mau-den-co-luon-tot-hon-tam-pin-mau-xanh",
+      "decision": "link",
+      "reason": "Bài khuyên so thông số module (hiệu suất, cấu tạo, bảo hành) thay vì màu; liên kết các biến thể cùng công suất khác cấu tạo để so sánh.",
+      "products": [
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-1-mat-kinh", "expected_id": 744, "topic": "pv_module", "reason": "Module 650 Wp 1 mặt kính, hiệu suất 24.1%, bảo hành hiệu suất 30 năm theo trang sản phẩm."},
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-tran-vien", "expected_id": 745, "topic": "pv_module", "reason": "Cùng 650 Wp nhưng kiểu tràn viền — khác cấu tạo khung, cùng hiệu suất ghi 24.1%."},
+        {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-2-mat-kinh", "expected_id": 746, "topic": "pv_module", "reason": "Cùng 650 Wp, cấu tạo 2 mặt kính — minh họa lớp mặt sau mà bài nói ảnh hưởng hơn màu sắc."},
+        {"slug": "tam-pin-nang-luong-mat-troi-astronergy-625wp", "expected_id": 755, "topic": "pv_module", "reason": "Module N-Type TOPCon của hãng khác, hiệu suất 23.1%, để so thông số thay vì so màu."}
+      ]
+    }
+  ]
+}

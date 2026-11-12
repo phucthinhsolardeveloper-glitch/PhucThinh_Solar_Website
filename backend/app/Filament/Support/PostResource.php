@@ -2,22 +2,30 @@
 
 namespace App\Filament\Support;
 
+use App\Domain\News\RelatedProductSuggestions;
 use App\Domain\Projects\ProjectSystem;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Post;
+use App\Models\PostCategory;
 use App\Support\Slugs;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,6 +35,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 /**
  * Shared screen for the four kinds of post (article, solution, project, policy). Each kind is its
@@ -106,7 +115,8 @@ abstract class PostResource extends Resource
             ]))),
             in_array($kind, ['article', 'project'], true) ? Section::make($kind === 'article' ? 'Sản phẩm liên quan' : 'Thiết bị đã dùng')->schema([
                 Select::make('products')->label('Sản phẩm')->relationship('products', 'name')->multiple()->searchable()
-                    ->maxItems($kind === 'article' ? 4 : null)
+                    ->maxItems($kind === 'article' ? RelatedProductSuggestions::MAX : null)
+                    ->hintActions($kind === 'article' ? [self::suggestProductsAction()] : [])
                     ->helperText($kind === 'article' ? 'Chọn sản phẩm phù hợp để liên kết trực tiếp từ bài viết tới trang bán hàng. Tối đa 4 sản phẩm sẽ hiện trên bài.' : null),
             ]) : null,
             Section::make()->columns(3)->schema(array_values(array_filter([
@@ -118,6 +128,83 @@ abstract class PostResource extends Resource
             ]))),
             Fields::seo('news'),
         ])));
+    }
+
+    /**
+     * Opens the topic-based suggestions for the article being edited. Choosing adds to the current
+     * selection only; existing (manual) choices are never removed or reordered, and nothing is saved
+     * until the editor saves the form.
+     */
+    protected static function suggestProductsAction(): Action
+    {
+        return Action::make('suggestProducts')->label('Gợi ý sản phẩm phù hợp')->icon('heroicon-o-light-bulb')->link()
+            ->modalHeading('Gợi ý sản phẩm phù hợp')->modalWidth('2xl')
+            ->modalSubmitActionLabel('Thêm sản phẩm đã chọn')
+            ->schema(function (Get $get, ?Model $record): array {
+                $current = self::selectedProductIds($get);
+                $free = RelatedProductSuggestions::MAX - count($current);
+                $items = $free > 0 ? app(RelatedProductSuggestions::class)->suggest(self::articleState($get, $record), $current) : [];
+                if ($items === []) {
+                    return [Text::make($free > 0
+                        ? 'Chưa tìm thấy sản phẩm phù hợp: bài chưa bàn rõ một nhóm thiết bị (tấm pin, inverter hòa lưới/hybrid, pin lưu trữ, đèn, bơm). Bài tin thị trường chung có thể không cần sản phẩm liên quan.'
+                        : 'Bài đã có đủ '.RelatedProductSuggestions::MAX.' sản phẩm. Bỏ bớt một sản phẩm nếu muốn thêm gợi ý.')];
+                }
+                $options = [];
+                $descriptions = [];
+                foreach ($items as $item) {
+                    $options[$item['id']] = $item['name'];
+                    $descriptions[$item['id']] = new HtmlString('<span style="display:flex;gap:.6rem;align-items:flex-start">'
+                        .'<img src="/thumbs/96x96x1'.e($item['image']).'" alt="" loading="lazy" style="width:48px;height:48px;object-fit:contain;flex:none;border-radius:4px;background:#fff">'
+                        .'<span>'.e($item['reason']).' <a href="'.e($item['url']).'" target="_blank" rel="noopener" style="text-decoration:underline">Xem trang sản phẩm</a></span></span>');
+                }
+
+                return [
+                    Text::make(count($current) > 0
+                        ? 'Đang có '.count($current).' sản phẩm đã chọn, được giữ nguyên. Có thể thêm tối đa '.$free.' sản phẩm.'
+                        : 'Chọn tối đa '.$free.' sản phẩm. Gợi ý chỉ gồm sản phẩm đang hiển thị, có ảnh và đường dẫn hợp lệ.'),
+                    CheckboxList::make('suggested')->label('Sản phẩm gợi ý')->options($options)->descriptions($descriptions)
+                        ->maxItems($free)->required()->validationMessages(['required' => 'Chọn ít nhất một sản phẩm hoặc bấm Hủy.']),
+                ];
+            })
+            ->action(function (array $data, Get $get, Set $set): void {
+                $current = self::selectedProductIds($get);
+                $chosen = array_map('intval', (array) ($data['suggested'] ?? []));
+                $live = array_keys(app(RelatedProductSuggestions::class)->eligible(array_values(array_diff($chosen, $current))));
+                $merged = array_values(array_unique([...$current, ...$live]));
+                if (count($merged) > RelatedProductSuggestions::MAX) {
+                    Notification::make()->danger()->title('Tối đa '.RelatedProductSuggestions::MAX.' sản phẩm cho một bài viết')
+                        ->body('Lựa chọn hiện có không bị thay đổi.')->send();
+
+                    return;
+                }
+                $set('products', array_map('strval', $merged));
+                Notification::make()->success()->title('Đã thêm '.count($live).' sản phẩm vào lựa chọn')
+                    ->body('Bấm Lưu để áp dụng.')->send();
+            });
+    }
+
+    /** @return list<int> */
+    private static function selectedProductIds(Get $get): array
+    {
+        return array_values(array_unique(array_map('intval', array_filter((array) ($get('products') ?? []), 'is_numeric'))));
+    }
+
+    /** @return array{title: string, summary: string, keywords: string, body: string, category: string} */
+    private static function articleState(Get $get, ?Model $record): array
+    {
+        $body = $get('body');
+        if (! is_string($body)) {
+            $body = filled($body) ? RichContentRenderer::make($body)->getEditor()->getHTML() : (string) ($record instanceof Post ? $record->body : '');
+        }
+        $categoryId = $get('category_id');
+
+        return [
+            'title' => (string) $get('title'),
+            'summary' => (string) $get('summary'),
+            'keywords' => (string) ($get('seo.keywords') ?? ($record instanceof Post ? $record->seo?->keywords : '')),
+            'body' => $body,
+            'category' => $categoryId ? (string) PostCategory::query()->whereKey($categoryId)->value('slug') : '',
+        ];
     }
 
     public static function table(Table $table): Table
