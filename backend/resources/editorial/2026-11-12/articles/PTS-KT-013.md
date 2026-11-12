@@ -34,7 +34,7 @@ Hồ sơ này cần xem công suất chạy đồng thời, dòng khởi động
 
 Mái và bóng che vẫn có thể đổi kết quả: diện tích nhìn thấy không phải toàn bộ diện tích lắp được, còn các mảng mái khác hướng sẽ phát ở những thời điểm khác nhau. PVGIS có thể hỗ trợ ước tính bức xạ theo địa điểm, nhưng không thay thế khảo sát mái, dữ liệu tải và thiết kế điện tại công trình.
 
-Vì vậy, hóa đơn nên được dùng như điểm xuất phát để biết quy mô tiêu thụ; câu trả lời về hệ thống phải dựa thêm vào giờ dùng điện, mái, mục tiêu và điều kiện an toàn. Cách đọc từng ô hóa đơn và bảng theo dõi 6–12 tháng thuộc bài thực hành PTS-KT-016, không lặp lại ở đây.
+Vì vậy, hóa đơn nên được dùng như điểm xuất phát để biết quy mô tiêu thụ; câu trả lời về hệ thống phải dựa thêm vào giờ dùng điện, mái, mục tiêu và điều kiện an toàn.
 
 ### Nguồn tham khảo
 
