@@ -133,6 +133,72 @@
       "license": "https://www.pexels.com/license/",
       "attribution": "Ảnh: Parveen Khantwal / Pexels",
       "alt": "Bề mặt tấm pin điện mặt trời dưới bầu trời xanh"
+    },
+    {
+      "plan_key": "PTS-KT-016",
+      "cover_file": "pts-photo-016.webp",
+      "type": "licensed_photo",
+      "photographer": "Mikhail Nilov",
+      "source_url": "https://www.pexels.com/photo/couple-looking-at-their-bills-6964105/",
+      "image_id": 6964105,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Mikhail Nilov / Pexels",
+      "alt": "Hai người kiểm tra hóa đơn và chi tiêu gia đình"
+    },
+    {
+      "plan_key": "PTS-KT-017",
+      "cover_file": "pts-photo-017.webp",
+      "type": "licensed_photo",
+      "photographer": "Александр Лич",
+      "source_url": "https://www.pexels.com/photo/lights-over-pavement-at-night-10820087/",
+      "image_id": 10820087,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Александр Лич / Pexels",
+      "alt": "Lối đi công viên sáng đèn vào ban đêm, minh họa vùng chiếu sáng"
+    },
+    {
+      "plan_key": "PTS-KT-018",
+      "cover_file": "pts-photo-018.webp",
+      "type": "licensed_photo",
+      "photographer": "CHINA YU",
+      "source_url": "https://www.pexels.com/photo/industrial-facility-with-solar-panel-rooftop-35454187/",
+      "image_id": 35454187,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: CHINA YU / Pexels",
+      "alt": "Toàn cảnh mái nhà xưởng lớn được phủ nhiều tấm pin mặt trời"
+    },
+    {
+      "plan_key": "PTS-KT-019",
+      "cover_file": "pts-photo-019.webp",
+      "type": "licensed_photo",
+      "photographer": "Los Muertos Crew",
+      "source_url": "https://www.pexels.com/photo/solar-technician-installing-solar-panel-8853502/",
+      "image_id": 8853502,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Los Muertos Crew / Pexels",
+      "alt": "Kỹ thuật viên đang lắp đặt tấm pin quang điện trên mái"
+    },
+    {
+      "plan_key": "PTS-KT-020",
+      "cover_file": "pts-photo-020.webp",
+      "type": "licensed_photo",
+      "photographer": "Michael Pointner",
+      "source_url": "https://www.pexels.com/photo/rows-of-solar-panels-18316987/",
+      "image_id": 18316987,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Michael Pointner / Pexels",
+      "alt": "Cận cảnh bề mặt các tấm pin mặt trời, minh họa cấu trúc module"
+    },
+    {
+      "plan_key": "PTS-KT-021",
+      "cover_file": "pts-photo-021.webp",
+      "type": "licensed_photo",
+      "photographer": "Janick Bunzel",
+      "source_url": "https://www.pexels.com/photo/aerial-view-of-houses-16432398/",
+      "image_id": 16432398,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Janick Bunzel / Pexels",
+      "alt": "Mái nhà dân dụng có pin điện mặt trời nhìn từ trên cao"
     }
   ]
 }

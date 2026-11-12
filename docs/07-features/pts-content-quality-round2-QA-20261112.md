@@ -45,7 +45,7 @@ Nhóm giải pháp là **landing page**, không nên viết theo template “bà
 ## QA hình ảnh và khả năng trình bày
 
 - 21 ảnh bìa mới trong `frontend/public/assets/images/editorial/` đều hiện hữu ở 1600×900 WebP. Kiểm tra mẫu các đường dẫn ảnh Nuxt cho HTTP 200.
-- Sáu ảnh `pts-plan-016.webp` đến `pts-plan-021.webp` đang dùng làm bìa, có dung lượng 46–51 KiB; cần kiểm duyệt thiết kế bằng mắt trước khi công khai. Không đồng nhất tất cả thành ảnh AI kiểu infographic. Ưu tiên ảnh thật chất lượng và đa dạng ảnh dự án, thiết bị, ứng dụng, sơ đồ/biểu đồ khi nội dung cần.
+- **Đã thay 6 bìa bài 016–021** từ poster chữ theo một khuôn sang 6 ảnh thật riêng biệt (Pexels): hóa đơn gia đình, lối đi ban đêm, mái nhà xưởng, kỹ thuật viên lắp đặt, cận cảnh module và mái dân dụng. Kích thước 1600×900 WebP, file hiện hữu và 6/6 URL local HTTP 200. Ảnh 017 chỉ minh họa ánh sáng lối đi, không tuyên bố đèn trong ảnh dùng năng lượng mặt trời.
 - Ảnh có nguồn ngoài: cần quyền sử dụng + caption/nguồn chính xác; ảnh tự biên soạn ghi “Hình minh họa”. Không biến ảnh quảng cáo thành bằng chứng chứng nhận hay hiệu suất thiết bị.
 
 ## Gate an toàn và việc tiếp theo
@@ -57,3 +57,18 @@ Nhóm giải pháp là **landing page**, không nên viết theo template “bà
 5. Sau khi duyệt trên local, mới chuẩn bị kế hoạch deploy riêng; **chưa push GitHub, chưa deploy website production**.
 
 Nguồn kỹ thuật/biên tập và proposal: `docs/07-features/editorial-voice-and-review-standard.md`, `backend/resources/editorial/2026-11-12/reviews/`, `backend/resources/editorial/2026-11-12/legacy-public/`, `backend/resources/editorial/2026-11-12/solutions/`.
+
+## Phụ lục kiểm tra nguồn ảnh 016–021
+
+Mỗi mục đã gán tác giả, URL ảnh nguồn và Pexels License trong photo-cover-selections.json và image-credits.json. Ảnh được lưu WebP trong frontend/public/assets/images/editorial/, không chèn logo lên hình có người để tránh làm hiểu nhầm nhân vật là nhân viên hoặc khách của Phúc Thịnh Solar.
+
+| Bài | Ảnh mới | Nội dung và lưu ý |
+|---|---|---|
+| PTS-KT-016 | pts-photo-016.webp | Hai người đối chiếu hóa đơn (Mikhail Nilov); ảnh minh họa, không phải khách hàng công ty |
+| PTS-KT-017 | pts-photo-017.webp | Lối đi sáng đèn ban đêm (Александр Лич); không khẳng định nguồn điện của hệ chiếu sáng |
+| PTS-KT-018 | pts-photo-018.webp | Mái nhà xưởng phủ PV (CHINA YU); không gán làm dự án do Phúc Thịnh Solar thi công |
+| PTS-KT-019 | pts-photo-019.webp | Kỹ thuật viên lắp pin mái (Los Muertos Crew); ảnh minh họa thao tác |
+| PTS-KT-020 | pts-photo-020.webp | Cận cảnh module mặt trời (Michael Pointner); không dùng để xác định công nghệ TOPCon/HJT/BC cụ thể |
+| PTS-KT-021 | pts-photo-021.webp | Mái nhà ở nhìn từ cao (Janick Bunzel); không chứng minh mức giảm nhiệt |
+
+Phải giữ credit/nguồn trên trang chi tiết; các file ảnh cũ pts-plan-016..021 được giữ trong repository để tránh ảnh hưởng những bản thảo/lịch khác đang tham chiếu, nhưng 6 Post local hiện dùng các bìa pts-photo mới. Đã cập nhật image_status trong calendar-180.csv thành Đã chọn - chờ duyệt, không đổi giờ đăng và không tự xuất bản.
