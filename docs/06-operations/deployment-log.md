@@ -4,6 +4,40 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-12 — release 83a74afa: nội dung biên tập, danh mục, Admin và lịch bài đăng
+
+- Runtime source: commit `83a74afa998fa5cfbc6e1945044cf7466fee99f8` đã push lên `origin/master`.
+  Image backend `sha256:bfc92a71065a4f30a73c7e591a6c0955829eefefc0925280986f02a52b72c6e2`,
+  Nuxt `sha256:03b0594d0c65613127f9fa972f5fd251e7d8ea94e6008212917ddeb9ec3217a3`.
+  Gói `/srv/pts-laravel13/releases/83a74afa/pts-release-83a74afa-images.tar.gz`
+  (~408 MiB) đã kiểm SHA-256 và đối chiếu image ID giữa máy build/VPS.
+- Backup full trước migration/import: `/srv/pts-laravel13/backups/20261112T094236Z-full`,
+  checksum 6/6 file đạt. Giữ image release `d2c529e0` và bản env/image ID trước đổi ở
+  `/srv/pts-laravel13/releases/rollback-83a74afa/`. Không phục hồi DB theo quán tính.
+- Candidate cô lập phục hồi DB production (399 sản phẩm, 29 bài cũ), chạy thành công 6 migration
+  `002000`, `2026_11_11_000100`, `000200`, `000300`, `2026_11_12_000100`, `000300`.
+  Backend Laravel **399 pass / 1 skip**, 2.785 assertions; Pint 455 file, PHPStan 0 lỗi;
+  frontend 513/513 test, Nuxt typecheck và production build đạt.
+  `verify-candidate.sh` hoàn tất sau khi cập nhật 7 snapshot có thay đổi đã kiểm duyệt;
+  site-audit 0 lỗi trên 20 route × 4 viewport; shop-flow đạt, không tạo đơn.
+- Trên VPS: đã áp đủ 6 migration và chỉ thay backend, Nuxt, worker, scheduler thuộc stack
+  `pts-laravel13`. MariaDB volume, Caddy biên, ZCRM và training được giữ nguyên.
+  Kiểm HTTPS `/`, `/tin-tuc/`, `/san-pham/`, `/admin/login`, `/api/v1/site`,
+  sitemap, feed và ảnh bài viết trả 200; Admin plan/calendar trả 302 về đăng nhập đúng phân quyền.
+  Các service mới healthy; scan log ngắn sau deploy: 0 fatal/uncaught/SQLSTATE/connection-refused.
+- Nội dung versioned: `release-editorial-content.sh --apply` hoàn tất sau backup và
+  diễn tập clone DB. Ba bài hiện hữu được cập nhật có guard, thay 5 bìa và bỏ 2 banner lỗi thời;
+  tạo thêm 18 bản thảo ẩn. Tổng sau release: **50 bài (28 đang hiển thị)**, **399 sản phẩm**,
+  **180 mục kế hoạch từ 13/11/2026 đến 11/01/2027**, **21 liên kết bài**, **0 bìa thiếu**.
+  Lịch biên tập không tự công khai; việc duyệt bài, gán sản phẩm và chọn ngày đăng vẫn thuộc Admin.
+- Snapshot API đã đạt đầy đủ **trước khi import nội dung**. Sau khi thay dữ liệu bài viết có chủ đích,
+  snapshot `news` và `news-detail` cũ của image đang chạy sẽ lệch về nội dung/bìa.
+  Baseline sau import được cập nhật vào Git trong một commit dữ liệu/tài liệu kế tiếp; nó có hiệu lực
+  trên runtime khi xây image release tiếp theo, **không tự động sửa image đã deploy**.
+- Rủi ro còn lại: backup full vẫn chỉ ở VPS, chưa có bản sao off-host riêng;
+  chưa chạy audit trình duyệt có đăng nhập cho mọi màn Admin trên chính production.
+  Không xóa ảnh/media cũ hoặc backup rollback.
+
 ## 2026-11-10 — category tree + Admin updates (d2c529e0)
 
 - Commit/image: `d2c529e03111cc3e7fceeef07f1e384951b5295c`; backend image ID

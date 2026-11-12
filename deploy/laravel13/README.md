@@ -1,18 +1,24 @@
 # Triển khai Laravel 13 — rehearsal, staging và production
 
-## Trạng thái hiện tại — 2026-11-10
+## Trạng thái hiện tại — 2026-11-12
 
-Production đang chạy release `d2c529e0` (Laravel 13 + Nuxt) sau khi chủ website
-cho phép triển khai. Chi tiết, checksum, migration, kiểm tra và rollback point ở
+Production đang chạy release `83a74afa` (Laravel 13 + Nuxt 4) trên stack
+`pts-laravel13`. Source release đã push `master`; backend, Nuxt, worker và
+scheduler dùng image mới có SHA bất biến. Chi tiết checksum, kiểm thử, sáu
+migration và rollback nằm ở
 [`docs/06-operations/deployment-log.md`](../../docs/06-operations/deployment-log.md).
-Các mốc candidate bên dưới là lịch sử. Compose candidate dành cho DB cô lập;
-production dùng thêm `docker-compose.production.yml` và image đã kiểm, không chép
-compose candidate đè lên stack VPS.
 
-Release gần nhất áp migration `001700`–`001900`; 68 đèn sân vườn nằm dưới
-`Đèn NLMT › Đèn Sân Vườn` theo nhóm trụ cổng/treo tường/đèn nấm/cắm cỏ. Trước
-mỗi lần deploy tiếp theo cần backup mới, kiểm SHA-256 image archive, giữ image
-đang chạy để rollback và chỉ khởi động lại service thuộc `pts-laravel13`.
+Đã nhập 180 mục kế hoạch bài viết (13/11/2026–11/01/2027) và 21 bản thảo liên
+kết, tất cả bài mới để ẩn, không tự đăng. 180 ảnh bìa của kế hoạch đều tồn tại
+trong `upload/news` sau import. Bản trước `d2c529e0` được giữ làm rollback,
+cùng bản full backup mới trước khi thay image và nhập nội dung.
+
+Các mốc candidate bên dưới là lịch sử. Compose candidate dành cho DB cô lập;
+production phải dùng thêm `docker-compose.production.yml` trên VPS và image đã
+kiểm; không chép compose candidate đè lên stack VPS. Với release kế tiếp:
+backup mới, xác minh SHA-256 archive/image, chạy migration trên clone dữ liệu,
+kiểm API/Playwright và giữ image cũ cùng bản env để rollback. Chỉ thay service
+thuộc `pts-laravel13`, không đụng Caddy biên, MariaDB volume, ZCRM hoặc training.
 
 Trạng thái tại 2026-11-09: **chưa triển khai production**. Compose ở đây tạo project
 `pts_laravel13_candidate` riêng, chỉ mở Caddy ở `127.0.0.1:18085`. DB và upload
