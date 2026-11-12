@@ -9,6 +9,8 @@
 
 ## Quyết định theo bài
 
+ARTICLE-100, ARTICLE-101, ARTICLE-103 và ARTICLE-109 giữ trạng thái **HOLD** cho đến khi hoàn tất xác minh nguồn/chứng cứ tương ứng; không sync hoặc publish trong trạng thái này. ARTICLE-108 ở trạng thái REVIEW vì cần đối chiếu chính sách đối tác hiện hành.
+
 ### ARTICLE-100 — Sharp
 
 Đổi title khỏi khẳng định “phân phối độc quyền” hiện tại. Giữ đây là thông báo năm 2024; mọi thông số, giá, bảo hành và quyền phân phối cần đối chiếu theo model và văn bản Sharp trước khi publish.

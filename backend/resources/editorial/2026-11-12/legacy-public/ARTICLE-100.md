@@ -1,10 +1,8 @@
-# Sharp tại Việt Nam: thông báo phân phối của Phúc Thịnh Solar năm 2024
+# Sharp tại Việt Nam: thông báo phân phối của Phúc Thịnh Solar
 
-Ngày ấn bản cũ: năm 2024 (theo tiêu đề và tài liệu lưu trong bài).
+Bài viết này lưu lại một thông báo thương mại đã được Phúc Thịnh Solar đăng tải về việc phân phối tấm pin Sharp tại Việt Nam. Cụm từ “phân phối độc quyền” thuộc về thông báo tại thời điểm công bố, không phải mô tả mặc định cho quan hệ phân phối hiện tại.
 
-Bài viết này lưu lại một thông báo thương mại đã được Phúc Thịnh Solar đăng tải về việc phân phối tấm pin Sharp tại Việt Nam. Cụm từ “phân phối độc quyền” chỉ được hiểu trong phạm vi và thời điểm của thông báo năm 2024; không nên xem đây là xác nhận về quyền phân phối hiện tại nếu chưa có văn bản còn hiệu lực từ Sharp hoặc đơn vị có thẩm quyền.
-
-## Nội dung thông báo năm 2024
+## Nội dung thông báo lưu trữ
 
 Theo bản đăng lưu trữ, Phúc Thịnh Solar giới thiệu mình là nhà nhập khẩu và đơn vị phân phối tấm pin Sharp tại thị trường Việt Nam, đồng thời mời nhà phân phối và đại lý quan tâm đến hợp tác. Bản gốc đề cập các thông số, chính sách thương mại và hỗ trợ kỹ thuật của thời điểm đăng tải.
 
@@ -16,8 +14,9 @@ Sharp là thương hiệu có hoạt động nghiên cứu, sản xuất thiết
 
 ## Ghi chú sử dụng
 
-Đây là nội dung lưu trữ về một thông báo doanh nghiệp trong năm 2024. Phúc Thịnh Solar cần xác minh bằng văn bản với Sharp hoặc nhà sản xuất/nhà phân phối được ủy quyền trước khi tái sử dụng claim “độc quyền”, giá, hiệu suất, chứng nhận hoặc chính sách bảo hành như thông tin hiện hành.
+Đây là nội dung lưu trữ về một thông báo doanh nghiệp, phản ánh cách Phúc Thịnh Solar giới thiệu sản phẩm và quan hệ phân phối tại thời điểm công bố.
 
 ### Tài liệu và hình ảnh lưu trữ
 
-- [Ảnh/tài liệu Sharp trong bài gốc](http://phucthinhsolar.com/upload/filemanager/sharp-khung-1095x1536.jpg) — giữ quyền và credit theo nguồn gốc; cần kiểm tra quyền tái sử dụng trước khi xuất bản lại.
+- **Nguồn tác giả:** Phúc Thịnh Solar.
+- [Ảnh/tài liệu Sharp trong bài gốc](http://phucthinhsolar.com/upload/filemanager/sharp-khung-1095x1536.jpg)

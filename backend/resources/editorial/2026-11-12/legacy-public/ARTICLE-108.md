@@ -22,5 +22,6 @@ Các mục trên không tự động là nghĩa vụ chung cho mọi đơn hàng
 
 ### Sản phẩm và hình ảnh lưu trữ
 
+- **Nguồn tác giả:** Phúc Thịnh Solar.
 - [Trang sản phẩm trong bài gốc](https://phucthinhsolar.com/san-pham/)
-- [Ảnh minh họa chương trình hợp tác](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/09/loi-ich-web-1200.jpg) và [bản 600 px](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/09/loi-ich-web-1200-600x400.jpg) — giữ credit/quyền ảnh theo hồ sơ media.
+- [Ảnh minh họa chương trình hợp tác](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/09/loi-ich-web-1200.jpg) và [bản 600 px](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/09/loi-ich-web-1200-600x400.jpg)
