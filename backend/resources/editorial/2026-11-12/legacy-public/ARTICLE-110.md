@@ -1,12 +1,3 @@
----
-post_id: 110
-status: draft
-original_title: "CHIP LED CREE THƯƠNG HIỆU TOP 1"
-proposed_title: "Chip LED CREE ảnh hưởng thế nào đến chất lượng đèn?"
-slug: chip-led-cree-thuong-hieu-top-1
-summary: "Chip LED là một phần của hệ thống đèn; hãy đọc hiệu suất, màu ánh sáng, bộ nguồn và dữ liệu thử thay vì dựa vào danh xưng đứng đầu."
----
-
 Tên chip là một tín hiệu để bắt đầu tìm hiểu, không phải kết luận rằng toàn bộ đèn sẽ sáng hơn hoặc bền hơn. Chất lượng thực tế còn phụ thuộc bộ nguồn, tản nhiệt, quang học, pin và cách nhà sản xuất thử nghiệm.
 
 ## Chip LED làm gì?
@@ -32,7 +23,7 @@ Tên CREE/Cree LED trong bài cũ cần đối chiếu với datasheet hoặc ch
 
 Đặt hai model cạnh nhau với cùng điều kiện: quang thông hữu dụng, phân bố chùm sáng, nhiệt độ màu, công suất toàn bộ đèn, bộ nguồn, tản nhiệt, pin và điều kiện bảo hành. Nếu một mục không có nguồn, ghi “chưa cung cấp” thay vì suy đoán.
 
-## Ghi chú biên tập
+## Nguồn tham khảo
 
-- Giữ các URL ảnh trong baseline; cần xác minh license/credit trước khi xuất bản.
-- Bỏ superlative “TOP 1” và các bảo đảm tuyệt đối; không hạ nhẹ cảnh báo về tài liệu chưa được kiểm chứng.
+- [Cree LED — XLamp LEDs](https://www.cree-led.com/products/leds/xlamp/): tài liệu sản phẩm chính thức cho các họ LED; chỉ chứng minh có dòng sản phẩm, không chứng minh model Blue Carbon trong bài.
+- [Cree LED — XLamp XM data sheets](https://www.cree-led.com/products/leds/xlamp/xm/): ví dụ về cách đọc datasheet, quang thông/CRI và điều kiện đo; không dùng số của datasheet làm số của đèn hoàn chỉnh.

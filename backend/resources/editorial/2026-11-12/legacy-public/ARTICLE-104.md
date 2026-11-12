@@ -1,12 +1,3 @@
----
-post_id: 104
-status: draft
-original_title: "TOP 4 LỢI ÍCH KHI SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI"
-proposed_title: "Chọn đèn năng lượng mặt trời theo vị trí: bốn câu hỏi trước khi mua"
-slug: top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi
-summary: "Bốn câu hỏi về vị trí, ánh sáng, điều khiển và bảo trì giúp so sánh đèn năng lượng mặt trời thực tế hơn các danh sách lợi ích chung."
----
-
 Một chiếc đèn tốt cho cổng có thể không phù hợp với sân rộng hoặc lối đi dài. Trước khi nhìn vào giá và công suất, hãy trả lời bốn câu hỏi dưới đây.
 
 ## 1. Vùng cần sáng là gì?
@@ -36,7 +27,7 @@ Tấm pin cần được giữ sạch; vị trí cao cần có phương án ti�
 
 Đây là bài checklist mua theo tình huống, không thay cho hướng dẫn lắp đặt ở bài 105 hay bài giải thích chất lượng ánh sáng chuyên sâu.
 
-## Ghi chú biên tập
+## Nguồn tham khảo
 
-- Ảnh giữ theo baseline: `pts-light-advantages.webp`; không có external link/alt cần khôi phục.
-- Đã bỏ nhắc JinDian/Blue Carbon trong claim chung; cần xác minh từng model và quyền sử dụng tên thương hiệu trước khi đưa lại.
+- [DOE — Purchasing Energy-Efficient Exterior Lighting](https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting): gợi ý xem xét thông số, bộ đèn và điều khiển trong mua sắm chiếu sáng ngoài trời.
+- [Lighting Global — Pico-PV Quality Standards](https://www.lightingglobal.org/resource/lighting-global-quality-standards/): tham chiếu cách yêu cầu thông tin/chất lượng cho sản phẩm off-grid; không suy ra đèn dự án đạt chuẩn.

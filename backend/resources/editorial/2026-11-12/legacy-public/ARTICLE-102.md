@@ -1,12 +1,3 @@
----
-post_id: 102
-status: draft
-original_title: "ĐÈN NĂNG LƯỢNG MẶT TRỜI - NHỮNG LÝ DO NÊN CHỌN!"
-proposed_title: "Đèn năng lượng mặt trời có hợp với nhu cầu chiếu sáng của bạn?"
-slug: den-nang-luong-mat-troi-nhung-ly-do-nen-chon
-summary: "Một khung quyết định ngắn gọn về điện lưới, vị trí lắp, thời gian sáng và việc bảo trì trước khi chọn đèn năng lượng mặt trời."
----
-
 Đèn năng lượng mặt trời phù hợp khi vị trí cần sáng ở ngoài trời, khó kéo dây hoặc muốn tách khỏi mạch điện lưới. Chọn đúng không bắt đầu từ lời hứa “tiết kiệm”, mà từ việc xác định đèn sẽ sáng ở đâu, cần sáng bao lâu và có đủ nắng để nạp pin hay không.
 
 ## Khi nào lựa chọn này hợp lý?
@@ -33,7 +24,7 @@ Với lối đi và cổng, ưu tiên vùng sáng đều, cảm biến ổn đ�
 
 Đèn năng lượng mặt trời là một phương án chiếu sáng độc lập, không phải lời hứa phù hợp cho mọi vị trí. Hãy chốt nhu cầu, điều kiện nắng, model và kế hoạch bảo trì; chỉ dùng thông số có trong tài liệu sản phẩm đã xác minh.
 
-## Ghi chú biên tập
+## Nguồn tham khảo
 
-- Ảnh giữ theo baseline: `pts-light-benefits.webp`; không có external link/alt cần khôi phục.
-- Claim tuổi thọ, IP, loại pin, chứng chỉ xanh và số năm cụ thể của bản cũ đã bỏ vì chưa có nguồn model tương ứng.
+- [DOE — Solar-Powered Street and Area Lighting Considerations](https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf): bối cảnh hệ thống thường gồm PV, pin, đèn LED và yêu cầu cột/nền móng.
+- [Lighting Global — Quality Assurance](https://www.lightingglobal.org/how-we-work/quality-assurance/): khung kiểm tra chất lượng sản phẩm off-grid; không dùng như chứng nhận cho model cụ thể nếu chưa có hồ sơ xác minh.

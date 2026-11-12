@@ -1,12 +1,3 @@
----
-post_id: 105
-status: draft
-original_title: "4 LƯU Ý QUAN TRỌNG KHI LẮP ĐẶT VÀ SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI"
-proposed_title: "Bốn lưu ý an toàn khi lắp và dùng đèn năng lượng mặt trời"
-slug: 4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi
-summary: "Kiểm tra nắng, cảm biến, vệ sinh và an toàn lắp đặt để đèn hoạt động ổn định; phần đấu nối và làm việc trên cao cần kỹ thuật viên."
----
-
 Đèn mới có thể chưa sáng đủ ngay tối đầu tiên. Trước khi kết luận thiết bị lỗi, hãy kiểm tra bốn điểm dưới đây và giao phần làm việc trên cao hoặc điện cho người có chuyên môn.
 
 ## 1. Chọn vị trí nhận nắng
@@ -29,7 +20,7 @@ Lau bụi trên tấm pin bằng dụng cụ mềm, khi thiết bị đã nguộ
 
 Mọi việc trên cao, khoan vào kết cấu, xử lý dây dẫn hỏng, chống sét, hoặc lắp hệ thống dự án phải do người đủ năng lực thực hiện. Bài này chỉ là checklist quan sát và vận hành cơ bản, không phải hướng dẫn thi công điện.
 
-## Ghi chú biên tập
+## Nguồn tham khảo
 
-- Ảnh giữ theo baseline: `pts-light-installation.webp`; không có external link/alt cần khôi phục.
-- Đã loại các mốc 6–8 giờ, 1–2 chu kỳ và tối thiểu 8 giờ vì chưa gắn với model/điều kiện đo cụ thể.
+- [DOE — Solar-Powered Street and Area Lighting Considerations](https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf): lưu ý cấu phần cơ khí và nền móng của đèn ngoài trời dùng PV.
+- Hướng dẫn lắp đặt/datasheet của đúng model là nguồn bắt buộc cho góc lắp, cảm biến, pin và bảo trì; hiện baseline không có nên chưa khẳng định số giờ hay chu kỳ.

@@ -1,12 +1,3 @@
----
-post_id: 111
-status: draft
-original_title: "8 LÝ DO BẠN NÊN SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI NGAY BÂY GIỜ"
-proposed_title: "Bài toán chi phí khi đổi sang đèn năng lượng mặt trời"
-slug: 8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio
-summary: "Cách nhìn tổng chi phí của một điểm sáng: mua thiết bị, thi công, điện lưới, bảo trì và rủi ro vận hành thay vì hứa hẹn tiết kiệm chung chung."
----
-
 Đèn năng lượng mặt trời có thể giảm phần điện lưới và dây dẫn ở một số vị trí, nhưng không mặc nhiên rẻ hơn. So sánh công bằng phải đặt chi phí ban đầu, điều kiện nắng và công việc bảo trì cạnh phương án dùng điện lưới.
 
 ## Tách chi phí thành từng phần
@@ -35,7 +26,7 @@ Thiết bị vẫn cần lắp cơ khí chắc chắn, chống nước đúng h�
 
 Đây là góc nhìn kinh tế vận hành, khác bài 104 (chọn theo vị trí) và bài 102 (khung giải thích tổng quát). Không nên xuất bản cùng một thông điệp “8 lý do” với các bài còn lại.
 
-## Ghi chú biên tập
+## Nguồn tham khảo
 
-- Ảnh giữ theo baseline: `pts-light-why.webp`; không có external link/alt cần khôi phục.
-- Bỏ các claim “an toàn tuyệt đối”, “lợi ích ngàn lần”, bảo hành 5 năm và tuổi thọ hơn 10 năm vì chưa gắn model/chứng từ.
+- [DOE — Solar-Powered Street and Area Lighting Considerations](https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf): nêu các điều kiện khiến chiếu sáng PV có thể phù hợp về kỹ thuật và chi phí; không cung cấp mức tiết kiệm chung cho mọi dự án.
+- [Lighting Global — Quality Assurance](https://www.lightingglobal.org/how-we-work/quality-assurance/): nhấn mạnh kiểm thử/chất lượng để tránh kỳ vọng sai; không thay cho báo giá và dữ liệu vận hành của dự án.

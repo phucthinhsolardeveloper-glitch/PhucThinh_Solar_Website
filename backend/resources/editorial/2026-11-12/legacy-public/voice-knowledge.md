@@ -18,9 +18,9 @@
 
 ## Bằng chứng trùng lặp và cách xử lý
 
-Phương pháp: đối chiếu tiêu đề, câu mở đầu và các cụm ý trong baseline (102/107 đều “những lý do nên chọn”; 104/111 đều liệt kê tiết kiệm, môi trường, dễ lắp, tự động). Đây là bằng chứng định tính theo cấu trúc/ý định, không tuyên bố điểm cosine máy tính khi chưa chạy bộ đo chuẩn.
+So sánh trực tiếp HTML/text DB đã xác nhận **102 và 107 giống 100%**: SequenceMatcher **1.000**, tập từ **1.000**; chỉ khác title “Những lý do nên chọn” và “Những lý do bạn nên chọn”. 104/111 cũng chồng lấn các ý tiết kiệm, môi trường, lắp đặt và tự động.
 
-- **102 ↔ 107 — trùng cao ở title và 5 nhóm lợi ích cũ.** Giữ 102 làm guide evergreen; 107 đổi sang tình huống nơi khó kéo điện, giới hạn mặt bằng và bảo trì. Không xuất bản hai URL với cùng opening/listicle. Nếu chỉ duy trì một bài, 301 slug 107 về 102 sau khi duyệt redirect; không xóa URL cũ.
+- **102 ↔ 107 — trùng tuyệt đối trong HTML/text DB.** Không viết hai bài bằng cách thay từ đồng nghĩa và không xuất bản bản 107 application hiện tại. Đối chiếu organic clicks, impressions, backlink chất lượng và chuyển đổi trước; URL tốt hơn làm canonical, URL còn lại 301 về đó. Không tự unpublish/redirect khi chưa có analytics. Nếu không có chênh lệch đáng kể, 102 là ứng viên hợp lý vì slug ngắn hơn.
 - **104 ↔ 111 — trùng cao ở tiết kiệm điện, môi trường, lắp đặt và tự động.** 104 nay là checklist mua theo vị trí; 111 là total-cost-of-ownership với giả định cần thu thập. Link chéo chỉ khi có component liên quan, không copy đoạn.
 - **105 ↔ 102/104 — trùng một phần về vị trí nắng và vận hành.** 105 giữ vai trò thao tác an toàn/vệ sinh; bỏ claim thời lượng chung và cấm DIY wiring.
 - **106 ↔ 102/104/111 — trùng phần lợi ích chung.** 106 chuyển thành hồ sơ dự án, nghiệm thu và xác minh nguồn; không dùng slogan thương hiệu.
@@ -62,4 +62,12 @@ Tổng sơ bộ 22/25 (quy đổi 26.4/30); không đánh dấu ready-to-publish
 
 ## Canonical và old links
 
-Giữ nguyên bảy slug cũ trong draft và không đổi canonical trực tiếp. Nếu hợp nhất 107 vào 102, dùng 301 từ slug 107 sang URL canonical đã duyệt, cập nhật internal links và theo dõi backlink; không xóa bài/URL đột ngột. 104 và 111 giữ URL riêng vì đã có intent khác sau biên tập. 106/110 chỉ phát hành sau review nguồn, không dùng ảnh hoặc claim làm bằng chứng khi quyền sử dụng chưa rõ.
+Giữ nguyên bảy slug cũ trong draft và không đổi canonical trực tiếp. Với 102/107, trước hết lấy analytics; sau khi owner duyệt URL thắng, dùng 301 từ URL còn lại, cập nhật internal links/canonical/sitemap và theo dõi 404; không tự unpublish. 104 và 111 giữ URL riêng vì đã có intent khác sau biên tập. 106/110 chỉ phát hành sau review nguồn, không dùng ảnh hoặc claim làm bằng chứng khi quyền sử dụng chưa rõ.
+
+## URL nguồn và tình trạng hình ảnh
+
+Baseline xác nhận cả 7 bài không có URL nguồn bên ngoài trong HTML. Bản draft bổ sung nguồn tham khảo chính thức DOE, Lighting Global và Cree LED ở cuối các bài liên quan; các nguồn này chỉ chứng minh nguyên lý/khung kiểm thử, không xác minh thông số Blue Carbon hay model cụ thể.
+
+- 102, 104, 105, 107, 111: chỉ có filename ảnh trong baseline; chưa có source, license hoặc credit, cần bổ sung hồ sơ quyền trước publish.
+- 106: giữ remote image URL/alt gốc để không mất asset; URL không phải bằng chứng quyền sử dụng, cần xác minh ownership/license/credit.
+- 110: giữ remote certificate image URL/alt gốc để kiểm tra; cần xác minh tính xác thực, liên quan model và quyền sử dụng trước publish.

@@ -1,12 +1,3 @@
----
-post_id: 106
-status: draft
-original_title: "BLUE CARBON ĐÈN NĂNG LƯỢNG MẶT TRỜI CHO DỰ ÁN"
-proposed_title: "Đèn năng lượng mặt trời Blue Carbon cho dự án: hồ sơ cần kiểm tra"
-slug: blue-carbon-den-nang-luong-mat-troi-cho-du-an
-summary: "Một khung kiểm tra hồ sơ, quang học, năng lượng và bảo hành khi đánh giá dòng đèn Blue Carbon cho dự án; thông số phải lấy từ model cụ thể."
----
-
 Với dự án, câu hỏi quan trọng không phải thương hiệu nghe lớn đến đâu mà là bộ hồ sơ có đủ để nghiệm thu hay không. Tên Blue Carbon trong bài cũ được giữ như phạm vi tham chiếu; mọi thông số và năng lực thương hiệu cần đối chiếu tài liệu chính thức của đúng model.
 
 ![Đèn năng lượng mặt trời cho dự án](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/11/BCT-OLK3-1.jpg)
@@ -30,6 +21,7 @@ Bài cũ nêu bảo hành 5 năm, hơn 100 quốc gia, nhiều dự án tại Vi
 
 Đối chiếu từng dòng báo giá với model trong datasheet; yêu cầu mẫu phân bổ ánh sáng, phương án điều khiển và điều kiện thử thời lượng. Nghiệm thu nên ghi nhận độ rọi theo yêu cầu dự án, vị trí lắp, tình trạng tấm pin, kết nối và tài liệu bàn giao. Không thay thế khảo sát hiện trường bằng ảnh quảng cáo.
 
-## Ghi chú hình ảnh và nguồn
+## Nguồn tham khảo
 
-Giữ ảnh gốc và alt như baseline. Ảnh có thể minh họa sản phẩm nhưng không chứng minh model, hiệu suất hay dự án; cần xác minh quyền sử dụng và credit trước khi xuất bản.
+- [Lighting Global — Quality Assurance](https://www.lightingglobal.org/how-we-work/quality-assurance/): chất lượng và kiểm thử sản phẩm off-grid; chỉ dùng để xây checklist, không xác nhận Blue Carbon.
+- [DOE — Solar-Powered Street and Area Lighting Considerations](https://betterbuildingssolutioncenter.energy.gov/resources/solar-powered-street-and-area-lighting-considerations-fact-sheet): bối cảnh kỹ thuật/cost-effectiveness của đèn đường và khu vực dùng PV.
