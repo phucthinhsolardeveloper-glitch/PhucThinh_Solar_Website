@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\ProductDetail;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
+use App\Domain\Routing\PublicUrls;
 use App\Models\Product;
 use App\Support\SiteSettings;
 use App\Support\Text;
@@ -38,7 +39,7 @@ class ProductDetailAssembler
     {
         $signed = URL::temporarySignedRoute('product.preview', now()->addMinutes(15), ['product' => $id], absolute: false);
 
-        return url('/xem-truoc/san-pham/'.$id).'?'.parse_url($signed, PHP_URL_QUERY);
+        return PublicUrls::base().'/xem-truoc/san-pham/'.$id.'?'.parse_url($signed, PHP_URL_QUERY);
     }
 
     /** @return array<string, mixed>|null null when no visible product has this slug */

@@ -6,7 +6,7 @@ return [
     'canonical_origin' => env('SITE_CANONICAL_ORIGIN', 'https://phucthinhsolar.com'),
 
     // Where the storefront is reachable from Admin's "Xem trên website" links. Empty in production (same host as Admin);
-    // locally the Nuxt server, e.g. http://127.0.0.1:3110.
+    // locally the Nuxt server, e.g. http://127.0.0.1:3100 (keep this aligned with the active Nuxt listener).
     'public_url' => env('SITE_PUBLIC_URL', ''),
 
     'admin_password' => [

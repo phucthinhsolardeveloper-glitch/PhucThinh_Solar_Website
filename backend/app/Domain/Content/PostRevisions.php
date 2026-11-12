@@ -3,6 +3,7 @@
 namespace App\Domain\Content;
 
 use App\Domain\News\NewsDetail;
+use App\Domain\Routing\PublicUrls;
 use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectSystem;
 use App\Domain\Solutions\SolutionDetail;
@@ -233,7 +234,9 @@ final class PostRevisions
         $route = $kind === 'article' ? 'article-draft.preview' : 'post-draft.preview';
         $signed = URL::temporarySignedRoute($route, now()->addMinutes(15), ['revision' => $revision->id], absolute: false);
 
-        return url('/xem-truoc/'.self::PREVIEW_PATHS[$kind].'/'.$revision->id).'?'.parse_url($signed, PHP_URL_QUERY);
+        $path = '/xem-truoc/'.self::PREVIEW_PATHS[$kind].'/'.$revision->id;
+
+        return PublicUrls::base().$path.'?'.parse_url($signed, PHP_URL_QUERY);
     }
 
     /**

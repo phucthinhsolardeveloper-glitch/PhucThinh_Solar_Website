@@ -3,6 +3,7 @@
 namespace App\Domain\Pages;
 
 use App\Domain\Audit\Audit;
+use App\Domain\Routing\PublicUrls;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -153,7 +154,9 @@ final class PageLayouts
     {
         $signed = URL::temporarySignedRoute('page-layout.preview', now()->addMinutes(15), ['layout' => $row->id], absolute: false);
 
-        return url(($row->page === 'home' ? '/xem-truoc/trang-chu/' : '/xem-truoc/gioi-thieu/').$row->id).'?'.parse_url($signed, PHP_URL_QUERY);
+        $path = ($row->page === 'home' ? '/xem-truoc/trang-chu/' : '/xem-truoc/gioi-thieu/').$row->id;
+
+        return PublicUrls::base().$path.'?'.parse_url($signed, PHP_URL_QUERY);
     }
 
     private function open(int $id, bool $lock = false): object

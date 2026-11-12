@@ -5,6 +5,22 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
+it('builds the frontend preview origin from site public url and keeps production links same-origin', function () {
+    $actor = User::query()->create(['name' => 'Chủ', 'username' => 'preview-origin-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $post = Post::query()->where('kind', 'article')->where('is_visible', false)->firstOrFail();
+    $draft = app(PostRevisions::class)->draft($post, $actor);
+
+    config(['site.public_url' => 'http://127.0.0.1:3100/']);
+    $url = app(PostRevisions::class)->previewUrl($draft->fresh());
+    expect($url)->toStartWith('http://127.0.0.1:3100/xem-truoc/bai-viet/'.$draft->id.'?')
+        ->and(parse_url($url, PHP_URL_QUERY))->toContain('expires=');
+
+    config(['site.public_url' => '']);
+    expect(app(PostRevisions::class)->previewUrl($draft->fresh()))
+        ->toStartWith('/xem-truoc/bai-viet/'.$draft->id.'?');
+});
+
 it('previews solution, project and policy drafts as the public page while the live page stays unchanged', function (string $kind, string $endpoint, string $titlePath, string $page) {
     $actor = User::query()->create(['name' => 'Chủ', 'username' => 'preview-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
         'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
