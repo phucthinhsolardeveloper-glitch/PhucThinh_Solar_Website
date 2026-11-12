@@ -1,0 +1,35 @@
+---
+post_id: 106
+status: draft
+original_title: "BLUE CARBON ĐÈN NĂNG LƯỢNG MẶT TRỜI CHO DỰ ÁN"
+proposed_title: "Đèn năng lượng mặt trời Blue Carbon cho dự án: hồ sơ cần kiểm tra"
+slug: blue-carbon-den-nang-luong-mat-troi-cho-du-an
+summary: "Một khung kiểm tra hồ sơ, quang học, năng lượng và bảo hành khi đánh giá dòng đèn Blue Carbon cho dự án; thông số phải lấy từ model cụ thể."
+---
+
+Với dự án, câu hỏi quan trọng không phải thương hiệu nghe lớn đến đâu mà là bộ hồ sơ có đủ để nghiệm thu hay không. Tên Blue Carbon trong bài cũ được giữ như phạm vi tham chiếu; mọi thông số và năng lực thương hiệu cần đối chiếu tài liệu chính thức của đúng model.
+
+![Đèn năng lượng mặt trời cho dự án](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/11/BCT-OLK3-1.jpg)
+
+## Bắt đầu từ yêu cầu chiếu sáng
+
+Ghi rõ tuyến đường, khoảng cách cột, chiều cao lắp, thời gian cần sáng, mức giao thông và điều kiện che bóng. Từ đó mới xác định quang thông, phân bố chùm sáng, nhiệt độ màu, pin, tấm pin và chế độ điều khiển. Công suất ghi trên tên sản phẩm không đủ để kết luận chất lượng chiếu sáng.
+
+## Hồ sơ cần có trước khi chọn model
+
+- Datasheet ghi rõ model, công suất, quang thông, pin, tấm pin, bộ điều khiển và điều kiện thử.
+- Bản vẽ kích thước, tải trọng, giá đỡ, cột và phương án móng phù hợp vị trí.
+- Tài liệu bảo vệ môi trường/IP, EMC hoặc tiêu chuẩn liên quan nếu hồ sơ mời thầu yêu cầu; phải kiểm tra chứng chỉ thật, không suy ra từ tên thương hiệu.
+- Điều kiện bảo hành, linh kiện thay thế, thời gian đáp ứng và quy trình nghiệm thu.
+
+## Điều gì chưa thể kết luận từ bài cũ?
+
+Bài cũ nêu bảo hành 5 năm, hơn 100 quốc gia, nhiều dự án tại Việt Nam và các tính năng vượt trội nhưng không kèm tài liệu xác minh. Các tuyên bố đó được đánh dấu **chưa xác minh**, không dùng làm bằng chứng bán hàng hay hồ sơ dự án. Cũng chưa đủ căn cứ để khẳng định Blue Carbon là lựa chọn duy nhất, hay mọi sản phẩm cùng thương hiệu có cùng thông số.
+
+## Cách đọc báo giá và nghiệm thu
+
+Đối chiếu từng dòng báo giá với model trong datasheet; yêu cầu mẫu phân bổ ánh sáng, phương án điều khiển và điều kiện thử thời lượng. Nghiệm thu nên ghi nhận độ rọi theo yêu cầu dự án, vị trí lắp, tình trạng tấm pin, kết nối và tài liệu bàn giao. Không thay thế khảo sát hiện trường bằng ảnh quảng cáo.
+
+## Ghi chú hình ảnh và nguồn
+
+Giữ ảnh gốc và alt như baseline. Ảnh có thể minh họa sản phẩm nhưng không chứng minh model, hiệu suất hay dự án; cần xác minh quyền sử dụng và credit trước khi xuất bản.

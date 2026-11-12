@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-11-12",
+  "scope": [102, 104, 105, 106, 107, 110, 111],
+  "rule": "Draft only; do not mutate DB, visibility, title, slug, date, image or canonical URL without editorial/SEO approval.",
+  "proposals": [
+    {"post_id": 102, "decision": "retain_as_evergreen_core", "proposed_title": "Đèn năng lượng mặt trời có hợp với nhu cầu chiếu sáng của bạn?", "canonical_action": "keep_existing_slug", "notes": "Core guide: fit, light quality and selection boundaries."},
+    {"post_id": 107, "decision": "retain_as_distinct_application", "proposed_title": "Đèn năng lượng mặt trời cho nơi khó kéo điện: khung ứng dụng", "canonical_action": "keep_existing_slug_if_approved_else_301_to_102", "notes": "Distinct use-case angle; do not publish as a second generic reasons article. If owner wants one evergreen URL, 301 old slug to 102 and preserve inbound links."},
+    {"post_id": 104, "decision": "retain_as_buying_checklist", "proposed_title": "Chọn đèn năng lượng mặt trời theo vị trí: bốn câu hỏi trước khi mua", "canonical_action": "keep_existing_slug", "notes": "Unique decision checklist; removes unsupported brand claims."},
+    {"post_id": 111, "decision": "retain_as_economics", "proposed_title": "Bài toán chi phí khi đổi sang đèn năng lượng mặt trời", "canonical_action": "keep_existing_slug", "notes": "Unique total-cost/operating angle; no invented savings or payback."},
+    {"post_id": 105, "decision": "retain_as_installation_cautions", "proposed_title": "Bốn lưu ý an toàn khi lắp và dùng đèn năng lượng mặt trời", "canonical_action": "keep_existing_slug", "notes": "Practical cautions; explicitly excludes DIY wiring and unsafe work at height."},
+    {"post_id": 106, "decision": "needs_verification_before_publish", "proposed_title": "Đèn năng lượng mặt trời Blue Carbon cho dự án: hồ sơ cần kiểm tra", "canonical_action": "keep_existing_slug", "notes": "Product/project article only after model, warranty, brand and image rights verification."},
+    {"post_id": 110, "decision": "needs_verification_before_publish", "proposed_title": "Chip LED CREE ảnh hưởng thế nào đến chất lượng đèn?", "canonical_action": "keep_existing_slug", "notes": "Technical explainer; CREE/Blue Carbon claims and certificate image require source and rights checks."}
+  ],
+  "source_checks": {
+    "preserve_external_links": ["https://phucthinhsolar.com/upload/filemanager/wp-legacy/2022/11/BCT-OLK3-1.jpg", "https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/chung-nhan-scaled.jpg"],
+    "verification_required": ["106: warranty, global/project adoption, Blue Carbon specifications", "110: CREE configuration, performance, certificate, exclusivity/brand relationship", "all: model-specific lifetime, IP, battery, runtime and savings claims"]
+  }
+}
