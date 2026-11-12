@@ -42,6 +42,9 @@ it('dry-runs, applies atomically, preserves links, and is idempotent', function 
         ->and($post->fresh()->body)->toBe('<p>Copy cũ</p>');
     expect(Artisan::call('pts:editorial-copy-refresh', ['--baseline' => $baseline, '--apply' => true]))->toBe(0);
     $updated = $post->fresh(['seo']);
+    $metadata = json_decode((string) file_get_contents(base_path('resources/editorial/2026-11-12/written-articles.json')), true, flags: JSON_THROW_ON_ERROR);
+    $approvedSummary = collect($metadata['articles'])->firstWhere('id', 'PTS-KT-004')['summary'];
+    expect($updated->summary)->toBe($approvedSummary);
     expect($updated->body)->not->toBe('<p>Copy cũ</p>')
         ->and($updated->summary)->not->toBe('Tóm tắt cũ')
         ->and($updated->seo->description)->toBe($updated->summary)

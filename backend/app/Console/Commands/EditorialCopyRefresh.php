@@ -161,9 +161,11 @@ final class EditorialCopyRefresh extends Command
                 $proposals[$entry['id']] = $entry;
             }
         }
+        // The approved source-controlled metadata wins over older review proposals.
+        // Review snapshots are retained for traceability, not as active CMS copy.
         $written = json_decode((string) file_get_contents($base.'/written-articles.json'), true, flags: JSON_THROW_ON_ERROR);
         foreach ($written['articles'] ?? [] as $entry) {
-            $proposals[$entry['id']] ??= $entry;
+            $proposals[$entry['id']] = $entry;
         }
         $targets = [];
         foreach ($proposals as $id => $proposal) {
