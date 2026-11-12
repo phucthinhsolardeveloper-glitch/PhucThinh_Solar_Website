@@ -16,7 +16,8 @@ final class EditorialCopyRefresh extends Command
 {
     protected $signature = 'pts:editorial-copy-refresh
         {--apply : Apply changes (only allowed in local/testing)}
-        {--baseline= : Absolute path to the immutable DB copy baseline JSON}';
+        {--baseline= : Absolute path to the immutable DB copy baseline JSON}
+        {--include-initial-three : Explicitly allow the 001–003 reviewed Markdown replacements}';
 
     protected $description = 'Preview or safely refresh hidden editorial article copy with drift checks.';
 
@@ -51,7 +52,8 @@ final class EditorialCopyRefresh extends Command
         $changes = [];
         $blocked = 0;
         foreach ($entries as $key => $expected) {
-            if (! preg_match('/^PTS-KT-(?:00[4-9]|01[0-9]|02[01])$/', (string) $key)) {
+            if (! preg_match('/^PTS-KT-(?:00[4-9]|01[0-9]|02[01])$/', (string) $key)
+                && ! ($this->option('include-initial-three') && preg_match('/^PTS-KT-00[1-3]$/', (string) $key))) {
                 continue;
             }
             if (! isset($targets[$key])) {
@@ -156,6 +158,11 @@ final class EditorialCopyRefresh extends Command
     private function loadTargets(string $base): array
     {
         $proposals = [];
+        if ($this->option('include-initial-three')) {
+            foreach (json_decode((string) file_get_contents($base.'/review-proposals-001-003.json'), true, flags: JSON_THROW_ON_ERROR) as $entry) {
+                $proposals[$entry['id']] = $entry;
+            }
+        }
         foreach (glob($base.'/reviews/review-proposals-*.json') ?: [] as $path) {
             foreach (json_decode((string) file_get_contents($path), true, flags: JSON_THROW_ON_ERROR) as $entry) {
                 $proposals[$entry['id']] = $entry;
@@ -169,7 +176,8 @@ final class EditorialCopyRefresh extends Command
         }
         $targets = [];
         foreach ($proposals as $id => $proposal) {
-            if (! preg_match('/^PTS-KT-(?:00[4-9]|01[0-9]|02[01])$/', (string) $id)) {
+            if (! preg_match('/^PTS-KT-(?:00[4-9]|01[0-9]|02[01])$/', (string) $id)
+                && ! ($this->option('include-initial-three') && preg_match('/^PTS-KT-00[1-3]$/', (string) $id))) {
                 continue;
             }
             $path = $base.'/articles/'.$id.'.md';
