@@ -6,6 +6,7 @@ use App\Filament\Resources\EditorialPlanItems\Pages\EditEditorialPlanItem;
 use App\Models\EditorialPlanItem;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\RichText;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -30,7 +31,7 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
         ->and($tenth->post)->toBeInstanceOf(Post::class)
         ->and($tenth->post->is_visible)->toBeFalse()
         ->and($tenth->post->body)->toContain('/upload/news/pts-explainer-grid-outage.webp')
-        ->and(\App\Support\RichText::sanitize((string) $tenth->post->body))->toContain('/upload/news/pts-explainer-grid-outage.webp')
+        ->and(RichText::sanitize((string) $tenth->post->body))->toContain('/upload/news/pts-explainer-grid-outage.webp')
         ->and($tenth->post->body)->not->toContain('<h1>')
         ->and(Storage::disk('upload_news')->exists('pts-explainer-grid-outage.webp'))->toBeTrue();
     expect($first->post)->toBeInstanceOf(Post::class)
@@ -39,13 +40,13 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
         ->and($fourth->post)->toBeInstanceOf(Post::class)
         ->and($fourth->post->is_visible)->toBeFalse()
         ->and($fourth->post->body)->toContain('<h2>')
-        ->and($fourth->cover_file)->toBe('pts-plan-004.webp')
+        ->and($fourth->cover_file)->toBe('pts-photo-004.webp')
         ->and(Storage::disk('upload_news')->exists($fourth->cover_file))->toBeTrue()
         ->and($last->post_id)->toBeNull()
         ->and($last->primary_source_url)->not->toBeEmpty();
 
     $this->getJson('/api/v1/news-detail?slug='.$fourth->post->slug)->assertNotFound();
-    $this->get('/upload/news/pts-plan-004.webp')->assertOk();
+    $this->get('/upload/news/pts-photo-004.webp')->assertOk();
     expect(Artisan::call('pts:editorial-calendar', ['--apply' => true]))->toBe(0)
         ->and(EditorialPlanItem::query()->count())->toBe(180);
 });
@@ -104,4 +105,20 @@ it('reschedules only a hidden CMS article when an editor changes its planning sl
     expect($item->fresh()->scheduled_for->format('Y-m-d H:i'))->toBe('2026-11-16 11:00')
         ->and((string) $post->fresh()->published_at)->toBe('2026-11-16 11:00:00')
         ->and($post->fresh()->is_visible)->toBeFalse();
+});
+
+it('keeps an editor-selected cover instead of restoring the curated default', function () {
+    Storage::fake('upload_news');
+    Artisan::call('pts:editorial-batch', ['--apply' => true]);
+    Artisan::call('pts:editorial-calendar', ['--apply' => true]);
+
+    $plan = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-005')->sole();
+    $post = $plan->post;
+    expect($post)->not->toBeNull()->and($post->is_visible)->toBeFalse();
+
+    $plan->update(['cover_file' => 'custom-editorial-cover.webp', 'image_status' => 'approved']);
+    $post->update(['image' => 'custom-editorial-cover.webp']);
+    expect(Artisan::call('pts:editorial-calendar', ['--apply' => true]))->toBe(0)
+        ->and($plan->fresh()->cover_file)->toBe('custom-editorial-cover.webp')
+        ->and($post->fresh()->image)->toBe('custom-editorial-cover.webp');
 });

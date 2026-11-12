@@ -85,3 +85,14 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 - Danh mục ghi nguồn: `backend/resources/editorial/2026-11-12/image-credits.json`. Các hình tự thiết kế dùng logo dài chính thức và không giả làm công trình thật.
 - Ảnh đèn đường cũ được thay bằng phối hợp cảnh nhiều đèn và ảnh có bối cảnh sáng rõ; một ảnh sân vườn tối được giữ như ngoại lệ.
 - `pts:editorial-calendar --apply` kiểm tra ảnh minh họa trong Markdown và chép sang upload khi deploy; bản local dùng nguồn Git-managed nếu volume upload đang chỉ đọc.
+
+## Bản cập nhật chọn ảnh 12/11/2026
+
+Đã chuyển 12 bài PTS-KT-004..015 từ bìa concept đồng dạng sang **11 ảnh chụp thật được tuyển chọn, 1 infographic kỹ thuật**. Ảnh đã được áp dụng vào 12 bản nháp ẩn trên local; không làm thay đổi trạng thái xuất bản. Các ảnh concept `pts-plan-*.webp` của 165 ý tưởng chưa viết chỉ phục vụ kế hoạch, không mặc định dùng làm bìa đăng bài.
+
+Quy chuẩn hình ảnh mới: `docs/07-features/editorial-photo-first-guidelines.md`.
+
+- Metadata nguồn và giấy phép: `backend/resources/editorial/2026-11-12/photo-cover-selections.json` và `image-credits.json`.
+- Ảnh bìa mới: `frontend/public/assets/images/editorial/pts-photo-*.webp`.
+- Script tạo lại: `node scripts/content/prepare-editorial-photo-covers.mjs`.
+- Import `pts:editorial-calendar --apply` chỉ nâng cấp bìa generic trên bản nháp **chưa hiển thị** và chỉ khi chưa bị người biên tập sửa; bước deploy import hiện tại đã bao gồm media mới.

@@ -76,6 +76,13 @@ final class EditorialCalendarImport extends Command
         }
         $prewritten = json_decode((string) file_get_contents($base.'/written-articles.json'), true, flags: JSON_THROW_ON_ERROR);
         $writtenById = collect($prewritten['articles'] ?? [])->keyBy('id');
+        $coverManifest = json_decode((string) file_get_contents($base.'/photo-cover-selections.json'), true, flags: JSON_THROW_ON_ERROR);
+        $coverEntries = $coverManifest['entries'] ?? [];
+        if (! is_array($coverEntries) || $coverEntries === []
+            || count(array_unique(array_column($coverEntries, 'plan_key'))) !== count($coverEntries)) {
+            throw new RuntimeException('Invalid or duplicate curated editorial cover entries');
+        }
+        $covers = collect($coverEntries)->keyBy('plan_key');
         $disk = Storage::disk('upload_news');
         $assets = rtrim((string) config('site.assets_path'), '/');
         $created = 0;
@@ -98,7 +105,7 @@ final class EditorialCalendarImport extends Command
             }
             $times[] = $day.' '.$time;
             $keys[] = $key;
-            $image = self::FIRST_COVERS[$key] ?? 'pts-plan-'.substr($key, -3).'.webp';
+            $image = self::FIRST_COVERS[$key] ?? ($covers->get($key)['cover_file'] ?? 'pts-plan-'.substr($key, -3).'.webp');
             $path = $assets.'/images/editorial/'.$image;
             if (! is_file($path) || ! preg_match('/^pts-[a-z0-9-]+\.webp$/', $image)) {
                 throw new RuntimeException('Missing editorial image: '.$path);
@@ -147,7 +154,7 @@ final class EditorialCalendarImport extends Command
         foreach ($rows as $row) {
             $key = $row['id'];
             $scheduled = Carbon::parse($row['date'].' '.$row['time'], 'Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s');
-            $image = self::FIRST_COVERS[$key] ?? 'pts-plan-'.substr($key, -3).'.webp';
+            $image = self::FIRST_COVERS[$key] ?? ($covers->get($key)['cover_file'] ?? 'pts-plan-'.substr($key, -3).'.webp');
             $written = $writtenById->get($key);
             $actualSlug = self::FIRST_THREE[$key] ?? $row['slug_draft'];
             $post = Post::query()->where('kind', 'article')->where('slug', $actualSlug)->first();
@@ -213,7 +220,7 @@ final class EditorialCalendarImport extends Command
                 'image_brief' => $row['image_brief'],
                 'image_search_url' => $row['image_search_url'],
                 'cover_file' => $image,
-                'image_status' => isset(self::FIRST_COVERS[$key]) ? 'approved' : 'mockup',
+                'image_status' => isset(self::FIRST_COVERS[$key]) || $covers->has($key) ? 'approved' : 'mockup',
                 'logo_variant' => 'wide',
                 'post_id' => $post?->id,
             ];
@@ -231,6 +238,23 @@ final class EditorialCalendarImport extends Command
                     EditorialPlanItem::query()->where('plan_key', $key)
                         ->whereNull('post_id')->where('stage', 'idea')
                         ->update(['post_id' => $post->id, 'stage' => 'review']);
+                }
+
+                // Replace only the original generic *mockup* on an unpublished,
+                // unedited article. Never touch a cover that an editor selected.
+                if ($apply && $covers->has($key) && $post && $post->kind === 'article'
+                    && ! $post->is_visible) {
+                    $oldCover = 'pts-plan-'.substr($key, -3).'.webp';
+                    $plan = EditorialPlanItem::query()->where('plan_key', $key)->first();
+                    if ($plan && $plan->cover_file === $oldCover
+                        && $plan->image_status === 'mockup'
+                        && (int) $plan->post_id === (int) $post->id
+                        && $post->image === $oldCover) {
+                        DB::transaction(function () use ($plan, $post, $image): void {
+                            $post->update(['image' => $image]);
+                            $plan->update(['cover_file' => $image, 'image_status' => 'approved']);
+                        });
+                    }
                 }
                 $already++;
             }

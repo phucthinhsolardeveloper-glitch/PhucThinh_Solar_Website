@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "description": "Curated editorial photography is first priority. Original technical illustration reserved for PTS-KT-014.",
+  "entries": [
+    {
+      "plan_key": "PTS-KT-004",
+      "cover_file": "pts-photo-004.webp",
+      "type": "licensed_photo",
+      "photographer": "Diego Vivanco",
+      "source_url": "https://www.pexels.com/photo/clear-sky-over-solar-panels-16586151/",
+      "image_id": 16586151,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Diego Vivanco / Pexels",
+      "alt": "Dãy tấm pin mặt trời trong ánh sáng bình minh"
+    },
+    {
+      "plan_key": "PTS-KT-005",
+      "cover_file": "pts-photo-005.webp",
+      "type": "licensed_photo",
+      "photographer": "Elite Power Group",
+      "source_url": "https://www.pexels.com/photo/technician-installing-solar-power-system-in-australia-33751638/",
+      "image_id": 33751638,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Elite Power Group / Pexels",
+      "alt": "Kỹ thuật viên kiểm tra hệ thống inverter điện mặt trời"
+    },
+    {
+      "plan_key": "PTS-KT-006",
+      "cover_file": "pts-photo-006.webp",
+      "type": "licensed_photo",
+      "photographer": "Kindel Media",
+      "source_url": "https://www.pexels.com/photo/aerial-shot-of-house-with-solar-panel-9875684/",
+      "image_id": 9875684,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Kindel Media / Pexels",
+      "alt": "Mái nhà dân dụng lắp điện mặt trời nhìn từ trên cao"
+    },
+    {
+      "plan_key": "PTS-KT-007",
+      "cover_file": "pts-photo-007.webp",
+      "type": "licensed_photo",
+      "photographer": "K",
+      "source_url": "https://www.pexels.com/photo/solar-panels-on-tiled-roofs-of-a-house-8457868/",
+      "image_id": 8457868,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: K / Pexels",
+      "alt": "Mái ngói khu dân cư có lắp đặt điện mặt trời"
+    },
+    {
+      "plan_key": "PTS-KT-008",
+      "cover_file": "pts-photo-008.webp",
+      "type": "licensed_photo",
+      "photographer": "finix photographer",
+      "source_url": "https://www.pexels.com/photo/solar-street-light-amidst-lush-green-trees-32915849/",
+      "image_id": 32915849,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: finix photographer / Pexels",
+      "alt": "Đèn đường năng lượng mặt trời giữa tán cây xanh"
+    },
+    {
+      "plan_key": "PTS-KT-009",
+      "cover_file": "pts-photo-009.webp",
+      "type": "licensed_photo",
+      "photographer": "Neville Hawkins",
+      "source_url": "https://www.pexels.com/photo/solar-power-station-in-green-field-landscape-37061434/",
+      "image_id": 37061434,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Neville Hawkins / Pexels",
+      "alt": "Hệ pin ngoài trời dưới bầu trời nhiều mây"
+    },
+    {
+      "plan_key": "PTS-KT-010",
+      "cover_file": "pts-photo-010.webp",
+      "type": "licensed_photo",
+      "photographer": "Kindel Media",
+      "source_url": "https://www.pexels.com/photo/aerial-view-of-houses-with-solar-panels-along-the-road-9875673/",
+      "image_id": 9875673,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Kindel Media / Pexels",
+      "alt": "Khu dân cư với các hệ điện mặt trời mái nhà"
+    },
+    {
+      "plan_key": "PTS-KT-011",
+      "cover_file": "pts-photo-011.webp",
+      "type": "licensed_photo",
+      "photographer": "Quang Nguyen Vinh",
+      "source_url": "https://www.pexels.com/photo/solar-panels-on-green-grass-field-under-the-blue-sky-6876536/",
+      "image_id": 6876536,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Quang Nguyen Vinh / Pexels",
+      "alt": "Cánh đồng pin mặt trời dưới trời xanh"
+    },
+    {
+      "plan_key": "PTS-KT-012",
+      "cover_file": "pts-photo-012.webp",
+      "type": "licensed_photo",
+      "photographer": "Quang Nguyen Vinh",
+      "source_url": "https://www.pexels.com/photo/vast-solar-panel-farm-in-scenic-landscape-35105442/",
+      "image_id": 35105442,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Quang Nguyen Vinh / Pexels",
+      "alt": "Toàn cảnh trang trại điện mặt trời quy mô lớn tại Việt Nam"
+    },
+    {
+      "plan_key": "PTS-KT-013",
+      "cover_file": "pts-photo-013.webp",
+      "type": "licensed_photo",
+      "photographer": "Freek Wolsink",
+      "source_url": "https://www.pexels.com/photo/aerial-view-of-modern-solar-panel-roof-architecture-34557230/",
+      "image_id": 34557230,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Freek Wolsink / Pexels",
+      "alt": "Mái công trình hiện đại có tấm pin mặt trời"
+    },
+    {
+      "plan_key": "PTS-KT-014",
+      "cover_file": "pts-explainer-inverter-types.webp",
+      "type": "original_diagram",
+      "photographer": "Phúc Thịnh Solar",
+      "source_url": "",
+      "image_id": null,
+      "license": "original_internal",
+      "attribution": "Hình minh họa: Phúc Thịnh Solar",
+      "alt": "Infographic so sánh inverter hòa lưới và hybrid"
+    },
+    {
+      "plan_key": "PTS-KT-015",
+      "cover_file": "pts-photo-015.webp",
+      "type": "licensed_photo",
+      "photographer": "Parveen Khantwal",
+      "source_url": "https://www.pexels.com/photo/solar-panels-under-bright-blue-sky-38804917/",
+      "image_id": 38804917,
+      "license": "https://www.pexels.com/license/",
+      "attribution": "Ảnh: Parveen Khantwal / Pexels",
+      "alt": "Bề mặt tấm pin điện mặt trời dưới bầu trời xanh"
+    }
+  ]
+}
