@@ -3,9 +3,9 @@
 namespace App\Domain\Content;
 
 use App\Domain\News\NewsDetail;
-use App\Domain\Routing\PublicUrls;
 use App\Domain\Projects\ProjectDetail;
 use App\Domain\Projects\ProjectSystem;
+use App\Domain\Routing\PublicUrls;
 use App\Domain\Solutions\SolutionDetail;
 use App\Models\Post;
 use App\Models\PostRevision;

@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\URL;
 it('builds the frontend preview origin from site public url and keeps production links same-origin', function () {
     $actor = User::query()->create(['name' => 'Chủ', 'username' => 'preview-origin-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
         'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
-    $post = Post::query()->where('kind', 'article')->where('is_visible', false)->firstOrFail();
-    $draft = app(PostRevisions::class)->draft($post, $actor);
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $post->update(['is_visible' => false]);
+    $draft = app(PostRevisions::class)->draft($post->refresh(), $actor);
 
     config(['site.public_url' => 'http://127.0.0.1:3100/']);
     $url = app(PostRevisions::class)->previewUrl($draft->fresh());
