@@ -2,12 +2,24 @@ Hóa đơn điện là điểm bắt đầu hữu ích để xem xét điện m�
 
 Thay vì hỏi “mỗi tháng dùng bao nhiêu thì lắp được”, nên hỏi: **điện được dùng vào lúc nào, phần nào có thể tự dùng khi hệ thống phát, và mái nhà có thể lắp được bao nhiêu một cách an toàn?**
 
+Ba hộ dưới đây đều là **ví dụ giả định**, cùng dùng 450 kWh trong 30 ngày (15 kWh/ngày). Nhưng họ không có cùng một quyết định.
+
 
 ![Sơ đồ phân tích điện tiêu thụ ban ngày và ban đêm cho thiết kế hệ PV](/upload/news/pts-explainer-load-profile.webp)
 
 *Hình minh họa: Phúc Thịnh Solar*
 
 ## Hóa đơn cho biết lượng điện, chưa cho biết thời điểm
+
+## Ba hộ cùng kWh, ba bài toán khác nhau
+
+| Hồ sơ giả định | Lịch dùng điện | Câu hỏi cần đặt trước khi chọn quy mô |
+|---|---|---|
+| Hộ A | Ở nhà ban ngày, nấu ăn và bơm nước chủ yếu 9–15 giờ | Phần điện mặt trời nào có thể dùng ngay, không cần tăng pin? |
+| Hộ B | Vắng nhà ban ngày, điều hòa và bếp dùng 18–23 giờ | Có cần chuyển giờ, pin hay chỉ lắp vừa mức tải ban ngày? |
+| Hộ C | Dùng thất thường, có máy bơm theo mùa và muốn giữ tủ lạnh khi cúp | Tải ưu tiên, dòng khởi động và thời gian dự phòng là bao nhiêu? |
+
+450 kWh không tự trả lời được các câu hỏi này. Bảng trên cũng không phải cấu hình lắp đặt; đó là cách nhìn để tách tổng điện tiêu thụ khỏi điện có thể tự dùng và mục tiêu dự phòng.
 
 Trên hóa đơn, kWh thường là tổng lượng điện tiêu thụ trong kỳ. Nếu chia tổng cho số ngày, ta có mức tiêu thụ trung bình mỗi ngày. Chẳng hạn, hóa đơn 450 kWh trong 30 ngày tương ứng trung bình 15 kWh/ngày. Đây chỉ là phép chia để hình dung quy mô nhu cầu, không phải công thức suy ra hệ mặt trời 15 kW hay một công suất lắp đặt cụ thể.
 

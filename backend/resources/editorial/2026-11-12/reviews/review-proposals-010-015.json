@@ -1,0 +1,32 @@
+[
+  {
+    "id": "PTS-KT-010",
+    "summary": "Vì sao hệ có tấm pin vẫn tắt khi mất điện lưới? Bài dùng hai tình huống hòa lưới và nhánh dự phòng để giải thích chống đảo lưới, tải ưu tiên và giới hạn an toàn.",
+    "keywords": "điện mặt trời mất điện, chống đảo lưới, anti-islanding, tải dự phòng"
+  },
+  {
+    "id": "PTS-KT-011",
+    "summary": "Tấm 600–720 W không tự động tốt hơn: hãy đặt kích thước đúng model lên phần mái dùng được rồi mới kiểm tra hiệu suất, Voc/MPPT và inverter.",
+    "keywords": "tấm pin 600W, tấm pin 620W, tấm pin 650W, tấm pin 720W, kích thước mái, công suất module"
+  },
+  {
+    "id": "PTS-KT-012",
+    "summary": "Bản tin IEA Renewables 2026: ba điểm chính về gần 4.800 GW, tỷ trọng tái tạo từ 33% năm 2025 lên 43% năm 2031 và nhu cầu linh hoạt lưới.",
+    "keywords": "IEA Renewables 2026, dự báo điện mặt trời 2031, năng lượng tái tạo, linh hoạt lưới điện"
+  },
+  {
+    "id": "PTS-KT-013",
+    "summary": "Ba hộ cùng dùng 450 kWh/tháng nhưng có thể cần ba hướng khác nhau vì giờ dùng điện, tải ưu tiên, mái và mục tiêu dự phòng không giống nhau.",
+    "keywords": "điện mặt trời hộ gia đình, hóa đơn điện, biểu đồ phụ tải, giờ sử dụng điện"
+  },
+  {
+    "id": "PTS-KT-014",
+    "summary": "Bảng quyết định nhanh: có cần điện khi cúp và có chấp nhận mua pin không? Từ đó đối chiếu hòa lưới, hybrid, nhánh backup và giới hạn đúng model.",
+    "keywords": "inverter hòa lưới, inverter hybrid, pin lưu trữ, tải backup, EPS"
+  },
+  {
+    "id": "PTS-KT-015",
+    "summary": "Màu đen hay xanh là lựa chọn thẩm mỹ, không phải thước đo chất lượng; bài hướng người mua đến ảnh đúng model, kích thước, hiệu suất, nhiệt độ và bảo hành.",
+    "keywords": "tấm pin màu đen, tấm pin màu xanh, hiệu suất module, all black solar panel"
+  }
+]
