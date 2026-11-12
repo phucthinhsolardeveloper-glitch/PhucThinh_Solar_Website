@@ -8,12 +8,7 @@ mkdirSync(out,{recursive:true});
 const images=[
  {file:'pts-solar-how-it-works.webp',id:29206495,credit:'Stefan de Vries',page:'https://www.pexels.com/photo/modern-home-with-rooftop-solar-panels-29206495/'},
  {file:'pts-solar-datasheet-guide.webp',id:6961110,credit:'Hoan Ngọc',page:'https://www.pexels.com/photo/solar-technician-installing-solar-panels-6961110/'},
- {file:'pts-global-pv-trends-2026.webp',id:35105436,credit:'Quang Nguyen Vinh',page:'https://www.pexels.com/photo/aerial-view-of-vast-solar-farm-with-mountains-35105436/'},
- {file:'pts-light-benefits.webp',id:9799703,credit:'Kindel Media',page:'https://www.pexels.com/photo/solar-powered-street-lamp-post-9799703/'},
- {file:'pts-light-advantages.webp',id:32915849,credit:'finix photographer',page:'https://www.pexels.com/photo/solar-street-light-amidst-lush-green-trees-32915849/'},
- {file:'pts-light-installation.webp',id:19665970,credit:'Angelo Capitanio',page:'https://www.pexels.com/photo/pole-with-lamp-and-solar-panel-19665970/'},
- {file:'pts-light-choice.webp',id:36940916,credit:'Tejvinder Singh',page:'https://www.pexels.com/photo/close-up-of-garden-pathway-solar-light-at-dusk-36940916/'},
- {file:'pts-light-why.webp',id:9799715,credit:'Kindel Media',page:'https://www.pexels.com/photo/a-street-light-with-solar-panel-9799715/'}
+ {file:'pts-global-pv-trends-2026.webp',id:35105436,credit:'Quang Nguyen Vinh',page:'https://www.pexels.com/photo/aerial-view-of-vast-solar-farm-with-mountains-35105436/'}
 ];
 const ledger=[];
 for(const item of images) {

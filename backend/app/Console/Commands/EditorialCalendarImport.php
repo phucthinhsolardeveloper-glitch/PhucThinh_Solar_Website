@@ -84,6 +84,7 @@ final class EditorialCalendarImport extends Command
         $mediaCount = 0;
         $times = [];
         $keys = [];
+        $inlineMedia = [];
 
         // Validate all source and prepared assets before making any DB changes.
         foreach ($rows as $i => $row) {
@@ -111,10 +112,36 @@ final class EditorialCalendarImport extends Command
                 if (! is_array($written) || ! is_file($base.'/articles/'.$key.'.md')) {
                     throw new RuntimeException('Missing prepared article: '.$key);
                 }
+                // Collect all packaged in-body illustration files before writing data.
+                $sourceMarkdown = (string) file_get_contents($base.'/articles/'.$key.'.md');
+                preg_match_all('~/upload/news/(pts-[a-z0-9-]+\\.webp)~', $sourceMarkdown, $imageMatches);
+                foreach (array_unique($imageMatches[1] ?? []) as $inlineImage) {
+                    $illustration = $assets.'/images/editorial/'.$inlineImage;
+                    if (! is_file($illustration)) {
+                        throw new RuntimeException('Missing inline illustration: '.$inlineImage);
+                    }
+                    if (! $this->option('skip-images') && $disk->exists($inlineImage)
+                        && hash_file('sha256', $disk->path($inlineImage)) !== hash_file('sha256', $illustration)) {
+                        throw new RuntimeException('Inline image checksum conflict: '.$inlineImage);
+                    }
+                    $inlineMedia[$inlineImage] = $illustration;
+                }
             }
         }
         if (count(array_unique($times)) !== 180) {
             throw new RuntimeException('Duplicate publishing slots');
+        }
+
+        // Ensure every referenced in-body image exists in the production upload volume.
+        // The local preview resolves to Git-managed assets when upload is read-only.
+        if ($apply && ! $this->option('skip-images')) {
+            foreach ($inlineMedia as $imageName => $sourcePath) {
+                if (! $disk->exists($imageName) && ! app()->environment('local')) {
+                    if (! $disk->put($imageName, file_get_contents($sourcePath))) {
+                        throw new RuntimeException('Could not copy inline image: '.$imageName);
+                    }
+                }
+            }
         }
 
         foreach ($rows as $row) {
@@ -198,6 +225,13 @@ final class EditorialCalendarImport extends Command
                 }
             } else {
                 // Never overwrite an editor's changed date, source, status, image or notes.
+                // Link a newly prepared hidden article only while the planning slot is still
+                // untouched at the initial idea stage.
+                if ($apply && $hasWritten && $post && ! $post->is_visible) {
+                    EditorialPlanItem::query()->where('plan_key', $key)
+                        ->whereNull('post_id')->where('stage', 'idea')
+                        ->update(['post_id' => $post->id, 'stage' => 'review']);
+                }
                 $already++;
             }
 

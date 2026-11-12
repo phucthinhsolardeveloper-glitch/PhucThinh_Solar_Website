@@ -17,14 +17,22 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
 
     expect(EditorialPlanItem::query()->count())->toBe(180)
         ->and(EditorialPlanItem::query()->distinct()->count('scheduled_for'))->toBe(180)
-        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(9)
-        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(171)
+        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(15)
+        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(165)
         ->and(EditorialPlanItem::query()->min('scheduled_for'))->toBe('2026-11-13 08:00:00')
         ->and(EditorialPlanItem::query()->max('scheduled_for'))->toBe('2027-01-11 19:30:00');
 
     $first = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-001')->sole();
     $fourth = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-004')->sole();
     $last = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-180')->sole();
+    $tenth = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-010')->sole();
+    expect($tenth->stage)->toBe('review')
+        ->and($tenth->post)->toBeInstanceOf(Post::class)
+        ->and($tenth->post->is_visible)->toBeFalse()
+        ->and($tenth->post->body)->toContain('/upload/news/pts-explainer-grid-outage.webp')
+        ->and(\App\Support\RichText::sanitize((string) $tenth->post->body))->toContain('/upload/news/pts-explainer-grid-outage.webp')
+        ->and($tenth->post->body)->not->toContain('<h1>')
+        ->and(Storage::disk('upload_news')->exists('pts-explainer-grid-outage.webp'))->toBeTrue();
     expect($first->post)->toBeInstanceOf(Post::class)
         ->and($first->post->is_visible)->toBeFalse()
         ->and($first->post->published_at)->toBe('2026-11-13 08:00:00')

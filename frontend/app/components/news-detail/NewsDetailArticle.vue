@@ -116,8 +116,19 @@ function formatDate(value: string): string {
       width="1000"
       height="560"
       sizes="(min-width: 1024px) 66vw, 100vw"
-      class="mx-auto mb-8 block h-auto w-full max-w-[920px] rounded-btn nav:mb-10"
+      class="mx-auto block h-auto w-full max-w-[920px] rounded-btn"
+      :class="article.coverCredit ? 'mb-2' : 'mb-8 nav:mb-10'"
     >
+    <p v-if="article.cover && article.showCover && article.coverCredit" class="mx-auto mb-8 max-w-[920px] text-right text-xs text-slate-500 nav:mb-10">
+      <a
+        v-if="article.coverCreditUrl"
+        :href="article.coverCreditUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="underline decoration-slate-300 underline-offset-2 hover:text-navy-800"
+      >{{ article.coverCredit }}</a>
+      <span v-else>{{ article.coverCredit }}</span>
+    </p>
 
     <div class="grid grid-cols-1 gap-8 nav:gap-12" :class="editorial.toc.length ? 'nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)]' : ''">
       <aside v-if="article.content.html && editorial.toc.length" class="order-1 min-w-0 nav:order-1">

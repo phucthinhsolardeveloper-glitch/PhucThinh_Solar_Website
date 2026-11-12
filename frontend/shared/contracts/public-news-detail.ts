@@ -5,7 +5,7 @@ export interface PublicNewsLinkedProduct { id: number; name: string; url: string
 export interface PublicNewsDetailRelated { id: number; title: string; slug: string; canonical: string; date: string; author: string; description: string; image: string }
 export interface PublicNewsDetailCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicNewsDetailPayload {
-  article: { schemaVersion: 1; locale: 'vi'; id: number; title: string; slug: string; canonical: string; date: string; datePublished: string; dateModified: string; author: { name: string }; description: string; cover: string; showCover: boolean; content: PublicSanitizedRichText; quote?: PublicSanitizedRichText | null; category: { id: number; name: string; slug: string; url: string } | Record<string, never>; media: PublicNewsDetailMedia; linkedProducts?: PublicNewsLinkedProduct[]; seo: { title: string; description: string; keywords: string; canonical: string } }
+  article: { schemaVersion: 1; locale: 'vi'; id: number; title: string; slug: string; canonical: string; date: string; datePublished: string; dateModified: string; author: { name: string }; description: string; cover: string; coverCredit?: string; coverCreditUrl?: string; showCover: boolean; content: PublicSanitizedRichText; quote?: PublicSanitizedRichText | null; category: { id: number; name: string; slug: string; url: string } | Record<string, never>; media: PublicNewsDetailMedia; linkedProducts?: PublicNewsLinkedProduct[]; seo: { title: string; description: string; keywords: string; canonical: string } }
   cta: PublicNewsDetailCta | null
   related: PublicNewsDetailRelated[]
 }
@@ -25,6 +25,8 @@ export function isPublicNewsDetailPayload(value: unknown): value is PublicNewsDe
     return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === v
   }
   if (!a || a.schemaVersion !== 1 || a.locale !== 'vi' || !Number.isSafeInteger(a.id) || a.id < 1 || !text(a.title) || !isNewsDetailSlug(a.slug) || a.canonical !== `/${a.slug}/` || !isDate(a.date) || a.date !== a.datePublished || !isDate(a.datePublished) || !isDate(a.dateModified) || typeof a.showCover !== 'boolean' || !text(a.author?.name) || !text(a.description, true) || !image(a.cover)) return false
+  if (a.coverCredit !== undefined && !text(a.coverCredit, true)) return false
+  if (a.coverCreditUrl !== undefined && (typeof a.coverCreditUrl !== 'string' || (a.coverCreditUrl !== '' && !/^https:\/\/www\.pexels\.com\/photo\//.test(a.coverCreditUrl)))) return false
   // content đi qua envelope sanitized-html (RICHTEXT-CONTRACT.md): hàng rào
   // isPublicSanitizedRichText() là lớp phòng vệ thứ hai ở Nuxt, không thay
   // thế sanitizer của Laravel — chỉ chặn payload giả mạo format/metadata.

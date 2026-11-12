@@ -30,6 +30,36 @@
       "id": "PTS-KT-009",
       "summary": "Tấm pin có tạo điện khi trời nhiều mây hay mùa mưa? Giải thích bức xạ tán xạ, MPPT và cách dự báo sản lượng theo mùa.",
       "keywords": "tấm pin trời nhiều mây, điện mặt trời mùa mưa, PVGIS"
+    },
+    {
+      "id": "PTS-KT-010",
+      "summary": "Vì sao hệ thống có tấm pin vẫn tắt khi mất điện lưới? Tìm hiểu chống đảo lưới, tải ưu tiên và cấu hình dự phòng an toàn.",
+      "keywords": "điện mặt trời mất điện, chống đảo lưới, anti-islanding, tải dự phòng"
+    },
+    {
+      "id": "PTS-KT-011",
+      "summary": "So sánh tấm pin 600W, 620W, 650W và 720W theo kích thước, hiệu suất, giới hạn điện áp, mái nhà và inverter.",
+      "keywords": "tấm pin 600W, tấm pin 620W, tấm pin 650W, tấm pin 720W, công suất module"
+    },
+    {
+      "id": "PTS-KT-012",
+      "summary": "Điểm chính từ dự báo IEA Renewables 2026 đến năm 2031: tăng trưởng điện tái tạo, vai trò điện mặt trời và yêu cầu linh hoạt lưới.",
+      "keywords": "IEA Renewables 2026, dự báo điện mặt trời 2031, năng lượng tái tạo, linh hoạt lưới điện"
+    },
+    {
+      "id": "PTS-KT-013",
+      "summary": "Hóa đơn điện là điểm bắt đầu, nhưng chọn quy mô điện mặt trời còn cần biểu đồ tải, thời gian sử dụng, điều kiện mái và mục tiêu.",
+      "keywords": "điện mặt trời hộ gia đình, hóa đơn điện, biểu đồ phụ tải, công suất hệ thống"
+    },
+    {
+      "id": "PTS-KT-014",
+      "summary": "Phân biệt inverter hòa lưới và hybrid theo khả năng tích hợp pin, cấp tải dự phòng, giới hạn thiết bị và mục tiêu sử dụng.",
+      "keywords": "inverter hòa lưới, inverter hybrid, pin lưu trữ, tải backup, EPS"
+    },
+    {
+      "id": "PTS-KT-015",
+      "summary": "Tấm pin màu đen không mặc định tốt hơn màu xanh; hãy so thông số module, hiệu suất, hệ số nhiệt độ, bảo hành và nhu cầu mái.",
+      "keywords": "tấm pin màu đen, tấm pin màu xanh, hiệu suất module, all black solar panel"
     }
   ]
 }

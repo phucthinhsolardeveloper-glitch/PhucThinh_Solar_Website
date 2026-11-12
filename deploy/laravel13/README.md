@@ -306,7 +306,7 @@ thì đặt `/usr/local/sbin/pts-backup-offsite` như stack cũ từng dự tín
 
 ## Editorial content release — 180 bài / 60 ngày (2026-11-12)
 
-Release source gồm 180 vị trí bài viết (13/11/2026 – 11/01/2027), 9 bản thảo ẩn,
+Release source gồm 180 vị trí bài viết (13/11/2026 – 11/01/2027), 15 bản thảo ẩn,
 177 bìa kế hoạch có logo chính thức cùng các ảnh/infographic của đợt trước.
 Phải chạy bước nhập dữ liệu sau khi deploy backend/Nuxt; build image **không tự nhập** CSV/Markdown vào database.
 
@@ -318,5 +318,5 @@ PTS_EDITORIAL_BACKUP_VERIFIED=1 bash deploy/laravel13/scripts/release-editorial-
 ```
 
 Màn Admin local: `/admin/editorial-plan-items` (kế hoạch) và `/admin/lich-bien-tap` (lịch tháng).
-Cả 9 bài vẫn `is_visible=false`, ngày giờ chỉ là dự kiến và không tự công khai.
+Cả 15 bài vẫn `is_visible=false`, ngày giờ chỉ là dự kiến và không tự công khai.
 Thông tin và checklist: `docs/07-features/editorial-plan-180-2026-11-12.md`.

@@ -100,6 +100,7 @@ class NewsDetail extends PageSupport
         }
         $description = self::text($row['summary']);
         $cover = NewsListing::media($this->photo($row['image']));
+        $coverCredit = EditorialImageCredits::forFile((string) $row['image']);
         $quote = RichText::sanitize((string) $row['extra_body']);
         $published = self::date($row['published_at']);
         $linkedRows = $draftProductIds === null
@@ -133,6 +134,8 @@ class NewsDetail extends PageSupport
             'author' => ['name' => $this->author($row['author_id'])],
             'description' => $description,
             'cover' => $cover,
+            'coverCredit' => $coverCredit['credit'],
+            'coverCreditUrl' => $coverCredit['source'],
             'showCover' => $cover !== '' && ! self::contentRepeatsCover($row['body'], (string) $row['image']),
             'content' => RichText::dto(RichText::sanitize((string) $row['body'])),
             'quote' => $quote !== '' ? RichText::dto($quote) : null,

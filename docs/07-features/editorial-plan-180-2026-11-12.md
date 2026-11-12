@@ -4,8 +4,8 @@
 
 - **Phạm vi:** 13/11/2026 – 11/01/2027, 3 khung giờ/ngày: **08:00, 12:00, 19:30** (Asia/Ho_Chi_Minh).
 - **Số đầu mục:** 180. Gồm **164 bài Kiến thức sản phẩm** và **16 bài Tin mới nhất**; không tự tạo tin truyền thông doanh nghiệp nếu không có hoạt động đã xác nhận.
-- **Đã biên tập đủ thân bài và liên kết lịch:** 9 bài (PTS-KT-001..009). Các bài đều **is_visible=false**, dù có giờ dự kiến trong `published_at`; không công khai chỉ vì chạy bộ nhập.
-- **Đang ở mức ý tưởng/nghiên cứu:** 171 bài (PTS-KT-010..180). Có tiêu đề, góc viết, nguồn tham khảo đầu vào, brief ảnh, khung giờ, trạng thái và bìa đồ họa thương hiệu; **chưa phải bài hoàn chỉnh**.
+- **Đã biên tập đủ thân bài và liên kết lịch:** 15 bài (PTS-KT-001..015). Các bài đều **is_visible=false**, dù có giờ dự kiến trong `published_at`; không công khai chỉ vì chạy bộ nhập.
+- **Đang ở mức ý tưởng/nghiên cứu:** 165 bài (PTS-KT-016..180). Có tiêu đề, góc viết, nguồn tham khảo đầu vào, brief ảnh, khung giờ, trạng thái và bìa đồ họa thương hiệu; **chưa phải bài hoàn chỉnh**.
 - **Hình:** 3 ảnh bìa bản gốc cho các bài đầu + 177 hình bìa đồ họa WebP 1600×900 từ script. Hình đồ họa có **logo dài chính thức** của Phúc Thịnh Solar; logo đứng được lưu làm tài nguyên khi dùng cho bố cục khác.
 - **Source:** `backend/resources/editorial/2026-11-12/calendar-180.csv` (nguồn danh mục 180 chủ đề đã thống nhất, ngày đã chuyển về lịch hiện hành).
 - **Admin:** `/admin/lich-bien-tap` để xem theo tháng; `/admin/editorial-plan-items` để tìm kiếm/lọc và chỉnh đầu mục.
@@ -55,7 +55,7 @@ docker exec pts-laravel13-local php artisan pts:editorial-calendar --apply
 # Xem trước — không ghi dữ liệu
 bash deploy/laravel13/scripts/release-editorial-content.sh --preview
 # Sau khi XÁC NHẬN backup, script sẽ chạy migration riêng, nhập 3 bài cũ,
-# 6 bài bổ sung, 180 ô lịch và 180 ảnh bìa vào upload/news:
+# 12 bài bổ sung, 180 ô lịch và 180 ảnh bìa vào upload/news:
 PTS_EDITORIAL_BACKUP_VERIFIED=1 bash deploy/laravel13/scripts/release-editorial-content.sh --apply
 ```
 
@@ -64,7 +64,7 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 **An toàn/lặp lại:**
 
 - Import theo `plan_key` (PTS-KT-001..180), không tạo bản ghi trùng và không ghi đè lịch/ghi chú đã sửa trong Admin.
-- Nội dung mới chỉ tạo Post khi có file Markdown đầy đủ, không tạo Post rỗng từ 171 ý tưởng còn lại.
+- Nội dung mới chỉ tạo Post khi có file Markdown đầy đủ, không tạo Post rỗng từ 165 ý tưởng còn lại.
 - Bài mới giữ trạng thái ẩn dù có `published_at`; chuyển giờ trong kế hoạch không làm bật bài.
 - Ảnh mới ở local được Laravel phục vụ qua `/upload/news/` từ nguồn tĩnh khi volume upload cũ chỉ đọc; production nhập vào upload dùng checksum để tránh ghi đè file khác.
 - Nếu backup hoặc migration fail, **không tự động xuất bản**; rollback database và ảnh là bước riêng, không nhầm với rollback image Docker.
@@ -77,3 +77,11 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 - [ ] Bài có mô tả SEO, heading đúng, link nội bộ phù hợp, không trùng với bài cũ.
 - [ ] Người có quyền xuất bản kiểm tra và bật hiển thị đúng thời gian.
 - [ ] Kiểm tra trang thực tế và hình ảnh sau khi công khai.
+
+## Ảnh minh họa và ghi nguồn ngắn (12/11/2026)
+
+- Hiện đã có 15 bản nháp đầy đủ; 165 đầu mục còn là ý tưởng. PTS-KT-010 đến PTS-KT-015 có 1 infographic riêng trong thân bài.
+- Dưới ảnh bìa chỉ hiện một dòng: **Ảnh: Tác giả / Pexels** hoặc **Hình minh họa: Phúc Thịnh Solar**. Ảnh bên ngoài liên kết đến trang nguồn.
+- Danh mục ghi nguồn: `backend/resources/editorial/2026-11-12/image-credits.json`. Các hình tự thiết kế dùng logo dài chính thức và không giả làm công trình thật.
+- Ảnh đèn đường cũ được thay bằng phối hợp cảnh nhiều đèn và ảnh có bối cảnh sáng rõ; một ảnh sân vườn tối được giữ như ngoại lệ.
+- `pts:editorial-calendar --apply` kiểm tra ảnh minh họa trong Markdown và chép sang upload khi deploy; bản local dùng nguồn Git-managed nếu volume upload đang chỉ đọc.

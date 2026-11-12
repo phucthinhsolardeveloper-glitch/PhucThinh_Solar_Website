@@ -2,8 +2,8 @@
 
 **Thời gian:** 13/11/2026 – 11/01/2027 · 08:00 / 12:00 / 19:30 (Asia/Ho_Chi_Minh).
 
-**9 bài đầu đã soạn nội dung và có bản nháp ẩn trong CMS.**
-171 bài còn lại mới có ý tưởng, nguồn tham khảo và bìa dự thảo có logo; không được công khai khi chưa biên tập và duyệt.
+**15 bài đầu đã soạn nội dung và có bản nháp ẩn trong CMS.**
+165 bài còn lại mới có ý tưởng, nguồn tham khảo và bìa dự thảo có logo; không được công khai khi chưa biên tập và duyệt.
 
 Đây là bản chụp từ CSV source-controlled. Trạng thái sửa trực tiếp trong Admin là nguồn vận hành mới nhất.
 
@@ -35,17 +35,17 @@
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Vì sao có tấm pin nhưng mất điện lưới vẫn có thể bị cúp?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.energy.gov/cmei/systems/solar-and-resilience-basics) | pts-plan-010.webp |
-| 12:00 | **Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.cleanenergyreviews.info/blog) | pts-plan-011.webp |
-| 19:30 | **IEA công bố Renewables 2026: triển vọng điện mặt trời đến 2031** | Tin mới nhất | Đề cương · chờ viết · [Nguồn](https://www.iea.org/reports/renewables-2026) | pts-plan-012.webp |
+| 08:00 | **Vì sao có tấm pin nhưng mất điện lưới vẫn có thể bị cúp?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-and-resilience-basics) | pts-plan-010.webp |
+| 12:00 | **Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog) | pts-plan-011.webp |
+| 19:30 | **IEA công bố Renewables 2026: triển vọng điện mặt trời đến 2031** | Tin mới nhất | Đã soạn · chờ duyệt · [Nguồn](https://www.iea.org/reports/renewables-2026) | pts-plan-012.webp |
 
 ## 17/11/2026 — Thứ Ba
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-013.webp |
-| 12:00 | **Inverter hòa lưới và hybrid khác nhau thế nào?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.cleanenergyreviews.info/blog/solar-hybrid-battery-ready-inverters) | pts-plan-014.webp |
-| 19:30 | **Tấm pin màu đen có luôn tốt hơn tấm pin màu xanh?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-plan-015.webp |
+| 08:00 | **Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-013.webp |
+| 12:00 | **Inverter hòa lưới và hybrid khác nhau thế nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog/solar-hybrid-battery-ready-inverters) | pts-plan-014.webp |
+| 19:30 | **Tấm pin màu đen có luôn tốt hơn tấm pin màu xanh?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-plan-015.webp |
 
 ## 18/11/2026 — Thứ Tư
 
