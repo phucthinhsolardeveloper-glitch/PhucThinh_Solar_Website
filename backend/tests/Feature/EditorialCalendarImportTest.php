@@ -39,7 +39,10 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
         ->and($newDraft->post)->toBeInstanceOf(Post::class)
         ->and($newDraft->post->is_visible)->toBeFalse()
         ->and($newDraft->post->body)->not->toContain('Gợi ý infographic')
-        ->and($newDraft->image_status)->toBe('mockup');
+        ->and($newDraft->image_status)->toBe('approved')
+        ->and($newDraft->cover_file)->toBe('pts-photo-021.webp')
+        ->and($newDraft->post->image)->toBe('pts-photo-021.webp')
+        ->and(Storage::disk('upload_news')->exists('pts-photo-021.webp'))->toBeTrue();
     expect($first->post)->toBeInstanceOf(Post::class)
         ->and($first->post->is_visible)->toBeFalse()
         ->and($first->post->published_at)->toBe('2026-11-13 08:00:00')
