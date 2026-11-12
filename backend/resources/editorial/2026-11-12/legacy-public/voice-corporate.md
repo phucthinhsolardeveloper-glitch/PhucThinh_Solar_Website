@@ -34,3 +34,10 @@ Nêu những nhóm lợi ích có thể được giới thiệu nhưng không bi
 - [ ] Quyết định canonical/redirect cho ARTICLE-101 và ARTICLE-109.
 - [ ] Xác nhận quyền sử dụng và credit của từng ảnh, tài liệu scan, liên kết ngoài.
 - [ ] Không đồng bộ DB, publish hoặc deploy từ batch draft này.
+
+## QA fact-check bổ sung
+
+- ARTICLE-103: sự kiện được xác minh là ngày 10/06/2023 theo [Cổng Thông tin điện tử Chính phủ](https://www2.en.baochinhphu.vn/khan-truong-hoan-thien-co-che-khuyen-khich-lap-dat-dien-mat-troi-mai-nha-102230610205935993.htm). Có thể ghi ngày này trong bản lưu trữ, nhưng không dùng làm tư vấn pháp luật hiện hành.
+- ARTICLE-100: [Sharp Việt Nam](https://vn.sharp/) không xác nhận claim phân phối độc quyền PV của Phúc Thịnh Solar; giữ HOLD nếu thiếu giấy ủy quyền.
+- ARTICLE-101/109: [Blue Carbon FAQ](https://bluecarbon.solar/faq/) chỉ nêu khả năng cấp quyền phân phối độc quyền theo hợp đồng vùng, không xác nhận Phúc Thịnh Solar; giữ HOLD nếu thiếu giấy ủy quyền.
+- ARTICLE-109: không chốt năm 2022 dựa vào ngữ cảnh COP26 hoặc đường dẫn media; chỉ ghi năm/ngày khi có chứng cứ trực tiếp.

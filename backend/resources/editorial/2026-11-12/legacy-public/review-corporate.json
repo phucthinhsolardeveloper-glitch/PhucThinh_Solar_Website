@@ -4,13 +4,15 @@
     "status": "HOLD",
     "category_id": 9,
     "slug": "phuc-thinh-solar-phan-phoi-doc-quyen-tam-pin-sharp-thuong-hieu-nhat-ban-tai-viet-nam-2024",
-    "proposed_title": "Sharp tại Việt Nam: thông báo phân phối của Phúc Thịnh Solar năm 2024",
+    "proposed_title": "Sharp tại Việt Nam: thông báo phân phối của Phúc Thịnh Solar",
     "editorial_action": "retain_as_historical_after_verification",
-    "summary": "Lưu lại thông báo năm 2024 về Sharp, không khẳng định quyền phân phối độc quyền hiện tại.",
+    "summary": "Lưu lại thông báo về Sharp, không khẳng định quyền phân phối độc quyền hiện tại.",
     "keywords": "Sharp, tấm pin mặt trời, phân phối, thông báo lịch sử",
     "source_needs": ["Văn bản còn hiệu lực từ Sharp hoặc đơn vị ủy quyền xác nhận phạm vi/quyền phân phối", "Datasheet, chứng nhận và điều khoản bảo hành đúng model", "Xác nhận quyền tái sử dụng ảnh/tài liệu"],
     "qa_flags": ["historical_claim_only", "legal_review_required", "do_not_reassert_exclusivity", "verify_image_rights"],
-    "canonical_recommendation": "Giữ slug hiện tại nếu giữ bài lịch sử; đổi title hiển thị như đề xuất và không dùng title cũ làm claim hiện tại."
+    "canonical_recommendation": "Giữ slug hiện tại nếu giữ bài lịch sử; đổi title hiển thị như đề xuất và không dùng title cũ làm claim hiện tại.",
+    "fact_check_notes": "Sharp Việt Nam không xác nhận claim phân phối độc quyền PV của PTS; giữ HOLD nếu thiếu giấy ủy quyền.",
+    "fact_check_sources": ["https://vn.sharp/"]
   },
   {
     "id": 101,
@@ -23,7 +25,9 @@
     "keywords": "Blue Carbon, đèn năng lượng mặt trời, phân phối, lịch sử hợp tác",
     "source_needs": ["Thông báo/ủy quyền Blue Carbon có ngày và phạm vi rõ", "Điều khoản bảo hành và dịch vụ đúng model", "Quyền dùng lại ảnh thông báo"],
     "qa_flags": ["near_duplicate_101_109", "historical_claim_only", "legal_review_required", "canonical_decision_required"],
-    "canonical_recommendation": "Không publish SEO độc lập song song với 109; chọn một URL canonical và redirect/noindex URL còn lại."
+    "canonical_recommendation": "Không publish SEO độc lập song song với 109; chọn một URL canonical và redirect/noindex URL còn lại.",
+    "fact_check_notes": "Blue Carbon FAQ chỉ nói có thể cấp quyền phân phối độc quyền theo hợp đồng vùng, không xác nhận PTS; giữ HOLD nếu thiếu giấy ủy quyền.",
+    "fact_check_sources": ["https://bluecarbon.solar/faq/"]
   },
   {
     "id": 103,
@@ -35,7 +39,9 @@
     "summary": "Biên tập lại thành bài lưu trữ, ghi rõ sự kiện tháng 6/2023 và không dùng làm tư vấn pháp lý hiện hành.",
     "keywords": "điện mặt trời mái nhà, tự sản tự tiêu, chính sách lưu trữ, Quy hoạch điện VIII",
     "source_needs": ["Nguồn xuất bản gốc và ngày đăng chính xác", "Toàn văn/đường dẫn văn bản, biên bản hoặc thông cáo liên quan", "Kiểm tra quyền ảnh minh họa"],
-    "qa_flags": ["archival_context_required", "legal_review_required", "not_current_legal_advice", "hold_if_source_unverified"]
+    "qa_flags": ["archival_context_required", "legal_review_required", "not_current_legal_advice", "hold_if_source_unverified"],
+    "verified_event_date": "2023-06-10",
+    "fact_check_sources": ["https://www2.en.baochinhphu.vn/khan-truong-hoan-thien-co-che-khuyen-khich-lap-dat-dien-mat-troi-mai-nha-102230610205935993.htm"]
   },
   {
     "id": 108,
@@ -54,12 +60,14 @@
     "status": "HOLD",
     "category_id": 9,
     "slug": "phuc-thinh-solar-chinh-thuc-la-doi-tac-phan-phoi-doc-quyen-den-nang-luong-mat-troi-blue-carbon-tai-viet-nam",
-    "proposed_title": "Phúc Thịnh Solar và Blue Carbon: ghi nhận một quan hệ phân phối năm 2022",
+    "proposed_title": "Phúc Thịnh Solar và Blue Carbon: ghi nhận một quan hệ phân phối",
     "editorial_action": "merge_candidate_retain_one_historical_page",
-    "summary": "Ứng viên gộp với bài 101; giữ nội dung hợp tác ở bối cảnh năm 2022 và chờ bằng chứng về hiệu lực claim.",
+    "summary": "Ứng viên gộp với bài 101; giữ nội dung hợp tác ở bối cảnh lịch sử và chờ bằng chứng về hiệu lực claim.",
     "keywords": "Blue Carbon, Phúc Thịnh Solar, quan hệ phân phối, lịch sử hợp tác",
     "source_needs": ["Xác nhận bằng văn bản từ Blue Carbon về thời hạn/phạm vi", "Kiểm tra ảnh chứng nhận và quyền tái sử dụng", "Chính sách bảo hành/dịch vụ hiện hành"],
     "qa_flags": ["near_duplicate_101_109", "historical_claim_only", "legal_review_required", "canonical_decision_required"],
-    "canonical_recommendation": "So sánh ngày và chất lượng chứng cứ của 101/109; chỉ một bài được canonical, bài kia redirect hoặc noindex."
+    "canonical_recommendation": "So sánh ngày và chất lượng chứng cứ của 101/109; chỉ một bài được canonical, bài kia redirect hoặc noindex.",
+    "fact_check_notes": "Blue Carbon FAQ chỉ nói có thể cấp quyền phân phối độc quyền theo hợp đồng vùng, không xác nhận PTS; không chốt năm 2022 từ ngữ cảnh COP26; giữ HOLD nếu thiếu giấy ủy quyền.",
+    "fact_check_sources": ["https://bluecarbon.solar/faq/"]
   }
 ]

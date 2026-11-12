@@ -1,6 +1,6 @@
-# Điện mặt trời mái nhà: ghi nhận một đề xuất chính sách
+# Điện mặt trời mái nhà: ghi nhận một đề xuất chính sách ngày 10/06/2023
 
-Đây là bài lưu trữ về cuộc làm việc được bài gốc mô tả giữa Phó Thủ tướng Trần Hồng Hà, Bộ Công Thương, EVN và các cơ quan liên quan. Nội dung phản ánh đề xuất, yêu cầu và bối cảnh chính sách tại thời điểm bài được công bố; không phải hướng dẫn pháp lý hiện hành.
+Đây là bài lưu trữ về cuộc làm việc ngày 10/06/2023 giữa Phó Thủ tướng Trần Hồng Hà, Bộ Công Thương, EVN và các cơ quan liên quan, được Cổng Thông tin điện tử Chính phủ đưa tin. Nội dung phản ánh đề xuất, yêu cầu và bối cảnh chính sách tại thời điểm đó; không phải hướng dẫn pháp lý hiện hành.
 
 ## Bối cảnh được bài gốc ghi nhận
 
@@ -15,4 +15,5 @@ Bài viết phù hợp với mục đích tra cứu lịch sử thảo luận ch
 ### Nguồn và hình ảnh lưu trữ
 
 - **Nguồn tác giả:** Phúc Thịnh Solar.
+- **Nguồn sự kiện:** [Cổng Thông tin điện tử Chính phủ — Khẩn trương hoàn thiện cơ chế khuyến khích lắp đặt điện mặt trời mái nhà](https://www2.en.baochinhphu.vn/khan-truong-hoan-thien-co-che-khuyen-khich-lap-dat-dien-mat-troi-mai-nha-102230610205935993.htm), đăng ngày 10/06/2023.
 - [Ảnh minh họa lưu trữ](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/foreman-businessman-solar-energy-station-scaled.jpg), [bản 1536 px](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/foreman-businessman-solar-energy-station-1536x1024.jpg), [bản 2048 px](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/foreman-businessman-solar-energy-station-2048x1365.jpg) và [bản 600 px](https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/foreman-businessman-solar-energy-station-600x400.jpg)
