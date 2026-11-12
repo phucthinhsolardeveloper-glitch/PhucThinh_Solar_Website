@@ -1,4 +1,4 @@
-# Nhà dùng điện chủ yếu vào buổi tối có nên lắp điện mặt trời?
+# Có nên lắp điện mặt trời khi nhà chỉ dùng điện nhiều vào buổi tối?
 
 Có thể, nhưng hệ hòa lưới không lưu trữ sẽ không tự chuyển toàn bộ điện tạo ra ban ngày sang buổi tối. Gia đình cần nhìn vào lịch dùng điện, mức có thể chuyển sang ban ngày và mục tiêu muốn tiết kiệm hay muốn có nguồn dự phòng.
 
@@ -29,4 +29,5 @@ Không nên quyết định chỉ từ tổng tiền điện hoặc một bảng
 ### Nguồn tham khảo
 
 - [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
+- [U.S. Department of Energy – Solar Integration: Solar Energy and Storage Basics](https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics)
 - [U.S. Department of Energy – Solar and Resilience Basics](https://www.energy.gov/cmei/systems/solar-and-resilience-basics)
