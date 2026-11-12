@@ -1,4 +1,15 @@
-## Ba kiến trúc cell, ba cách tối ưu
+## Người mua cần nhớ gì về TOPCon, HJT và BC?
+
+Nếu chỉ có 30 giây, hãy nhớ ba điều: đây là ba kiến trúc cell chứ không phải ba cấp chất lượng; hiệu suất ghi trên tấm pin không tự nói lên sản lượng của mái nhà; và bảng thông số, bảo hành, kích thước, inverter cùng giá trị sử dụng quan trọng không kém tên công nghệ. Phần dưới dành cho người muốn hiểu sâu hơn cách ba kiến trúc tạo và thu dòng điện.
+
+### Từ điển nhanh
+
+- **Cell:** tế bào quang điện, đơn vị biến ánh sáng thành điện trong một tấm pin.
+- **Tiếp xúc thụ động hóa:** lớp cấu trúc giúp giảm mất mát tại nơi thu dòng.
+- **Hệ số nhiệt Pmax:** mức công suất cực đại thay đổi khi nhiệt độ cell thay đổi.
+- **BC/Back Contact:** cách đưa các tiếp điểm thu dòng ra mặt sau cell.
+
+### Ba kiến trúc cell, ba cách tối ưu
 
 TOPCon, HJT và BC đều là tên kiến trúc cell, không phải thang điểm chất lượng tuyệt đối của cả tấm pin. Hiệu suất module, hệ số nhiệt, độ suy giảm, bảo hành, kích thước, giá và năng lực nhà sản xuất mới quyết định sản phẩm có hợp mái nhà hay không. Fraunhofer ISE mô tả TOPCon là tiếp xúc thụ động hóa bằng lớp oxide đường hầm; HJT kết hợp silicon tinh thể với lớp silicon mỏng; BC đặt các tiếp điểm ở phía sau cell.
 

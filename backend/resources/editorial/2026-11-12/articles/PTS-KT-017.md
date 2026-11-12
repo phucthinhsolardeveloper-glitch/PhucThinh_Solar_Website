@@ -38,6 +38,10 @@ Lighting Global nhấn mạnh kiểm thử chất lượng và thông tin minh b
 
 Sau lắp đặt, đo lại lux ở các điểm sử dụng và ghi thời lượng qua một tuần. Nếu đèn sáng rất mạnh đầu tối rồi tắt sớm, bộ điều khiển hoặc dung lượng pin không khớp phụ tải. Nếu chỉ một góc sáng, hãy chỉnh quang học trước khi mua đèn mới.
 
+### Từ hiểu đơn vị đến chọn đèn
+
+Sau khi đo hoặc mô tả vị trí, chuyển sang checklist mua đèn ở [PTS-KT-008 — Mua đèn năng lượng mặt trời: đừng chỉ nhìn con số W quảng cáo](/kien-thuc/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao). Bài 008 hỏi người bán về model, thời lượng và bảo hành; bài này giúp bạn hiểu các con số trước khi hỏi.
+
 ### Kết luận dễ nhớ
 
 Watt trả lời “đèn tiêu thụ bao nhiêu điện”, lumen trả lời “đèn phát ra bao nhiêu ánh sáng”, lux trả lời “nơi cần sáng nhận được bao nhiêu”. Chọn đèn solar ở Gia Lai nên bắt đầu từ vị trí, độ đồng đều và thời lượng thực tế, rồi mới so watt. Hãy yêu cầu thông số có điều kiện đo, tính năng lượng theo chế độ và lắp đặt đúng an toàn điện ngoài trời.

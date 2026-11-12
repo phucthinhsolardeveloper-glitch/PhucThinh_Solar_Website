@@ -1,6 +1,12 @@
-## Vì sao mái có thể mát hơn dưới tấm pin?
+## Mái nhà dưới tấm pin: khi nào có thể mát hơn?
 
 Câu trả lời đúng là “tùy cấu tạo mái và cách lắp”. Tấm pin nhận một phần bức xạ để tạo điện, che một phần mái khỏi nắng trực tiếp và thường được đặt cách mái để có khe thông gió. Vì thế bề mặt mái bên dưới có thể nhận ít nhiệt hơn. Nhưng tấm pin cũng nóng lên; nếu khe bị bịt kín, mái vốn đã hấp thụ nhiệt hoặc phòng không có trần/cách nhiệt, hiệu quả cảm nhận sẽ khác. Không thể khẳng định mọi mái đều mát hơn chỉ vì có solar.
+
+### Hai trường hợp dễ hình dung
+
+**Trường hợp 1 — có khe thông gió.** Module che bớt nắng trực tiếp, còn khoảng hở có đường vào–ra để không khí lưu thông. Khi kết cấu mái và hướng gió cho phép, mặt mái dưới vùng che có thể nhận ít nhiệt hơn; mức giảm nhiệt phòng vẫn phụ thuộc trần, cách nhiệt và cách sử dụng.
+
+**Trường hợp 2 — khe bị bít hoặc nhiệt bị giữ lại.** Nếu vật liệu chặn đường gió, mái vốn không có trần/cách nhiệt, hoặc module được bố trí quá sát và nóng, bóng che không tự biến thành hệ làm mát. Mái tôn, ngói và bê tông còn phản ứng khác nhau; một lần sờ thấy mát không đủ để kết luận cả mùa.
 
 ### Ba đường nhiệt cần hình dung
 

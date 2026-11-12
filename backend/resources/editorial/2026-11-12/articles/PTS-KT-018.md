@@ -2,9 +2,17 @@
 
 Lắp thêm tấm pin chỉ rút ngắn hoàn vốn khi phần điện tạo ra được dùng hoặc có giá trị kinh tế đủ lớn. Nếu mái còn chỗ nhưng phụ tải ban ngày thấp, nhiều kWp hơn có thể tạo ra điện dư, trong khi chi phí khung, cáp, inverter, bảo trì và thay thế vẫn tăng. Câu hỏi đúng không phải “lắp được bao nhiêu tấm?” mà là “mỗi tấm thêm vào tạo ra bao nhiêu kWh có ích?”.
 
-### Phản ví dụ lệch phụ tải
+### Hai kịch bản giả định để nhìn phần điện có ích
 
-Giả sử một nhà dùng 25 kWh/ngày nhưng 18 kWh rơi vào buổi tối. Hệ PV lớn có thể sản xuất nhiều vào buổi trưa, song nếu không có pin hoặc cơ chế sử dụng điện dư, tỷ lệ tự dùng sẽ thấp. Tăng thêm tấm vẫn tăng sản lượng, nhưng không tăng tương ứng khoản tiền tiết kiệm. Đó là trường hợp công suất mái tăng nhanh hơn giá trị sử dụng.
+Hai ví dụ dưới đây chỉ là kịch bản giả định, không phải báo giá, sản lượng hay lời hứa hoàn vốn. Cả hai đều cần được tính lại bằng dữ liệu mái thật, giá điện áp dụng và lịch chạy thiết bị tại thời điểm tư vấn.
+
+**Kịch bản A — nhà dùng điện chủ yếu buổi tối.** Giả sử nhà dùng 25 kWh/ngày nhưng 18 kWh rơi vào buổi tối. Một cấu hình lớn hơn có thể tạo thêm điện vào buổi trưa, song nếu không có pin hoặc cách chuyển tải sang ban ngày, phần tăng thêm dễ thành điện dư. Chi phí tăng nhưng lượng điện thực sự thay thế điện mua không tăng tương ứng.
+
+**Kịch bản B — xưởng dùng điện giữa ngày.** Giả sử xưởng chạy bơm, quạt hoặc máy nén trong giờ có nắng. Cùng lượng điện/ngày, nhiều sản lượng hơn có thể được dùng ngay tại chỗ; việc thêm một nhóm tấm có cơ sở hơn, nhưng vẫn phải kiểm tra giới hạn inverter, mái, cáp và bảo vệ. Đây là lý do tự dùng quan trọng: giá trị nằm ở kWh tạo ra đúng lúc tải đang chạy, không nằm ở số tấm nhìn trên mái.
+
+### Vì sao cùng một mái có thể cho kết quả khác?
+
+Hai kịch bản trên cho thấy tổng kWh/ngày chưa đủ để quyết định. Một nhà dùng điện buổi tối cần xem cách chuyển tải hoặc lưu trữ; xưởng có tải chạy giữa ngày cần xem lịch vận hành và phần điện có thể dùng ngay. Đừng lấy sản lượng lý thuyết của toàn bộ hệ để thay cho phần điện thực sự có ích.
 
 Ngược lại, xưởng có bơm, quạt, máy nén hoặc dây chuyền chạy giữa ngày có thể hấp thụ phần lớn sản lượng. Cùng một mái nhà, lịch vận hành thay đổi có thể làm hiệu quả tài chính khác hẳn mà không cần thêm tấm. Đây là lý do biểu đồ phụ tải theo giờ quan trọng hơn tổng kWh trên một hóa đơn.
 
@@ -24,7 +32,7 @@ Không ghép module khác thông số vào cùng chuỗi mà không kiểm tra d
 
 Diện tích trống trên mái không đồng nghĩa với diện tích lắp hữu ích. Cần chừa lối đi, khoảng cách mép mái, vùng tránh bóng của bồn nước và khoảng thao tác chữa cháy. Thêm một hàng tấm có thể đòi hỏi gia cố, kéo dài cáp hoặc di chuyển inverter. Trên mái tôn, tải gió và điểm bắt vít cần được khảo sát; mái ngói cần giữ ngói và chống dột; mái bằng cần xét tải trọng và bóng của hàng phía trước.
 
-Ở Gia Lai, bụi đỏ, mưa lớn và giông sét cũng ảnh hưởng sản lượng và bảo trì. Không nên lấy sản lượng lý tưởng của nhà máy để cam kết cho mái nhà. Hãy yêu cầu mô phỏng có tổn hao, lịch vệ sinh, kiểm tra đầu nối, bảo hành và giả định thay inverter/pin nếu có.
+Điều kiện nắng, mưa, bụi và giông sét cũng ảnh hưởng sản lượng và bảo trì; mức ảnh hưởng cụ thể phải được khảo sát, không tự gán một con số. Không nên lấy sản lượng lý tưởng của nhà máy để cam kết cho mái nhà. Hãy yêu cầu mô phỏng có tổn hao, lịch vệ sinh, kiểm tra đầu nối, bảo hành và giả định thay inverter/pin nếu có.
 
 ### Khi pin lưu trữ làm thay đổi bài toán
 
@@ -34,9 +42,9 @@ Nếu mục tiêu là dùng điện ban đêm hoặc dự phòng, thêm pin mặ
 
 Đo phụ tải theo giờ; lập bản vẽ mái và vùng bóng; mô phỏng hai hoặc ba quy mô; tính tỷ lệ tự dùng và sản lượng dư; rồi so dòng tiền phần tăng thêm. Đặt câu hỏi “nếu giảm 20% sản lượng do thời tiết/bóng, phương án còn chấp nhận được không?”. Nếu câu trả lời không rõ, phương án nhỏ hơn nhưng linh hoạt thường an toàn hơn.
 
-### Kết luận dễ nhớ
+### Tự dùng là câu hỏi trước khi hỏi “hoàn vốn”
 
-Nhiều tấm chỉ có lợi khi mái, inverter, an toàn và phụ tải cùng đủ chỗ. Với hộ gia đình hoặc cơ sở ở Gia Lai, hãy ưu tiên khớp giờ phát điện với giờ dùng, sau đó mới mở rộng công suất. Đừng ký theo cam kết hoàn vốn một con số nếu chưa thấy giả định sản lượng, điện dư, giới hạn inverter và chi phí vận hành.
+Nhiều tấm chỉ có lợi khi mái, inverter, an toàn và phụ tải cùng đủ chỗ. Hãy hỏi phần điện tăng thêm sẽ được dùng vào giờ nào, bao nhiêu kWh có thể dư, và giả định nào tạo ra con số tài chính. Không có cơ sở để hứa một thời gian hoàn vốn khi các dữ liệu đó chưa được kiểm chứng.
 
 ### Nguồn tham khảo
 

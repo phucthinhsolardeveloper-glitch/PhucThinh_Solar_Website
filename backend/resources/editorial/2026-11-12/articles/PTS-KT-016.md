@@ -1,40 +1,67 @@
-## Hóa đơn điện cho biết gì trước khi thiết kế?
+## Cầm hóa đơn lên và chuẩn bị gì trước khi gặp tư vấn?
 
-Hóa đơn điện là điểm bắt đầu tốt, nhưng không phải bản thiết kế của một hệ thống điện mặt trời. Một con số kWh của tháng vừa rồi chỉ nói lượng điện đã dùng trong một khoảng thời gian; nó chưa cho biết điện được dùng lúc nào, mái có đủ chỗ hay hệ thống điện trong nhà có an toàn để đấu nối hay không. Với hộ gia đình ở Gia Lai, đọc hóa đơn đúng cách giúp buổi khảo sát đi thẳng vào vấn đề và tránh mua công suất theo cảm tính.
+Bạn không cần tự tính số tấm pin từ một hóa đơn điện. Việc hữu ích hơn là lấy hóa đơn ra, đánh dấu đúng bốn vùng, rồi gom đủ thông tin để người tư vấn hiểu nhà đang dùng điện như thế nào. Bài này là một phiếu chuẩn bị; nó khác PTS-KT-013, bài so sánh các gia đình có cùng lượng điện nhưng dùng vào những thời điểm khác nhau.
 
-### Tách ba khái niệm trên hóa đơn
+### Bốn vùng cần đọc trên một hóa đơn
 
-Trước hết, ghi lại kỳ ghi điện, sản lượng điện tiêu thụ theo kWh và số ngày của kỳ. Nếu hai tháng có số ngày khác nhau, so sánh kWh/ngày sẽ công bằng hơn so với chỉ nhìn tổng tiền. Tiền phải trả còn phụ thuộc bậc thang, thuế, phí và chính sách tại thời điểm lập hóa đơn; không nên lấy số tiền chia cho kWh rồi coi đó là đơn giá cố định cho cả năm.
+**Một: kỳ ghi điện và số ngày.** Ghi ngày đầu, ngày cuối hoặc số ngày của kỳ. Hai hóa đơn cùng ghi 900 kWh nhưng một kỳ 28 ngày và một kỳ 33 ngày không nên đặt cạnh nhau như thể chúng cùng độ dài. Có thể tính nhanh kWh/ngày bằng cách lấy sản lượng chia số ngày, chỉ để nhận ra xu hướng.
 
-Hãy lập bảng ít nhất 12 tháng. Đánh dấu các tháng có máy lạnh, bơm nước, bơm tưới, máy sấy hoặc hoạt động kinh doanh tăng cường. Gia Lai có mùa mưa và mùa khô khác nhau, vì vậy chênh lệch theo mùa không tự động có nghĩa là hệ thống điện mặt trời sẽ bù đúng phần đó. Nếu hóa đơn chỉ có một tổng kWh, ta mới có dữ liệu năng lượng, chưa có biểu đồ phụ tải.
+**Hai: sản lượng kWh.** Đây là lượng điện đã dùng trong kỳ, không phải công suất hệ điện mặt trời cần lắp. Hãy khoanh con số kWh và chép lại, kể cả khi phần tiền phải trả làm bạn chú ý hơn. Nếu hóa đơn hiển thị nhiều dòng theo bậc, vẫn cần lấy tổng kWh của cả kỳ.
 
-### Từ kWh tháng đến công suất tham khảo
+**Ba: tiền điện và các dòng tính tiền.** Tổng tiền còn liên quan đến bậc giá, thuế, phí và chính sách áp dụng tại thời điểm lập hóa đơn. Đừng lấy tổng tiền chia kWh rồi dùng kết quả đó làm “đơn giá cố định” cho mười hai tháng sau. Khi gửi cho tư vấn, giữ nguyên hóa đơn để họ thấy mốc thời gian và cách tính.
 
-Giả sử một hộ dùng 900 kWh trong 30 ngày, mức trung bình là 30 kWh/ngày. Đây là phép chia để hình dung, không phải kết luận phải lắp một hệ có công suất cố định. Sản lượng PV phụ thuộc bức xạ, hướng và góc mái, bóng che, nhiệt độ, tổn hao dây dẫn, inverter và tình trạng vệ sinh. DOE lưu ý tiềm năng mái còn bị chi phối bởi diện tích, hướng, bóng che và vị trí; PVGIS của Ủy ban châu Âu cho phép ước tính hiệu suất theo địa điểm và biến động theo năm.
+**Bốn: ghi chú bất thường.** Viết bên cạnh hóa đơn nếu tháng đó có sửa nhà, mở cửa hàng, chạy bơm tưới, dùng máy lạnh nhiều, có khách ở dài ngày hoặc nhà vắng. Một tháng tăng đột biến có thể là sự kiện ngắn hạn, không phải nhu cầu thiết kế lâu dài.
 
-Vì vậy, cách làm thực tế là dùng hóa đơn để đặt khoảng mục tiêu, sau đó đối chiếu với mô phỏng tại đúng địa chỉ. Ví dụ, nếu nhà dùng nhiều điện ban ngày, hệ hòa lưới vừa phải có thể tự dùng được phần đáng kể. Nếu phụ tải chính vào buổi tối, chỉ tăng số tấm không giải quyết được thời điểm sử dụng; cần cân nhắc đổi giờ chạy thiết bị hoặc pin lưu trữ sau khi tính chi phí và yêu cầu an toàn.
+### Lập bảng đủ 12 tháng
 
-### Đọc thời điểm dùng điện thay vì chỉ đọc tổng số
+Mở một bảng đơn giản, mỗi dòng một tháng. Chỉ cần các cột: tháng/kỳ ghi, số ngày, kWh, kWh/ngày, thiết bị dùng nhiều và ghi chú bất thường.
 
-Hãy hỏi gia đình bốn câu: máy lạnh chạy từ mấy giờ, bơm hoạt động theo lịch nào, bếp và bình nước nóng dùng lúc nào, và có thiết bị nào chạy liên tục không. Điều hòa buổi trưa, bơm tưới ban ngày và tủ đông tạo ra phụ tải phù hợp với điện mặt trời. Bình nước nóng, máy giặt hoặc sạc xe vào ban đêm lại cần điều khiển lịch hoặc nguồn dự phòng nếu muốn tăng tỷ lệ tự dùng.
+| Tháng/kỳ | Số ngày | Tổng kWh | kWh/ngày | Thiết bị dùng nhiều | Ghi chú |
+|---|---:|---:|---:|---|---|
+| 01/2026 | … | … | kWh ÷ ngày | máy lạnh/bơm… | nhà vắng? |
+| 02/2026 | … | … | kWh ÷ ngày | … | … |
+| … | … | … | … | … | … |
+| 12/2026 | … | … | … | … | … |
 
-Một đồng hồ đo năng lượng tạm thời trong vài ngày có thể cho thông tin tốt hơn việc đoán từ hóa đơn, nhất là nhà có xưởng nhỏ. Nhưng số liệu ngắn ngày chỉ là mẫu; nên ghi thêm các ngày có thời tiết và lịch sinh hoạt khác nhau. Không nên dùng một ngày nghỉ lễ để đại diện cho cả năm.
+Đây là mẫu để điền, không phải dữ liệu thực tế của Phúc Thịnh Solar. Nếu chưa đủ mười hai hóa đơn, gửi số đang có và ghi rõ còn thiếu tháng nào. Một năm đầy đủ giúp nhìn mùa vụ tốt hơn; một bảng thiếu tháng vẫn có giá trị nếu người đọc không biến nó thành kết luận chắc chắn.
 
-### Những kiểm tra hóa đơn không thay thế được khảo sát
+### Bốn câu hỏi về giờ dùng điện
 
-Hóa đơn không cho biết dây dẫn, tủ điện, aptomat, tiếp địa, vị trí inverter hay khả năng chịu lực của mái. Trước khi chốt phương án, đơn vị khảo sát phải kiểm tra sơ đồ điện, tiết diện dây, thiết bị bảo vệ, điểm đấu nối và cách tách tải. Phần điện một chiều có điện áp nguy hiểm khi có ánh sáng; phải dùng thiết bị đúng cấp điện áp, đầu nối tương thích và quy trình cô lập nguồn.
+Hóa đơn cho biết “bao nhiêu”, nhưng thường không cho biết “lúc nào”. Trước buổi tư vấn, hãy trả lời bốn câu sau bằng lịch sinh hoạt thật:
 
-Không đấu nối vào lưới bằng ổ cắm gia dụng hay tự thay aptomat để “dành chỗ” cho inverter. Hệ hòa lưới phải có bảo vệ chống đảo lưới và được đấu nối theo quy định của đơn vị điện lực, tiêu chuẩn áp dụng và thiết kế được thẩm tra. Ở khu vực có giông sét, cần xem cả chống sét lan truyền, tiếp địa và đường đi cáp; đừng coi đó là phụ kiện trang trí.
+1. Máy lạnh, bình nước nóng và bếp điện thường chạy vào giờ nào?
+2. Bơm nước, bơm tưới, máy nén hoặc máy móc chạy ban ngày hay ban đêm?
+3. Thiết bị nào cần chạy liên tục, kể cả khi nhà không có người?
+4. Khi mất điện, thiết bị nào thực sự cần giữ lại?
 
-### Một mẫu bảng chuẩn bị cho tư vấn
+Ví dụ, điều hòa chạy từ 10 giờ đến 15 giờ và bơm tưới chạy buổi trưa thường khớp với giờ có nắng hơn so với bình nước nóng chỉ bật lúc 21 giờ. Đây là ví dụ về thời điểm sử dụng, không phải cam kết sản lượng hay mức tiết kiệm. Nếu lịch thay đổi theo mùa, ghi cả hai lịch thay vì chọn một ngày “đẹp”.
 
-Bạn có thể gửi trước: 12 hóa đơn gần nhất; ảnh mặt trước và sau mái; danh sách thiết bị công suất lớn; giờ hoạt động; hướng mái và vùng bóng che; mục tiêu tiết kiệm hay dự phòng; và ngân sách dự kiến. Ghi rõ số điện tăng do xây dựng, bơm tưới hay mở cửa hàng để người thiết kế không ngoại suy một bất thường thành nhu cầu dài hạn.
+### Khi nào nên đo thêm vài ngày?
 
-Từ bảng này, người tư vấn nên trình bày ít nhất hai kịch bản: hệ ưu tiên tự dùng và hệ có lưu trữ/dự phòng. Mỗi kịch bản cần nêu sản lượng ước tính, tỷ lệ tự dùng, thiết bị được cấp khi mất lưới, giả định về giá điện, bảo trì và thời gian hoàn vốn. Một con số “tiết kiệm tối đa” thiếu giả định không giúp quyết định tốt hơn.
+Nhà có xưởng nhỏ, quán hoặc máy bơm lớn thường khó đoán từ tổng kWh. Một thiết bị đo năng lượng do người có chuyên môn lắp đúng vị trí có thể ghi mẫu theo giờ trong vài ngày. Mẫu ngắn không đại diện cho cả năm, nên ghi thêm ngày trong tuần, ngày nghỉ, thời tiết và thiết bị đang chạy.
 
-### Kết luận dễ nhớ
+Không dùng ổ cắm gia dụng để tự đấu thiết bị đo vào mạch công suất lớn. Hóa đơn và số đo phụ tải cũng không thay cho việc kiểm tra tủ điện, dây dẫn, tiếp địa, chống sét, điểm đấu nối hoặc khả năng chịu lực của mái.
 
-Đọc hóa đơn theo thứ tự: kWh và số ngày, mùa vụ, thiết bị dùng điện, rồi mới đến tiền. Hóa đơn giúp định hình nhu cầu; khảo sát mái và hệ điện mới quyết định hệ thống có lắp được, vận hành an toàn và tạo ra sản lượng tương ứng hay không. Với nhà ở Gia Lai, hãy yêu cầu mô phỏng theo địa chỉ, hỏi rõ phương án chống sét–tiếp địa và tuyệt đối không tự đấu nối.
+### Gửi gì cho người tư vấn?
+
+Gửi một thư mục gồm:
+
+- 12 hóa đơn gần nhất, hoặc toàn bộ hóa đơn đang có;
+- bảng kWh, số ngày và ghi chú bất thường;
+- danh sách thiết bị công suất lớn cùng giờ hoạt động;
+- ảnh tổng thể mái, hướng mái và vùng bị bóng che;
+- thông tin nhà có bơm, cửa hàng, xưởng hay tải chạy liên tục;
+- mục tiêu chính: giảm tiền điện ban ngày, dùng điện ban đêm, hay có nguồn dự phòng khi mất điện.
+
+Bạn có thể gửi thêm [PTS-KT-013 — Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?](/kien-thuc/nha-dung-bao-nhieu-dien-moi-thang-thi-phu-hop-lap-nang-luong-mat-troi) nếu muốn so sánh trường hợp “cùng kWh nhưng khác giờ dùng”. Khi gửi ảnh hóa đơn, che mã khách hàng, địa chỉ và thông tin cá nhân không cần thiết.
+
+### Hóa đơn không trả lời được điều gì?
+
+Hóa đơn không cho biết mái có đủ chỗ, kết cấu có chịu được hệ khung, dây điện có phù hợp, inverter đặt ở đâu hay hệ có thể cấp tải nào khi mất lưới. Không tự thay aptomat, nối inverter vào ổ cắm hoặc lên mái kiểm tra điểm neo nếu không có người đủ chuyên môn. Phần DC vẫn có điện khi có ánh sáng; khảo sát và đấu nối phải do đơn vị có năng lực thực hiện theo yêu cầu an toàn và quy định hiện hành.
+
+### Chốt lại
+
+Cầm hóa đơn lên theo thứ tự: kỳ và số ngày, tổng kWh, các dòng tiền, rồi ghi chú tháng bất thường. Sau đó điền bảng 12 tháng và trả lời bốn câu hỏi về thời điểm dùng điện. Bộ hồ sơ này giúp buổi tư vấn bắt đầu từ dữ liệu thật; nó chưa phải lời hứa về công suất, sản lượng hay thời gian hoàn vốn.
 
 ### Nguồn tham khảo
 
