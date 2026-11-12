@@ -15,6 +15,7 @@ function copyRefreshBaseline(Post $post): string
         'seo_description_sha256' => hash('sha256', (string) ($post->seo?->description ?? '')),
     ]]];
     file_put_contents($path, json_encode($payload, JSON_THROW_ON_ERROR));
+
     return $path;
 }
 
@@ -27,6 +28,7 @@ function preparedCopyRefreshPost(): array
     $post = $plan->post->fresh(['seo']);
     $post->update(['body' => '<p>Copy cũ</p>', 'summary' => 'Tóm tắt cũ']);
     $post->seo()->updateOrCreate([], ['description' => 'SEO cũ']);
+
     return [$plan->fresh(), $post->fresh(['seo'])];
 }
 

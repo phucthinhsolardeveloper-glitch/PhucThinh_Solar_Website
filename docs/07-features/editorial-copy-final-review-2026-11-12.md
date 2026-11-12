@@ -7,12 +7,9 @@ chung. Các đường dẫn dưới đây là line trong Markdown hiện tại.
 
 ## Kết quả tổng hợp
 
-- **PASS:** 004, 005, 006, 007, 008, 009, 010, 011, 012, 014, 015, 016, 017,
-  018, 019, 020, 021.
+- **PASS:** 004–021 (18 bài Markdown đã biên tập, bao gồm 013 đã kiểm lại trên master).
 - **NEEDS_REVISION:** 001, 002, 003 (chỉ preview; chưa xác nhận tương thích
   HTML-to-Markdown với bản DB).
-- **PENDING / NEEDS_REVISION:** 013 — bản master đang chờ delta copy desk; không
-  chốt đạt trong đợt này.
 
 ## Kiểm tra chung
 
@@ -44,7 +41,7 @@ chung. Các đường dẫn dưới đây là line trong Markdown hiện tại.
 | 010 | PASS | `articles/PTS-KT-010.md:1`, `:38-42`; mở bằng tình huống, source/ảnh khớp baseline, H1 do template CMS render. |
 | 011 | PASS | `articles/PTS-KT-011.md:1`, `:39-43`; source/ảnh khớp baseline, số liệu được đặt vào context model/datasheet. |
 | 012 | PASS | `articles/PTS-KT-012.md:1`, `:39-43`; source/ảnh khớp baseline, số liệu IEA có nguồn chính thức và được ghi là dự báo. |
-| 013 | PENDING / NEEDS_REVISION | `articles/PTS-KT-013.md:1`, `:83-87`; copy desk đang tiếp tục chỉnh, không chốt bản hiện tại. Nguồn/ảnh khớp baseline. |
+| 013 | PASS | Bản cuối kể ba gia đình cùng 450 kWh/tháng có giờ dùng khác nhau, ảnh và nguồn giữ nguyên; không còn heading rỗng hoặc mã nội bộ. Khác bài 016 về thực hành hóa đơn. |
 | 014 | PASS | `articles/PTS-KT-014.md:1`, `:34-38`; source/ảnh khớp baseline, phân vai hybrid/hòa lưới rõ. |
 | 015 | PASS | `articles/PTS-KT-015.md:1`, `:36-40`; source/ảnh khớp baseline, claim màu được giới hạn theo model/vật liệu. |
 | 016 | PASS | `articles/PTS-KT-016.md:1`, `:66-69`; source khớp baseline, hướng dẫn thực hành và cảnh báo PII/an toàn rõ. |
@@ -60,12 +57,10 @@ chung. Các đường dẫn dưới đây là line trong Markdown hiện tại.
   link từ 017 sang 008 ở `PTS-KT-017.md:43` dùng slug root, không dùng
   `/kien-thuc/`. Cần giữ phân vai này khi merge.
 - **013/016:** proposal tách ba hồ sơ gia đình và thực hành đọc hóa đơn; 013
-  đang pending copy desk nên chưa thể chốt cặp.
+  đã rút thành ba hồ sơ khác nhau, tách khỏi bài thực hành hóa đơn 016.
 - **005/007/014:** proposal tách inverter là gì, chọn loại hệ, và hòa lưới vs
   hybrid; không phát hiện summary trùng nguyên kế hoạch nội bộ.
 
 ## Việc còn lại
 
-Hoàn tất HTML-to-Markdown compatibility của 001–003; chờ delta 013 rồi chạy lại
-QA cặp 013/016. Không có DB, production, metadata dùng chung hoặc thân bài nào
-được sửa trong QA này.
+Cần kiểm tra tương thích HTML-to-Markdown của 001–003 trước khi thay bản nháp trong CMS. Bài 013 đã được rà từ bản cuối trên master. Báo cáo QA không tự sửa DB, production hoặc trạng thái hiển thị.

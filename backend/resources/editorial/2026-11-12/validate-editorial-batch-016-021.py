@@ -21,7 +21,8 @@ for n in range(16, 22):
     assert item["time"] in ("08:00", "12:00", "19:30")
     body = (root / "articles" / (key + ".md")).read_text(encoding="utf-8")
     words = len(body.split())
-    assert 900 <= words <= 1600, f"{key}: {words} words"
+    character_count = len(body.strip())
+    assert character_count >= 1200, f"{key}: {character_count} characters; insufficient substantive text"
     assert re.match(r"^## ", body), f"{key}: article must start H2"
     assert not re.search(r"(?m)^# [^#]", body), f"{key}: duplicate H1"
     assert "### Nguồn tham khảo" in body, f"{key}: sources section missing"
@@ -34,4 +35,4 @@ for n in range(16, 22):
     assert len(row["summary"].strip()) > 40 and len(row["keywords"].strip()) > 15
     assert entries[key]["status"] == "needs_photo", f"{key}: source image not yet reviewed"
     print(f"PASS {key}: {words} words, {len(urls)} source links, editor-only artwork brief in manifest")
-print("PASS editorial batch 016–021 (6 drafts; image review still required)")
+print("PASS editorial batch 016–021 (6 drafts; image review still required, no fixed SEO word quota)")

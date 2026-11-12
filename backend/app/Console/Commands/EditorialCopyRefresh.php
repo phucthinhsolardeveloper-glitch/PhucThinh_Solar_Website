@@ -21,24 +21,28 @@ final class EditorialCopyRefresh extends Command
     protected $description = 'Preview or safely refresh hidden editorial article copy with drift checks.';
 
     private const ROOT = 'resources/editorial/2026-11-12';
+
     private const BACKUP_DIR = 'editorial-copy-refresh';
 
     public function handle(): int
     {
         if ($this->option('apply') && ! app()->environment(['local', 'testing'])) {
             $this->error('Apply chỉ được phép trong môi trường local hoặc testing.');
+
             return self::FAILURE;
         }
 
         $baselinePath = (string) $this->option('baseline');
         if ($baselinePath === '' || ! str_starts_with($baselinePath, '/') || ! is_file($baselinePath)) {
             $this->error('--baseline phải là đường dẫn JSON tuyệt đối đang tồn tại.');
+
             return self::FAILURE;
         }
         $baseline = json_decode((string) file_get_contents($baselinePath), true, flags: JSON_THROW_ON_ERROR);
         $entries = $baseline['posts'] ?? null;
         if (! is_array($entries) || $entries === []) {
             $this->error('Baseline thiếu trường posts.');
+
             return self::FAILURE;
         }
 
@@ -52,6 +56,7 @@ final class EditorialCopyRefresh extends Command
             }
             if (! isset($targets[$key])) {
                 $this->error("Thiếu source/proposal cho {$key}.");
+
                 return self::FAILURE;
             }
             $plan = EditorialPlanItem::query()->where('plan_key', $key)->first();
@@ -60,6 +65,7 @@ final class EditorialCopyRefresh extends Command
             if ($reason !== null) {
                 $this->warn("SKIP {$key}: {$reason}");
                 $blocked++;
+
                 continue;
             }
             $target = $targets[$key];
@@ -75,12 +81,14 @@ final class EditorialCopyRefresh extends Command
             ];
             if ($current === $next) {
                 $this->line("NOOP {$key}: current copy already matches target");
+
                 continue;
             }
             $reason = $this->baselineReason($expected, $post);
             if ($reason !== null) {
                 $this->warn("SKIP {$key}: {$reason}");
                 $blocked++;
+
                 continue;
             }
             $changes[$key] = compact('post', 'target', 'current', 'next');
@@ -89,10 +97,12 @@ final class EditorialCopyRefresh extends Command
 
         if ($this->option('apply') && $blocked > 0) {
             $this->error("FAIL CLOSED: {$blocked} article(s) failed preflight; no writes performed.");
+
             return self::FAILURE;
         }
         if (! $this->option('apply') || $changes === []) {
             $this->info(($this->option('apply') ? 'APPLIED' : 'DRY-RUN').': '.count($changes).' change(s)');
+
             return self::SUCCESS;
         }
 
@@ -113,6 +123,7 @@ final class EditorialCopyRefresh extends Command
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         if (! Storage::disk('local')->put($backupRelativePath, $backupContents)) {
             $this->error('Không thể ghi backup private; dừng trước khi cập nhật DB.');
+
             return self::FAILURE;
         }
 
@@ -133,9 +144,11 @@ final class EditorialCopyRefresh extends Command
             });
         } catch (Throwable $exception) {
             $this->error('FAIL CLOSED: preflight recheck failed; transaction rolled back.');
+
             return self::FAILURE;
         }
         $this->info('APPLIED: '.count($changes).' change(s); backup stored outside Git.');
+
         return self::SUCCESS;
     }
 
@@ -168,16 +181,28 @@ final class EditorialCopyRefresh extends Command
                 'summary' => trim($proposal['summary']),
             ];
         }
+
         return $targets;
     }
 
     private function structuralReason(array $expected, ?EditorialPlanItem $plan, ?Post $post): ?string
     {
-        if ($plan === null || $post === null) return 'missing linked EditorialPlanItem/Post';
-        if ((int) ($expected['id'] ?? 0) !== (int) $post->id || (int) $plan->post_id !== (int) $post->id) return 'post id mismatch';
-        if (($expected['slug'] ?? null) !== $post->slug) return 'slug mismatch';
-        if (($expected['kind'] ?? null) !== 'article' || $post->kind !== 'article') return 'kind mismatch';
-        if (($expected['visible'] ?? null) !== false || $post->is_visible) return 'post is visible';
+        if ($plan === null || $post === null) {
+            return 'missing linked EditorialPlanItem/Post';
+        }
+        if ((int) ($expected['id'] ?? 0) !== (int) $post->id || (int) $plan->post_id !== (int) $post->id) {
+            return 'post id mismatch';
+        }
+        if (($expected['slug'] ?? null) !== $post->slug) {
+            return 'slug mismatch';
+        }
+        if (($expected['kind'] ?? null) !== 'article' || $post->kind !== 'article') {
+            return 'kind mismatch';
+        }
+        if (($expected['visible'] ?? null) !== false || $post->is_visible) {
+            return 'post is visible';
+        }
+
         return null;
     }
 
@@ -185,8 +210,11 @@ final class EditorialCopyRefresh extends Command
     {
         $hashes = ['body' => $post->body, 'summary' => $post->summary, 'seo_description' => $post->seo?->description ?? ''];
         foreach ($hashes as $field => $value) {
-            if (! hash_equals((string) ($expected[$field.'_sha256'] ?? ''), hash('sha256', (string) $value))) return "baseline drift: {$field}";
+            if (! hash_equals((string) ($expected[$field.'_sha256'] ?? ''), hash('sha256', (string) $value))) {
+                return "baseline drift: {$field}";
+            }
         }
+
         return null;
     }
 }
