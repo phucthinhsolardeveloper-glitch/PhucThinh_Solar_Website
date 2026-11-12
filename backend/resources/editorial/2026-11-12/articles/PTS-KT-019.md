@@ -4,6 +4,8 @@ Mái tôn, mái ngói và mái bằng không chỉ khác nhau ở hình thức. 
 
 ### Mái tôn: nhìn xà gồ, vít và dấu rỉ
 
+Một bức ảnh mái đẹp không đủ để quyết định số tấm; ảnh chỉ giúp khoanh vùng câu hỏi cho buổi khảo sát.
+
 **Cues khi xem ảnh:** đường xà gồ thường chạy đều dưới các gân tôn; điểm vít rỉ, vệt nước, mép tôn cong hoặc vùng võng là dấu cần đánh dấu, không phải chỗ để tự khoan thử. Nếu ảnh không nhìn thấy kết cấu bên dưới, đó là lý do phải khảo sát trực tiếp.
 
 Mái tôn thường có xà gồ và lớp tôn mỏng. Người khảo sát cần xác định vị trí xà gồ, tình trạng rỉ sét, độ võng, lớp cách nhiệt và các điểm vít hiện hữu. Không bắt vít tùy tiện vào tôn rồi phủ keo như một giải pháp lâu dài. Vị trí xuyên mái phải dùng phụ kiện đúng hệ, tạo mặt kín nước và được kiểm tra sau mưa.
@@ -42,11 +44,11 @@ Yêu cầu nhà thầu mô tả từng điểm xuyên mái, vật liệu làm k�
 
 Phần DC vẫn có điện khi có nắng, kể cả khi đã ngắt AC. Không cắt nối đầu MC4 khác hãng bằng kìm tại công trường nếu chưa xác nhận tương thích. Tủ bảo vệ phải có phân loại đúng, dây tiếp địa liên tục, chống sét lan truyền và nhãn cảnh báo để người vận hành nhận biết. Khi đấu nối với lưới, phải có bảo vệ chống đảo lưới và thủ tục theo yêu cầu hiện hành.
 
-### Checklist trước khi nhận báo giá
+**Checklist trước khi nhận báo giá.**
 
 Trước khi nhận báo giá, hãy yêu cầu ảnh khảo sát xà/kèo, bản vẽ không che máng xối, giả định tải gió và phương án cáp. Ghi rõ cây sẽ lớn thêm, đường tiếp cận và lịch bảo trì. Nếu mái cũ hoặc đã rỉ, sửa mái trước rồi mới lắp PV; tấm pin không phải cách che một vấn đề kết cấu.
 
-### Kết luận dễ nhớ
+**Kết luận dễ nhớ.**
 
 Mái tôn cần kiểm soát điểm xuyên và neo; mái ngói cần bảo vệ ngói và vì kèo; mái bằng cần tính tải, gió và bóng hàng. Không có loại mái “lắp dễ nhất” nếu chưa khảo sát. Bản báo giá đáng tin phải nói rõ kết cấu, chống dột, chống sét và lối bảo trì ngay từ đầu.
 

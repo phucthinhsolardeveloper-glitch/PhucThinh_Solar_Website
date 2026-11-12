@@ -13,7 +13,7 @@ Một gia đình ở khu vực hay cúp điện có hai câu hỏi trước khi 
 | Cần điện khi cúp + không chấp nhận pin | Chưa thể kết luận là hybrid | Giải pháp nguồn dự phòng khác, tải ưu tiên và thời gian cần điện |
 | Không có lưới ổn định | Hệ độc lập/giải pháp chuyên biệt | Nguồn cân bằng, dự phòng nhiều ngày và quản lý tải |
 
-Đây là bộ lọc nhu cầu, không phải quyết định mua model. “Hybrid” không có nghĩa máy luôn kèm pin, tự động cấp điện khi mất lưới hoặc chạy được toàn bộ tải.
+Đây là bộ lọc nhu cầu, không phải quyết định mua model. “Hybrid” không có nghĩa máy luôn kèm pin, tự động cấp điện khi mất lưới hoặc chạy được toàn bộ tải. Nếu người bán chỉ nêu tên hybrid mà không đưa sơ đồ nhánh dự phòng, bảng pin tương thích và giới hạn tải, hồ sơ vẫn chưa đủ để so.
 
 ## Hòa lưới: đơn giản khi mục tiêu là dùng điện ban ngày
 
@@ -29,7 +29,7 @@ Nhánh backup không mặc định là toàn bộ nhà. Modem, đèn, tủ lạn
 
 Yêu cầu sơ đồ một đường thể hiện dàn pin, inverter, pin lưu trữ, lưới, tủ chính, tủ tải dự phòng và thiết bị cách ly. Trong datasheet, kiểm tra dải MPPT, điện áp DC tối đa, dòng mỗi MPPT, công suất AC liên tục/đỉnh, công suất sạc-xả, pin tương thích, số pha và thời gian chuyển EPS.
 
-Với hybrid, tổng chi phí còn gồm pin, tủ tải, chuyển nguồn, bảo vệ, dây và công lắp đặt. Giá trị của backup phụ thuộc tần suất mất điện và giá trị tải cần duy trì; không có kết luận kinh tế chung nếu chưa có dữ liệu.
+Với hybrid, tổng chi phí còn gồm pin, tủ tải, chuyển nguồn, bảo vệ, dây và công lắp đặt. Giá trị của backup phụ thuộc tần suất mất điện, tải cần duy trì và thời gian chờ; không có kết luận kinh tế chung nếu chưa có dữ liệu.
 
 ### Nguồn tham khảo
 

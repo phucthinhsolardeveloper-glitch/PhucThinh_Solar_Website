@@ -1,0 +1,13 @@
+[
+  {"id":"PTS-KT-011","summary":"Đặt kích thước đúng model lên bản vẽ mái trước khi so 600–720 W, hiệu suất và giới hạn inverter.","keywords":"tấm pin 600W, tấm pin 620W, tấm pin 650W, tấm pin 720W, kích thước mái, Voc MPPT"},
+  {"id":"PTS-KT-012","summary":"Bản tin IEA Renewables 2026: đọc đúng mốc 2025–2031, công suất, sản lượng và giới hạn của một dự báo toàn cầu.","keywords":"IEA Renewables 2026, dự báo 2031, 4800 GW, tỷ trọng điện tái tạo, lưới điện"},
+  {"id":"PTS-KT-013","summary":"Ba hộ cùng 450 kWh nhưng khác giờ dùng, tải mùa vụ và nhu cầu dự phòng nên không nhất thiết chọn cùng một hướng.","keywords":"giờ dùng điện, biểu đồ phụ tải, điện mặt trời hộ gia đình, tự dùng, backup"},
+  {"id":"PTS-KT-014","summary":"Dùng hai câu hỏi về mất điện và pin để lọc hòa lưới, hybrid hay giải pháp dự phòng trước khi so model.","keywords":"inverter hòa lưới, inverter hybrid, pin lưu trữ, tải backup, EPS"},
+  {"id":"PTS-KT-015","summary":"Màu đen hay xanh chỉ là một phần quyết định: xem ảnh đúng model rồi đối chiếu kích thước, hiệu suất, nhiệt và bảo hành.","keywords":"tấm pin đen, tấm pin xanh, màu module, chọn model, hệ số nhiệt"},
+  {"id":"PTS-KT-016","summary":"Biến hóa đơn thành bộ hồ sơ khảo sát: đánh dấu bốn vùng, lập bảng 12 tháng và ghi giờ dùng điện thật.","keywords":"đọc hóa đơn điện, bảng 12 tháng, kWh, giờ dùng điện, khảo sát solar"},
+  {"id":"PTS-KT-017","summary":"Một lối đi giúp phân biệt watt, lumen và lux, rồi chuyển ba đơn vị đó thành câu hỏi mua đèn cụ thể.","keywords":"watt lumen lux, độ rọi, đèn năng lượng mặt trời, lối đi, quang thông"},
+  {"id":"PTS-KT-018","summary":"Thêm tấm pin chỉ có ích khi phần điện tăng thêm được dùng đúng lúc: so hai kịch bản tự dùng trước khi tính tài chính.","keywords":"thêm tấm pin, điện tự dùng, điện dư, inverter, kịch bản giả định"},
+  {"id":"PTS-KT-019","summary":"Đọc dấu hiệu trên mái tôn, mái ngói và mái bằng để biết khi nào phải dừng chọn số tấm và kiểm tra kết cấu.","keywords":"khảo sát mái, mái tôn, mái ngói, mái bằng, chống dột, tải gió"},
+  {"id":"PTS-KT-020","summary":"TOPCon, HJT và BC khác nhau ở kiến trúc cell; so đúng datasheet, mái, inverter và bảo hành thay vì xếp hạng tên công nghệ.","keywords":"TOPCon HJT BC, Back Contact, kiến trúc cell, hệ số nhiệt, datasheet"},
+  {"id":"PTS-KT-021","summary":"Tấm pin có thể che nắng nhưng độ mát trong phòng còn tùy khe thoáng, mái, trần và cửa sổ; biết cách đo thay vì đoán.","keywords":"mái nhà nóng mát, khe thông gió, mái tôn, cách nhiệt, module"}
+]

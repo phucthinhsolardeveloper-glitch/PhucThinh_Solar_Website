@@ -6,7 +6,7 @@ Hai tấm pin nhìn từ ngoài có thể đều được gọi là “đen”, 
 
 ## Nếu ưu tiên thẩm mỹ, hãy bắt đầu bằng ảnh đúng sản phẩm
 
-Yêu cầu báo giá gửi ảnh thật của đúng mã hàng ở góc nhìn lắp đặt, cùng kích thước, khung và lớp nền. Ảnh minh họa “đen/xanh” chỉ giúp hình dung; nó không chứng minh màu, cấu tạo hay sản phẩm sẽ giao.
+Yêu cầu báo giá gửi ảnh thật của đúng mã hàng ở góc nhìn lắp đặt, cùng kích thước, khung và lớp nền. Ảnh minh họa “đen/xanh” chỉ giúp hình dung; nó không chứng minh màu, cấu tạo hay sản phẩm sẽ giao. Nếu ảnh là ảnh quảng cáo, hãy xem nó như tham khảo thẩm mỹ, không phải bằng chứng về model.
 
 “All black” thường mô tả sự phối hợp của cell, khung và nền đen. Một module xanh có thể có khung bạc hoặc nền sáng. Tên màu thương mại không phải tiêu chuẩn kỹ thuật thống nhất, nên không thể suy ra loại cell hay hiệu suất chỉ bằng mắt.
 
@@ -21,7 +21,7 @@ Yêu cầu báo giá gửi ảnh thật của đúng mã hàng ở góc nhìn l�
 | Bảo hành/chứng nhận | Đúng mã hàng, thời hạn và điều kiện áp dụng chưa? |
 | Màu sắc | Hợp kiến trúc sau khi các điều kiện trên đã đạt chưa? |
 
-Hiệu suất liên quan đến vật liệu bán dẫn, cấu trúc cell, mật độ đóng gói, tiếp điểm, kính và tổn thất module. Màu quan sát bằng mắt không thay thế được các thông số đó.
+Hiệu suất liên quan đến vật liệu bán dẫn, cấu trúc cell, mật độ đóng gói, tiếp điểm, kính và tổn thất module. Màu quan sát bằng mắt không thay thế được các thông số đó; cũng không nên suy ra chất lượng từ việc một tấm trông “đen” hơn.
 
 ## Phần kỹ thuật ngắn: màu không tự quyết định nhiệt
 

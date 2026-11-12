@@ -11,7 +11,7 @@ Một cách đọc đơn giản là tách hai câu hỏi. “Cell được làm 
 - **Hệ số nhiệt Pmax:** mức công suất cực đại thay đổi khi cell nóng lên hoặc lạnh đi.
 - **Tiếp điểm mặt sau:** các đường thu dòng được đưa ra phía sau cell thay vì nằm nhiều trên mặt trước.
 
-Không cần thuộc quy trình sản xuất để chọn đúng model. Chỉ cần nhận ra các từ này khi chúng xuất hiện trên bảng thông số, rồi quay lại các số liệu liên quan đến mái và inverter.
+Không cần thuộc quy trình sản xuất để chọn đúng model. Chỉ cần nhận ra các từ này khi chúng xuất hiện trên bảng thông số, rồi quay lại các số liệu liên quan đến mái và inverter. Phần giải thích sâu hơn chỉ đáng đọc khi hai model đã vượt qua các điều kiện cơ bản về kích thước, dòng và bảo hành.
 
 ### TOPCon: tối ưu vùng tiếp xúc
 
@@ -39,13 +39,13 @@ Tiếp theo, đối chiếu với mái: tấm có vừa khoảng kèo và lối 
 
 Cuối cùng là phần ít hào nhoáng nhưng ảnh hưởng lâu dài: ai xử lý bảo hành tại Việt Nam, thời gian phản hồi, model thay thế và hồ sơ cần giữ. Sản phẩm dễ mua hôm nay nhưng khó thay sau nhiều năm có thể làm rủi ro vận hành tăng, dù bảng hiệu suất rất đẹp.
 
-### Khi công nghệ phải nhường chỗ cho thiết kế
+**Khi công nghệ phải nhường chỗ cho thiết kế.**
 
-Một mái bị che bóng cần được xử lý về hướng tấm, chuỗi và MPPT trước khi tranh luận TOPCon hay BC. Mái nóng cần xem khoảng thông gió và hệ số nhiệt, không chỉ tìm tên HJT. Mái chật cần cân đối công suất trên diện tích với giá, khối lượng và tải kết cấu.
+Một mái bị che bóng cần được xử lý về hướng tấm, chuỗi và MPPT trước khi tranh luận TOPCon hay BC. Mái nóng cần xem khoảng thông gió và hệ số nhiệt, không chỉ tìm tên HJT. Mái chật cần cân đối công suất trên diện tích với giá, khối lượng và tải kết cấu. Đây là thứ tự ra quyết định; không phải bảng xếp hạng ba công nghệ.
 
 Trong mọi trường hợp, cần tính điện áp hở mạch ở điều kiện nhiệt độ thấp, dòng ngắn mạch ở bức xạ cao và giới hạn inverter theo hồ sơ thiết kế. Dây DC, đầu nối, bảo vệ, tiếp địa và chống sét phải đồng bộ; hệ hòa lưới vẫn cần chống đảo lưới. Đây là phần để kỹ thuật viên xác nhận, không phải hướng dẫn chủ nhà tự đấu nối.
 
-### Kết luận cho người đang chọn model
+**Kết luận cho người đang chọn model.**
 
 TOPCon giảm tổn thất ở vùng tiếp xúc, HJT dùng cấu trúc silicon dị thể, BC đưa tiếp điểm ra mặt sau. Những khác biệt ấy đáng hiểu nếu bạn đang so datasheet, nhưng chúng không thay thế câu hỏi căn bản: tấm nào vừa mái, hợp inverter, có sản lượng mô phỏng đáng tin và được bảo hành rõ ràng? Hãy yêu cầu hai bảng thông số của đúng model và xem giả định mô phỏng trước khi để tên công nghệ quyết định thay mình.
 

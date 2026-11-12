@@ -14,7 +14,7 @@ IEA dự báo công suất điện tái tạo toàn cầu tăng gần **4.800 GW
 
 Trong sản lượng điện toàn cầu, tỷ trọng các nguồn tái tạo được dự báo tăng từ **33% năm 2025** lên **43% năm 2031**; phần tóm tắt của IEA mô tả mức sau là **gần 45%**. Gió và mặt trời cộng lại có thể vượt 28% sản lượng điện năm 2031.
 
-Đây là tỷ trọng **sản lượng**, không phải tỷ lệ số tấm pin, và không thể dùng để suy ra một hệ mái nhà ở Việt Nam sẽ phát bao nhiêu điện.
+Đây là tỷ trọng **sản lượng điện toàn cầu**, không phải tỷ lệ số tấm pin hay công suất lắp đặt. Nó cũng không thể dùng để suy ra một hệ mái nhà ở Việt Nam sẽ phát bao nhiêu điện.
 
 ### 3. Lưới điện và độ linh hoạt là bài toán đi kèm
 
@@ -28,7 +28,7 @@ Khi gió và mặt trời tăng nhanh, hệ thống cần thêm truyền tải, 
 | 2025 | Năm nền của tỷ trọng sản lượng 33% |
 | 2031 | Năm cuối kỳ dự báo, khi tỷ trọng được dự báo 43%/gần 45% |
 
-IEA cũng lưu ý đây là dự báo dựa trên chính sách, giá, tiến độ dự án, vốn, lưới và chuỗi cung ứng. **GW** là công suất; **TWh** là sản lượng trong một giai đoạn. Không trộn hai đơn vị, không đổi dự báo toàn cầu thành lời hứa tiết kiệm cho từng hộ.
+IEA cũng lưu ý đây là dự báo dựa trên chính sách, giá, tiến độ dự án, vốn, lưới và chuỗi cung ứng. **GW** là công suất; **TWh** là sản lượng trong một giai đoạn. Không trộn hai đơn vị, không đổi dự báo toàn cầu thành lời hứa tiết kiệm cho từng hộ. Nếu dùng con số trong một infographic khác, phải ghi rõ đó là dự báo hay số đã quan sát.
 
 ## Vì sao người dùng điện mặt trời nên quan tâm?
 

@@ -1,5 +1,7 @@
 Một mái nhà có thể không “hợp” với tấm 720 W dù con số đó cao hơn 600 W. Nếu mái bị chia bởi bồn nước, cửa mái hoặc vùng bóng che, kích thước của **đúng model** và cách đặt tấm quan trọng trước nhãn watt.
 
+Hãy coi bản vẽ mái là bài kiểm tra đầu tiên: khoanh phần thật sự lắp được, rồi thử từng kích thước module vào phần đó. Một con số W chỉ có ý nghĩa sau khi biết nó nằm ở đâu trên mái.
+
 ![Biểu đồ so sánh công suất danh định các mức tấm pin 600 620 650 720 Wp](/upload/news/pts-explainer-power-ratings.webp)
 
 *Hình minh họa: Phúc Thịnh Solar*
@@ -14,7 +16,7 @@ Mái rộng, ít vật cản thường có nhiều lựa chọn. Mái nhỏ ho�
 
 ## Sau kích thước mới so hiệu suất và chi phí
 
-Hiệu suất module cho biết công suất trên diện tích trong điều kiện đo. Một tấm công suất cao có thể đạt con số đó nhờ kích thước lớn hơn, mật độ công suất hoặc cấu trúc cell; không nên suy ngược nguyên nhân từ watt trên nhãn.
+Hiệu suất module cho biết công suất trên diện tích trong điều kiện đo. Một tấm công suất cao có thể đạt con số đó nhờ kích thước lớn hơn, mật độ công suất hoặc cấu trúc cell; vì vậy đừng dùng watt trên nhãn để suy ngược rằng tấm đó “tốt hơn” ở mọi mái.
 
 Hãy so tổng hệ thống: số tấm thực lắp, tổng kWp, inverter, khung, dây, bảo vệ, nhân công, giám sát và bảo hành. Sản lượng còn phụ thuộc hướng, góc nghiêng, nắng, nhiệt độ, bóng che và tổn thất DC/AC; không lấy Wp nhân với số giờ nắng để hứa sản lượng.
 

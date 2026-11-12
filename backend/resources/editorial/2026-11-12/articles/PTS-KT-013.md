@@ -8,7 +8,7 @@ Con số **450 kWh/tháng** trong ba hồ sơ dưới đây là giả định đ
 
 ## Hồ sơ A: có tải ban ngày
 
-Gia đình A thường ở nhà từ sáng đến chiều. Bơm nước chạy theo lịch, nấu ăn một phần vào ban ngày, tủ lạnh và các tải nền hoạt động liên tục. Với hồ sơ này, một phần điện mặt trời có thể dùng ngay khi hệ thống phát.
+Gia đình A thường ở nhà từ sáng đến chiều. Bơm nước chạy theo lịch, nấu ăn một phần vào ban ngày, tủ lạnh và các tải nền hoạt động liên tục. Với hồ sơ này, phần điện mặt trời trùng giờ tải có thể dùng ngay khi hệ thống phát.
 
 Điểm cần hỏi không phải “450 kWh thì lắp bao nhiêu kW?”, mà là những tải ban ngày thực sự chiếm bao nhiêu và có thể chạy cùng lúc không. Nếu mái đủ dùng, thiết kế có thể ưu tiên phần điện tự dùng tại chỗ thay vì mặc định tăng pin để chuyển toàn bộ điện sang buổi tối.
 
@@ -22,7 +22,7 @@ Gia đình B đi làm và đi học ban ngày. Điều hòa, bếp điện và b
 
 Gia đình C dùng điện không đều: máy bơm chạy nhiều vào mùa tưới, còn mục tiêu quan trọng là giữ tủ lạnh, modem và vài đèn khi lưới mất. Cùng một mức trung bình tháng có thể che khuất những thời điểm tải tăng mạnh.
 
-Hồ sơ này cần xem công suất chạy đồng thời, dòng khởi động của máy bơm, tải ưu tiên và thời gian muốn duy trì. Hệ có nhánh backup cũng phải cách ly khỏi lưới; không phải cứ thêm tấm pin là toàn bộ nhà có điện khi cúp.
+Hồ sơ này cần xem công suất chạy đồng thời, dòng khởi động của máy bơm, tải ưu tiên và thời gian muốn duy trì. Nếu mục tiêu là dự phòng, phải chốt trước thiết bị nào được giữ điện và cách ly nhánh đó khỏi lưới; không phải cứ thêm tấm pin là toàn bộ nhà có điện khi cúp.
 
 ## Điều ba hồ sơ cho thấy
 

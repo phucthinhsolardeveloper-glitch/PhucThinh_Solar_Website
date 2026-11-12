@@ -1,6 +1,6 @@
 ## Mái nhà dưới tấm pin: khi nào có thể mát hơn?
 
-Tấm pin có thể che bớt nắng trực tiếp trên mái, nhưng không phải cứ lắp pin là căn phòng bên dưới mát hơn. Kết quả phụ thuộc vào khe giữa tấm pin và mái, đường đi của không khí, loại mái, trần và lớp cách nhiệt. Vì vậy câu trả lời thực tế nằm ở cấu tạo mái chứ không nằm ở một lời hứa chung cho mọi công trình.
+Tấm pin có thể che bớt nắng trực tiếp trên mái, nhưng không phải cứ lắp pin là căn phòng bên dưới mát hơn. Kết quả phụ thuộc vào khe giữa tấm pin và mái, đường đi của không khí, loại mái, trần và lớp cách nhiệt. Vì vậy câu trả lời thực tế nằm ở cấu tạo mái chứ không nằm ở một lời hứa chung cho mọi công trình. Nếu mục tiêu là giảm nóng trong phòng, hãy đưa trần và cửa sổ vào cùng cuộc khảo sát.
 
 ### Hai căn nhà, hai kết quả
 
@@ -30,15 +30,15 @@ Cáp phải được cố định, tránh cọ cạnh kim loại và điểm đ�
 
 ### Cách kiểm chứng thay vì đoán
 
-Nếu muốn biết mái pin có tạo khác biệt hay không, đo hai vùng tương đồng: một vùng dưới mái có tấm và một vùng chưa che, trong cùng các khung giờ của vài ngày. Ghi nhiệt độ mặt dưới mái, nhiệt độ phòng, gió, mây, cửa mở, điều hòa và tải trong phòng. So sánh giữa các vùng có điều kiện gần nhau có ý nghĩa hơn một lần đo giữa trưa.
+Nếu muốn biết mái pin có tạo khác biệt hay không, đo hai vùng tương đồng: một vùng dưới mái có tấm và một vùng chưa che, trong cùng các khung giờ của vài ngày. Ghi nhiệt độ mặt dưới mái, nhiệt độ phòng, gió, mây, cửa mở, điều hòa và tải trong phòng. So sánh giữa các vùng có điều kiện gần nhau có ý nghĩa hơn một lần đo giữa trưa; đó vẫn là phép kiểm tra tại công trình, không phải bằng chứng cho mọi kiểu mái.
 
 Cảm biến hồng ngoại cần xét độ phát xạ và bề mặt; kết quả trên tôn bóng có thể gây hiểu nhầm. Đơn vị thiết kế nên giải thích vị trí khe, chiều cao khung, thoát nước, tác động bóng và cách bảo trì. Nếu cần giảm nóng rõ rệt, có thể phải kết hợp trần cách nhiệt, thông gió, sơn mái phù hợp hoặc che nắng cửa sổ.
 
-### Điều cần hỏi trong buổi khảo sát
+**Điều cần hỏi trong buổi khảo sát.**
 
 Hỏi ba việc cụ thể: khe lấy và thoát gió ở đâu; mái và trần hiện có lớp cách nhiệt nào; và nhà thầu sẽ giữ lại lối thoát nước, dây cáp cùng đường kiểm tra ra sao. Câu trả lời nên đi kèm bản vẽ hoặc ảnh hiện trạng, không chỉ một câu “để hở cho mát”.
 
-### Chốt lại
+**Chốt lại.**
 
 Tấm pin có thể giảm nắng trực tiếp trên một phần mái, còn khe thông gió có thể hỗ trợ đưa nhiệt ra ngoài. Mức mát thực tế thay đổi theo mái tôn, ngói hay bê tông, lớp cách nhiệt, hướng gió và cách dùng phòng. Hãy xem cấu tạo, đo trong điều kiện tương đồng và giữ an toàn kết cấu–điện; đừng dùng tuyên bố “mái chắc chắn mát hơn” làm tiêu chí duy nhất.
 

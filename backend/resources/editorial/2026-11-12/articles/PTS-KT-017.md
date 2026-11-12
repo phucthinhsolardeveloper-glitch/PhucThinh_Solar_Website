@@ -1,6 +1,6 @@
 ## Chọn đèn cho lối đi: watt, lumen và lux nói gì?
 
-Một chiếc đèn ghi 200 W chưa chắc làm lối đi sáng hơn chiếc ghi 20 W. Khi mua đèn năng lượng mặt trời, ba đơn vị này trả lời ba câu hỏi khác nhau: **watt (W)** là điện đèn dùng, **lumen (lm)** là tổng ánh sáng đèn phát ra, còn **lux (lx)** là lượng ánh sáng thực sự rơi trên mặt đường hoặc sân.
+Một chiếc đèn ghi 200 W chưa chắc làm lối đi sáng hơn chiếc ghi 20 W. Khi mua đèn năng lượng mặt trời, ba đơn vị này trả lời ba câu hỏi khác nhau: **watt (W)** là điện đèn dùng, **lumen (lm)** là tổng ánh sáng đèn phát ra, còn **lux (lx)** là lượng ánh sáng thực sự rơi trên mặt đường hoặc sân. Quyết định bắt đầu từ mặt đường cần nhìn thấy, không từ con số lớn nhất trên vỏ hộp.
 
 ### Hãy bắt đầu bằng vị trí cần sáng
 
@@ -38,11 +38,11 @@ Sau khi lắp, ghi thời điểm đèn chuyển sang mức giảm sáng, thời
 
 Đèn ngoài trời phải có vỏ và dây phù hợp môi trường ẩm. Không tự ghép pin khác hóa học hoặc khác tuổi, không để đầu nối nằm ở chỗ đọng nước, và ngừng dùng khi pin phồng, dây nứt hoặc mạch hở. Tấm quang điện cũng cần được xem bóng che theo mùa, không chỉ nhìn một ngày nắng.
 
-### Từ đơn vị sang quyết định mua
+**Từ đơn vị sang quyết định mua.**
 
 Khi đã biết chiều dài lối đi, vị trí cổng, vùng cần tránh chói và số giờ mong muốn, hãy đọc [bài hướng dẫn mua đèn năng lượng mặt trời](/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/) để lập câu hỏi cho người bán về model, bảo hành và thử nghiệm. Bài này giúp đọc đúng W/lm/lx; bước chọn sản phẩm cần thêm hình dạng khu vực và điều kiện lắp thực tế.
 
-### Nhớ ba câu
+**Nhớ ba câu.**
 
 Watt nói đèn tiêu thụ bao nhiêu điện. Lumen nói đèn phát ra bao nhiêu ánh sáng. Lux nói nơi cần sáng nhận được bao nhiêu. Với lối đi 20 m² trong ví dụ, cách bố trí và độ đồng đều quan trọng không kém tổng lumen; không nên biến một con số watt thành lời hứa về độ sáng cả đêm.
 

@@ -8,7 +8,7 @@ Hai ví dụ dưới đây chỉ là kịch bản giả định, không phải b
 
 **Kịch bản A — nhà dùng điện chủ yếu buổi tối.** Giả sử nhà dùng 25 kWh/ngày nhưng 18 kWh rơi vào buổi tối. Nếu cứ thêm tấm để lấp phần mái còn trống, hệ có thể tạo thêm điện vào buổi trưa nhưng phần tăng thêm dễ thành điện dư khi không có pin hoặc cách chuyển tải sang ban ngày. Chi phí tăng nhưng lượng điện thực sự thay thế điện mua không tăng tương ứng.
 
-**Kịch bản B — xưởng dùng điện giữa ngày.** Giả sử xưởng chạy bơm, quạt hoặc máy nén trong giờ có nắng. Cùng lượng điện/ngày, nhiều sản lượng hơn có thể được dùng ngay tại chỗ; việc thêm một nhóm tấm có cơ sở hơn, nhưng vẫn phải kiểm tra giới hạn inverter, mái, cáp và bảo vệ. Đây là lý do tự dùng quan trọng: giá trị nằm ở kWh tạo ra đúng lúc tải đang chạy, không nằm ở số tấm nhìn trên mái.
+**Kịch bản B — xưởng dùng điện giữa ngày.** Giả sử xưởng chạy bơm, quạt hoặc máy nén trong giờ có nắng. Cùng lượng điện/ngày, nhiều sản lượng hơn có thể được dùng ngay tại chỗ; việc thêm một nhóm tấm có cơ sở hơn, nhưng vẫn phải kiểm tra giới hạn inverter, mái, cáp và bảo vệ. Đây là lý do tự dùng quan trọng: giá trị nằm ở kWh tạo ra đúng lúc tải đang chạy, không nằm ở số tấm nhìn trên mái. Một lịch chạy máy được chuyển từ tối sang trưa đôi khi có giá trị hơn việc lấp thêm một mảng mái.
 
 ### Vì sao cùng một mái có thể cho kết quả khác?
 
@@ -38,11 +38,11 @@ Diện tích trống trên mái không đồng nghĩa với diện tích lắp h
 
 Nếu mục tiêu là dùng điện ban đêm hoặc dự phòng, thêm pin mặt trời và thêm pin lưu trữ là hai quyết định khác nhau. Tấm tạo năng lượng; pin chuyển thời điểm sử dụng nhưng có tổn hao, giới hạn công suất và tuổi thọ. Cần xác định tải ưu tiên khi mất điện, thời gian backup, công suất khởi động của bơm/tủ lạnh và cách cô lập tải. Không đưa toàn bộ ngôi nhà vào mạch backup nếu inverter không được thiết kế cho việc đó.
 
-### Quy trình quyết định 5 bước
+**Quy trình quyết định 5 bước.**
 
 Đo phụ tải theo giờ; lập bản vẽ mái và vùng bóng; mô phỏng hai hoặc ba quy mô; tính tỷ lệ tự dùng và sản lượng dư; rồi so dòng tiền phần tăng thêm. Đặt câu hỏi “nếu giảm 20% sản lượng do thời tiết/bóng, phương án còn chấp nhận được không?”. Nếu câu trả lời không rõ, phương án nhỏ hơn nhưng linh hoạt thường an toàn hơn.
 
-### Tự dùng là câu hỏi trước khi hỏi “hoàn vốn”
+**Tự dùng là câu hỏi trước khi hỏi “hoàn vốn”.**
 
 Nhiều tấm chỉ có lợi khi mái, inverter, an toàn và phụ tải cùng đủ chỗ. Hãy hỏi phần điện tăng thêm sẽ được dùng vào giờ nào, bao nhiêu kWh có thể dư, và giả định nào tạo ra con số tài chính. Không có cơ sở để hứa một thời gian hoàn vốn khi các dữ liệu đó chưa được kiểm chứng.
 

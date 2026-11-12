@@ -1,6 +1,6 @@
 ## Cầm hóa đơn lên và chuẩn bị gì trước khi gặp tư vấn?
 
-Bạn không cần tự tính số tấm pin từ một hóa đơn điện. Việc hữu ích hơn là lấy hóa đơn ra, đánh dấu đúng bốn vùng, rồi gom đủ thông tin để người tư vấn hiểu nhà đang dùng điện như thế nào. Đây là một phiếu chuẩn bị trước buổi khảo sát, tập trung vào dữ liệu bạn có thể tự gom ở nhà.
+Bạn không cần tự tính số tấm pin từ một hóa đơn điện. Việc hữu ích hơn là lấy hóa đơn ra, đánh dấu đúng bốn vùng, rồi gom đủ thông tin để người tư vấn hiểu nhà đang dùng điện như thế nào. Đây là một phiếu chuẩn bị trước buổi khảo sát, tập trung vào dữ liệu bạn có thể tự gom ở nhà. Nếu chỉ có một hóa đơn, hãy gửi nó như một mốc tham khảo, không biến nó thành đại diện cho cả năm.
 
 ### Bốn vùng cần đọc trên một hóa đơn
 
@@ -55,11 +55,11 @@ Gửi một thư mục gồm:
 
 Nếu muốn xem vì sao hai nhà có cùng lượng điện vẫn có thể chọn cấu hình khác nhau, đọc thêm [bài về lượng điện và giờ sử dụng](/nha-dung-bao-nhieu-dien-moi-thang-thi-phu-hop-lap-nang-luong-mat-troi/). Khi gửi ảnh hóa đơn, che mã khách hàng, địa chỉ và thông tin cá nhân không cần thiết.
 
-### Hóa đơn không trả lời được điều gì?
+**Những điều hóa đơn không trả lời được.**
 
 Hóa đơn không cho biết mái có đủ chỗ, kết cấu có chịu được hệ khung, dây điện có phù hợp, inverter đặt ở đâu hay hệ có thể cấp tải nào khi mất lưới. Không tự thay aptomat, nối inverter vào ổ cắm hoặc lên mái kiểm tra điểm neo nếu không có người đủ chuyên môn. Phần DC vẫn có điện khi có ánh sáng; khảo sát và đấu nối phải do đơn vị có năng lực thực hiện theo yêu cầu an toàn và quy định hiện hành.
 
-### Chốt lại
+**Mang gì đến buổi khảo sát.**
 
 Cầm hóa đơn lên theo thứ tự: kỳ và số ngày, tổng kWh, các dòng tiền, rồi ghi chú tháng bất thường. Sau đó điền bảng 12 tháng và trả lời bốn câu hỏi về thời điểm dùng điện. Bộ hồ sơ này giúp buổi tư vấn bắt đầu từ dữ liệu thật; nó chưa phải lời hứa về công suất, sản lượng hay thời gian hoàn vốn.
 
