@@ -3,93 +3,93 @@
   "articles": [
     {
       "id": "PTS-KT-004",
-      "summary": "Phân biệt kW, kWp và kWh bằng 7 ví dụ dễ hiểu để đọc hóa đơn điện, báo giá inverter và công suất tấm pin chính xác.",
-      "keywords": "kW kWp kWh, công suất tấm pin, điện năng kWh"
+      "summary": "Đang đọc báo giá hoặc hóa đơn điện mặt trời? Bài này giúp bạn phân biệt nhanh kW, kWp và kWh qua ví dụ máy bơm và dàn pin.",
+      "keywords": "kW, kWp, kWh, công suất, điện năng, máy bơm, hóa đơn điện mặt trời"
     },
     {
       "id": "PTS-KT-005",
-      "summary": "Tìm hiểu inverter điện mặt trời làm gì: chuyển DC/AC, MPPT, giám sát, chống đảo lưới và các thông số chọn biến tần.",
-      "keywords": "inverter điện mặt trời, bộ biến tần, MPPT, hòa lưới, hybrid"
+      "summary": "Inverter có liên quan gì đến điện trong nhà, và khi chọn thiết bị bạn cần hỏi những thông số nào? Bài viết giải thích từ tình huống sử dụng quen thuộc.",
+      "keywords": "inverter điện mặt trời, DC, AC, MPPT, hòa lưới, hybrid, điện dự phòng"
     },
     {
       "id": "PTS-KT-006",
-      "summary": "Nhà dùng điện chủ yếu buổi tối có nên lắp điện mặt trời? Phân tích tự dùng, pin lưu trữ, chi phí và thiết kế phù hợp.",
-      "keywords": "điện mặt trời dùng buổi tối, pin lưu trữ, hybrid, điện tự dùng"
+      "summary": "Nhà bạn dùng điện chủ yếu sau khi trời tối? Hãy xem khi nào hòa lưới đã đủ, khi nào cần pin lưu trữ hoặc một mạch điện dự phòng.",
+      "keywords": "điện mặt trời buổi tối, hòa lưới, hybrid, pin lưu trữ, điện dự phòng, tự dùng"
     },
     {
       "id": "PTS-KT-007",
-      "summary": "So sánh điện mặt trời hòa lưới, hybrid và độc lập để chọn đúng cấu hình theo nhu cầu tiết kiệm, lưu trữ và dự phòng.",
-      "keywords": "hệ điện mặt trời hòa lưới, hybrid, off-grid, backup"
+      "summary": "Bạn cần giảm điện mua từ lưới, muốn có điện khi cúp hay đang ở nơi chưa có lưới? Các nhu cầu này dẫn đến ba hướng lựa chọn khác nhau.",
+      "keywords": "hòa lưới, hybrid, độc lập, off-grid, pin lưu trữ, backup, mất điện"
     },
     {
       "id": "PTS-KT-008",
-      "summary": "Hướng dẫn chọn đèn năng lượng mặt trời dựa trên lumen, lux, dung lượng pin, quang học và độ bền thay vì chỉ nhìn watt.",
-      "keywords": "chọn đèn năng lượng mặt trời, lumen, lux, pin đèn solar"
+      "summary": "Trước khi mua đèn cho sân, cổng hoặc lối đi, hãy biết cần hỏi gì về vùng sáng, thời gian hoạt động, cảm biến, pin và khả năng chịu thời tiết.",
+      "keywords": "mua đèn năng lượng mặt trời, đèn sân, đèn cổng, đèn lối đi, cảm biến, IP, pin Wh"
     },
     {
       "id": "PTS-KT-009",
-      "summary": "Tấm pin có tạo điện khi trời nhiều mây hay mùa mưa? Giải thích bức xạ tán xạ, MPPT và cách dự báo sản lượng theo mùa.",
-      "keywords": "tấm pin trời nhiều mây, điện mặt trời mùa mưa, PVGIS"
+      "summary": "Trời nhiều mây có làm tấm pin ngừng phát điện không? Bài viết giải thích điều gì thay đổi trong mùa mưa và cách theo dõi hệ thống bình tĩnh hơn.",
+      "keywords": "điện mặt trời trời nhiều mây, mùa mưa, bức xạ tán xạ, sản lượng PV, MPPT, PVGIS"
     },
     {
       "id": "PTS-KT-010",
-      "summary": "Vì sao hệ thống có tấm pin vẫn tắt khi mất điện lưới? Tìm hiểu chống đảo lưới, tải ưu tiên và cấu hình dự phòng an toàn.",
-      "keywords": "điện mặt trời mất điện, chống đảo lưới, anti-islanding, tải dự phòng"
+      "summary": "Điện lưới mất nhưng mái vẫn có nắng: vì sao ổ cắm vẫn tắt, và khi nào đèn hoặc tủ lạnh có thể tiếp tục chạy?",
+      "keywords": "mất điện, chống đảo lưới, điện dự phòng"
     },
     {
       "id": "PTS-KT-011",
-      "summary": "So sánh tấm pin 600W, 620W, 650W và 720W theo kích thước, hiệu suất, giới hạn điện áp, mái nhà và inverter.",
-      "keywords": "tấm pin 600W, tấm pin 620W, tấm pin 650W, tấm pin 720W, công suất module"
+      "summary": "Tấm 600–720 W không tự động tốt hơn: hãy đặt kích thước đúng model lên phần mái dùng được rồi mới kiểm tra hiệu suất, Voc/MPPT và inverter.",
+      "keywords": "tấm pin 600W, tấm pin 620W, tấm pin 650W, tấm pin 720W, kích thước mái, công suất module"
     },
     {
       "id": "PTS-KT-012",
-      "summary": "Điểm chính từ dự báo IEA Renewables 2026 đến năm 2031: tăng trưởng điện tái tạo, vai trò điện mặt trời và yêu cầu linh hoạt lưới.",
-      "keywords": "IEA Renewables 2026, dự báo điện mặt trời 2031, năng lượng tái tạo, linh hoạt lưới điện"
+      "summary": "Ba con số trong dự báo IEA Renewables 2026 đáng chú ý với người dùng điện: gần 4.800 GW, 33% năm 2025 và khoảng 43% vào năm 2031.",
+      "keywords": "IEA Renewables 2026, dự báo 2031, lưới điện"
     },
     {
       "id": "PTS-KT-013",
-      "summary": "Hóa đơn điện là điểm bắt đầu, nhưng chọn quy mô điện mặt trời còn cần biểu đồ tải, thời gian sử dụng, điều kiện mái và mục tiêu.",
-      "keywords": "điện mặt trời hộ gia đình, hóa đơn điện, biểu đồ phụ tải, công suất hệ thống"
+      "summary": "Ba hộ cùng dùng 450 kWh/tháng nhưng có thể cần ba hướng khác nhau vì giờ dùng điện, tải ưu tiên, mái và mục tiêu dự phòng không giống nhau.",
+      "keywords": "điện mặt trời hộ gia đình, hóa đơn điện, biểu đồ phụ tải, giờ sử dụng điện"
     },
     {
       "id": "PTS-KT-014",
-      "summary": "Phân biệt inverter hòa lưới và hybrid theo khả năng tích hợp pin, cấp tải dự phòng, giới hạn thiết bị và mục tiêu sử dụng.",
+      "summary": "Bảng quyết định nhanh: có cần điện khi cúp và có chấp nhận mua pin không? Từ đó đối chiếu hòa lưới, hybrid, nhánh backup và giới hạn đúng model.",
       "keywords": "inverter hòa lưới, inverter hybrid, pin lưu trữ, tải backup, EPS"
     },
     {
       "id": "PTS-KT-015",
-      "summary": "Tấm pin màu đen không mặc định tốt hơn màu xanh; hãy so thông số module, hiệu suất, hệ số nhiệt độ, bảo hành và nhu cầu mái.",
-      "keywords": "tấm pin màu đen, tấm pin màu xanh, hiệu suất module, all black solar panel"
+      "summary": "Đen hay xanh cho mái nhà? Xem ảnh đúng model và đối chiếu kích thước, hiệu suất, nhiệt độ, bảo hành trước khi chọn theo thẩm mỹ.",
+      "keywords": "tấm pin đen, tấm pin xanh, chọn model"
     },
     {
       "id": "PTS-KT-016",
-      "summary": "Hướng dẫn đọc hóa đơn điện theo kWh, số ngày và thời điểm dùng điện để đặt mục tiêu thiết kế solar, kiểm tra mái và đấu nối an toàn tại Gia Lai.",
-      "keywords": "đọc hóa đơn tiền điện, thiết kế điện mặt trời, phụ tải theo giờ, kWh, Gia Lai"
+      "summary": "Cầm hóa đơn lên, đánh dấu bốn vùng và điền bảng 12 tháng để biết nên mang gì đến buổi khảo sát.",
+      "keywords": "đọc hóa đơn điện, bảng 12 tháng, kWh, giờ dùng điện, khảo sát solar"
     },
     {
       "id": "PTS-KT-017",
-      "summary": "Phân biệt watt, lumen và lux khi chọn đèn năng lượng mặt trời; cách đọc datasheet, tính pin và kiểm tra độ sáng thực tế cho sân vườn, lối đi.",
-      "keywords": "lumen lux watt, đèn năng lượng mặt trời, hiệu suất lm/W, pin solar, độ rọi"
+      "summary": "Nhìn một lối đi sân vườn để hiểu vì sao đèn nhiều watt chưa chắc sáng đúng chỗ, rồi chọn theo nhu cầu thật.",
+      "keywords": "watt lumen lux, độ rọi, đèn năng lượng mặt trời, lối đi, quang thông"
     },
     {
       "id": "PTS-KT-018",
-      "summary": "Lắp thêm tấm pin chỉ rút ngắn hoàn vốn khi phụ tải, inverter, mái và giá trị điện tự dùng cùng phù hợp; có ví dụ phần điện dư và an toàn đấu nối.",
-      "keywords": "lắp nhiều tấm pin, thời gian hoàn vốn solar, điện dư, tỷ lệ tự dùng, inverter"
+      "summary": "Hai gia đình có thể lắp thêm cùng số tấm nhưng nhận giá trị khác nhau: mấu chốt là điện tạo ra có được dùng ngay không.",
+      "keywords": "thêm tấm pin, điện tự dùng, điện dư, inverter, kịch bản giả định"
     },
     {
       "id": "PTS-KT-019",
-      "summary": "So sánh lưu ý khảo sát mái tôn, mái ngói và mái bằng: kết cấu, tải gió, chống dột, thoát nước, cáp, tiếp địa và lối bảo trì.",
-      "keywords": "mái tôn mái ngói mái bằng, khảo sát mái solar, chống dột, tải gió, an toàn điện"
+      "summary": "Mái tôn, mái ngói hay mái bằng đều có dấu hiệu cần nhìn trước khi đặt tấm pin; biết lúc nào phải dừng để kiểm tra kết cấu.",
+      "keywords": "khảo sát mái, mái tôn, mái ngói, mái bằng, chống dột, tải gió"
     },
     {
       "id": "PTS-KT-020",
-      "summary": "Giải thích TOPCon, HJT và BC theo kiến trúc cell, ưu nhược điểm và cách so datasheet, hệ số nhiệt, bảo hành, inverter thay vì chạy theo tên công nghệ.",
-      "keywords": "TOPCon HJT BC, Back Contact, công nghệ cell, hiệu suất module, hệ số nhiệt"
+      "summary": "TOPCon, HJT và BC khác nhau ở đâu, và người mua nên nhìn gì trên hai bảng thông số trước khi chọn tấm pin?",
+      "keywords": "TOPCon HJT BC, Back Contact, kiến trúc cell, hệ số nhiệt, bảng thông số"
     },
     {
       "id": "PTS-KT-021",
-      "summary": "Giải thích khi nào tấm pin có thể giúp mái bớt nhận nắng và khe thông gió thoát nhiệt, vì sao không nên khẳng định mọi mái đều mát hơn.",
-      "keywords": "điện mặt trời mái nóng mát, khe thông gió mái, cách nhiệt mái, nhiệt độ module"
+      "summary": "Tấm pin có thể che nắng cho mái, nhưng căn phòng có mát hơn hay không còn tùy khe thoáng, trần và vật liệu xây dựng.",
+      "keywords": "mái nhà nóng mát, khe thông gió, mái tôn, cách nhiệt, module"
     }
   ]
 }
