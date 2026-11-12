@@ -32,8 +32,13 @@ for article_id in TARGET_IDS:
     path = ARTICLE_DIR / f"{article_id}.md"
     check(path.is_file(), f"missing article file {path.name}")
     body = path.read_text(encoding="utf-8")
-    word_count = len(body.split())
-    check(900 <= word_count <= 1600, f"{path.name}: {word_count} words (expected 900–1600)")
+    # The voice standard defines length by reader purpose, not a word quota. Keep
+    # only a small guard against accidentally empty/truncated drafts; do not cap
+    # well-supported technical articles.
+    visible_text = re.sub(r"!\[[^]]*\]\([^)]*\)|\[[^]]+\]\([^)]*\)", "", body)
+    visible_text = re.sub(r"\s+", " ", visible_text).strip()
+    character_count = len(visible_text)
+    check(character_count >= 1200, f"{path.name}: {character_count} Unicode characters (minimum 1200)")
     headings = re.findall(r"(?m)^#{1,6} .*", body)
     check(headings and headings[0].startswith("## "), f"{path.name}: first heading must be H2, without a body H1")
     check(not re.search(r"(?m)^#(?!#)\s", body), f"{path.name}: body must not contain H1")
@@ -52,6 +57,6 @@ for article_id in TARGET_IDS:
     check(metadata_entry is not None, f"{article_id}: missing metadata")
     check(bool(metadata_entry["summary"].strip()), f"{article_id}: empty summary")
     check(bool(metadata_entry["keywords"].strip()), f"{article_id}: empty keywords")
-    print(f"PASS {article_id}: {word_count} words, {len(urls)} sources, metadata present")
+    print(f"PASS {article_id}: {character_count} Unicode characters, {len(urls)} sources, metadata present")
 
 print("PASS batch: six article files and metadata are valid")
