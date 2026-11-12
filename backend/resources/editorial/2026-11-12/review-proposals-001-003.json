@@ -1,5 +1,23 @@
 [
-  {"id": "PTS-KT-001", "summary": "Hiểu dòng điện đi từ ánh nắng qua tấm pin và inverter đến ổ cắm, cùng cách hệ thống dùng điện ban ngày, ban đêm và khi mất lưới.", "keywords": "điện mặt trời hoạt động, tấm pin PV, inverter, điện DC, điện AC", "title": "Điện mặt trời hoạt động như thế nào? Từ ánh nắng đến điện sử dụng trong nhà", "slug": "dien-mat-troi-hoat-dong-nhu-the-nao"},
-  {"id": "PTS-KT-002", "summary": "Biết cách đọc nhanh 5 chỉ số cốt lõi rồi kiểm tra sâu datasheet LONGi Hi-MO X10 để đối chiếu công suất, điện áp, dòng điện, nhiệt độ và kích thước với hệ thống.", "keywords": "datasheet tấm pin, LONGi Hi-MO X10, Pmax, Voc, Vmp, Isc, Imp, NMOT", "title": "Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng", "slug": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi"},
-  {"id": "PTS-KT-003", "summary": "Nắm ba con số IEA PVPS 2026 về quy mô và tốc độ tăng trưởng điện mặt trời, hiểu chúng mô tả năm 2025 ra sao và vì sao có ý nghĩa với người đọc Việt Nam.", "keywords": "IEA PVPS 2026, 2,96 TW, 690 GW, 15%, thị trường điện mặt trời", "title": "Điện mặt trời toàn cầu đạt 2,96 TW: Xu hướng nổi bật từ IEA PVPS 2026", "slug": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps"}
+  {
+    "id": "PTS-KT-001",
+    "summary": "Một kWh điện đi từ ánh sáng qua tấm pin và inverter đến ổ cắm như thế nào? Sơ đồ và các điểm kiểm tra giúp người mới hiểu hệ hòa lưới, pin lưu trữ và giới hạn khi mất điện.",
+    "keywords": "điện mặt trời hoạt động, tấm pin PV, inverter, AC DC, MPPT, hòa lưới, pin lưu trữ",
+    "title": "Điện mặt trời hoạt động như thế nào? Từ ánh nắng đến điện sử dụng trong nhà",
+    "slug": "dien-mat-troi-hoat-dong-nhu-the-nao"
+  },
+  {
+    "id": "PTS-KT-002",
+    "summary": "Đọc datasheet tấm pin theo đúng thứ tự: mã model, điện áp, dòng điện, nhiệt độ, kích thước và bảo hành. Ví dụ LONGi 650 W chỉ ra con số nào ảnh hưởng đến việc ghép chuỗi và chọn inverter.",
+    "keywords": "datasheet tấm pin, LONGi LR7-72HVH-650M, Pmax, Voc, Vmp, Isc, Imp, MPPT",
+    "title": "Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng",
+    "slug": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi"
+  },
+  {
+    "id": "PTS-KT-003",
+    "summary": "IEA PVPS ghi nhận khoảng 2,96 TW PV lũy kế và 690 GW lắp mới trong năm 2025. Bản tin tách rõ năm dữ liệu, ấn bản công bố và điều người mua ở Việt Nam có thể — hoặc không thể — suy ra.",
+    "keywords": "IEA PVPS Trends 2026, 2,96 TW, 690 GW, thị trường điện mặt trời, 2025",
+    "title": "Điện mặt trời toàn cầu đạt 2,96 TW: Xu hướng nổi bật từ IEA PVPS 2026",
+    "slug": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps"
+  }
 ]
