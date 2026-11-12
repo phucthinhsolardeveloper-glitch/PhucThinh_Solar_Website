@@ -13,6 +13,14 @@ Một cách đọc đơn giản là tách hai câu hỏi. “Cell được làm 
 
 Không cần thuộc quy trình sản xuất để chọn đúng model. Chỉ cần nhận ra các từ này khi chúng xuất hiện trên bảng thông số, rồi quay lại các số liệu liên quan đến mái và inverter. Phần giải thích sâu hơn chỉ đáng đọc khi hai model đã vượt qua các điều kiện cơ bản về kích thước, dòng và bảo hành.
 
+| Tên thường gặp | Tóm tắt dễ hiểu | Khi đọc datasheet, nhìn trước |
+|---|---|---|
+| TOPCon | Lớp tiếp xúc được thụ động hóa để giảm tổn thất ở vùng thu dòng | Hệ số nhiệt, dòng làm việc, kích thước và bảo hành |
+| HJT | Wafer silicon tinh thể kết hợp với các lớp silicon mỏng | Hệ số nhiệt, điều kiện hai mặt và điều kiện thử của model |
+| BC | Các tiếp điểm chính được đưa ra phía sau cell | Hiệu suất theo đúng model, kích thước, giá thay thế và bảo hành |
+
+Bảng này chỉ là lớp đọc nhanh, không phải bảng xếp hạng. Phần dưới giải thích vì sao cùng một tên công nghệ vẫn có thể cho lựa chọn khác nhau giữa hai mái.
+
 ### TOPCon: tối ưu vùng tiếp xúc
 
 TOPCon là viết tắt của *Tunnel Oxide Passivated Contact*. Kiến trúc này dùng một lớp oxide rất mỏng cùng lớp silicon để giảm tổn thất tại tiếp xúc thu dòng. Nhiều sản phẩm thương mại dùng wafer n-type và có thể là tấm hai mặt, nhưng khả năng hai mặt hay hiệu suất cao vẫn phải đọc theo đúng model.

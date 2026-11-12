@@ -28,13 +28,17 @@ Khi gió và mặt trời tăng nhanh, hệ thống cần thêm truyền tải, 
 | 2025 | Năm nền của tỷ trọng sản lượng 33% |
 | 2031 | Năm cuối kỳ dự báo, khi tỷ trọng được dự báo 43%/gần 45% |
 
-IEA cũng lưu ý đây là dự báo dựa trên chính sách, giá, tiến độ dự án, vốn, lưới và chuỗi cung ứng. **GW** là công suất; **TWh** là sản lượng trong một giai đoạn. Không trộn hai đơn vị, không đổi dự báo toàn cầu thành lời hứa tiết kiệm cho từng hộ. Nếu dùng con số trong một infographic khác, phải ghi rõ đó là dự báo hay số đã quan sát.
+IEA cũng lưu ý đây là dự báo dựa trên chính sách, giá, tiến độ dự án, vốn, lưới và chuỗi cung ứng. **GW** là công suất; **TWh** là sản lượng trong một giai đoạn. Không trộn hai đơn vị, không đổi dự báo toàn cầu thành lời hứa tiết kiệm cho từng hộ.
+
+## Ba điều bản tin này không thể trả lời
+
+Thứ nhất, bản tin không cho biết một mái nhà cụ thể sẽ phát bao nhiêu điện. Thứ hai, nó không nói một hộ nên chọn hòa lưới hay hybrid; lựa chọn đó phụ thuộc giờ dùng điện, mức độ mất điện và tải cần giữ. Thứ ba, nó không phải bảng xếp hạng nhà cung cấp hay bảo đảm giá điện. Đây là những giới hạn quan trọng vì số liệu toàn cầu rất dễ bị kéo sang một kết luận mua hàng quá nhanh.
 
 ## Vì sao người dùng điện mặt trời nên quan tâm?
 
 Tin này cho thấy điện mặt trời tiếp tục là động lực tăng trưởng của ngành và việc tích hợp lưới sẽ quan trọng hơn. Với một địa chỉ cụ thể, câu hỏi vẫn là tải dùng vào giờ nào, mái có vùng bóng che nào, khả năng đấu nối ra sao và có cần lưu trữ hay không. Những câu hỏi đó cần dữ liệu địa phương, không thể trả lời bằng một tỷ lệ toàn cầu.
 
-Khi dùng lại biểu đồ hoặc số liệu, cần ghi nguồn IEA, năm phát hành, phạm vi địa lý và điều kiện là dự báo. IEA công bố báo cáo theo giấy phép CC BY 4.0; infographic tự dựng phải giữ đúng ý nghĩa dữ liệu và ghi công.
+Khi dùng lại biểu đồ hoặc số liệu, cần ghi nguồn IEA, năm phát hành, phạm vi địa lý và điều kiện là dự báo. Không cắt riêng một tỷ lệ rồi trình bày như số liệu của Việt Nam hoặc như sản lượng đã xảy ra.
 
 ### Nguồn tham khảo
 

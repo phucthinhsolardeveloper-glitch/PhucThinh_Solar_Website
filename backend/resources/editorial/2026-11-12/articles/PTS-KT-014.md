@@ -19,6 +19,8 @@ Một gia đình ở khu vực hay cúp điện có hai câu hỏi trước khi 
 
 Inverter hòa lưới đổi DC từ tấm pin thành AC đồng bộ với lưới. Khi lưới mất, chống đảo lưới khiến máy ngừng cấp điện vào đường AC; có nắng cũng không biến hệ thành nguồn độc lập. Loại này phù hợp hơn khi mục tiêu chính là dùng phần điện mặt trời tạo ra cùng lưới, không phải duy trì điện lúc cúp.
 
+Hãy thử đặt vào một tình huống cụ thể: 12 giờ trưa mất điện khi mái vẫn có nắng. Với hệ hòa lưới, inverter dừng cấp điện dù tấm pin vẫn nhận nắng. Nếu gia đình chỉ cần giảm tiền điện và chấp nhận chờ lưới trở lại, đây có thể là đánh đổi hợp lý; nếu cần tủ lạnh hoặc modem chạy tiếp, phải thiết kế nhánh dự phòng ngay từ đầu.
+
 ## Hybrid: thêm pin, thêm điều kiện
 
 Hybrid thường quản lý PV, lưới, pin và có thể cấp một nhánh tải dự phòng. Khi mất lưới, hệ phải tách khỏi lưới ngoài rồi tạo nguồn cục bộ; thời gian chuyển, công suất liên tục, công suất đỉnh và khả năng chạy không pin phụ thuộc đúng model.

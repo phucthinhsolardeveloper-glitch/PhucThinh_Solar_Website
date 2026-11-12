@@ -12,11 +12,15 @@ Gia đình A thường ở nhà từ sáng đến chiều. Bơm nước chạy t
 
 Điểm cần hỏi không phải “450 kWh thì lắp bao nhiêu kW?”, mà là những tải ban ngày thực sự chiếm bao nhiêu và có thể chạy cùng lúc không. Nếu mái đủ dùng, thiết kế có thể ưu tiên phần điện tự dùng tại chỗ thay vì mặc định tăng pin để chuyển toàn bộ điện sang buổi tối.
 
+Ví dụ, nếu bơm nước có thể chạy vào cuối buổi sáng thay vì buổi tối, đó là một thay đổi lịch vận hành cần đưa vào phương án trước khi tính thêm pin. Bài này chỉ giúp nhận ra cơ hội đó; cách đọc từng ô trên hóa đơn thuộc bài thực hành riêng.
+
 ## Hồ sơ B: phần lớn nhu cầu nằm sau giờ nắng
 
 Gia đình B đi làm và đi học ban ngày. Điều hòa, bếp điện và bình nóng lạnh hoạt động chủ yếu từ 18–23 giờ. Tổng kWh giống hộ A, nhưng phần điện phát vào ban ngày khó trùng tải hơn.
 
 Ở đây cần tách hai câu hỏi: có tải nào chuyển được sang giờ có nắng không, và việc lưu trữ có đáng với mục tiêu sử dụng hay không? Pin có thể dịch chuyển điện nhưng đi kèm dung lượng khả dụng, tổn thất, công suất sạc-xả và chi phí. Không thể kết luận chỉ từ tổng kWh.
+
+Một lịch dùng điện như 18–23 giờ cũng chưa đủ để chọn pin: cần biết những thiết bị nào chạy cùng lúc, thiết bị nào chỉ cần dời giờ, và khi cúp điện có cần giữ chúng hay không. Nếu mục tiêu chỉ là giảm điện mua buổi tối, câu hỏi khác với mục tiêu duy trì tủ lạnh qua một lần mất điện.
 
 ## Hồ sơ C: tải theo mùa và nhu cầu dự phòng
 
@@ -31,6 +35,12 @@ Hồ sơ này cần xem công suất chạy đồng thời, dòng khởi động
 | A — dùng ban ngày | Mức tải trùng với giờ phát và diện tích mái dùng được |
 | B — dùng buổi tối | Khả năng chuyển giờ, nhu cầu pin và chi phí lưu trữ |
 | C — tải theo mùa/dự phòng | Tải khởi động, nhánh ưu tiên và thời gian backup |
+
+| Hồ sơ | Việc nên chuẩn bị tiếp |
+|---|---|
+| A | Lịch chạy các tải có thể dời sang giờ nắng |
+| B | Tỷ lệ tải buổi tối và danh sách thiết bị có thể chuyển giờ |
+| C | Công suất khởi động, nhánh cần giữ và thời gian backup |
 
 Mái và bóng che vẫn có thể đổi kết quả: diện tích nhìn thấy không phải toàn bộ diện tích lắp được, còn các mảng mái khác hướng sẽ phát ở những thời điểm khác nhau. PVGIS có thể hỗ trợ ước tính bức xạ theo địa điểm, nhưng không thay thế khảo sát mái, dữ liệu tải và thiết kế điện tại công trình.
 

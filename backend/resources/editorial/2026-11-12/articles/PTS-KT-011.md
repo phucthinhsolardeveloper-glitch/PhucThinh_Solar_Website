@@ -14,6 +14,12 @@ Hãy đánh dấu vùng mái có thể lắp, lối bảo trì, khoảng tránh 
 
 Mái rộng, ít vật cản thường có nhiều lựa chọn. Mái nhỏ hoặc chia nhiều mặt có thể cần tấm nhỏ hơn để tận dụng hình dạng; lắp được nhiều tấm vừa vặn đôi khi hữu ích hơn cố lấy số watt lớn nhất trên từng tấm.
 
+### Một tình huống đọc báo giá
+
+Giả sử phần mái còn lại bị cắt thành hai mảng bởi cửa mái. Báo giá A dùng ít tấm công suất cao nhưng để lại một dải trống khó dùng; báo giá B dùng nhiều tấm nhỏ hơn, tổng Wp chưa chắc cao hơn nhưng phủ được hai mảng và giữ lối bảo trì. Chưa thể chọn A hay B chỉ bằng tổng Wp: cần đặt kích thước thật lên sơ đồ, xem bóng che theo từng mảng rồi mới kiểm tra chuỗi và inverter.
+
+Đây cũng là chỗ cần hỏi người tư vấn: phương án đã tính phần mái bỏ trống, khoảng thao tác và khả năng thay thế đúng model chưa? Câu hỏi này cụ thể hơn việc hỏi “tấm nào mạnh nhất”.
+
 ## Sau kích thước mới so hiệu suất và chi phí
 
 Hiệu suất module cho biết công suất trên diện tích trong điều kiện đo. Một tấm công suất cao có thể đạt con số đó nhờ kích thước lớn hơn, mật độ công suất hoặc cấu trúc cell; vì vậy đừng dùng watt trên nhãn để suy ngược rằng tấm đó “tốt hơn” ở mọi mái.
