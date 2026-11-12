@@ -73,5 +73,3 @@ Không có một ngưỡng kWh hàng tháng đúng cho mọi gia đình. Hóa đ
 - [U.S. Department of Energy – Rooftop Solar Potential](https://www.energy.gov/cmei/systems/solar-rooftop-potential)
 - [European Commission Joint Research Centre – PVGIS](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en)
 - [European Commission Joint Research Centre – PVGIS User Manual](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en)
-
-*Gợi ý infographic tự thiết kế: lịch 24 giờ minh họa ba nhóm tải “đang chạy ban ngày – có thể chuyển giờ – chủ yếu buổi tối”, dùng dữ liệu ví dụ có ghi rõ giả định và không gắn với hộ gia đình thật.*

@@ -21,7 +21,9 @@ def check(condition: bool, message: str) -> None:
 
 metadata = json.loads((ROOT / "written-articles.json").read_text(encoding="utf-8"))
 metadata_ids = [article["id"] for article in metadata["articles"]]
-check(metadata_ids == EXPECTED_METADATA_IDS, "metadata must retain 004–009 and add exactly 010–015")
+check(metadata_ids[:len(EXPECTED_METADATA_IDS)] == EXPECTED_METADATA_IDS
+      and len(metadata_ids) == len(set(metadata_ids)),
+      "metadata must retain the 004–015 prefix, with no duplicate IDs")
 
 with (ROOT / "calendar-180.csv").open(encoding="utf-8-sig", newline="") as csv_file:
     calendar = {row["id"]: row for row in csv.DictReader(csv_file)}
@@ -36,14 +38,15 @@ for article_id in TARGET_IDS:
     check(headings and headings[0].startswith("## "), f"{path.name}: first heading must be H2, without a body H1")
     check(not re.search(r"(?m)^#(?!#)\s", body), f"{path.name}: body must not contain H1")
     check("### Nguồn tham khảo" in body, f"{path.name}: missing sources section")
-    source_section = body.split("### Nguồn tham khảo", 1)[1].split("\n*Gợi ý", 1)[0]
+    source_section = body.split("### Nguồn tham khảo", 1)[1]
     urls = re.findall(r"\]\((https?://[^)]+)\)", source_section)
     check(2 <= len(urls) <= 3, f"{path.name}: expected 2–3 source URLs, got {len(urls)}")
     check(
         all(urlparse(url).scheme == "https" and urlparse(url).netloc for url in urls),
         f"{path.name}: source URL must be an absolute HTTPS URL",
     )
-    check("*Gợi ý infographic tự thiết kế:" in body, f"{path.name}: missing original illustration suggestion")
+    check("Gợi ý infographic" not in body, f"{path.name}: private illustration brief is public")
+    check("/upload/news/pts-explainer-" in body, f"{path.name}: missing approved inline infographic")
     check(article_id in calendar, f"{article_id}: missing from calendar-180.csv")
     metadata_entry = next((entry for entry in metadata["articles"] if entry["id"] == article_id), None)
     check(metadata_entry is not None, f"{article_id}: missing metadata")

@@ -18,14 +18,15 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
 
     expect(EditorialPlanItem::query()->count())->toBe(180)
         ->and(EditorialPlanItem::query()->distinct()->count('scheduled_for'))->toBe(180)
-        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(15)
-        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(165)
+        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(21)
+        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(159)
         ->and(EditorialPlanItem::query()->min('scheduled_for'))->toBe('2026-11-13 08:00:00')
         ->and(EditorialPlanItem::query()->max('scheduled_for'))->toBe('2027-01-11 19:30:00');
 
     $first = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-001')->sole();
     $fourth = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-004')->sole();
     $last = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-180')->sole();
+    $newDraft = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-021')->sole();
     $tenth = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-010')->sole();
     expect($tenth->stage)->toBe('review')
         ->and($tenth->post)->toBeInstanceOf(Post::class)
@@ -34,6 +35,11 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
         ->and(RichText::sanitize((string) $tenth->post->body))->toContain('/upload/news/pts-explainer-grid-outage.webp')
         ->and($tenth->post->body)->not->toContain('<h1>')
         ->and(Storage::disk('upload_news')->exists('pts-explainer-grid-outage.webp'))->toBeTrue();
+    expect($newDraft->stage)->toBe('review')
+        ->and($newDraft->post)->toBeInstanceOf(Post::class)
+        ->and($newDraft->post->is_visible)->toBeFalse()
+        ->and($newDraft->post->body)->not->toContain('Gợi ý infographic')
+        ->and($newDraft->image_status)->toBe('mockup');
     expect($first->post)->toBeInstanceOf(Post::class)
         ->and($first->post->is_visible)->toBeFalse()
         ->and($first->post->published_at)->toBe('2026-11-13 08:00:00')
@@ -56,7 +62,8 @@ it('preserves editorial changes on repeated imports and displays the planning ca
     Artisan::call('pts:editorial-batch', ['--apply' => true]);
     Artisan::call('pts:editorial-calendar', ['--apply' => true]);
 
-    $item = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-020')->sole();
+    // PTS-KT-020 is now a written/linked article; use the next idea-only plan slot.
+    $item = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-022')->sole();
     $item->update(['title' => 'Tên đã sửa thủ công', 'stage' => 'research', 'editor_notes' => 'Đang kiểm chứng nguồn']);
     Artisan::call('pts:editorial-calendar', ['--apply' => true]);
     expect($item->fresh()->title)->toBe('Tên đã sửa thủ công')

@@ -69,5 +69,3 @@ Watt cao hơn cho biết công suất danh định mỗi module cao hơn trong �
 - [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
 - [Fraunhofer ISE – Photovoltaics Report](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
 - [European Commission Joint Research Centre – PVGIS User Manual](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en)
-
-*Gợi ý infographic tự thiết kế: so sánh hai mái có cùng diện tích với module kích thước và công suất khác nhau, kèm chú giải Wp, hiệu suất diện tích và sơ đồ giới hạn MPPT; không dùng ảnh model hãng nếu chưa có quyền sử dụng.*

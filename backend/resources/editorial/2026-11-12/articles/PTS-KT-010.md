@@ -60,5 +60,3 @@ Tấm pin vẫn nhận ánh sáng khi lưới mất, nhưng hệ hòa lưới th
 - [U.S. Department of Energy – Solar and Resilience Basics](https://www.energy.gov/cmei/systems/solar-and-resilience-basics)
 - [National Renewable Energy Laboratory – A Primer on the Unintentional Islanding Protection Requirement in IEEE Std 1547-2018](https://www.nrel.gov/docs/fy22osti/77782.pdf)
 - [U.S. Department of Energy – Solar Integration: Inverters and Grid Services Basics](https://www.energy.gov/cmei/systems/solar-integration-inverters-and-grid-services-basics)
-
-*Gợi ý infographic tự thiết kế: sơ đồ ba trạng thái “lưới bình thường – lưới mất/hòa lưới tự ngắt – tải ưu tiên trên nhánh backup”, chú thích đường cách ly và ghi rõ đây là sơ đồ nguyên lý, không dùng để thi công.*

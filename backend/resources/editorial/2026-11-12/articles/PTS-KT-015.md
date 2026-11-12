@@ -67,5 +67,3 @@ Tấm pin màu đen không mặc định tốt hơn tấm màu xanh. Màu chủ 
 - [Fraunhofer ISE – Photovoltaics Report](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
 - [IEA PVPS Task 15 – Coloured Building Integrated Photovoltaics](https://iea-pvps.org/wp-content/uploads/2020/01/IEA-PVPS_15_R07_Coloured_BIPV_report.pdf)
 - [European Commission – The interplay between aesthetics and energy performance in BIPV modules](https://build-up.ec.europa.eu/en/resources-and-tools/publications/interplay-between-aesthetics-and-energy-performance-bipv-modules)
-
-*Gợi ý infographic tự thiết kế: mặt cắt module chú thích cell, kính, đường dẫn, khung và backsheet bằng hai bảng màu; dùng hình vẽ gốc, không sao chép ảnh sản phẩm hoặc sơ đồ có bản quyền.*

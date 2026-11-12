@@ -4,8 +4,8 @@
 
 - **Phạm vi:** 13/11/2026 – 11/01/2027, 3 khung giờ/ngày: **08:00, 12:00, 19:30** (Asia/Ho_Chi_Minh).
 - **Số đầu mục:** 180. Gồm **164 bài Kiến thức sản phẩm** và **16 bài Tin mới nhất**; không tự tạo tin truyền thông doanh nghiệp nếu không có hoạt động đã xác nhận.
-- **Đã biên tập đủ thân bài và liên kết lịch:** 15 bài (PTS-KT-001..015). Các bài đều **is_visible=false**, dù có giờ dự kiến trong `published_at`; không công khai chỉ vì chạy bộ nhập.
-- **Đang ở mức ý tưởng/nghiên cứu:** 165 bài (PTS-KT-016..180). Có tiêu đề, góc viết, nguồn tham khảo đầu vào, brief ảnh, khung giờ, trạng thái và bìa đồ họa thương hiệu; **chưa phải bài hoàn chỉnh**.
+- **Đã biên tập đủ thân bài và liên kết lịch:** 21 bài (PTS-KT-001..021). Các bài đều **is_visible=false**, dù có giờ dự kiến trong `published_at`; không công khai chỉ vì chạy bộ nhập.
+- **Đang ở mức ý tưởng/nghiên cứu:** 159 bài (PTS-KT-022..180). Có tiêu đề, góc viết, nguồn tham khảo đầu vào, brief ảnh, khung giờ, trạng thái và bìa đồ họa thương hiệu; **chưa phải bài hoàn chỉnh**.
 - **Hình:** 3 ảnh bìa bản gốc cho các bài đầu + 177 hình bìa đồ họa WebP 1600×900 từ script. Hình đồ họa có **logo dài chính thức** của Phúc Thịnh Solar; logo đứng được lưu làm tài nguyên khi dùng cho bố cục khác.
 - **Source:** `backend/resources/editorial/2026-11-12/calendar-180.csv` (nguồn danh mục 180 chủ đề đã thống nhất, ngày đã chuyển về lịch hiện hành).
 - **Admin:** `/admin/lich-bien-tap` để xem theo tháng; `/admin/editorial-plan-items` để tìm kiếm/lọc và chỉnh đầu mục.
@@ -55,7 +55,7 @@ docker exec pts-laravel13-local php artisan pts:editorial-calendar --apply
 # Xem trước — không ghi dữ liệu
 bash deploy/laravel13/scripts/release-editorial-content.sh --preview
 # Sau khi XÁC NHẬN backup, script sẽ chạy migration riêng, nhập 3 bài cũ,
-# 12 bài bổ sung, 180 ô lịch và 180 ảnh bìa vào upload/news:
+# 18 bài bổ sung, 180 ô lịch và 180 ảnh bìa vào upload/news:
 PTS_EDITORIAL_BACKUP_VERIFIED=1 bash deploy/laravel13/scripts/release-editorial-content.sh --apply
 ```
 
@@ -64,7 +64,7 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 **An toàn/lặp lại:**
 
 - Import theo `plan_key` (PTS-KT-001..180), không tạo bản ghi trùng và không ghi đè lịch/ghi chú đã sửa trong Admin.
-- Nội dung mới chỉ tạo Post khi có file Markdown đầy đủ, không tạo Post rỗng từ 165 ý tưởng còn lại.
+- Nội dung mới chỉ tạo Post khi có file Markdown đầy đủ, không tạo Post rỗng từ 159 ý tưởng còn lại.
 - Bài mới giữ trạng thái ẩn dù có `published_at`; chuyển giờ trong kế hoạch không làm bật bài.
 - Ảnh mới ở local được Laravel phục vụ qua `/upload/news/` từ nguồn tĩnh khi volume upload cũ chỉ đọc; production nhập vào upload dùng checksum để tránh ghi đè file khác.
 - Nếu backup hoặc migration fail, **không tự động xuất bản**; rollback database và ảnh là bước riêng, không nhầm với rollback image Docker.
@@ -80,7 +80,7 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 
 ## Ảnh minh họa và ghi nguồn ngắn (12/11/2026)
 
-- Hiện đã có 15 bản nháp đầy đủ; 165 đầu mục còn là ý tưởng. PTS-KT-010 đến PTS-KT-015 có 1 infographic riêng trong thân bài.
+- Hiện đã có 21 bản nháp đầy đủ; 159 đầu mục còn là ý tưởng. PTS-KT-010 đến PTS-KT-015 có 1 infographic riêng trong thân bài.
 - Dưới ảnh bìa chỉ hiện một dòng: **Ảnh: Tác giả / Pexels** hoặc **Hình minh họa: Phúc Thịnh Solar**. Ảnh bên ngoài liên kết đến trang nguồn.
 - Danh mục ghi nguồn: `backend/resources/editorial/2026-11-12/image-credits.json`. Các hình tự thiết kế dùng logo dài chính thức và không giả làm công trình thật.
 - Ảnh đèn đường cũ được thay bằng phối hợp cảnh nhiều đèn và ảnh có bối cảnh sáng rõ; một ảnh sân vườn tối được giữ như ngoại lệ.
@@ -88,7 +88,7 @@ Không chạy lệnh này ngoài VPS/container đúng của project. Chỉ dùng
 
 ## Bản cập nhật chọn ảnh 12/11/2026
 
-Đã chuyển 12 bài PTS-KT-004..015 từ bìa concept đồng dạng sang **11 ảnh chụp thật được tuyển chọn, 1 infographic kỹ thuật**. Ảnh đã được áp dụng vào 12 bản nháp ẩn trên local; không làm thay đổi trạng thái xuất bản. Các ảnh concept `pts-plan-*.webp` của 165 ý tưởng chưa viết chỉ phục vụ kế hoạch, không mặc định dùng làm bìa đăng bài.
+Đã chuyển 12 bài PTS-KT-004..015 từ bìa concept đồng dạng sang **11 ảnh chụp thật được tuyển chọn, 1 infographic kỹ thuật**. Ảnh đã được áp dụng vào 12 bản nháp ẩn trên local; không làm thay đổi trạng thái xuất bản. Các ảnh concept `pts-plan-*.webp` của 159 ý tưởng chưa viết chỉ phục vụ kế hoạch, không mặc định dùng làm bìa đăng bài.
 
 Quy chuẩn hình ảnh mới: `docs/07-features/editorial-photo-first-guidelines.md`.
 
@@ -96,3 +96,12 @@ Quy chuẩn hình ảnh mới: `docs/07-features/editorial-photo-first-guideline
 - Ảnh bìa mới: `frontend/public/assets/images/editorial/pts-photo-*.webp`.
 - Script tạo lại: `node scripts/content/prepare-editorial-photo-covers.mjs`.
 - Import `pts:editorial-calendar --apply` chỉ nâng cấp bìa generic trên bản nháp **chưa hiển thị** và chỉ khi chưa bị người biên tập sửa; bước deploy import hiện tại đã bao gồm media mới.
+
+## Tiến độ Orca 12/11/2026: 21 bản nháp, sản phẩm liên quan
+
+- PTS-KT-016..021 đã biên tập nội dung và SEO, có 2–3 nguồn tham khảo/bài. Ảnh bìa của sáu bài còn ở trạng thái needs_photo; bìa hiện tại là concept, chưa phải ảnh được duyệt.
+- Đã loại lời nhắc làm infographic khỏi nội dung hiển thị PTS-KT-010..021; gợi ý ảnh riêng của 016..021 được lưu trong manifest hình.
+- Công cụ liên kết sản phẩm đúng chủ đề (tối đa 4) có dry-run, chỉ áp dụng vào bản nháp ẩn chưa có lựa chọn thủ công; không gắn sản phẩm cho bài chỉ nói về thị trường chung. Mapping được lưu ở related-products.json, báo cáo ở related-products-report.md.
+- Nút xem bài ẩn sử dụng signed preview có hạn, không bật công khai bài.
+- Validate batch 010..015 và 016..021 trước mỗi lần release; không bỏ qua khâu duyệt ảnh.
+- Đây là source master local; chưa có bước push hay deploy production.

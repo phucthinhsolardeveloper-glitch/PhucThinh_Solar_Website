@@ -2,8 +2,8 @@
 
 **Thời gian:** 13/11/2026 – 11/01/2027 · 08:00 / 12:00 / 19:30 (Asia/Ho_Chi_Minh).
 
-**15 bài đầu đã soạn nội dung và có bản nháp ẩn trong CMS.**
-165 bài còn lại mới có ý tưởng, nguồn tham khảo và bìa dự thảo có logo; không được công khai khi chưa biên tập và duyệt.
+**21 bài đầu đã soạn nội dung và có bản nháp ẩn trong CMS.**
+159 bài còn lại mới có ý tưởng, nguồn tham khảo và bìa dự thảo có logo; không được công khai khi chưa biên tập và duyệt.
 
 Đây là bản chụp từ CSV source-controlled. Trạng thái sửa trực tiếp trong Admin là nguồn vận hành mới nhất.
 
@@ -19,49 +19,49 @@
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **kW, kWp và kWh khác nhau thế nào? 7 ví dụ tránh nhầm** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics) | pts-plan-004.webp |
-| 12:00 | **Inverter điện mặt trời là gì? Nó thực hiện những chức năng nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://blog.fronius.com/solar-energy/en/know-how/what-is-an-inverter/) | pts-plan-005.webp |
-| 19:30 | **Có nên lắp điện mặt trời khi nhà chỉ dùng điện nhiều vào buổi tối?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics) | pts-plan-006.webp |
+| 08:00 | **kW, kWp và kWh khác nhau thế nào? 7 ví dụ tránh nhầm** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics) | pts-photo-004.webp |
+| 12:00 | **Inverter điện mặt trời là gì? Nó thực hiện những chức năng nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://blog.fronius.com/solar-energy/en/know-how/what-is-an-inverter/) | pts-photo-005.webp |
+| 19:30 | **Có nên lắp điện mặt trời khi nhà chỉ dùng điện nhiều vào buổi tối?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics) | pts-photo-006.webp |
 
 ## 15/11/2026 — Chủ Nhật
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics) | pts-plan-007.webp |
-| 12:00 | **Mua đèn năng lượng mặt trời: đừng chỉ nhìn con số W quảng cáo** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.lightingglobal.org/resource/lighting-global-quality-standards/) | pts-plan-008.webp |
-| 19:30 | **Trời nhiều mây, ánh sáng yếu: pin còn tạo điện thế nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics) | pts-plan-009.webp |
+| 08:00 | **Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics) | pts-photo-007.webp |
+| 12:00 | **Mua đèn năng lượng mặt trời: đừng chỉ nhìn con số W quảng cáo** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.lightingglobal.org/resource/lighting-global-quality-standards/) | pts-photo-008.webp |
+| 19:30 | **Trời nhiều mây, ánh sáng yếu: pin còn tạo điện thế nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics) | pts-photo-009.webp |
 
 ## 16/11/2026 — Thứ Hai
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Vì sao có tấm pin nhưng mất điện lưới vẫn có thể bị cúp?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-and-resilience-basics) | pts-plan-010.webp |
-| 12:00 | **Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog) | pts-plan-011.webp |
-| 19:30 | **IEA công bố Renewables 2026: triển vọng điện mặt trời đến 2031** | Tin mới nhất | Đã soạn · chờ duyệt · [Nguồn](https://www.iea.org/reports/renewables-2026) | pts-plan-012.webp |
+| 08:00 | **Vì sao có tấm pin nhưng mất điện lưới vẫn có thể bị cúp?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-and-resilience-basics) | pts-photo-010.webp |
+| 12:00 | **Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog) | pts-photo-011.webp |
+| 19:30 | **IEA công bố Renewables 2026: triển vọng điện mặt trời đến 2031** | Tin mới nhất | Đã soạn · chờ duyệt · [Nguồn](https://www.iea.org/reports/renewables-2026) | pts-photo-012.webp |
 
 ## 17/11/2026 — Thứ Ba
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-013.webp |
-| 12:00 | **Inverter hòa lưới và hybrid khác nhau thế nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog/solar-hybrid-battery-ready-inverters) | pts-plan-014.webp |
-| 19:30 | **Tấm pin màu đen có luôn tốt hơn tấm pin màu xanh?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-plan-015.webp |
+| 08:00 | **Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-photo-013.webp |
+| 12:00 | **Inverter hòa lưới và hybrid khác nhau thế nào?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.cleanenergyreviews.info/blog/solar-hybrid-battery-ready-inverters) | pts-explainer-inverter-types.webp |
+| 19:30 | **Tấm pin màu đen có luôn tốt hơn tấm pin màu xanh?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-photo-015.webp |
 
 ## 18/11/2026 — Thứ Tư
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Cách đọc hóa đơn tiền điện trước khi thiết kế hệ thống** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-016.webp |
-| 12:00 | **Lumen, lux và watt khác nhau thế nào khi chọn đèn?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.lightingglobal.org/resource/lighting-global-quality-standards/) | pts-plan-017.webp |
-| 19:30 | **Lắp tấm pin càng nhiều có luôn rút ngắn hoàn vốn?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.irena.org/Publications/2026/Jul/Renewable-Power-Generation-Costs-in-2025) | pts-plan-018.webp |
+| 08:00 | **Cách đọc hóa đơn tiền điện trước khi thiết kế hệ thống** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-016.webp |
+| 12:00 | **Lumen, lux và watt khác nhau thế nào khi chọn đèn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.lightingglobal.org/resource/lighting-global-quality-standards/) | pts-plan-017.webp |
+| 19:30 | **Lắp tấm pin càng nhiều có luôn rút ngắn hoàn vốn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.irena.org/Publications/2026/Jul/Renewable-Power-Generation-Costs-in-2025) | pts-plan-018.webp |
 
 ## 19/11/2026 — Thứ Năm
 
 | Giờ | Chủ đề | Chuyên mục | Nội dung | Ảnh bìa |
 |---|---|---|---|---|
-| 08:00 | **Mái tôn, mái ngói, mái bằng: lưu ý khi khảo sát điện mặt trời** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics) | pts-plan-019.webp |
-| 12:00 | **TOPCon, HJT, BC (Back Contact) khác nhau ra sao?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-plan-020.webp |
-| 19:30 | **Điện mặt trời có làm mái nhà nóng hơn hay mát hơn?** | Kiến thức sản phẩm | Đề cương · chờ viết · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-021.webp |
+| 08:00 | **Mái tôn, mái ngói, mái bằng: lưu ý khi khảo sát điện mặt trời** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics) | pts-plan-019.webp |
+| 12:00 | **TOPCon, HJT, BC (Back Contact) khác nhau ra sao?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html) | pts-plan-020.webp |
+| 19:30 | **Điện mặt trời có làm mái nhà nóng hơn hay mát hơn?** | Kiến thức sản phẩm | Đã soạn · chờ duyệt, ảnh bìa tạm · [Nguồn](https://www.energy.gov/cmei/systems/solar-rooftop-potential) | pts-plan-021.webp |
 
 ## 20/11/2026 — Thứ Sáu
 

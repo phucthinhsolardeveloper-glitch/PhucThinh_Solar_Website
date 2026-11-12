@@ -306,7 +306,7 @@ thì đặt `/usr/local/sbin/pts-backup-offsite` như stack cũ từng dự tín
 
 ## Editorial content release — 180 bài / 60 ngày (2026-11-12)
 
-Release source gồm 180 vị trí bài viết (13/11/2026 – 11/01/2027), 15 bản thảo ẩn,
+Release source gồm 180 vị trí bài viết (13/11/2026 – 11/01/2027), 21 bản thảo ẩn,
 177 bìa kế hoạch có logo chính thức cùng các ảnh/infographic của đợt trước.
 Phải chạy bước nhập dữ liệu sau khi deploy backend/Nuxt; build image **không tự nhập** CSV/Markdown vào database.
 
@@ -318,5 +318,13 @@ PTS_EDITORIAL_BACKUP_VERIFIED=1 bash deploy/laravel13/scripts/release-editorial-
 ```
 
 Màn Admin local: `/admin/editorial-plan-items` (kế hoạch) và `/admin/lich-bien-tap` (lịch tháng).
-Cả 15 bài vẫn `is_visible=false`, ngày giờ chỉ là dự kiến và không tự công khai.
+Cả 21 bài vẫn `is_visible=false`, ngày giờ chỉ là dự kiến và không tự công khai.
 Thông tin và checklist: `docs/07-features/editorial-plan-180-2026-11-12.md`.
+
+### Nội dung 21 bài và sản phẩm liên quan
+
+Các bài PTS-KT-016..021 đã có thân bài nhưng thiếu ảnh cuối cùng được cấp quyền, chưa được xuất bản. Sau khi nhập dữ liệu lịch bằng release-editorial-content.sh và xác nhận danh mục sản phẩm thực tế, xem trước kết quả gợi ý bằng lệnh (không ghi DB):
+
+    docker exec pts-laravel13-backend php artisan pts:editorial-product-links
+
+Bước --apply cho sản phẩm chỉ được chạy riêng sau khi duyệt báo cáo, DB backup và bảo đảm quyền. Production còn yêu cầu --production-approved. Không để một bước deploy image tự bật hiển thị hay ghi đè lựa chọn sản phẩm thủ công.

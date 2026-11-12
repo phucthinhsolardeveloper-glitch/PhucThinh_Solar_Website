@@ -70,5 +70,3 @@ Inverter hòa lưới thường tập trung chuyển đổi điện mặt trời
 - [Clean Energy Reviews – Solar hybrid and battery-ready inverters](https://www.cleanenergyreviews.info/blog/solar-hybrid-battery-ready-inverters)
 - [Fronius – What is an inverter?](https://blog.fronius.com/solar-energy/en/know-how/what-is-an-inverter/)
 - [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
-
-*Gợi ý infographic tự thiết kế: sơ đồ hai cấu hình đơn giản, đánh dấu đường DC/AC, pin và tủ tải dự phòng; thêm cảnh báo “chỉ có nhánh được thiết kế backup mới được cấp điện khi mất lưới”, không dùng để thi công.*

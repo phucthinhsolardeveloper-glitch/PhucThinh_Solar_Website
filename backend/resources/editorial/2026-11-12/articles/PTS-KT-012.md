@@ -54,5 +54,3 @@ Renewables 2026 dự báo điện tái tạo tiếp tục mở rộng đến nă
 - [IEA – Renewables 2026: Analysis and forecasts to 2031](https://www.iea.org/reports/renewables-2026)
 - [IEA – Executive Summary, Renewables 2026](https://www.iea.org/reports/renewables-2026/executive-summary)
 - [IEA – Thông cáo về triển vọng năng lượng tái tạo 2026–2031](https://www.iea.org/news/energy-security-concerns-spur-faster-renewables-growth-across-a-widening-constellation-of-countries)
-
-*Gợi ý infographic tự thiết kế: biểu đồ hai phần tách riêng công suất tái tạo dự báo tăng thêm và tỷ trọng nguồn tái tạo trong sản lượng điện; ghi rõ toàn cầu, giai đoạn và nhãn “dự báo IEA”, không đại diện cho Việt Nam.*
