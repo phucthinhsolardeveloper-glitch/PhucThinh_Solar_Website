@@ -1,0 +1,9 @@
+{
+  "exported_at": "2026-11-12T00:00:00+07:00",
+  "source": "read-only local DB via pts-laravel13-local",
+  "records": [
+    {"id": 1, "plan_key": "PTS-KT-001", "post_id": 136, "title": "Điện mặt trời hoạt động như thế nào? Từ ánh nắng đến điện sử dụng trong nhà", "slug": "dien-mat-troi-hoat-dong-nhu-the-nao", "published_at": "2026-11-13 08:00:00", "is_visible": false, "body_html_sha256": "e9cd81db39e47b55772855da584082820436ad1740c5916da2faa36c11237480", "source_link_counts": {"primary": 1, "secondary": 1, "body_href": 2, "body_src": 1}},
+    {"id": 2, "plan_key": "PTS-KT-002", "post_id": 137, "title": "Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng", "slug": "cach-doc-datasheet-tam-pin-nang-luong-mat-troi", "published_at": "2026-11-13 12:00:00", "is_visible": false, "body_html_sha256": "86d2a7829dacb47f1556a33703d1c4811b71e173a00b7cddeaf8a81f0e2e5d32", "source_link_counts": {"primary": 1, "secondary": 1, "body_href": 3, "body_src": 1}},
+    {"id": 3, "plan_key": "PTS-KT-003", "post_id": 138, "title": "Điện mặt trời toàn cầu đạt 2,96 TW: Xu hướng nổi bật từ IEA PVPS 2026", "slug": "thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps", "published_at": "2026-11-13 19:30:00", "is_visible": false, "body_html_sha256": "7ad8ccda4aa3e18111146bafe1b49dfdb1c16880c4254e06b4c1e4bee6f3c628", "source_link_counts": {"primary": 1, "secondary": 1, "body_href": 2, "body_src": 1}}
+  ]
+}
