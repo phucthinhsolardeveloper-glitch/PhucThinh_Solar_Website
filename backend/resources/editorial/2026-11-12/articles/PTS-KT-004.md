@@ -1,52 +1,37 @@
 # kW, kWp và kWh khác nhau thế nào? 7 ví dụ tránh nhầm
 
-Ba ký hiệu này cùng xuất hiện trong báo giá điện mặt trời nhưng trả lời ba câu hỏi khác nhau: thiết bị đang dùng hoặc tạo ra bao nhiêu công suất, dàn pin có quy mô thế nào, và đã dùng hoặc tạo ra bao nhiêu điện năng.
+Muốn đọc một báo giá, chỉ cần tách ba câu hỏi: thiết bị đang cần bao nhiêu công suất, dàn pin có quy mô danh định bao nhiêu, và đã dùng bao nhiêu điện năng.
 
-| Ký hiệu | Đo gì? | Ví dụ dễ hình dung |
+| Ký hiệu | Trả lời câu hỏi | Ví dụ |
 |---|---|---|
-| **kW** | Công suất tại một thời điểm | Máy bơm đang chạy ở mức 1 kW |
-| **kWp** | Công suất đỉnh danh định của dàn pin ở điều kiện thử nghiệm chuẩn | 10 tấm 600 Wp tạo thành dàn 6 kWp DC |
-| **kWh** | Điện năng đã dùng hoặc tạo ra trong một khoảng thời gian | Máy bơm 1 kW chạy 3 giờ dùng khoảng 3 kWh |
+| **kW** | Mức công suất tại một thời điểm | Máy bơm đang chạy 1 kW |
+| **kWp** | Quy mô đỉnh danh định của dàn pin tại STC | 10 tấm 600 Wp = 6 kWp DC |
+| **kWh** | Lượng điện tích lũy theo thời gian | Máy 1 kW chạy 3 giờ ≈ 3 kWh |
 
-## kW: mức đang chạy lúc này
-
-Một thiết bị ghi 1,5 kW có thể cần công suất khoảng 1,5 kW khi hoạt động ở mức định mức. Nếu chạy liên tục một giờ và công suất không đổi, lượng điện tương ứng là khoảng 1,5 kWh. Thiết bị thực tế có thể chạy theo chu kỳ hoặc tự điều chỉnh nên con số không phải lúc nào cũng giữ nguyên.
-
-## kWh: con số trên hóa đơn
-
-Điện năng được tính đơn giản bằng công suất nhân với thời gian:
+## Công thức dùng được ngay trên hóa đơn
 
 **Điện năng (kWh) = Công suất (kW) × Thời gian (giờ).**
 
-Vì vậy, hóa đơn ghi 450 kWh nghĩa là cả kỳ đã dùng 450 kWh, không phải nhà đang dùng 450 kW tại một thời điểm. Khi công suất thay đổi trong ngày, công tơ cộng dồn các khoảng sử dụng khác nhau.
+Vì vậy hóa đơn 450 kWh là tổng điện của cả kỳ, không phải nhà đang chạy ở 450 kW. Thiết bị chạy theo chu kỳ còn làm công suất thực tế thay đổi.
 
-## kWp: quy mô danh định của dàn pin
+### Bảy tình huống đọc nhanh
 
-kWp mô tả công suất DC danh định của dàn pin ở điều kiện thử nghiệm chuẩn (STC). Đây là mốc để so quy mô hệ thống, không phải mức phát điện liên tục ngoài mái nhà.
+1. Inverter ghi 5 kW: đó là công suất AC danh định, không phải sản lượng mỗi giờ.
+2. Dàn 5 kWp: đó là tổng công suất DC danh định của các tấm ở điều kiện thử nghiệm.
+3. Pin lưu trữ 10 kWh: là dung lượng danh định; thời gian dùng còn tùy tải và dung lượng khả dụng.
+4. Ứng dụng báo 25 kWh hôm nay: tổng điện đã tạo trong ngày, không phải 25 kW liên tục.
+5. Máy bơm 1,5 kW chạy 2 giờ: ví dụ lý tưởng là 3 kWh; thực tế có thể chạy theo chu kỳ.
+6. Tám tấm 625 Wp: cộng công suất danh định được 5 kWp, chưa phải sản lượng ngày.
+7. Hệ 5 kWp tạo ít hơn ngày nắng: bức xạ, nhiệt độ, bóng che, hướng mái và hiệu suất inverter làm kết quả thay đổi.
 
-Ví dụ, 8 tấm 625 Wp tạo thành dàn **5 kWp DC**. Công suất thực tế còn thay đổi theo bức xạ, nhiệt độ cell, mái, bụi, bóng che và hiệu suất inverter.
+## Một phép tính minh họa, không phải dự báo
 
-### Một bảng ví dụ khác
+Giả sử tải 2 kW chạy đều 3 giờ, điện năng là 6 kWh. Đây chỉ là phép đổi đơn vị. Không lấy 5 kWp nhân một số giờ cố định để hứa sản lượng, vì điều kiện mái và thời tiết không cố định.
 
-| Tình huống | Cách đọc |
-|---|---|
-| Inverter ghi 5 kW | Công suất AC danh định; không có nghĩa dàn pin chỉ được 5 kWp |
-| Pin lưu trữ ghi 10 kWh | Dung lượng năng lượng danh định; thời gian dùng tùy tải và dung lượng khả dụng |
-| Ứng dụng báo hệ PV tạo 25 kWh hôm nay | Tổng điện năng trong ngày, không phải công suất 25 kW |
-
-## Vì sao 5 kWp không có nghĩa mỗi ngày tạo 5 kWh?
-
-Trong một **ví dụ giả định**, hệ 5 kWp có 4 giờ nắng đỉnh tương đương và hiệu suất tổng hợp 0,8 sẽ cho:
-
-**5 kWp × 4 giờ × 0,8 = 16 kWh/ngày.**
-
-Đây không phải dự báo cho mọi mái nhà. Mưa, bóng che, hướng mái, nhiệt độ và dữ liệu bức xạ tại địa điểm đều có thể làm kết quả khác đi; muốn tính sản lượng cần khảo sát và mô phỏng phù hợp.
-
-## Khi đọc báo giá, hãy tách ba dòng
-
-Đề nghị đơn vị tư vấn ghi riêng tổng công suất DC của tấm pin (kWp), công suất AC của inverter (kW), và sản lượng dự kiến theo tháng/năm (kWh). Nếu gia đình dùng điện nhiều vào buổi tối, tổng kWh mỗi tháng vẫn chưa đủ để quyết định có cần pin lưu trữ: còn phải xem biểu đồ tải theo giờ, nhu cầu dự phòng và điều kiện tài chính.
+Khi xem báo giá, hãy ghi riêng công suất AC của inverter, kWp DC của dàn pin, kWh danh định/khả dụng của pin và dữ liệu điện năng dùng theo tháng. Bốn dòng này giúp tránh so những con số vốn đo những việc khác nhau.
 
 ### Nguồn tham khảo
 
+- [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
 - [U.S. Department of Energy – Solar Photovoltaic Technology Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics)
-- [U.S. Department of Energy – Solar PV Performance and Efficiency Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics)
+- [U.S. Department of Energy – Solar Photovoltaic Performance and Efficiency Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics)

@@ -1,33 +1,31 @@
 # Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào?
 
-Hãy bắt đầu từ câu hỏi “khi nào cần điện?” thay vì từ tên thiết bị. Nhà có lưới và dùng được điện ban ngày sẽ đi theo bài toán khác khu vực thường mất điện hoặc nơi chưa có lưới.
+Chọn theo lúc cần điện, không chọn theo tên thiết bị. Bảng dưới đây là điểm bắt đầu để hỏi đúng; nó không thay thế thiết kế điện của công trình.
 
-| Nhu cầu chính | Hướng phù hợp để xem xét | Điều kiện cần kiểm tra |
-|---|---|---|
-| Dùng điện mặt trời khi có nắng, vẫn có lưới bổ sung | **Hòa lưới** | Tải ban ngày, cấu hình chống đảo lưới, quy định đấu nối |
-| Dùng một phần điện buổi tối hoặc cần backup | **Hybrid** | Dung lượng và công suất pin, tải ưu tiên, cổng backup |
-| Không có lưới ổn định hoặc không có lưới | **Độc lập (off-grid)** | Pin, nguồn dự phòng, tải theo mùa và dữ liệu bức xạ |
+| Câu hỏi tại công trình | Hòa lưới | Hybrid | Độc lập |
+|---|---|---|---|
+| Có lưới ổn định để bù thiếu không? | Có | Có | Không hoặc không đáng tin cậy |
+| Muốn dùng điện ban ngày? | Có | Có | Có |
+| Muốn chuyển điện sang tối? | Không có pin thì không | Có thể, nếu có pin phù hợp | Có, trong giới hạn pin |
+| Khi mất lưới có tải còn điện? | Thông thường không | Có thể ở nhánh backup | Có, nếu pin/nguồn đủ |
+| Cần hỏi thêm | Chống đảo lưới, đấu nối | Pin, tải ưu tiên, cổng backup | Mùa mưa, nguồn dự phòng, tải cực đại |
 
-## Hòa lưới: hợp khi mục tiêu là tự dùng
+## Đọc ba lựa chọn bằng một ngày mất điện
 
-Điện PV cấp cho tải đang hoạt động; khi thiếu, nhà lấy thêm từ lưới. Khi lưới mất, inverter hòa lưới thông thường dừng phát vì cơ chế chống đảo lưới. Có tấm pin trên mái không đồng nghĩa nhà vẫn có điện trong lúc cúp.
+Với hệ hòa lưới, inverter bám theo điện áp và tần số của lưới; khi lưới mất, nó dừng phát để chống đảo lưới. Có tấm pin trên mái không đồng nghĩa ổ cắm vẫn có điện.
 
-## Hybrid: thêm khả năng lưu trữ, thêm điều kiện thiết kế
+Hybrid thêm khả năng điều phối PV, lưới và pin theo model. Nó có thể cấp một nhóm tải khi mất lưới nếu có cổng backup, thiết bị cách ly và thiết kế phù hợp; không mặc định cấp toàn bộ nhà.
 
-Hybrid điều phối PV, lưới và pin theo model. Pin có thể giúp chuyển điện từ ban ngày sang tối hoặc cấp cho một nhóm tải khi mất lưới, nhưng không mặc định cấp được toàn bộ nhà. Cần chốt trước thiết bị nào là tải thiết yếu, công suất khởi động của chúng và thời gian cần duy trì.
+Độc lập không có lưới để bù sai số. Một hệ đủ cho đèn có thể không đủ cho bơm hoặc điều hòa; phải tính theo tải, mùa mưa, dung lượng pin và nguồn dự phòng.
 
-## Độc lập: không có lưới để bù sai số
+## Bốn câu hỏi mang đi khảo sát
 
-Off-grid phải dựa vào pin và nguồn dự phòng được tính theo ngày nắng, mùa mưa và tải thực tế. Một thiết kế đủ cho chiếu sáng có thể không đủ cho bơm hoặc điều hòa. Vì không có lưới hỗ trợ, việc tính dung lượng và phương án dự phòng cần được thực hiện bởi người có chuyên môn.
+1. Tải nào phải còn điện và chạy cùng lúc? Có động cơ, dòng khởi động không?
+2. Mất điện thường kéo dài bao lâu, theo mùa có khác không?
+3. Có chấp nhận chi phí, bảo trì và thay thế pin theo vòng đời không?
+4. Sơ đồ cách ly, bảo vệ và đấu nối của đúng model nằm ở tài liệu nào?
 
-## Bốn câu hỏi giúp khoanh vùng
-
-1. Nhà có thể dùng bao nhiêu điện trong giờ có nắng?
-2. Mất điện xảy ra bao lâu và tải nào bắt buộc phải còn điện?
-3. Có chấp nhận pin, bảo trì và thay thế theo vòng đời không?
-4. Công trình có lưới ổn định hay cần vận hành độc lập theo mùa?
-
-Không nên chọn theo kW của inverter một mình, cũng không nên tự đấu nguồn dự phòng vào hệ thống. Mạch cách ly lưới, bảo vệ và đấu nối phải theo thiết kế an toàn.
+Không tự đấu nguồn dự phòng vào hệ thống cố định. Khả năng thực tế phải được xác nhận bằng datasheet, sơ đồ và thiết kế của người có chuyên môn.
 
 ### Nguồn tham khảo
 

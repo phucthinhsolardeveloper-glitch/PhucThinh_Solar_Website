@@ -1,32 +1,31 @@
 # Inverter điện mặt trời là gì? Nó thực hiện những chức năng nào?
 
-Buổi trưa, tấm pin trên mái đang tạo điện nhưng tủ lạnh, điều hòa và ổ cắm trong nhà vẫn cần loại điện mà thiết bị gia dụng sử dụng được. Inverter là bộ phận nhận điện một chiều (DC) từ tấm pin, chuyển thành điện xoay chiều (AC), rồi phối hợp với tải trong nhà và lưới điện theo cấu hình hệ thống.
+Nếu tấm pin là nơi tạo DC, inverter là bộ phận biến dòng đó thành AC để tải trong nhà có thể dùng. Khi đọc thông số inverter, đừng chỉ hỏi “bao nhiêu kW”; hãy hỏi nó nhận dàn pin ra sao, xử lý mất lưới thế nào và cấp điện cho tải nào.
 
-## Vai trò nhìn từ một ngày dùng điện
+## Một inverter làm ba việc chính
 
-Khi nhà có nắng và đang dùng điện, inverter chuyển phần điện phù hợp để cấp cho các thiết bị. Phần thiếu có thể lấy từ lưới; phần dư được xử lý theo thiết kế hòa lưới hoặc đưa vào pin ở hệ hybrid. Vì thế, chọn inverter không chỉ là nhìn một con số kW trên bảng giá.
+1. **Biến đổi:** chuyển DC từ pin thành AC phù hợp với hệ thống.
+2. **Theo dõi:** MPPT tìm điểm vận hành phù hợp khi bức xạ và điện áp thay đổi.
+3. **Bảo vệ/điều khiển:** giám sát điều kiện lưới và thực hiện các chức năng ngắt, giới hạn hoặc điều phối theo model.
 
-Inverter cũng theo dõi trạng thái vận hành, hiển thị công suất tức thời và sản lượng ngày/tháng trên màn hình hoặc ứng dụng ở những model có hỗ trợ. Các số liệu này cần đọc đúng điểm đo: công suất dàn pin, công suất inverter và điện dùng tại nhà không nhất thiết giống nhau.
+## Đọc theo tình huống mái nhà
 
-## Ba điều cần kiểm tra trước khi chọn
+| Tình huống | Điều cần xem trên tài liệu |
+|---|---|
+| Mái một hướng, ít bóng | Dải MPPT, giới hạn DC và cách ghép chuỗi |
+| Hai hướng mái khác nhau | Số MPPT độc lập và phân bổ chuỗi |
+| Có nhu cầu dùng khi cúp điện | Cổng backup/EPS, pin tương thích, mạch cách ly |
+| Tải có động cơ | Công suất liên tục, quá tải và dòng khởi động |
 
-- **Công suất AC:** phù hợp với tải cần cấp và thiết kế dàn pin; không mặc định phải bằng tổng kWp.
-- **Tương thích tấm pin:** điện áp DC tối đa, dải điện áp vận hành, giới hạn dòng vào và cách đấu chuỗi phải khớp bảng thông số của cả hai thiết bị.
-- **Nhu cầu khi mất điện:** inverter hòa lưới thông thường sẽ ngừng phát khi lưới mất để chống phát ngược vào đường dây. Muốn có điện dự phòng cần thiết bị, pin, mạch chuyển nguồn và tải backup được thiết kế đúng.
+Nhiều MPPT không tự tạo thêm điện; lợi ích chỉ xuất hiện khi cách bố trí chuỗi cần các điểm theo dõi riêng. Công suất inverter và công suất dàn pin cũng không nhất thiết bằng nhau — phải theo thiết kế và giới hạn của đúng model.
 
-## Nếu mái có nhiều hướng hoặc bóng che
+## Ba câu hỏi trước khi chốt model
 
-MPPT (Maximum Power Point Tracking) là cơ chế giúp inverter tìm điểm vận hành phù hợp khi dòng và điện áp của dàn pin thay đổi. Số MPPT độc lập có thể quan trọng khi các chuỗi pin ở hướng mái hoặc điều kiện bóng che khác nhau. Nhiều MPPT hơn không tự động tạo ra nhiều điện hơn; cách thiết kế chuỗi và đặc điểm mái vẫn quyết định.
+- Voc ở nhiệt độ thấp nhất và Vmp của chuỗi có nằm trong giới hạn DC/dải MPPT không?
+- Isc/Imp khi ghép song song có vượt dòng vào MPPT, dây, đầu nối hoặc bảo vệ không?
+- Khi lưới mất, thiết bị dừng hoàn toàn hay có nhánh backup đã được thiết kế? Tải nào được cấp, trong bao lâu?
 
-## Hòa lưới, hybrid và độc lập không phải cùng một việc
-
-| Loại | Vai trò chính | Điểm phải hỏi |
-|---|---|---|
-| Hòa lưới | Chuyển điện PV để dùng cùng lưới | Thường ngừng phát khi mất lưới |
-| Hybrid | Điều phối PV, lưới và pin | Cổng backup, tải dự phòng, pin tương thích |
-| Độc lập | Cấp điện cho hệ không phụ thuộc lưới | Dung lượng pin và nguồn dự phòng |
-
-Tên “battery-ready” cũng chưa đủ để kết luận có cấp điện khi mất lưới; cần xem model, loại pin, firmware và sơ đồ đấu nối trong tài liệu hãng.
+Inverter hòa lưới thông thường dừng để chống đảo lưới. Tên “hybrid” hoặc “battery-ready” chưa đủ xác nhận khả năng dự phòng; cần datasheet, sơ đồ đấu nối và danh sách pin tương thích của đúng mã.
 
 ### Nguồn tham khảo
 
