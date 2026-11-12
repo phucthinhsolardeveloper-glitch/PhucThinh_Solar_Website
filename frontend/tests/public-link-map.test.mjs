@@ -55,7 +55,7 @@ test('PDP cart and document links use public paths', () => {
   const page = readApp('components/product-detail/ProductDetailPage.vue')
 
   assert.match(purchase, /usePublicLinks\(\)/)
-  assert.match(purchase, /navigateTo\(links\.generic\('\/gio-hang\/'\)\)/)
+  assert.match(purchase, /navigateTo\(links\.generic\('\/thanh-toan\/'\)\)/)
   assert.match(documents, /return document\.url/)
   assert.match(page, /:consultation-available="Boolean\(extras\)"/)
   assert.match(purchase, /v-if="pricing\.mode === 'quote' && consultationAvailable"[\s\S]*href="#pts-pdp-consultation"/)

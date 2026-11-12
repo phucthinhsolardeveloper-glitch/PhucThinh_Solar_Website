@@ -75,16 +75,19 @@ class EditorialCalendarPage extends Page
             ? EditorialPlanItem::query()->with('post:id,published_at,is_visible')
                 ->whereBetween('scheduled_for', [$from, $to])->orderBy('scheduled_for')->get()
             : []) as $planned) {
+            /** @var Post|null $post */
             $post = $planned->post;
+            /** @var Carbon $scheduledFor Cast to datetime on the model. */
+            $scheduledFor = $planned->scheduled_for;
             if ($post && $post->published_at !== null
                 && Carbon::parse($post->published_at)->format('Y-m-d H:i')
-                    === $planned->scheduled_for->format('Y-m-d H:i')) {
+                    === $scheduledFor->format('Y-m-d H:i')) {
                 continue;
             }
-            $byDay[$planned->scheduled_for->toDateString()][] = [
+            $byDay[$scheduledFor->toDateString()][] = [
                 'title' => $planned->title,
                 'kind' => 'Kế hoạch bài viết',
-                'time' => $planned->scheduled_for->format('H:i'),
+                'time' => $scheduledFor->format('H:i'),
                 'status' => ['key' => 'planned', 'label' => EditorialPlanItem::STAGES[$planned->stage] ?? 'Lên kế hoạch'],
                 'url' => EditorialPlanItemResource::getUrl('edit', ['record' => $planned]),
             ];

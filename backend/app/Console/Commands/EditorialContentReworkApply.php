@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Post;
+use App\Models\SeoMeta;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -156,13 +157,12 @@ final class EditorialContentReworkApply extends Command
                         throw new RuntimeException("{$id}: drift inside transaction");
                     }
                     $post->update(['body' => $change['target']['body'], 'summary' => $change['target']['summary'], 'nav_title' => $change['target']['nav_title']]);
-                    if (array_key_exists('seo_description', $change['target']) || array_key_exists('seo_title', $change['target'])) {
-                        $seo = ['description' => $change['target']['seo_description'] ?? ($post->seo?->description ?? '')];
-                        if (array_key_exists('seo_title', $change['target'])) {
-                            $seo['title'] = $change['target']['seo_title'];
-                        }
-                        $post->seo()->updateOrCreate([], $seo);
+                    // seo_description is always staged (defaults to the approved summary), so SEO is always written.
+                    $seo = ['description' => $change['target']['seo_description']];
+                    if (array_key_exists('seo_title', $change['target'])) {
+                        $seo['title'] = $change['target']['seo_title'];
                     }
+                    $post->seo()->updateOrCreate([], $seo);
                 }
             });
         } catch (Throwable $e) {
@@ -283,7 +283,7 @@ final class EditorialContentReworkApply extends Command
         return $markdown;
     }
 
-    /** @return array<string, mixed> */
+    /** @return array{0: string, 1: array<string, string>} */
     private function stripFrontmatter(string $markdown): array
     {
         $markdown = preg_replace('/^\xEF\xBB\xBF/', '', $markdown) ?? $markdown;
@@ -317,7 +317,7 @@ final class EditorialContentReworkApply extends Command
         return is_string($value) && preg_match('/(?:ARTICLE|SOLUTION)-?(\d+)/i', $value, $m) ? (int) $m[1] : null;
     }
 
-    /** @return list<array<string, mixed>> */
+    /** @return array<mixed> Raw JSON entries; callers must validate each item. */
     private function proposalEntries(array $data): array
     {
         foreach (['posts', 'articles', 'solutions', 'proposals'] as $key) {
@@ -345,7 +345,9 @@ final class EditorialContentReworkApply extends Command
                 return "{$field} drift";
             }
         }
-        foreach (['seo_title' => $post->seo?->title ?? '', 'seo_description' => $post->seo?->description ?? ''] as $field => $value) {
+        /** @var SeoMeta|null $seoMeta The relation is absent when a post has no SEO row. */
+        $seoMeta = $post->seo;
+        foreach (['seo_title' => data_get($seoMeta, 'title', ''), 'seo_description' => data_get($seoMeta, 'description', '')] as $field => $value) {
             if (array_key_exists($field.'_sha256', $expected) && ! hash_equals((string) $expected[$field.'_sha256'], hash('sha256', (string) $value))) {
                 return "{$field} drift";
             }

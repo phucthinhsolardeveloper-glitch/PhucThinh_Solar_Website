@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\EditorialPlanItem;
 use App\Models\Post;
+use App\Models\SeoMeta;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -62,6 +63,7 @@ final class EditorialCopyRefresh extends Command
                 return self::FAILURE;
             }
             $plan = EditorialPlanItem::query()->where('plan_key', $key)->first();
+            /** @var Post|null $post */
             $post = $plan?->post;
             $reason = $this->structuralReason($expected, $plan, $post);
             if ($reason !== null) {
@@ -74,7 +76,7 @@ final class EditorialCopyRefresh extends Command
             $current = [
                 'body' => hash('sha256', (string) $post->body),
                 'summary' => hash('sha256', (string) $post->summary),
-                'seo_description' => hash('sha256', (string) ($post->seo?->description ?? '')),
+                'seo_description' => hash('sha256', (string) ($this->seoDescription($post) ?? '')),
             ];
             $next = [
                 'body' => hash('sha256', $target['body']),
@@ -110,12 +112,13 @@ final class EditorialCopyRefresh extends Command
 
         $backup = [];
         foreach ($changes as $key => $change) {
+            /** @var Post $post */
             $post = $change['post'];
             $backup[$key] = [
                 'id' => $post->id,
                 'body' => $post->body,
                 'summary' => $post->summary,
-                'seo_description' => $post->seo?->description,
+                'seo_description' => $this->seoDescription($post),
             ];
         }
         $backupName = now()->format('YmdHis-u').'-'.bin2hex(random_bytes(4)).'.json';
@@ -216,9 +219,18 @@ final class EditorialCopyRefresh extends Command
         return null;
     }
 
+    /** SEO row is optional: a post without one has no description. */
+    private function seoDescription(Post $post): ?string
+    {
+        /** @var SeoMeta|null $seo */
+        $seo = $post->seo;
+
+        return $seo?->description;
+    }
+
     private function baselineReason(array $expected, Post $post): ?string
     {
-        $hashes = ['body' => $post->body, 'summary' => $post->summary, 'seo_description' => $post->seo?->description ?? ''];
+        $hashes = ['body' => $post->body, 'summary' => $post->summary, 'seo_description' => $this->seoDescription($post) ?? ''];
         foreach ($hashes as $field => $value) {
             if (! hash_equals((string) ($expected[$field.'_sha256'] ?? ''), hash('sha256', (string) $value))) {
                 return "baseline drift: {$field}";

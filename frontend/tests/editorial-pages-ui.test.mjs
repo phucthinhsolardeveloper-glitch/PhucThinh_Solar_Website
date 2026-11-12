@@ -87,7 +87,9 @@ test('policy article keeps the PHP reading measure', () => {
 test('editorial cover and related images use the documented news aspect ratio and crop behavior', () => {
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   const related = read('../app/components/news-detail/NewsDetailRelated.vue')
-  assert.match(article, /width="1000"\s+height="560"\s+sizes="\(min-width: 1024px\) 66vw, 100vw"\s+class="mx-auto mb-8 block h-auto w-full max-w-\[920px\] rounded-btn nav:mb-10"/)
+  assert.match(article, /width="1000"\s+height="560"\s+sizes="\(min-width: 1024px\) 66vw, 100vw"\s+class="mx-auto block h-auto w-full max-w-\[920px\] rounded-btn"/)
+  assert.match(article, /:class="article\.coverCredit \? 'mb-2' : 'mb-8 nav:mb-10'"/)
+  assert.match(article, /v-if="article\.cover && article\.showCover && article\.coverCredit"/)
   assert.match(related, /aspect-video w-full object-cover/)
   assert.doesNotMatch(related, /aspect-\[3\/2\]/)
 })

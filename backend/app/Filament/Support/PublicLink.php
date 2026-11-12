@@ -50,7 +50,7 @@ final class PublicLink
 
     private static function url(?Model $record): ?string
     {
-        if (! $record || ! self::isPreview($record)) {
+        if (! $record instanceof Post || ! self::isPreview($record)) {
             return $record ? PublicUrls::url($record) : null;
         }
 

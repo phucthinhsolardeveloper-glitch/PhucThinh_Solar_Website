@@ -63,7 +63,7 @@ final class EditorialCalendarImport extends Command
                     throw new RuntimeException('CSV row has wrong column count: '.count($cells));
                 }
                 $row = array_combine($head, $cells);
-                if (! is_array($row) || ! preg_match('/^PTS-KT-\d{3}$/', (string) $row['id'])) {
+                if (! preg_match('/^PTS-KT-\d{3}$/', (string) $row['id'])) {
                     throw new RuntimeException('Invalid row ID in editorial calendar');
                 }
                 $rows[] = $row;
@@ -121,8 +121,8 @@ final class EditorialCalendarImport extends Command
                 }
                 // Collect all packaged in-body illustration files before writing data.
                 $sourceMarkdown = (string) file_get_contents($base.'/articles/'.$key.'.md');
-                preg_match_all('~/upload/news/(pts-[a-z0-9-]+\\.webp)~', $sourceMarkdown, $imageMatches);
-                foreach (array_unique($imageMatches[1] ?? []) as $inlineImage) {
+                $inlineImages = preg_match_all('~/upload/news/(pts-[a-z0-9-]+\\.webp)~', $sourceMarkdown, $imageMatches) === false ? [] : $imageMatches[1];
+                foreach (array_unique($inlineImages) as $inlineImage) {
                     $illustration = $assets.'/images/editorial/'.$inlineImage;
                     if (! is_file($illustration)) {
                         throw new RuntimeException('Missing inline illustration: '.$inlineImage);
