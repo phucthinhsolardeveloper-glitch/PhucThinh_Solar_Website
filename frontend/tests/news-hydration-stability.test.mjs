@@ -20,3 +20,11 @@ test('knowledge pages reuse the shell site payload instead of fetching /_api/sit
   }
   assert.match(read('../app/components/news/NewsCategoryPage.vue'), /await usePublicSite\(\)/)
 })
+
+test('knowledge page content avoids post-hydration text-node rewrites', () => {
+  const plugin = read('../app/plugins/vi-line-breaks.client.ts')
+  assert.match(plugin, /\[data-no-vi-text-reflow\]/)
+  for (const file of ['../app/components/views/NewsView.vue', '../app/components/news/NewsCategoryPage.vue']) {
+    assert.match(read(file), /<main data-no-vi-text-reflow /, file)
+  }
+})

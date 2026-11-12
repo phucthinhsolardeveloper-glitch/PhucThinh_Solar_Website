@@ -4,7 +4,7 @@ import { VI_WORD_PAIRS } from '#shared/vi-word-pairs'
 // It runs in the browser only, so the page source and search engines keep the plain text.
 const NBSP = ' '
 const PAIR = new RegExp(`(^|[^\\p{L}\\p{N}])(${VI_WORD_PAIRS.map((pair) => pair.replace(' ', '[ ]')).join('|')})(?=$|[^\\p{L}\\p{N}])`, 'giu')
-const SKIP = 'script,style,noscript,textarea,input,select,option,code,pre,svg,[contenteditable="true"],.notranslate,.gtranslate_wrapper'
+const SKIP = 'script,style,noscript,textarea,input,select,option,code,pre,svg,[contenteditable="true"],.notranslate,.gtranslate_wrapper,[data-no-vi-text-reflow]'
 const ENDING_BLOCKS = 'p,li,h1,h2,h3,h4,h5,h6,figcaption,dd,blockquote,.hero-caption span'
 const ROOTS = ['main', 'header', 'footer', '.pts-drawer', '[role="dialog"]']
 

@@ -93,7 +93,7 @@ usePublicSocialMeta({
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: '/tin-tuc/' }, { label: category?.name || 'Danh mục bài viết' }]" />
       </div>
     </div>
-    <main class="pts-container pb-16" :aria-busy="pending">
+    <main data-no-vi-text-reflow class="pts-container pb-16" :aria-busy="pending">
       <section v-if="error || !news || !category" class="min-h-[45vh] py-12" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
         <p class="mb-5 text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>

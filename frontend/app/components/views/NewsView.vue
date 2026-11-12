@@ -83,7 +83,7 @@ usePublicSocialMeta({
       </div>
     </div>
 
-    <main class="pts-container pb-16" :aria-busy="pending">
+    <main data-no-vi-text-reflow class="pts-container pb-16" :aria-busy="pending">
       <div v-if="!news" class="min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ 'Kiến thức' }}</h1>
           <p class="text-slate-500">{{ 'Bài viết tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' }}</p>
