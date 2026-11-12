@@ -28,5 +28,3 @@ Khi ánh sáng lên xuống, MPPT giúp inverter tìm điểm vận hành phù h
 
 - [U.S. Department of Energy – Solar Photovoltaic Technology Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics)
 - [European Commission – PVGIS](https://re.jrc.ec.europa.eu/pvg_tools/en/)
-
-*Ảnh bìa là thiết kế nhận diện; không phải ảnh đo bức xạ tại một công trình cụ thể.*

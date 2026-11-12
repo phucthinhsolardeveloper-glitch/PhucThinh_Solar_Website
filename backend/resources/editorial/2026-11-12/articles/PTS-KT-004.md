@@ -50,5 +50,3 @@ Trong một **ví dụ giả định**, hệ 5 kWp có 4 giờ nắng đỉnh t�
 
 - [U.S. Department of Energy – Solar Photovoltaic Technology Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics)
 - [U.S. Department of Energy – Solar PV Performance and Efficiency Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics)
-
-*Ảnh bìa là đồ họa thương hiệu tự thiết kế, không phải hình công trình thực tế.*

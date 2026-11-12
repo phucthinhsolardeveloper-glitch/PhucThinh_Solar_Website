@@ -32,5 +32,3 @@ Tên “battery-ready” cũng chưa đủ để kết luận có cấp điện 
 
 - [Fronius – Solar Energy Blog](https://blog.fronius.com/solar-energy/en/)
 - [U.S. Department of Energy – PV System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
-
-*Ảnh bìa là thiết kế minh họa thương hiệu; sơ đồ không thay thế bản vẽ điện kỹ thuật.*

@@ -30,5 +30,3 @@ Không nên quyết định chỉ từ tổng tiền điện hoặc một bảng
 
 - [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
 - [U.S. Department of Energy – Solar and Resilience Basics](https://www.energy.gov/cmei/systems/solar-and-resilience-basics)
-
-*Ảnh bìa là đồ họa thương hiệu minh họa, không phải ảnh một gia đình cụ thể.*

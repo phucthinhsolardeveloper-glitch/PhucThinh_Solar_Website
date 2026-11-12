@@ -33,5 +33,3 @@ Không nên chọn theo kW của inverter một mình, cũng không nên tự đ
 
 - [U.S. Department of Energy – PV System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
 - [U.S. Department of Energy – Solar and Resilience Basics](https://www.energy.gov/cmei/systems/solar-and-resilience-basics)
-
-*Ảnh bìa là đồ họa thương hiệu minh họa, không phải sơ đồ đấu nối để thi công.*

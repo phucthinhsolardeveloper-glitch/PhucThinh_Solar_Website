@@ -1,8 +1,8 @@
 [
-  {"id":"PTS-KT-004","summary":"Bảng ngắn giúp người mới đọc đúng kW, kWp và kWh trong báo giá, hóa đơn và ví dụ máy bơm.","keywords":"kW, kWp, kWh, công suất, điện năng, máy bơm, hóa đơn điện mặt trời"},
-  {"id":"PTS-KT-005","summary":"Giải thích inverter qua dòng điện trong một ngôi nhà, rồi mới đưa MPPT và các thông số cần đối chiếu.","keywords":"inverter điện mặt trời, DC, AC, MPPT, hòa lưới, hybrid, điện dự phòng"},
-  {"id":"PTS-KT-006","summary":"Giúp gia đình dùng điện buổi tối chọn giữa hòa lưới, hybrid có pin và phương án dự phòng theo nhu cầu thực.","keywords":"điện mặt trời buổi tối, hòa lưới, hybrid, pin lưu trữ, điện dự phòng, tự dùng"},
-  {"id":"PTS-KT-007","summary":"Bản đồ quyết định theo thời điểm dùng điện, mức cần dự phòng và việc công trình có lưới hay không.","keywords":"hòa lưới, hybrid, độc lập, off-grid, pin lưu trữ, backup, mất điện"},
-  {"id":"PTS-KT-008","summary":"Checklist khảo sát sân, cổng và lối đi giúp hỏi đúng về chế độ sáng, pin, góc chiếu, cảm biến và bảo trì.","keywords":"mua đèn năng lượng mặt trời, đèn sân, đèn cổng, đèn lối đi, cảm biến, IP, pin Wh"},
-  {"id":"PTS-KT-009","summary":"Trả lời rõ tấm pin vẫn phát điện khi nhiều mây và hướng dẫn theo dõi sản lượng theo chuỗi ngày trong mùa mưa.","keywords":"điện mặt trời trời nhiều mây, mùa mưa, bức xạ tán xạ, sản lượng PV, MPPT, PVGIS"}
+  {"id":"PTS-KT-004","summary":"Đang đọc báo giá hoặc hóa đơn điện mặt trời? Bài này giúp bạn phân biệt nhanh kW, kWp và kWh qua ví dụ máy bơm và dàn pin.","keywords":"kW, kWp, kWh, công suất, điện năng, máy bơm, hóa đơn điện mặt trời"},
+  {"id":"PTS-KT-005","summary":"Inverter có liên quan gì đến điện trong nhà, và khi chọn thiết bị bạn cần hỏi những thông số nào? Bài viết giải thích từ tình huống sử dụng quen thuộc.","keywords":"inverter điện mặt trời, DC, AC, MPPT, hòa lưới, hybrid, điện dự phòng"},
+  {"id":"PTS-KT-006","summary":"Nhà bạn dùng điện chủ yếu sau khi trời tối? Hãy xem khi nào hòa lưới đã đủ, khi nào cần pin lưu trữ hoặc một mạch điện dự phòng.","keywords":"điện mặt trời buổi tối, hòa lưới, hybrid, pin lưu trữ, điện dự phòng, tự dùng"},
+  {"id":"PTS-KT-007","summary":"Bạn cần giảm điện mua từ lưới, muốn có điện khi cúp hay đang ở nơi chưa có lưới? Các nhu cầu này dẫn đến ba hướng lựa chọn khác nhau.","keywords":"hòa lưới, hybrid, độc lập, off-grid, pin lưu trữ, backup, mất điện"},
+  {"id":"PTS-KT-008","summary":"Trước khi mua đèn cho sân, cổng hoặc lối đi, hãy biết cần hỏi gì về vùng sáng, thời gian hoạt động, cảm biến, pin và khả năng chịu thời tiết.","keywords":"mua đèn năng lượng mặt trời, đèn sân, đèn cổng, đèn lối đi, cảm biến, IP, pin Wh"},
+  {"id":"PTS-KT-009","summary":"Trời nhiều mây có làm tấm pin ngừng phát điện không? Bài viết giải thích điều gì thay đổi trong mùa mưa và cách theo dõi hệ thống bình tĩnh hơn.","keywords":"điện mặt trời trời nhiều mây, mùa mưa, bức xạ tán xạ, sản lượng PV, MPPT, PVGIS"}
 ]

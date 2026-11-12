@@ -20,7 +20,7 @@ Một chiếc đèn hợp sân trước chưa chắc hợp cổng hoặc đườ
 
 ## Đọc thông số để tránh chọn nhầm
 
-W cho biết công suất điện, không cho biết toàn bộ vùng sáng. Wh nói về năng lượng danh định của pin, không bảo đảm đèn sẽ sáng đúng một số giờ trong mọi đêm. Lumen và lux là các thuật ngữ quang học; bài **PTS-KT-017** giải thích ba đại lượng này bằng ví dụ đo sáng, còn bài này dùng chúng như câu hỏi cần lấy từ người bán để chọn đúng vị trí.
+W cho biết công suất điện, không cho biết toàn bộ vùng sáng. Wh nói về năng lượng danh định của pin, không bảo đảm đèn sẽ sáng đúng một số giờ trong mọi đêm. Lumen và lux là các thuật ngữ quang học; bài giải thích ba đại lượng ánh sáng bằng ví dụ đo sáng sẽ giúp bạn hiểu rõ hơn, còn bài này dùng chúng như câu hỏi cần lấy từ người bán để chọn đúng vị trí.
 
 Mức IP là thông tin về khả năng chống bụi và nước trong điều kiện thử nghiệm. Ngoài trời, độ bền còn phụ thuộc vỏ, gioăng, mối nối, dây cáp, nhiệt độ và bảo trì; không tự tháo đèn nếu việc đó ảnh hưởng bảo hành.
 
@@ -28,11 +28,9 @@ Mức IP là thông tin về khả năng chống bụi và nước trong điều
 
 Thời gian chiếu sáng thay đổi theo chế độ giảm sáng, mức sạc, thời tiết và tuổi pin. Nếu nhiều ngày mưa, điện nạp vào có thể ít hơn nhu cầu xả. Hãy yêu cầu bảng thông số hãng và hỏi rõ chế độ mà con số quảng cáo áp dụng.
 
- Với đèn thương mại hoặc hệ nhiều cột, nên khảo sát vùng cần chiếu và yêu cầu thông tin thử nghiệm trước khi chốt. Mục tiêu là đủ sáng đúng chỗ, dễ bảo trì và không gây chói — không phải chọn bộ có watt lớn nhất.
+Với đèn thương mại hoặc hệ nhiều cột, nên khảo sát vùng cần chiếu và yêu cầu thông tin thử nghiệm trước khi chốt. Mục tiêu là đủ sáng đúng chỗ, dễ bảo trì và không gây chói — không phải chọn bộ có watt lớn nhất.
 
 ### Nguồn tham khảo
 
 - [Lighting Global – Quality Standards](https://www.lightingglobal.org/resource/lighting-global-quality-standards/)
 - [Signify – Solar Lighting](https://www.signify.com/global/our-company/news/press-releases/2024/20240523-signify-off-grid-solar-lighting)
-
-*Ảnh bìa là đồ họa nhận diện Phúc Thịnh Solar; không đại diện cho một model đèn cụ thể.*
