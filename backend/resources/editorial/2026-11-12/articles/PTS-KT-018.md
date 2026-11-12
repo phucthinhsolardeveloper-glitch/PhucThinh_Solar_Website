@@ -18,15 +18,15 @@ Ngược lại, xưởng có bơm, quạt, máy nén hoặc dây chuyền chạy
 
 ### Tính theo biên, không tính trung bình
 
-Mỗi tấm tăng thêm có sản lượng phụ thuộc hướng, bóng che, nhiệt độ, khoảng cách hàng, giới hạn điện áp và tỷ lệ DC/AC của inverter. PVGIS cho phép xem sản lượng theo vị trí và biến động theo tháng; con số mô phỏng vẫn cần điều chỉnh theo mái thật. Khi so sánh, hãy tính dòng tiền của phần tăng thêm: chi phí tấm, rail, kẹp, dây, nhân công, nâng cấp bảo vệ và phần inverter bị giới hạn.
+Mỗi tấm tăng thêm có sản lượng phụ thuộc hướng, bóng che, nhiệt độ, khoảng cách hàng, giới hạn điện áp và tỷ lệ DC/AC của inverter. PVGIS cho phép xem sản lượng theo vị trí và biến động theo tháng; con số mô phỏng vẫn cần điều chỉnh theo mái thật. Khi so sánh, hãy tính dòng tiền của phần tăng thêm: chi phí tấm pin, thanh khung đỡ, kẹp, dây dẫn và nhân công, nâng cấp bảo vệ và phần inverter bị giới hạn.
 
 Một phép tính minh họa: nếu nhóm tấm thêm tạo 500 kWh/năm và chỉ 60% được tự dùng, phần điện tự dùng là 300 kWh. Giá trị tiết kiệm phải dựa trên giá điện áp dụng cho thời điểm đó và giả định thiết bị chạy tương ứng. Nếu có 200 kWh phải xả bỏ hoặc không được ghi nhận giá trị, không thể lấy cả 500 kWh để chia chi phí rồi gọi là hoàn vốn.
 
 ### Inverter là nút giới hạn
 
-Thêm module không có nghĩa công suất AC tăng. Inverter có giới hạn dòng mỗi MPPT, điện áp tối đa, số chuỗi và công suất AC. Có thể thiết kế DC lớn hơn AC trong một mức cho phép để tận dụng buổi sáng, chiều và ngày nhiều mây, nhưng vượt giới hạn dòng/điện áp sẽ làm mất an toàn hoặc mất bảo hành. Chuỗi mới phải có cấu hình điện áp tương thích, cùng điều kiện bóng che và đầu nối đúng chuẩn.
+Lắp thêm tấm pin không đồng nghĩa công suất điện xoay chiều đầu ra cũng tăng. Inverter có giới hạn dòng mỗi MPPT, điện áp tối đa, số chuỗi và công suất AC. Có thể thiết kế DC lớn hơn AC trong một mức cho phép để tận dụng buổi sáng, chiều và ngày nhiều mây, nhưng vượt giới hạn dòng/điện áp sẽ làm mất an toàn hoặc mất bảo hành. Chuỗi mới phải có cấu hình điện áp tương thích, cùng điều kiện bóng che và đầu nối đúng chuẩn.
 
-Không ghép module khác thông số vào cùng chuỗi mà không kiểm tra dòng ngắn mạch, điện áp hở mạch ở nhiệt độ thấp, giới hạn MPPT và khả năng chống hồ quang. Hệ thống phải có bảo vệ DC/AC, tiếp địa và chống sét lan truyền phù hợp. Khi liên quan đấu nối lưới, chống đảo lưới vẫn là yêu cầu bắt buộc; nhiều tấm hơn không được phép biến hệ hòa lưới thành nguồn cấp ngược khi lưới mất điện.
+Không ghép các tấm pin có thông số khác nhau vào cùng một chuỗi mà không kiểm tra dòng ngắn mạch, điện áp hở mạch ở nhiệt độ thấp, giới hạn MPPT và khả năng chống hồ quang. Hệ thống phải có bảo vệ DC/AC, tiếp địa và chống sét lan truyền phù hợp. Khi liên quan đấu nối lưới, chống đảo lưới vẫn là yêu cầu bắt buộc; nhiều tấm hơn không được phép biến hệ hòa lưới thành nguồn cấp ngược khi lưới mất điện.
 
 ### Mái, bóng che và chi phí ẩn
 
@@ -36,7 +36,7 @@ Diện tích trống trên mái không đồng nghĩa với diện tích lắp h
 
 ### Khi pin lưu trữ làm thay đổi bài toán
 
-Nếu mục tiêu là dùng điện ban đêm hoặc dự phòng, thêm pin mặt trời và thêm pin lưu trữ là hai quyết định khác nhau. Tấm tạo năng lượng; pin chuyển thời điểm sử dụng nhưng có tổn hao, giới hạn công suất và tuổi thọ. Cần xác định tải ưu tiên khi mất điện, thời gian backup, công suất khởi động của bơm/tủ lạnh và cách cô lập tải. Không đưa toàn bộ ngôi nhà vào mạch backup nếu inverter không được thiết kế cho việc đó.
+Nếu mục tiêu là dùng điện ban đêm hoặc dự phòng, thêm pin mặt trời và thêm pin lưu trữ là hai quyết định khác nhau. Tấm tạo năng lượng; pin chuyển thời điểm sử dụng nhưng có tổn hao, giới hạn công suất và tuổi thọ. Cần xác định tải ưu tiên khi mất điện, thời gian cấp điện dự phòng, công suất khởi động của bơm/tủ lạnh và cách cô lập tải. Không đưa toàn bộ ngôi nhà vào mạch cấp điện dự phòng nếu inverter không được thiết kế cho việc đó.
 
 **Quy trình quyết định 5 bước.**
 

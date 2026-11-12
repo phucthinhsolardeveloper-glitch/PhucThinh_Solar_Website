@@ -8,7 +8,7 @@ Một gia đình có thể dùng 600 kWh/tháng nhưng hai lịch dùng điện 
 |---|---|---|
 | Có người ở ban ngày, có thể dời bơm/giặt/sạc | Hòa lưới | Tỷ lệ tự dùng và tải ban ngày |
 | Dùng nhiều buổi tối, muốn chuyển điện | Hybrid có pin | Dung lượng khả dụng, công suất xả, tổn hao và vòng đời |
-| Vấn đề chính là cúp điện | Nhánh backup | Tải ưu tiên, cách ly lưới, dòng khởi động |
+| Vấn đề chính là cúp điện | Nhánh cấp điện dự phòng | Tải ưu tiên, cách ly lưới, dòng khởi động |
 
 Pin không tự làm cả ngôi nhà có điện. Tải tối cần 6 kWh không đồng nghĩa chỉ cần pin nhãn 6 kWh; còn phải xét công suất, dung lượng khả dụng và mức dự phòng vận hành.
 

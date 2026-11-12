@@ -1,4 +1,4 @@
-Hai tấm pin nhìn từ ngoài có thể đều được gọi là “đen”, nhưng một tấm có khung và nền đen đồng nhất, tấm kia chỉ có cell tối màu với khung bạc. Vì vậy, màu nên được xem như quyết định về hình thức và model, không phải thước đo độc lập về chất lượng.
+Hai tấm pin nhìn từ ngoài có thể đều được gọi là “đen”, nhưng một tấm có khung và nền đen đồng nhất, tấm kia chỉ có các tế bào quang điện sẫm màu với khung bạc. Vì vậy, màu nên được xem như quyết định về hình thức và model, không phải thước đo độc lập về chất lượng.
 
 ![Hình minh họa tấm pin màu đen và xanh và sự khác biệt về hình thức](/upload/news/pts-explainer-module-colors.webp)
 
@@ -8,7 +8,7 @@ Hai tấm pin nhìn từ ngoài có thể đều được gọi là “đen”, 
 
 Yêu cầu báo giá gửi ảnh thật của đúng mã hàng ở góc nhìn lắp đặt, cùng kích thước, khung và lớp nền. Ảnh minh họa “đen/xanh” chỉ giúp hình dung; nó không chứng minh màu, cấu tạo hay sản phẩm sẽ giao. Nếu ảnh là ảnh quảng cáo, hãy xem nó như tham khảo thẩm mỹ, không phải bằng chứng về model.
 
-“All black” thường mô tả sự phối hợp của cell, khung và nền đen. Một module xanh có thể có khung bạc hoặc nền sáng. Tên màu thương mại không phải tiêu chuẩn kỹ thuật thống nhất, nên không thể suy ra loại cell hay hiệu suất chỉ bằng mắt.
+Tên gọi “all-black” (toàn đen) thường chỉ thiết kế đồng màu của tế bào quang điện, khung và lớp nền. Tấm pin màu xanh thường có khung bạc hoặc lớp nền sáng. Tên màu thương mại không phải tiêu chuẩn kỹ thuật thống nhất, nên không thể xác định công nghệ tế bào quang điện hoặc hiệu suất chỉ bằng mắt.
 
 ## Sau hình thức, đối chiếu model
 
@@ -21,13 +21,13 @@ Yêu cầu báo giá gửi ảnh thật của đúng mã hàng ở góc nhìn l�
 | Bảo hành/chứng nhận | Đúng mã hàng, thời hạn và điều kiện áp dụng chưa? |
 | Màu sắc | Hợp kiến trúc sau khi các điều kiện trên đã đạt chưa? |
 
-Hiệu suất liên quan đến vật liệu bán dẫn, cấu trúc cell, mật độ đóng gói, tiếp điểm, kính và tổn thất module. Màu quan sát bằng mắt không thay thế được các thông số đó; cũng không nên suy ra chất lượng từ việc một tấm trông “đen” hơn.
+Hiệu suất liên quan đến vật liệu bán dẫn, cấu trúc tế bào quang điện, cách sắp xếp tế bào, tiếp điểm, kính và mức tổn hao của tấm pin. Màu quan sát bằng mắt không thay thế được các thông số đó; cũng không nên suy ra chất lượng từ việc một tấm trông “đen” hơn.
 
 ## Phần kỹ thuật ngắn: màu không tự quyết định nhiệt
 
 Nhiệt độ tế bào, khe thông gió phía sau, loại mái, hướng lắp và thời tiết đều ảnh hưởng vận hành. Màu hoặc lớp phủ có thể liên quan đến phản xạ và hấp thụ trong một thiết kế cụ thể, nhưng không đủ để kết luận mọi tấm đen nóng hơn hay mọi tấm xanh phát điện nhiều hơn.
 
-Nghiên cứu về module màu của IEA PVPS và Fraunhofer ISE cho thấy tác động phụ thuộc vật liệu và cấu hình. Không lấy kết quả của một thiết kế BIPV màu để gán cho mọi module mái nhà.
+Nghiên cứu về tấm pin có màu của IEA PVPS và Fraunhofer ISE cho thấy tác động phụ thuộc vật liệu và cấu hình. Không lấy kết quả của một thiết kế BIPV màu để gán cho mọi loại tấm pin lắp trên mái.
 
 ## Chọn màu khi nào?
 

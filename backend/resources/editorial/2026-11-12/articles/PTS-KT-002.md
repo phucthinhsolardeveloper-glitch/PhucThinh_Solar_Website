@@ -1,17 +1,17 @@
 # Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng
 
-Hai tấm pin cùng ghi “650 W” chưa chắc phù hợp với cùng một mái nhà hay inverter. Trong lần đọc đầu, năm thông tin đáng tìm là **mã model**, Pmax, hiệu suất, Voc/Vmp và Isc/Imp; sau đó mới đến nhiệt độ, kích thước, tải cơ học và bảo hành.
+Hai tấm pin cùng ghi “650 W” chưa chắc phù hợp với cùng một mái nhà hay bộ biến tần (inverter). Khi đọc bảng thông số kỹ thuật (datasheet), năm thông tin nên xem trước là **mã sản phẩm**, Pmax, hiệu suất, Voc/Vmp và Isc/Imp; sau đó mới đến nhiệt độ, kích thước, tải cơ học và bảo hành.
 
-Ví dụ dưới đây là **LONGi Hi-MO X10 Explorer LR7-72HVH-650M**. Các số phải được đối chiếu với đúng mã hàng và phiên bản datasheet trước khi báo giá, thiết kế hoặc thi công.
+Ví dụ dưới đây là **LONGi Hi-MO X10 Explorer LR7-72HVH-650M**. Các số phải được đối chiếu với đúng mã hàng và phiên bản bảng thông số kỹ thuật trước khi báo giá, thiết kế hoặc thi công.
 
-![Infographic các thông số datasheet LONGi 650W gồm Pmax hiệu suất Voc Vmp Isc và Imp](/upload/news/pts-infographic-panel-650w.webp)
+![Hình giải thích các thông số tấm pin LONGi 650W gồm Pmax hiệu suất Voc Vmp Isc và Imp](/upload/news/pts-infographic-panel-650w.webp)
 
-*Infographic biên soạn từ datasheet model tham khảo; kiểm tra phiên bản hiện hành trước khi sử dụng số liệu.*
+*Hình giải thích dựa trên bảng thông số của mẫu sản phẩm tham khảo; kiểm tra phiên bản hiện hành trước khi sử dụng số liệu.*
 
 ## Bắt đầu với 5 thông số
 
 1. **Model:** “Hi-MO X10” là tên dòng; mã **LR7-72HVH-650M** mới xác định biến thể đang đọc.
-2. **Pmax:** công suất cực đại của module; mẫu này là **650 W tại STC**.
+2. **Pmax:** công suất cực đại của tấm pin; mẫu này là **650 W tại STC**.
 3. **Hiệu suất:** mẫu tham khảo công bố **24,1%**; quan trọng khi diện tích mái hạn chế.
 4. **Voc và Vmp:** điện áp hở mạch và điện áp tại điểm công suất cực đại; dùng để kiểm tra dải MPPT và giới hạn DC của inverter.
 5. **Isc và Imp:** dòng ngắn mạch và dòng tại điểm công suất cực đại; cần đối chiếu với dòng vào MPPT, dây dẫn và thiết bị bảo vệ.
@@ -26,7 +26,7 @@ STC thường dùng bức xạ 1.000 W/m², nhiệt độ tế bào 25°C và ph
 
 ### 2. Hiệu suất
 
-Hiệu suất module là tỷ lệ bức xạ trên diện tích tấm được chuyển thành điện trong điều kiện chuẩn. Công suất lớn hơn không tự động có hiệu suất lớn hơn, vì tấm có thể có kích thước lớn hơn. Mái chật cần chú ý hiệu suất; mái rộng còn phải xét bố trí, chi phí toàn hệ và độ bền.
+Hiệu suất tấm pin cho biết tỷ lệ năng lượng ánh sáng chiếu tới bề mặt được chuyển thành điện trong điều kiện chuẩn. Công suất lớn hơn không tự động có hiệu suất lớn hơn, vì tấm có thể có kích thước lớn hơn. Mái chật cần chú ý hiệu suất; mái rộng còn phải xét bố trí, chi phí toàn hệ và độ bền.
 
 ### 3. Voc và Vmp: điện áp của chuỗi
 
@@ -41,7 +41,7 @@ Hiệu suất module là tỷ lệ bức xạ trên diện tích tấm được 
 | Thông số | Giá trị |
 |---|---:|
 | Pmax | 650 W |
-| Hiệu suất module | 24,1% |
+| Hiệu suất tấm pin | 24,1% |
 | Voc | 53,90 V |
 | Vmp | 44,56 V |
 | Isc | 15,29 A |
@@ -55,7 +55,7 @@ Tấm silicon thường giảm công suất khi tế bào nóng. Hệ số nhi�
 
 ### 6. Kích thước, khối lượng và tải
 
-Kích thước quyết định số tấm có thể đặt trên mái; khối lượng liên quan tải tĩnh. Với phiên bản LONGi tham khảo, datasheet BGV02 nêu **2.382 × 1.134 × 30 mm** và **28,5 kg**. Tải thiết kế của module không thay thế việc tính kết cấu mái và khung.
+Kích thước quyết định số tấm có thể đặt trên mái; khối lượng liên quan tải tĩnh. Với phiên bản LONGi tham khảo, datasheet BGV02 nêu **2.382 × 1.134 × 30 mm** và **28,5 kg**. Thông số chịu tải của tấm pin không thay thế việc tính kết cấu mái và khung.
 
 ### 7. Bảo hành
 

@@ -12,19 +12,19 @@ Trong bản **Trends in Photovoltaic Applications 2026** công bố tháng 9/202
 
 ### 1. Quy mô lũy kế: 2,96 TW
 
-Đến cuối năm 2025, tổng công suất PV toàn cầu đạt khoảng **2,96 TW**. Con số này cho thấy điện mặt trời đã trở thành một phần lớn của hệ thống năng lượng, không còn chỉ là công nghệ thử nghiệm ở một vài thị trường.
+Đến cuối năm 2025, tổng công suất điện mặt trời trên toàn cầu đạt khoảng **2,96 TW**. Con số này cho thấy điện mặt trời đã trở thành một phần lớn của hệ thống năng lượng, không còn chỉ là công nghệ thử nghiệm ở một vài thị trường.
 
 ### 2. Lắp mới: khoảng 690 GW
 
-Năm 2025 có khoảng **690 GW** PV được lắp mới, tăng **15%** so với năm 2024 theo báo cáo tháng 9/2026. Tốc độ có thể khác các giai đoạn tăng đột biến trước đó, nhưng khối lượng tuyệt đối vẫn rất lớn.
+Năm 2025 có khoảng **690 GW** điện mặt trời được lắp mới, tăng **15%** so với năm 2024 theo báo cáo tháng 9/2026. Tốc độ có thể khác các giai đoạn tăng đột biến trước đó, nhưng khối lượng tuyệt đối vẫn rất lớn.
 
-Snapshot sơ bộ tháng 4/2026 từng ước tính khoảng 698 GW. Con số 690 GW ở đây lấy từ bản Trends tháng 9/2026, phát hành sau và có tính tổng hợp đầy đủ hơn; hai ấn bản không nên trộn vào một chuỗi số liệu.
+Bản thống kê sơ bộ công bố tháng 4/2026 từng ước tính khoảng 698 GW. Con số 690 GW ở đây lấy từ bản Trends tháng 9/2026, phát hành sau và có tính tổng hợp đầy đủ hơn; hai ấn bản không nên trộn vào một chuỗi số liệu.
 
 ### 3. Trung Quốc dẫn đầu
 
 Các thị trường lắp mới lớn năm 2025, theo số liệu xấp xỉ của IEA PVPS:
 
-| Quốc gia | Công suất PV lắp mới 2025 |
+| Quốc gia | Công suất điện mặt trời lắp mới năm 2025 |
 |---|---:|
 | Trung Quốc | 415 GW |
 | Ấn Độ | 54 GW |
@@ -36,17 +36,17 @@ Trung Quốc chiếm gần **60%** công suất lắp mới toàn cầu; khoản
 
 ## Con số toàn cầu chạm đến mái nhà Việt Nam ra sao?
 
-Quy mô toàn cầu lớn hơn thường kéo theo nhiều lựa chọn module, inverter và giải pháp lưu trữ. Nhưng ba con số trên không đủ để trả lời một hộ gia đình nên lắp bao nhiêu kWp. Quyết định tại Việt Nam còn phụ thuộc lượng điện và giờ dùng, mái, bóng che, chi phí vòng đời, an toàn, bảo hành và quy định đấu nối tại thời điểm đầu tư.
+Thị trường phát triển giúp người mua có thêm nhiều lựa chọn tấm pin, bộ biến tần và pin lưu trữ. Nhưng ba con số trên không đủ để trả lời một hộ gia đình nên lắp bao nhiêu kWp. Quyết định tại Việt Nam còn phụ thuộc lượng điện và giờ dùng, mái, bóng che, chi phí vòng đời, an toàn, bảo hành và quy định đấu nối tại thời điểm đầu tư.
 
 Điện mặt trời cũng không chỉ là câu chuyện tăng công suất. Nguồn phát thay đổi theo nắng và thời tiết, trong khi nhu cầu điện có thể rơi vào buổi tối. Vì vậy, tự dùng, điều phối phụ tải và pin lưu trữ được quan tâm hơn; không có nghĩa mọi khách hàng đều cần đầu tư pin.
 
 ## Công nghệ và hệ thống điện
 
-IEA PVPS ghi nhận sự chuyển dịch mạnh sang silicon N-type; TOPCon, HJT và công nghệ tiếp xúc mặt sau (Back Contact) xuất hiện ngày càng nhiều trong phân khúc thương mại. Tên công nghệ không thay thế việc kiểm tra datasheet đúng model, hệ số nhiệt, suy giảm, kiểm thử độ tin cậy, bảo hành và khả năng tương thích toàn hệ.
+IEA PVPS ghi nhận sự chuyển dịch mạnh sang silicon N-type; TOPCon, HJT và công nghệ tiếp xúc mặt sau (Back Contact) xuất hiện ngày càng nhiều trong phân khúc thương mại. Tên công nghệ không thay thế việc kiểm tra datasheet đúng model, hệ số nhiệt, suy giảm, kiểm thử độ tin cậy, bảo hành và khả năng hoạt động đồng bộ của cả hệ thống.
 
 ## Đọc tin ngành cho đúng mốc
 
-2,96 TW cho thấy PV đã có quy mô toàn cầu; 690 GW cho thấy năm 2025 vẫn là một năm triển khai rất lớn; còn mức tăng 15% đặt tốc độ đó vào đúng mốc so sánh. Trước khi liên hệ một tin ngành với công trình cụ thể, cần tách **năm dữ liệu**, **năm công bố** và **phương pháp báo cáo**.
+Mức 2,96 TW cho thấy điện mặt trời đã được triển khai trên quy mô toàn cầu; 690 GW cho thấy năm 2025 vẫn là một năm triển khai rất lớn; còn mức tăng 15% đặt tốc độ đó vào đúng mốc so sánh. Trước khi liên hệ một tin ngành với công trình cụ thể, cần tách **năm dữ liệu**, **năm công bố** và **phương pháp báo cáo**.
 
 ### Nguồn tham khảo
 

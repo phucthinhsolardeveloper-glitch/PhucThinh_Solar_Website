@@ -34,13 +34,13 @@ Hồ sơ này cần xem công suất chạy đồng thời, dòng khởi động
 |---|---|
 | A — dùng ban ngày | Mức tải trùng với giờ phát và diện tích mái dùng được |
 | B — dùng buổi tối | Khả năng chuyển giờ, nhu cầu pin và chi phí lưu trữ |
-| C — tải theo mùa/dự phòng | Tải khởi động, nhánh ưu tiên và thời gian backup |
+| C — tải theo mùa/dự phòng | Tải khởi động, nhánh ưu tiên và thời gian duy trì điện dự phòng |
 
 | Hồ sơ | Việc nên chuẩn bị tiếp |
 |---|---|
 | A | Lịch chạy các tải có thể dời sang giờ nắng |
 | B | Tỷ lệ tải buổi tối và danh sách thiết bị có thể chuyển giờ |
-| C | Công suất khởi động, nhánh cần giữ và thời gian backup |
+| C | Công suất khởi động, nhánh cần giữ và thời gian duy trì điện dự phòng |
 
 Mái và bóng che vẫn có thể đổi kết quả: diện tích nhìn thấy không phải toàn bộ diện tích lắp được, còn các mảng mái khác hướng sẽ phát ở những thời điểm khác nhau. PVGIS có thể hỗ trợ ước tính bức xạ theo địa điểm, nhưng không thay thế khảo sát mái, dữ liệu tải và thiết kế điện tại công trình.
 

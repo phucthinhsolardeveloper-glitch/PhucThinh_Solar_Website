@@ -6,15 +6,15 @@ Tấm pin có thể che bớt nắng trực tiếp trên mái, nhưng không ph�
 
 **Nhà có khe thông gió.** Tấm pin được đặt trên hệ khung có khoảng hở; không khí có thể đi vào một phía và thoát ra phía khác. Tấm pin nhận một phần bức xạ, mặt mái dưới vùng che bớt bị nắng chiếu trực tiếp. Vào ngày có gió, khe có thể đưa một phần nhiệt ra ngoài. Phòng bên dưới có mát hơn bao nhiêu vẫn phụ thuộc trần, lớp cách nhiệt, cửa sổ và thời gian dùng điều hòa.
 
-**Nhà bị giữ nhiệt.** Nếu khe bị bịt bởi tường, máng xối, vật liệu cách nhiệt hoặc cách lắp quá sát, bóng che không tự tạo thành quạt làm mát. Mái tôn mỏng, phòng không có trần và module nóng có thể vẫn khiến người ở cảm thấy oi. Mái bê tông lại nóng và nguội chậm hơn; mái ngói còn phụ thuộc lớp dưới ngói và các khe sẵn có.
+**Nhà bị giữ nhiệt.** Nếu khe bị bịt bởi tường, máng xối, vật liệu cách nhiệt hoặc cách lắp quá sát, bóng che không tự tạo thành quạt làm mát. Mái tôn mỏng, phòng không có trần cách nhiệt và tấm pin nóng có thể vẫn khiến người ở cảm thấy oi. Mái bê tông lại nóng và nguội chậm hơn; mái ngói còn phụ thuộc lớp dưới ngói và các khe sẵn có.
 
 Hai trường hợp này giải thích vì sao không nên nói “lắp solar là nhà sẽ mát”. Có thể mát hơn ở mặt mái ngay dưới vùng che nhưng nhiệt độ phòng không giảm tương ứng, nhất là khi vỏ nhà truyền nhiệt kém hoặc trao đổi khí bị hạn chế.
 
 ### Nhiệt đi qua mái như thế nào?
 
-Ban ngày, bức xạ mặt trời chiếu lên module và mái. Module chuyển một phần năng lượng thành điện, phần còn lại làm module nóng; mái phía dưới nhận ít bức xạ trực tiếp hơn ở vùng được che. Nhiệt vẫn truyền qua vật liệu mái và trao đổi với không khí trong khe.
+Ban ngày, ánh nắng chiếu lên tấm pin và phần mái xung quanh. Tấm pin chuyển một phần ánh sáng thành điện, phần năng lượng còn lại khiến tấm pin nóng lên; mái phía dưới nhận ít bức xạ trực tiếp hơn ở vùng được che. Nhiệt vẫn truyền qua vật liệu mái và trao đổi với không khí trong khe.
 
-Khe hở có ích khi có đường vào–ra và được bố trí theo hệ khung. Một khoảng hở nhìn rộng trên ảnh chưa cho biết không khí có thật sự lưu thông hay không. Ban đêm, module không còn che nắng; mái nguội theo gió, mây, bức xạ nhiệt và khối lượng vật liệu. Vì thế một lần sờ thấy mặt dưới mái mát không đại diện cho cả ngày hay cả mùa.
+Khe hở có ích khi có đường vào–ra và được bố trí theo hệ khung. Một khoảng hở nhìn rộng trên ảnh chưa cho biết không khí có thật sự lưu thông hay không. Ban đêm, tấm pin không còn tác dụng che nắng; mái nguội theo gió, mây, bức xạ nhiệt và khối lượng vật liệu. Vì thế một lần sờ thấy mặt dưới mái mát không đại diện cho cả ngày hay cả mùa.
 
 ### Nhìn từng loại mái
 
@@ -24,7 +24,7 @@ Hướng mái, cây và công trình bên cạnh cũng ảnh hưởng. Một hà
 
 ### Khe hở phải phục vụ cả thông gió lẫn an toàn
 
-Chiều cao khe do hệ khung, tải gió, yêu cầu nhà sản xuất và kết cấu mái quyết định. Không tự kê tấm bằng vật liệu rời để “lấy gió”, không lấp kín cửa hút/xả bằng keo hoặc tấm che, và không đặt module lên mái thay vì neo đúng vào kết cấu. Một phương án có khe rộng nhưng neo kém vẫn là phương án nguy hiểm.
+Chiều cao khe do hệ khung, tải gió, yêu cầu nhà sản xuất và kết cấu mái quyết định. Không tự kê tấm bằng vật liệu rời để “lấy gió”, không lấp kín cửa hút/xả bằng keo hoặc tấm che, và không đặt tấm pin lên mái mà không cố định vào kết cấu chịu lực. Một phương án có khe rộng nhưng neo kém vẫn là phương án nguy hiểm.
 
 Cáp phải được cố định, tránh cọ cạnh kim loại và điểm đọng nước; máng xối, lối thoát nước và đường kiểm tra phải còn sử dụng được. Phần DC vẫn có điện khi có nắng. Đầu nối, tiếp địa, bảo vệ chống sét và chống đảo lưới cần được thiết kế đúng; người không chuyên không nên luồn tay vào khe hoặc di chuyển tấm để tự kiểm tra.
 

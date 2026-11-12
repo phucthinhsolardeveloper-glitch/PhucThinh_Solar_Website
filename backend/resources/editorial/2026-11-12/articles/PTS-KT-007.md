@@ -7,14 +7,14 @@ Chọn theo lúc cần điện, không chọn theo tên thiết bị. Bảng dư
 | Có lưới ổn định để bù thiếu không? | Có | Có | Không hoặc không đáng tin cậy |
 | Muốn dùng điện ban ngày? | Có | Có | Có |
 | Muốn chuyển điện sang tối? | Không có pin thì không | Có thể, nếu có pin phù hợp | Có, trong giới hạn pin |
-| Khi mất lưới có tải còn điện? | Thông thường không | Có thể ở nhánh backup | Có, nếu pin/nguồn đủ |
-| Cần hỏi thêm | Chống đảo lưới, đấu nối | Pin, tải ưu tiên, cổng backup | Mùa mưa, nguồn dự phòng, tải cực đại |
+| Khi mất lưới có tải còn điện? | Thông thường không | Có thể ở nhánh cấp điện dự phòng | Có, nếu pin/nguồn đủ |
+| Cần hỏi thêm | Chống đảo lưới, đấu nối | Pin, tải ưu tiên, cổng cấp điện dự phòng | Mùa mưa, nguồn dự phòng, tải cực đại |
 
 ## Đọc ba lựa chọn bằng một ngày mất điện
 
 Với hệ hòa lưới, inverter bám theo điện áp và tần số của lưới; khi lưới mất, nó dừng phát để chống đảo lưới. Có tấm pin trên mái không đồng nghĩa ổ cắm vẫn có điện.
 
-Hybrid thêm khả năng điều phối PV, lưới và pin theo model. Nó có thể cấp một nhóm tải khi mất lưới nếu có cổng backup, thiết bị cách ly và thiết kế phù hợp; không mặc định cấp toàn bộ nhà.
+Bộ biến tần hybrid có thể điều phối điện từ tấm pin mặt trời, điện lưới và pin lưu trữ, tùy theo từng mẫu thiết bị. Nó có thể cấp một nhóm tải khi mất lưới nếu có cổng cấp điện dự phòng, thiết bị cách ly và thiết kế phù hợp; không mặc định cấp toàn bộ nhà.
 
 Độc lập không có lưới để bù sai số. Một hệ đủ cho đèn có thể không đủ cho bơm hoặc điều hòa; phải tính theo tải, mùa mưa, dung lượng pin và nguồn dự phòng.
 

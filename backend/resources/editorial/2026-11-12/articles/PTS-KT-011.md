@@ -1,6 +1,6 @@
 Một mái nhà có thể không “hợp” với tấm 720 W dù con số đó cao hơn 600 W. Nếu mái bị chia bởi bồn nước, cửa mái hoặc vùng bóng che, kích thước của **đúng model** và cách đặt tấm quan trọng trước nhãn watt.
 
-Hãy coi bản vẽ mái là bài kiểm tra đầu tiên: khoanh phần thật sự lắp được, rồi thử từng kích thước module vào phần đó. Một con số W chỉ có ý nghĩa sau khi biết nó nằm ở đâu trên mái.
+Hãy coi bản vẽ mái là bài kiểm tra đầu tiên: khoanh phần thật sự lắp được, rồi đặt thử kích thước của từng loại tấm pin lên bản vẽ. Một con số W chỉ có ý nghĩa sau khi biết nó nằm ở đâu trên mái.
 
 ![Biểu đồ so sánh công suất danh định các mức tấm pin 600 620 650 720 Wp](/upload/news/pts-explainer-power-ratings.webp)
 
@@ -10,7 +10,7 @@ Hãy coi bản vẽ mái là bài kiểm tra đầu tiên: khoanh phần thật 
 
 600 W, 620 W, 650 W và 720 W là công suất danh định (Wp) trong điều kiện thử nghiệm chuẩn. 720 Wp cao hơn 600 Wp là 120 Wp, tương đương 20% trên nhãn; phép tính đó chưa nói tấm lớn bao nhiêu, vừa bao nhiêu mảng mái hay tạo ra bao nhiêu điện trong năm.
 
-Hãy đánh dấu vùng mái có thể lắp, lối bảo trì, khoảng tránh bóng và vật cản. Sau đó đặt chiều dài, chiều rộng và khối lượng ghi trong datasheet của từng model lên sơ đồ. Không thể điền một kích thước “điển hình” cho mọi tấm 650 W hoặc 720 W.
+Hãy đánh dấu vùng mái có thể lắp, lối bảo trì, khoảng tránh bóng và vật cản. Sau đó đặt chiều dài, chiều rộng và khối lượng ghi trong bảng thông số kỹ thuật của từng mẫu tấm pin lên sơ đồ. Không thể điền một kích thước “điển hình” cho mọi tấm 650 W hoặc 720 W.
 
 Mái rộng, ít vật cản thường có nhiều lựa chọn. Mái nhỏ hoặc chia nhiều mặt có thể cần tấm nhỏ hơn để tận dụng hình dạng; lắp được nhiều tấm vừa vặn đôi khi hữu ích hơn cố lấy số watt lớn nhất trên từng tấm.
 
@@ -22,7 +22,7 @@ Giả sử phần mái còn lại bị cắt thành hai mảng bởi cửa mái.
 
 ## Sau kích thước mới so hiệu suất và chi phí
 
-Hiệu suất module cho biết công suất trên diện tích trong điều kiện đo. Một tấm công suất cao có thể đạt con số đó nhờ kích thước lớn hơn, mật độ công suất hoặc cấu trúc cell; vì vậy đừng dùng watt trên nhãn để suy ngược rằng tấm đó “tốt hơn” ở mọi mái.
+Hiệu suất tấm pin cho biết tỷ lệ ánh sáng được chuyển thành điện trong điều kiện thử chuẩn. Một tấm công suất cao có thể đạt con số đó nhờ kích thước lớn hơn, mật độ công suất hoặc cấu trúc tế bào quang điện; vì vậy đừng dùng watt trên nhãn để suy ngược rằng tấm đó “tốt hơn” ở mọi mái.
 
 Hãy so tổng hệ thống: số tấm thực lắp, tổng kWp, inverter, khung, dây, bảo vệ, nhân công, giám sát và bảo hành. Sản lượng còn phụ thuộc hướng, góc nghiêng, nắng, nhiệt độ, bóng che và tổn thất DC/AC; không lấy Wp nhân với số giờ nắng để hứa sản lượng.
 

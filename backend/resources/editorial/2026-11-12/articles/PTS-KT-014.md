@@ -9,7 +9,7 @@ Một gia đình ở khu vực hay cúp điện có hai câu hỏi trước khi 
 | Câu trả lời | Hướng xem xét đầu tiên | Điều phải xác nhận |
 |---|---|---|
 | Không cần điện khi cúp | Inverter hòa lưới | Mức tự dùng, giới hạn lưới, mái và giám sát |
-| Cần điện khi cúp + chấp nhận pin | Hybrid có nhánh backup | Pin tương thích, cách ly, EPS, công suất và thời gian chuyển |
+| Cần điện khi cúp + chấp nhận pin | Bộ biến tần hybrid có nhánh cấp điện dự phòng | Pin tương thích, cách ly, EPS, công suất và thời gian chuyển |
 | Cần điện khi cúp + không chấp nhận pin | Chưa thể kết luận là hybrid | Giải pháp nguồn dự phòng khác, tải ưu tiên và thời gian cần điện |
 | Không có lưới ổn định | Hệ độc lập/giải pháp chuyên biệt | Nguồn cân bằng, dự phòng nhiều ngày và quản lý tải |
 
@@ -23,15 +23,15 @@ Hãy thử đặt vào một tình huống cụ thể: 12 giờ trưa mất đi�
 
 ## Hybrid: thêm pin, thêm điều kiện
 
-Hybrid thường quản lý PV, lưới, pin và có thể cấp một nhánh tải dự phòng. Khi mất lưới, hệ phải tách khỏi lưới ngoài rồi tạo nguồn cục bộ; thời gian chuyển, công suất liên tục, công suất đỉnh và khả năng chạy không pin phụ thuộc đúng model.
+Bộ biến tần hybrid thường điều phối điện từ tấm pin, điện lưới và pin lưu trữ; một số mẫu còn có khả năng cấp điện cho các thiết bị ưu tiên khi mất lưới. Khi mất lưới, hệ phải tách khỏi lưới ngoài rồi tạo nguồn cục bộ; thời gian chuyển, công suất liên tục, công suất đỉnh và khả năng chạy không pin phụ thuộc đúng model.
 
-Nhánh backup không mặc định là toàn bộ nhà. Modem, đèn, tủ lạnh hoặc camera có thể được ưu tiên; bếp điện, máy lạnh, bình nước nóng, máy bơm và tải ba pha cần tính công suất đồng thời, dòng khởi động và phân bổ pha.
+Nhánh cấp điện dự phòng không mặc định là toàn bộ nhà. Modem, đèn, tủ lạnh hoặc camera có thể được ưu tiên; bếp điện, máy lạnh, bình nước nóng, máy bơm và tải ba pha cần tính công suất đồng thời, dòng khởi động và phân bổ pha.
 
 ## Ba dòng cần có trong báo giá
 
 Yêu cầu sơ đồ một đường thể hiện dàn pin, inverter, pin lưu trữ, lưới, tủ chính, tủ tải dự phòng và thiết bị cách ly. Trong datasheet, kiểm tra dải MPPT, điện áp DC tối đa, dòng mỗi MPPT, công suất AC liên tục/đỉnh, công suất sạc-xả, pin tương thích, số pha và thời gian chuyển EPS.
 
-Với hybrid, tổng chi phí còn gồm pin, tủ tải, chuyển nguồn, bảo vệ, dây và công lắp đặt. Giá trị của backup phụ thuộc tần suất mất điện, tải cần duy trì và thời gian chờ; không có kết luận kinh tế chung nếu chưa có dữ liệu.
+Với hybrid, tổng chi phí còn gồm pin, tủ tải, chuyển nguồn, bảo vệ, dây và công lắp đặt. Giá trị của khả năng cấp điện dự phòng phụ thuộc tần suất mất điện, tải cần duy trì và thời gian chờ; không có kết luận kinh tế chung nếu chưa có dữ liệu.
 
 ### Nguồn tham khảo
 
