@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 function reworkBaseline(array $records): string
 {
     $path = tempnam(sys_get_temp_dir(), 'pts-content-rework-');
     file_put_contents($path, json_encode(['records' => $records], JSON_THROW_ON_ERROR));
+
     return $path;
 }
 
@@ -37,6 +39,12 @@ it('reports unselected records without blocking a dry-run', function () {
 });
 
 it('fails a selected batch closed when its staged source is absent', function () {
+    DB::table('posts')->insert([
+        'id' => 107, 'kind' => 'article', 'slug' => 'test-107',
+        'title' => 'Fixture legacy article', 'nav_title' => '',
+        'body' => '', 'summary' => '', 'is_visible' => false,
+        'created_at' => now(), 'updated_at' => now(),
+    ]);
     $baseline = reworkBaseline([reworkRecord(107)]);
 
     expect(Artisan::call('pts:content-rework-apply', [
