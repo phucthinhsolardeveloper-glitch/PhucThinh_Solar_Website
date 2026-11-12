@@ -39,8 +39,8 @@ it('reports unselected records without blocking a dry-run', function () {
 });
 
 it('fails a selected batch closed when its staged source is absent', function () {
-    DB::table('posts')->insert([
-        'id' => 107, 'kind' => 'article', 'slug' => 'test-107',
+    DB::table('posts')->updateOrInsert(['id' => 107], [
+        'kind' => 'article', 'slug' => 'test-107',
         'title' => 'Fixture legacy article', 'nav_title' => '',
         'body' => '', 'summary' => '', 'is_visible' => false,
         'created_at' => now(), 'updated_at' => now(),
