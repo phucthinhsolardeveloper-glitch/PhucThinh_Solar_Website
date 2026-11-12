@@ -2,7 +2,10 @@
 
 namespace App\Filament\Concerns;
 
+use App\Domain\Content\PostRevisions;
 use App\Domain\Routing\PublicUrls;
+use App\Filament\Support\AdminActor;
+use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Throwable;
@@ -24,9 +27,16 @@ trait ReportsSavedChanges
             ? 'Đã đổi: '.implode(', ', array_slice($changed, 0, 8)).(count($changed) > 8 ? ' và '.(count($changed) - 8).' mục khác' : '').'.'
             : 'Thông tin chính không đổi; ảnh, SEO và nội dung đi kèm được lưu nếu có sửa.');
         $record = $this->getRecord();
-        if (($url = PublicUrls::url($record)) !== null) {
+        if ($record instanceof Post && ! PublicUrls::isLive($record)) {
+            $draft = $record->revisions()->where('state', 'draft')->first()
+                ?? app(PostRevisions::class)->draft($record, AdminActor::current());
             $notification->actions([
-                Action::make('viewOnSite')->label(PublicUrls::isLive($record) ? 'Xem trên website' : 'Xem trang (đang ẩn)')
+                Action::make('previewDraft')->label('Xem trước bản nháp')
+                    ->url(app(PostRevisions::class)->previewUrl($draft), shouldOpenInNewTab: true)->button(),
+            ])->persistent();
+        } elseif (($url = PublicUrls::url($record)) !== null) {
+            $notification->actions([
+                Action::make('viewOnSite')->label('Xem trên website')
                     ->url($url, shouldOpenInNewTab: true)->button(),
             ])->persistent();
         }

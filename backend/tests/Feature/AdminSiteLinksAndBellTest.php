@@ -1,7 +1,9 @@
 <?php
 
 use App\Domain\Admin\AdminBell;
+use App\Domain\Content\PostRevisions;
 use App\Domain\Routing\PublicUrls;
+use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Models\Brand;
 use App\Models\Post;
@@ -47,6 +49,52 @@ it('says what changed after a save and offers the public page', function () {
     $notice = (fn () => $this->getSavedNotification())->call($page);
     expect($notice->getBody())->toStartWith('Đã đổi:')->toContain('Tên')
         ->and($notice->getActions()[0]->getUrl())->toEndWith('/san-pham/den-'.$tag);
+});
+
+it('offers a signed draft preview after saving a hidden article', function () {
+    $this->actingAs(bellOwner(), 'admin');
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $post->update(['is_visible' => false]);
+
+    $page = Livewire::test(EditArticle::class, ['record' => $post->getKey()])
+        ->assertActionVisible('viewOnSite')
+        ->set('data.title', 'Bài ẩn xem trước')
+        ->call('save')->assertHasNoErrors()->assertNotified()
+        ->instance();
+    $notice = (fn () => $this->getSavedNotification())->call($page);
+    $action = $notice->getActions()[0];
+
+    expect($action->getLabel())->toBe('Xem trước bản nháp')
+        ->and($action->getUrl())->toContain('/xem-truoc/bai-viet/')
+        ->and($post->fresh()->is_visible)->toBeFalse()
+        ->and($post->revisions()->where('state', 'draft')->count())->toBe(1);
+    $this->getJson('/api/v1/news-detail?slug='.$post->slug)->assertNotFound();
+});
+
+it('renders the scheduled post header preview as a new-tab signed link', function () {
+    $owner = bellOwner();
+    $this->actingAs($owner, 'admin');
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $post->update(['published_at' => now()->addDay()]);
+    app(PostRevisions::class)->draft($post, $owner);
+
+    Livewire::test(EditArticle::class, ['record' => $post->getKey()])
+        ->assertSee('Xem trước bản nháp')
+        ->assertSee('target="_blank"', false);
+});
+
+it('keeps the preview header action available to content editors without publish permission', function () {
+    $editor = User::query()->create([
+        'name' => 'Biên tập', 'username' => 'preview-editor-'.bin2hex(random_bytes(3)), 'password' => 'test-password',
+        'role' => User::ROLE_EDITOR, 'permissions' => ['content'], 'is_active' => true,
+    ]);
+    $this->actingAs($editor, 'admin');
+    $post = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $post->update(['is_visible' => false]);
+
+    Livewire::test(EditArticle::class, ['record' => $post->getKey()])
+        ->assertActionVisible('viewOnSite')
+        ->assertSee('Xem trước bản nháp');
 });
 
 it('rings the bell once per new enquiry for staff who handle enquiries, without the phone number', function () {

@@ -3,6 +3,7 @@
 use App\Domain\Content\PostRevisions;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 it('previews solution, project and policy drafts as the public page while the live page stays unchanged', function (string $kind, string $endpoint, string $titlePath, string $page) {
     $actor = User::query()->create(['name' => 'Chủ', 'username' => 'preview-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
@@ -42,4 +43,14 @@ it('previews a hidden post that has never been published', function () {
     $this->getJson('/api/v1/post-draft-preview/'.$draft->id.'?'.parse_url($url, PHP_URL_QUERY))->assertOk()->assertJsonPath('title', 'Chính sách mới chưa đăng');
     expect($post->fresh()->is_visible)->toBeFalse();
     $this->getJson('/api/v1/policy-detail?slug='.$post->slug)->assertNotFound();
+});
+
+it('rejects an expired post preview signature', function () {
+    $actor = User::query()->create(['name' => 'Chủ', 'username' => 'preview-exp-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $post = Post::query()->where('kind', 'policy')->where('is_visible', true)->orderBy('id')->firstOrFail();
+    $draft = app(PostRevisions::class)->draft($post, $actor);
+    $query = parse_url(URL::temporarySignedRoute('post-draft.preview', now()->subMinute(), ['revision' => $draft->id], absolute: false), PHP_URL_QUERY);
+
+    $this->getJson('/api/v1/post-draft-preview/'.$draft->id.'?'.$query)->assertForbidden();
 });
