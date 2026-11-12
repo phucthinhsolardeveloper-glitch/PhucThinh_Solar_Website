@@ -61,6 +61,21 @@ chung. Các đường dẫn dưới đây là line trong Markdown hiện tại.
 - **005/007/014:** proposal tách inverter là gì, chọn loại hệ, và hòa lưới vs
   hybrid; không phát hiện summary trùng nguyên kế hoạch nội bộ.
 
+## Fact-check bổ sung trực tiếp tại nguồn gốc (12/11/2026)
+
+- **PTS-KT-002 / LONGi LR7-72HVH-650M:** Manufacturer datasheet đúng model nêu STC 650 W, NOCT 495 W, 24,1%, Voc 53,90 V, Vmp 44,56 V, Isc 15,29 A, Imp 14,59 A, hệ số nhiệt Pmax -0,260%/°C, kích thước 2382 × 1134 × 30 mm, khối lượng 28,5 kg. Nguồn: https://static.longi.com/LR_7_72_HVH_630_650_M_30_30_and_15_Explorer_BGV_02_20241118_EN_Draft_426c93d9d1.pdf. Đây là bản BGV02 mẫu, không thay thế việc xác minh tài liệu lô hàng trước báo giá.
+- **PTS-KT-003 / IEA PVPS Trends 2026:** nguồn chính IEA PVPS tháng 9/2026 ghi 2,96 TW lũy kế cuối 2025; khoảng 690 GW lắp mới năm 2025; tăng 15% so với 2024. Snapshot sơ bộ tháng 4/2026 ghi 698 GW; không được trộn hai bản. Nguồn: https://iea-pvps.org/trends_reports/trends-2026/ và https://iea-pvps.org/snapshot-reports/snapshot-2026/.
+- **PTS-KT-012 / IEA Renewables 2026:** công bố 06/11/2026, dự báo gần 4.800 GW thêm trong 2026–2031, tăng 57% so với 6 năm trước; tỷ trọng điện tái tạo tăng từ 33% năm 2025 lên gần 45% năm 2031. Bài sử dụng khoảng 43% là điểm đọc chi tiết và nêu rõ tóm tắt ghi gần 45%. Nguồn: https://www.iea.org/reports/renewables-2026/executive-summary và https://www.iea.org/reports/renewables-2026.
+- **Phạm vi xác minh:** ba nhóm dữ kiện chính đã được đối chiếu nguồn công khai. Những claim an toàn/thiết kế và datasheet từng model khác vẫn phải được kiểm tra trước khi xuất bản; không xem đây là giấy phép sử dụng lại ảnh hoặc toàn bộ báo cáo.
+
+## Kết quả cập nhật local có kiểm soát
+
+- Đã chạy bộ test Laravel đầy đủ: **390 pass, 1 skipped, 2704 assertions**.
+- Lệnh dry-run xác định 18 bản ghi PTS-KT-004–021 cần chỉnh; apply thành công với baseline hash DB gốc và bản lưu riêng trong Laravel private storage; lần apply thứ hai **0 thay đổi**.
+- Xác nhận sau apply: **18 body HTML và SEO summary khớp nguồn Git; 21 bài vẫn ẩn; 3 bài 001–003 không bị sửa; 38 liên kết sản phẩm không đổi; 6 ảnh inline giữ nguyên, URL source không mất**.
+- Bản ghi đang ẩn có lịch dự kiến **không được tự công khai**; các bài 016–021 còn chờ ảnh bìa cuối được duyệt trước khi đăng.
+- Không có ghi đè sản phẩm, ảnh bìa, category, slug hay publish_at; không push, không deploy production.
+
 ## Việc còn lại
 
 Cần kiểm tra tương thích HTML-to-Markdown của 001–003 trước khi thay bản nháp trong CMS. Bài 013 đã được rà từ bản cuối trên master. Báo cáo QA không tự sửa DB, production hoặc trạng thái hiển thị.
