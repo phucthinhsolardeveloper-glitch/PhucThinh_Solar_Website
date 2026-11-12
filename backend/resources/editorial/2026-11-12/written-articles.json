@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "articles": [
+    {
+      "id": "PTS-KT-004",
+      "summary": "Phân biệt kW, kWp và kWh bằng 7 ví dụ dễ hiểu để đọc hóa đơn điện, báo giá inverter và công suất tấm pin chính xác.",
+      "keywords": "kW kWp kWh, công suất tấm pin, điện năng kWh"
+    },
+    {
+      "id": "PTS-KT-005",
+      "summary": "Tìm hiểu inverter điện mặt trời làm gì: chuyển DC/AC, MPPT, giám sát, chống đảo lưới và các thông số chọn biến tần.",
+      "keywords": "inverter điện mặt trời, bộ biến tần, MPPT, hòa lưới, hybrid"
+    },
+    {
+      "id": "PTS-KT-006",
+      "summary": "Nhà dùng điện chủ yếu buổi tối có nên lắp điện mặt trời? Phân tích tự dùng, pin lưu trữ, chi phí và thiết kế phù hợp.",
+      "keywords": "điện mặt trời dùng buổi tối, pin lưu trữ, hybrid, điện tự dùng"
+    },
+    {
+      "id": "PTS-KT-007",
+      "summary": "So sánh điện mặt trời hòa lưới, hybrid và độc lập để chọn đúng cấu hình theo nhu cầu tiết kiệm, lưu trữ và dự phòng.",
+      "keywords": "hệ điện mặt trời hòa lưới, hybrid, off-grid, backup"
+    },
+    {
+      "id": "PTS-KT-008",
+      "summary": "Hướng dẫn chọn đèn năng lượng mặt trời dựa trên lumen, lux, dung lượng pin, quang học và độ bền thay vì chỉ nhìn watt.",
+      "keywords": "chọn đèn năng lượng mặt trời, lumen, lux, pin đèn solar"
+    },
+    {
+      "id": "PTS-KT-009",
+      "summary": "Tấm pin có tạo điện khi trời nhiều mây hay mùa mưa? Giải thích bức xạ tán xạ, MPPT và cách dự báo sản lượng theo mùa.",
+      "keywords": "tấm pin trời nhiều mây, điện mặt trời mùa mưa, PVGIS"
+    }
+  ]
+}

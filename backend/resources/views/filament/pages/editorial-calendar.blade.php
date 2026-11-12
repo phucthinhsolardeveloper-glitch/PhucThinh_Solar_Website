@@ -4,10 +4,12 @@
         <x-filament::button color="gray" size="sm" wire:click="shift(-1)" icon="heroicon-m-chevron-left">Tháng trước</x-filament::button>
         <strong class="pts-cal__month">Tháng {{ $start->format('m/Y') }}</strong>
         <x-filament::button color="gray" size="sm" wire:click="shift(1)" icon="heroicon-m-chevron-right" icon-position="after">Tháng sau</x-filament::button>
+        <a class="text-sm font-semibold underline" href="{{ \App\Filament\Resources\EditorialPlanItems\EditorialPlanItemResource::getUrl() }}">Quản lý kế hoạch 180 bài</a>
         <span class="pts-cal__legend">
             <x-filament::badge color="success">Đang hiện</x-filament::badge>
             <x-filament::badge color="info">Hẹn giờ</x-filament::badge>
             <x-filament::badge color="gray">Đang ẩn</x-filament::badge>
+            <x-filament::badge color="warning">Bài trong kế hoạch</x-filament::badge>
         </span>
     </div>
 

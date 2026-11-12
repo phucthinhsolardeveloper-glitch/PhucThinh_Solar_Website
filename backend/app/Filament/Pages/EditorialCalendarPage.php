@@ -3,7 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Domain\Routing\PublicStatus;
+use App\Filament\Resources\EditorialPlanItems\EditorialPlanItemResource;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
+use App\Models\EditorialPlanItem;
 use App\Models\Post;
 use App\Models\PostRevision;
 use App\Models\User;
@@ -11,6 +13,7 @@ use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Url;
 use UnitEnum;
 
@@ -66,6 +69,31 @@ class EditorialCalendarPage extends Page
                 'url' => $resource::getUrl('edit', ['record' => $post]),
             ];
         }
+        // Editorial plans are not public posts: show them distinctly in the same monthly calendar.
+        // A plan already linked to a post with the same date/time is represented by that post.
+        foreach ((Schema::hasTable('editorial_plan_items')
+            ? EditorialPlanItem::query()->with('post:id,published_at,is_visible')
+                ->whereBetween('scheduled_for', [$from, $to])->orderBy('scheduled_for')->get()
+            : []) as $planned) {
+            $post = $planned->post;
+            if ($post && $post->published_at !== null
+                && Carbon::parse($post->published_at)->format('Y-m-d H:i')
+                    === $planned->scheduled_for->format('Y-m-d H:i')) {
+                continue;
+            }
+            $byDay[$planned->scheduled_for->toDateString()][] = [
+                'title' => $planned->title,
+                'kind' => 'Kế hoạch bài viết',
+                'time' => $planned->scheduled_for->format('H:i'),
+                'status' => ['key' => 'planned', 'label' => EditorialPlanItem::STAGES[$planned->stage] ?? 'Lên kế hoạch'],
+                'url' => EditorialPlanItemResource::getUrl('edit', ['record' => $planned]),
+            ];
+        }
+        foreach ($byDay as &$items) {
+            usort($items, fn (array $a, array $b) => strcmp($a['time'], $b['time']));
+        }
+        unset($items);
+
         $weeks = [];
         for ($day = $from->copy(); $day <= $to; $day->addDay()) {
             $weeks[intdiv((int) $from->diffInDays($day), 7)][] = ['date' => $day->copy(), 'inMonth' => $day->month === $start->month, 'posts' => $byDay[$day->toDateString()] ?? []];

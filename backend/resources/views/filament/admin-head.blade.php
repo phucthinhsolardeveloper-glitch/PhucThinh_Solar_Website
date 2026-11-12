@@ -34,6 +34,7 @@
     .pts-cal__post { display: block; font-size: .75rem; line-height: 1.3; padding: .2rem .35rem; border-radius: .3rem; border-left: 3px solid #94a3b8; background: rgb(128 128 128 / .08); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .pts-cal__post.is-live { border-left-color: #16a34a; }
     .pts-cal__post.is-scheduled { border-left-color: #2563eb; }
+    .pts-cal__post.is-planned { border-left-color: #c9962e; background: rgb(201 150 46 / .12); }
     .pts-cal__post:hover { text-decoration: underline; }
     .pts-cal__time { font-variant-numeric: tabular-nums; color: rgb(107 114 128); }
     @media (max-width: 768px) { .pts-cal__day { min-height: 4.5rem; } .pts-cal__post { white-space: normal; } .pts-cal__legend { margin-left: 0; } }

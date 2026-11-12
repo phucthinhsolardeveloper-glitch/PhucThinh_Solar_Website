@@ -19,13 +19,20 @@ docker exec "$container" php artisan pts:editorial-batch
 
 if [[ "$mode" == --apply ]]; then
   if [[ "${PTS_EDITORIAL_BACKUP_VERIFIED:-0}" != 1 ]]; then
-    echo "BLOCK: Verify fresh production DB/upload backup first, then set PTS_EDITORIAL_BACKUP_VERIFIED=1." >&2
+    echo "BLOCK: Verify fresh DB/upload backup before importing content, then set PTS_EDITORIAL_BACKUP_VERIFIED=1." >&2
     exit 1
   fi
-  echo "Applying packaged editorial content as hidden drafts (no automatic publication)"
+  echo "Running the isolated editorial planner migration (not unrelated migrations)."
+  docker exec "$container" php artisan migrate --path=database/migrations/2026_11_12_000100_create_editorial_plan_items_table.php --force
+  echo "Importing 9 hidden drafts and 180 planning slots (no automatic publication)."
   docker exec "$container" php artisan pts:editorial-batch --apply
-  echo "Verifying idempotent repeat preview:"
+  docker exec "$container" php artisan pts:editorial-calendar --apply
+  echo "Read-only repeat / idempotence checks:"
   docker exec "$container" php artisan pts:editorial-batch
+  docker exec "$container" php artisan pts:editorial-calendar
 else
+  if ! docker exec "$container" php artisan pts:editorial-calendar; then
+    echo "Planner table may be pending; apply mode migrates this one table AFTER backup."
+  fi
   echo "Preview only. After backup verification: PTS_EDITORIAL_BACKUP_VERIFIED=1 bash $0 --apply"
 fi
