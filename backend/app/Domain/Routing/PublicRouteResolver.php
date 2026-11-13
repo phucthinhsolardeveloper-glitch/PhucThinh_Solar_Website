@@ -81,6 +81,14 @@ class PublicRouteResolver
             return null;
         }
 
+        // A category without a visible product has no page: go straight to where its address was moved, if anywhere,
+        // instead of sending the visitor (and Google) through a second redirect or to a 404.
+        if (! $this->tree->hasVisibleProducts($id)) {
+            $moved = Redirects::find('/'.$relative);
+
+            return $moved !== null && str_starts_with($moved, '/danh-muc-san-pham/') ? ['category', $moved] : null;
+        }
+
         return ['category', '/'.$relative];
     }
 }

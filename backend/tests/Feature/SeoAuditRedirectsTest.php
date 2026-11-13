@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Routing\PublicRouteResolver;
 use App\Domain\Routing\Redirects;
 use App\Domain\Solutions\SolutionHub;
 use Illuminate\Support\Facades\DB;
@@ -26,4 +27,15 @@ it('offers only product groups whose page exists as shortcuts on the solution pa
     $ids = array_column(SolutionHub::liveProductGroups(DB::connection()), 'id');
     expect($ids)->not->toContain($empty)
         ->and(count($ids))->toBeGreaterThan(0);
+});
+
+it('sends an old bare category slug of an empty shelf straight to the live page in one hop', function () {
+    $empty = (int) DB::table('categories')->insertGetId(['name' => 'Kệ rỗng', 'slug' => 'ke-rong-thu', 'depth' => 1, 'sort_order' => 0, 'is_visible' => true, 'created_at' => now(), 'updated_at' => now()]);
+    $resolver = app(PublicRouteResolver::class);
+    expect($resolver->handle(['slug' => 'ke-rong-thu'])[0])->toBe(404);
+
+    Redirects::record('/danh-muc-san-pham/ke-rong-thu/', '/danh-muc-san-pham/den-nlmt/');
+    [$status, $body] = app(PublicRouteResolver::class)->handle(['slug' => 'ke-rong-thu']);
+    expect($status)->toBe(200)->and($body['canonicalPath'])->toBe('/danh-muc-san-pham/den-nlmt/');
+    unset($empty);
 });
