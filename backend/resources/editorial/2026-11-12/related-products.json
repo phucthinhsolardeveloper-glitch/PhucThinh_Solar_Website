@@ -155,6 +155,12 @@
         {"slug": "tam-pin-nang-luong-mat-troi-longi-650wp-2-mat-kinh", "expected_id": 746, "topic": "pv_module", "reason": "Cùng 650 Wp, cấu tạo 2 mặt kính — minh họa lớp mặt sau mà bài nói ảnh hưởng hơn màu sắc."},
         {"slug": "tam-pin-nang-luong-mat-troi-astronergy-625wp", "expected_id": 755, "topic": "pv_module", "reason": "Module N-Type TOPCon của hãng khác, hiệu suất 23.1%, để so thông số thay vì so màu."}
       ]
-    }
+    },
+    {"plan_key":"PTS-KT-016","slug":"cam-hoa-don-len-va-chuan-bi-gi-truoc-khi-gap-tu-van","decision":"none","reason":"Bài chuẩn bị dữ liệu hóa đơn và khảo sát, không chọn model; giữ lối sang bài/giải pháp khảo sát thay vì ép SKU.","products":[]},
+    {"plan_key":"PTS-KT-017","slug":"chon-den-cho-loi-di-watt-lumen-va-lux-noi-gi","decision":"none","reason":"Bài ưu tiên đo lumen/lux theo vị trí; chỉ gắn đèn khi catalog xác minh đúng thông số và ngữ cảnh chiếu sáng.","products":[]},
+    {"plan_key":"PTS-KT-018","slug":"co-nen-lap-them-tam-pin-khi-dien-du-nhieu","decision":"none","reason":"Bài phân tích điện tự dùng và kịch bản giả định, không đủ dữ liệu mái/tải để gợi ý model cụ thể.","products":[]},
+    {"plan_key":"PTS-KT-019","slug":"truoc-khi-lap-dien-mat-troi-hay-kiem-tra-mai-nha","decision":"none","reason":"Bài khảo sát kết cấu mái, chống dột và tải gió; chưa xác minh panel/thiết bị tương thích với từng mái.","products":[]},
+    {"plan_key":"PTS-KT-020","slug":"nguoi-mua-can-nho-gi-ve-topcon-hjt-va-bc","decision":"none","reason":"TOPCon/HJT/BC cần đối chiếu thuộc tính kỹ thuật theo đúng model trước khi phân loại; chưa gắn khi chưa có bằng chứng đủ trong catalog.","products":[]},
+    {"plan_key":"PTS-KT-021","slug":"mai-nha-duoi-tam-pin-khi-nao-co-the-mat-hon","decision":"none","reason":"Bài nói về khe thoáng, mái và cách nhiệt, không phải cam kết hiệu năng của SKU cụ thể.","products":[]}
   ]
 }

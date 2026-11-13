@@ -18,8 +18,8 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
 
     expect(EditorialPlanItem::query()->count())->toBe(180)
         ->and(EditorialPlanItem::query()->distinct()->count('scheduled_for'))->toBe(180)
-        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(21)
-        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(159)
+        ->and(EditorialPlanItem::query()->where('stage', 'review')->count())->toBe(24)
+        ->and(EditorialPlanItem::query()->where('stage', 'idea')->count())->toBe(156)
         ->and(EditorialPlanItem::query()->min('scheduled_for'))->toBe('2026-11-13 08:00:00')
         ->and(EditorialPlanItem::query()->max('scheduled_for'))->toBe('2027-01-11 19:30:00');
 
@@ -43,6 +43,13 @@ it('imports 180 distinct scheduled slots for 60 days with sources and branded im
         ->and($newDraft->cover_file)->toBe('pts-photo-021.webp')
         ->and($newDraft->post->image)->toBe('pts-photo-021.webp')
         ->and(Storage::disk('upload_news')->exists('pts-photo-021.webp'))->toBeTrue();
+    foreach (['PTS-KT-022', 'PTS-KT-023', 'PTS-KT-024'] as $key) {
+        $prepared = EditorialPlanItem::query()->where('plan_key', $key)->sole();
+        expect($prepared->stage)->toBe('review')
+            ->and($prepared->post)->toBeInstanceOf(Post::class)
+            ->and($prepared->post->is_visible)->toBeFalse()
+            ->and(mb_strlen(strip_tags((string) $prepared->post->body)))->toBeGreaterThan(1200);
+    }
     expect($first->post)->toBeInstanceOf(Post::class)
         ->and($first->post->is_visible)->toBeFalse()
         ->and($first->post->published_at)->toBe('2026-11-13 08:00:00')
@@ -65,8 +72,8 @@ it('preserves editorial changes on repeated imports and displays the planning ca
     Artisan::call('pts:editorial-batch', ['--apply' => true]);
     Artisan::call('pts:editorial-calendar', ['--apply' => true]);
 
-    // PTS-KT-020 is now a written/linked article; use the next idea-only plan slot.
-    $item = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-022')->sole();
+    // PTS-KT-001..024 are written/linked articles; use the first idea-only plan slot.
+    $item = EditorialPlanItem::query()->where('plan_key', 'PTS-KT-025')->sole();
     $item->update(['title' => 'Tên đã sửa thủ công', 'stage' => 'research', 'editor_notes' => 'Đang kiểm chứng nguồn']);
     Artisan::call('pts:editorial-calendar', ['--apply' => true]);
     expect($item->fresh()->title)->toBe('Tên đã sửa thủ công')

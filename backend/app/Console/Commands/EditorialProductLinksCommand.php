@@ -21,8 +21,9 @@ final class EditorialProductLinksCommand extends Command
 {
     protected $signature = 'pts:editorial-product-links
         {--apply : Write the links (otherwise dry run)}
+        {--ids= : Comma-separated plan keys to inspect/apply}
         {--report= : Also write the Markdown cross-check report to this path}
-        {--production-approved : Required together with --apply on the production environment}';
+        {--backup= : Private backup directory used before writes}';
 
     protected $description = 'Preview/apply reviewed related products for editorial drafts PTS-KT-001..015 without overwriting manual choices.';
 
@@ -31,12 +32,24 @@ final class EditorialProductLinksCommand extends Command
     public function handle(RelatedProductSuggestions $suggestions): int
     {
         $apply = (bool) $this->option('apply');
-        if ($apply && app()->environment('production') && ! $this->option('production-approved')) {
+        if ($apply && app()->environment('production')) {
             $this->error('Môi trường production: cần duyệt riêng và thêm --production-approved.');
 
             return self::FAILURE;
         }
         $entries = self::manifest();
+        $selected = $this->option('ids');
+        if (is_string($selected) && trim($selected) !== '') {
+            $ids = array_values(array_filter(array_map('trim', explode(',', $selected))));
+            $allowed = array_column($entries, 'plan_key');
+            if (array_diff($ids, $allowed) !== []) {
+                $this->error('Invalid plan key: '.implode(', ', array_diff($ids, $allowed)));
+
+                return self::FAILURE;
+            }
+            $entries = array_values(array_filter($entries, fn (array $entry) => in_array($entry['plan_key'], $ids, true)));
+        }
+        $backupDir = (string) ($this->option('backup') ?: storage_path('app/private/editorial-product-links'));
         $planPosts = Schema::hasTable('editorial_plan_items')
             ? DB::table('editorial_plan_items')->whereIn('plan_key', array_column($entries, 'plan_key'))->pluck('post_id', 'plan_key')
             : collect();
@@ -65,11 +78,22 @@ final class EditorialProductLinksCommand extends Command
             } elseif (! $apply) {
                 $row['status'] = 'SẼ GẮN '.count($valid).' sản phẩm';
             } else {
-                $done = DB::transaction(function () use ($post, $valid): bool {
+                $done = DB::transaction(function () use ($post, $valid, $backupDir): bool {
                     $locked = Post::query()->whereKey($post->id)->lockForUpdate()->first();
                     if (! $locked || self::blocked($locked) !== null) {
                         return false;
                     }
+                    $current = DB::table('post_products')->where('post_id', $locked->id)
+                        ->orderBy('sort_order')->orderBy('id')->get(['id', 'product_id', 'is_visible', 'sort_order'])->all();
+                    if ($current !== []) {
+                        return false;
+                    }
+                    if (! is_dir($backupDir) && ! mkdir($backupDir, 0700, true) && ! is_dir($backupDir)) {
+                        throw new RuntimeException('Cannot create private backup directory');
+                    }
+                    file_put_contents($backupDir.'/post-'.$locked->id.'-'.now()->format('YmdHisv').'.json', json_encode([
+                        'post_id' => $locked->id, 'rows' => $current, 'created_at' => now()->toIso8601String(),
+                    ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), LOCK_EX);
                     $attach = [];
                     foreach ($valid as $i => $product) {
                         $attach[$product['id']] = ['sort_order' => $i, 'is_visible' => true];
@@ -160,9 +184,9 @@ final class EditorialProductLinksCommand extends Command
             throw new RuntimeException('Invalid related-products manifest');
         }
         $keys = array_column($entries, 'plan_key');
-        $expected = array_map(fn (int $i) => sprintf('PTS-KT-%03d', $i), range(1, 15));
+        $expected = array_map(fn (int $i) => sprintf('PTS-KT-%03d', $i), range(1, 21));
         if ($keys !== $expected) {
-            throw new RuntimeException('Manifest must list PTS-KT-001..015 once, in order');
+            throw new RuntimeException('Manifest must list PTS-KT-001..021 once, in order');
         }
         foreach ($entries as $entry) {
             $products = $entry['products'] ?? null;

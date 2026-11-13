@@ -90,6 +90,21 @@
       "id": "PTS-KT-021",
       "summary": "Tấm pin có thể che nắng nhưng độ mát trong phòng còn tùy khe thoáng, mái, trần và cửa sổ; biết cách đo thay vì đoán.",
       "keywords": "mái nhà nóng mát, khe thông gió, mái tôn, cách nhiệt, module"
+    },
+    {
+      "id": "PTS-KT-022",
+      "summary": "Mái Đông–Tây có thể phân bổ điện sáng rộng hơn nhưng không có tỷ lệ hiệu quả chung. Bài hướng dẫn dùng tọa độ Pleiku, mô phỏng PVGIS, bóng che, lịch tải và kiểm tra MPPT thay vì lấy định mức châu Âu.",
+      "keywords": "mái Đông Tây, Pleiku, PVGIS, hướng mái, bóng che, lịch tải, MPPT"
+    },
+    {
+      "id": "PTS-KT-023",
+      "summary": "MPPT tìm điểm điện áp–dòng điện cho công suất phù hợp của chuỗi pin. Khi mái có nhiều hướng, cần tách điều kiện làm việc theo MPPT và đối chiếu Voc, Vmp, Isc, Imp với đúng inverter, không tự suy ra cấu hình từ kWp.",
+      "keywords": "MPPT, mái nhiều hướng, inverter, Voc, Vmp, Isc, Imp, bóng che"
+    },
+    {
+      "id": "PTS-KT-024",
+      "summary": "Kiwa PVEL 2026 đánh giá theo nhóm thử nghiệm, model và BOM chứ không xếp hạng mọi sản phẩm theo thương hiệu. Bài giải thích cách đọc Top Performer, mẫu số thất bại và các câu hỏi cần xác minh trong báo giá.",
+      "keywords": "Kiwa PVEL 2026, PV Module Reliability Scorecard, BOM, PQP, Top Performer, độ tin cậy"
     }
   ]
 }
