@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Product feed for Google Merchant Center. A product is left out rather than sent with anything Google
- * would reject: it needs a stable code, a real price matching its page, and a clean approved picture.
+ * would reject: it needs a stable code, a real price matching its page, and a picture of at least 500 px (the clean Shopping picture, else the main one).
  */
 final class MerchantFeed
 {
@@ -85,7 +85,9 @@ final class MerchantFeed
     {
         $code = trim((string) $product->code);
         $title = self::plain((string) $product->name, 150);
-        $image = trim((string) $product->feed_image);
+        // The clean Shopping picture when there is one; otherwise the main product picture (owner decision 2026-11-13).
+        // Google may still reject an individual product whose picture carries text or a logo; the others are unaffected.
+        $image = trim((string) $product->feed_image) !== '' ? trim((string) $product->feed_image) : trim((string) $product->image);
         // The ID must not change between syncs, so an over-long code is left out instead of being cut.
         if ($code === '' || mb_strlen($code, 'UTF-8') > 50 || $title === '' || (string) $product->slug === '' || $product->quote_only) {
             return null;

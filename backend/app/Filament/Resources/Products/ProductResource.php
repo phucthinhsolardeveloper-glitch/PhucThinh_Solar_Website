@@ -110,7 +110,7 @@ class ProductResource extends Resource
                     Grid::make(2)->schema([
                         Fields::image('image', 'product', 'Ảnh chính'),
                         Fields::image('image_secondary', 'product', 'Ảnh phụ'),
-                        Fields::image('feed_image', 'product', 'Ảnh Google Shopping')->helperText('Nền sạch, không chữ, không logo, tối thiểu 500×500 px. Sản phẩm thiếu ảnh này không lên feed quảng cáo.'),
+                        Fields::image('feed_image', 'product', 'Ảnh Google Shopping')->helperText('Nền sạch, không chữ, không logo, tối thiểu 500×500 px. Không có ảnh này thì feed quảng cáo dùng ảnh chính (cần từ 500×500 px); ảnh sạch giúp Google ít từ chối hơn.'),
                     ]),
                     Repeater::make('images')->label('Thư viện ảnh')->relationship()->orderColumn('sort_order')->reorderable()
                         ->schema([Fields::image('path', 'product')->required(), TextInput::make('caption')->label('Chú thích'), Fields::visible('Hiển thị')])

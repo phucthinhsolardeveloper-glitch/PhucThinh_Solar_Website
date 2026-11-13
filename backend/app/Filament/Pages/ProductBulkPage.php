@@ -203,7 +203,7 @@ class ProductBulkPage extends Page
         }
         $result = $feed->build((string) config('site.canonical_origin'));
         if ($result['rows'] === []) {
-            Notification::make()->warning()->title('Chưa có sản phẩm đủ điều kiện')->body('Cần mã sản phẩm, giá hợp lệ và ảnh Shopping từ 500×500 px.')->persistent()->send();
+            Notification::make()->warning()->title('Chưa có sản phẩm đủ điều kiện')->body('Cần mã sản phẩm, giá hợp lệ và ảnh (Shopping hoặc ảnh chính) từ 500×500 px.')->persistent()->send();
 
             return null;
         }

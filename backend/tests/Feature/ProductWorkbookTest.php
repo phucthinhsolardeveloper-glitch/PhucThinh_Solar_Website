@@ -223,7 +223,17 @@ it('sends Google only products that meet every condition', function () {
     $quote = Product::query()->where('is_visible', true)->whereNotIn('id', [$ok->id, $small->id])->firstOrFail();
     $quote->update(['code' => 'FEED-3', 'feed_image' => 'sach.jpg', 'regular_price' => 500_000, 'quote_only' => true]);
 
+    // No clean Shopping picture: the main picture stands in when it is big enough, and a too-small one does not.
+    Storage::disk('upload_product')->put('chinh.jpg', UploadedFile::fake()->image('c.jpg', 900, 900)->get());
+    $main = Product::query()->where('is_visible', true)->whereNotIn('id', [$ok->id, $small->id, $quote->id])->firstOrFail();
+    $main->update(['code' => 'FEED-4', 'feed_image' => null, 'image' => 'chinh.jpg', 'regular_price' => 700_000, 'sale_price' => null, 'quote_only' => false]);
+    $tiny = Product::query()->where('is_visible', true)->whereNotIn('id', [$ok->id, $small->id, $quote->id, $main->id])->firstOrFail();
+    $tiny->update(['code' => 'FEED-5', 'feed_image' => null, 'image' => 'nho.jpg', 'regular_price' => 700_000, 'sale_price' => null, 'quote_only' => false]);
+
     $rows = app(MerchantFeed::class)->build('https://phucthinhsolar.com')['rows'];
+    $byCode = collect($rows)->keyBy(0);
+    expect($rows)->toHaveCount(2)->and($byCode['FEED-4'][4])->toBe('https://phucthinhsolar.com/upload/product/chinh.jpg')->and($byCode->has('FEED-5'))->toBeFalse();
+    $rows = [$byCode['FEED-1']];
     expect($rows)->toHaveCount(1)->and($rows[0][0])->toBe('FEED-1')->and($rows[0][4])->toBe('https://phucthinhsolar.com/upload/product/sach.jpg')
         ->and($rows[0][6])->toBe('1000000 VND')->and($rows[0][7])->toBe('900000 VND');
 });

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Google Merchant Center fetches this on a schedule. Same rules as the CSV in Admin → Sản phẩm hàng loạt: only
- * products with a code, a real price and a 500 px Shopping picture, and nothing while prices are hidden on the site.
+ * products with a code, a real price and a 500 px picture (Shopping, else main), and nothing while prices are hidden on the site.
  */
 class MerchantFeedController extends Controller
 {
