@@ -5,7 +5,7 @@
 ## Trạng thái
 
 - Production (phucthinhsolar.com) đang chạy bản deploy 83a (`docs/06-operations/deployment-log.md`).
-- **ĐÃ DEPLOY lên production 2026-11-13 (release f62158bb, chi tiết ở `docs/06-operations/deployment-log.md`).** Các commit d6f73ecd → f62158bb đã push. Chủ website đã ra lệnh deploy. Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
+- **ĐÃ DEPLOY lên production 2026-11-13 (hai release: f62158bb rồi e94a3f71, chi tiết ở `docs/06-operations/deployment-log.md`).** Các commit d6f73ecd → f62158bb đã push. Chủ website đã ra lệnh deploy. Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
 - Các worktree `~/orca/workspaces/Web_PTS_PHP/pts-editorial-*` là việc bài viết của agent khác. Không đụng vào.
 
 | Commit | Nội dung |
@@ -48,3 +48,12 @@ Kiểm tra đã chạy: `php artisan test` 401 pass, 1 skip; phpstan 0 lỗi; `n
 - Nuxt local: `cd frontend && NUXT_LOCAL_API_PROXY=1 NITRO_HOST=0.0.0.0 NITRO_PORT=3110 NUXT_API_ORIGIN=http://127.0.0.1:8090 node .output/server/index.mjs` (đang chạy bản build mới nhất).
 - Classifier chặn lệnh đọc DB production qua ssh. Dùng DB local (bản sao) hoặc API công khai.
 - Script đo dùng lại được: `tools/visual-tests/audit/seo-20261113/` (README trong đó).
+
+## Cập nhật cuối ngày 2026-11-13
+
+- Release e94a3f71 đã lên production: feed dùng ảnh chính (304 sản phẩm), chữ trang Giải pháp đã rút gọn, code bài viết từ ba
+  worktree đã gom vào master (các worktree và nhánh biên tập đã xóa; chỉ còn nhánh master).
+- Việc còn mở: (1) chủ website dán mã GA4 (G-...) vào Admin › Thông tin website › Đo lường; (2) khai báo feed
+  `https://phucthinhsolar.com/google-shopping.xml` trong Merchant Center, gửi sitemap trong Search Console; (3) import 3 bài nháp ẩn
+  PTS-KT-022..024 (`pts:editorial-calendar --apply`, theo `release-editorial-content.sh`) chỉ khi chủ website đồng ý;
+  (4) thân mỗi trang giải pháp (~1.000 chữ) chưa rút gọn; (5) mô tả sản phẩm dài chưa làm.

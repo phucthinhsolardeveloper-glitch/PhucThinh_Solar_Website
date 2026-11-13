@@ -4,6 +4,28 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-13 — release e94a3f71: feed dùng ảnh chính, chữ Giải pháp rút gọn, gom bài nháp
+
+- Runtime source: commit `e94a3f718f74d3a82a4b74bee349d115eb1c4084` (đã push `origin/master`). Image backend
+  `sha256:00a475ebd43bb8c9fe951004ecbe3740f7dcd69809fb81c44ff56f2fb2e3c051`, Nuxt
+  `sha256:839d6eeb5ddc3d210bb89e4d670530803ff1d2a125ff30ad6530d9417f15def9`; gói
+  `/srv/pts-laravel13/releases/e94a3f71/` SHA-256 khớp, ID image trên VPS khớp manifest.
+- Phạm vi: feed `/google-shopping.xml` dùng ảnh chính (từ 500 px) khi sản phẩm chưa có ảnh Shopping (170 → 304 sản phẩm);
+  chữ CTA, phần giới thiệu và 5 tóm tắt giải pháp rút gọn (chủ website duyệt bảng so sánh); gom vào master code và 3 bài
+  nháp ẩn PTS-KT-022..024 từ ba worktree biên tập (chưa nhập vào website).
+- Migration: `2026_11_13_000200_shorten_solutions_copy` (chỉ thay dòng còn đúng chữ cũ của production, băm sau khi bỏ thẻ và
+  gộp khoảng trắng; chữ chủ website tự sửa sẽ được giữ). Đã chạy, chạy lại không đổi gì.
+- Backup trước thay đổi: `/srv/pts-laravel13/backups/20261113T032333Z-full` (checksum đạt). Rollback: image
+  `f62158bb-candidate` còn trên VPS; env và ID cũ ở `/srv/pts-laravel13/releases/rollback-e94a3f71/`.
+- Candidate cô lập với DB phục hồi từ backup production: mọi API đồng nhất trừ đúng chữ Giải pháp (chủ ý) và nội dung tin
+  chủ website đã đăng sau lần đối chiếu trước; backend 403 pass/1 skip, PHPStan 0; frontend 515 pass. Baseline `home`, `news`,
+  `news-detail`, `solution-detail`, `solutions` cập nhật ở commit kế tiếp.
+- Trên VPS chỉ thay backend, Nuxt, worker, scheduler; DB, Caddy biên, ZCRM, training giữ nguyên. HTTPS 11 route chính 200,
+  `/lienhe` và `/tru-den` 301 đúng đích, feed 304 mục, tiêu đề CTA mới hiển thị. Log 4 phút sau: 0 lỗi ở bốn dịch vụ; proxy
+  2 dòng 5xx đúng lúc thay container.
+- Rủi ro còn lại: chưa nhập mã GA4; 3 bài nháp chưa import; Google có thể từ chối riêng từng sản phẩm dùng ảnh chính có chữ hoặc
+  logo; backup chỉ nằm trên VPS.
+
 ## 2026-11-13 — release f62158bb: SEO/Merchant, mobile, tốc độ, GA4
 
 - Runtime source: commit `f62158bb9b68bd649ee7306adccc23f4cbe5f764` đã push `origin/master`. Image backend
