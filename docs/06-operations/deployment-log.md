@@ -4,6 +4,31 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-13 — release f62158bb: SEO/Merchant, mobile, tốc độ, GA4
+
+- Runtime source: commit `f62158bb9b68bd649ee7306adccc23f4cbe5f764` đã push `origin/master`. Image backend
+  `sha256:0957e9ed2651e0b97e4db56510f95af0772a9cf13dce26da0e17082c863cb6e8`, Nuxt
+  `sha256:ea1501bb9f1e3b416006fec1e26344987bc3b8264d6b7e19e8765c2ecd496810`. Gói
+  `/srv/pts-laravel13/releases/f62158bb/pts-release-f62158bb-images.tar.gz` (~408 MiB), SHA-256 khớp máy build và VPS,
+  ID image trên VPS khớp manifest.
+- Phạm vi: Offer `availability` + `seller`, BreadcrumbList theo danh mục, `og:type=product`, 30 trang thiếu meta
+  description có mô tả tự sinh, title chỉ thêm hậu tố thương hiệu khi tổng ≤ 65 ký tự; chuyển trang mobile cuộn sau khi
+  trang mới sẵn sàng, header không trượt, khối đầu danh mục giữ chiều cao; H1 trang chủ hiện ngay khung đầu (LCP);
+  chuyển hướng 21 link cũ còn 404 + `/tru-den` một bước; lối tắt giải pháp bỏ danh mục không có sản phẩm; ô Admin
+  "Mã đo Google Analytics 4" (trống mặc định, chưa bật).
+- Migration: một cái (`2026_11_13_000100`, thêm 21 dòng `redirects`, chạy lại an toàn). Không đổi bảng nào khác.
+- Backup trước thay đổi: `/srv/pts-laravel13/backups/20261113T025609Z-full` (6/6 checksum đạt). Rollback: image cũ
+  `83a74afa-candidate` còn trên VPS, env và ID cũ ở `/srv/pts-laravel13/releases/rollback-f62158bb/`.
+- Candidate cô lập (DB phục hồi từ `20261112T231500Z-db` của production): `verify-candidate.sh` mọi API đồng nhất trừ
+  đúng các chỗ chủ ý (seo.title 253 sản phẩm, 5 slug cũ chuyển hướng, `ga4Id`, equipment bỏ Trụ đèn); backend 402
+  pass/1 skip, PHPStan 0; frontend 515 pass, typecheck 0. Baseline 5 API đã cập nhật vào Git ở commit tiếp theo.
+- Trên VPS: chỉ thay backend, Nuxt, worker, scheduler của stack `pts-laravel13`; DB, Caddy biên, ZCRM, training giữ
+  nguyên. HTTPS 14 route chính trả 200, 5 link cũ trả 301 đúng đích, feed 170 sản phẩm, JSON-LD có InStock và 5 bước
+  breadcrumb. Log 6 phút sau: backend/Nuxt/worker/scheduler 0 lỗi; proxy 2 dòng lỗi DNS đúng lúc thay container.
+- Đo điện thoại giả lập (4x CPU, ~4G) trang chủ: LCP 3,7 s → 1,1 s.
+- Rủi ro còn lại: chưa nhập mã GA4 (cần chủ website xác nhận mã); backup chỉ nằm trên VPS; JavaScript khoảng 430 KB
+  (TBT cao trên máy yếu).
+
 ## 2026-11-12 — release 83a74afa: nội dung biên tập, danh mục, Admin và lịch bài đăng
 
 - Runtime source: commit `83a74afa998fa5cfbc6e1945044cf7466fee99f8` đã push lên `origin/master`.

@@ -2,7 +2,7 @@
 
 ## Trạng thái hiện tại — 2026-11-12
 
-Production đang chạy release `83a74afa` (Laravel 13 + Nuxt 4) trên stack
+Production đang chạy release `f62158bb` (Laravel 13 + Nuxt 4; trước đó `83a74afa`) trên stack
 `pts-laravel13`. Source release đã push `master`; backend, Nuxt, worker và
 scheduler dùng image mới có SHA bất biến. Chi tiết checksum, kiểm thử, sáu
 migration và rollback nằm ở

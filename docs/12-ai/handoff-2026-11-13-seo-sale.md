@@ -5,7 +5,7 @@
 ## Trạng thái
 
 - Production (phucthinhsolar.com) đang chạy bản deploy 83a (`docs/06-operations/deployment-log.md`).
-- **Các commit dưới đây (d6f73ecd → 3d1fc3d0) CHƯA push, CHƯA deploy.** Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
+- **ĐÃ DEPLOY lên production 2026-11-13 (release f62158bb, chi tiết ở `docs/06-operations/deployment-log.md`).** Các commit d6f73ecd → f62158bb đã push. Chủ website đã ra lệnh deploy. Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
 - Các worktree `~/orca/workspaces/Web_PTS_PHP/pts-editorial-*` là việc bài viết của agent khác. Không đụng vào.
 
 | Commit | Nội dung |
