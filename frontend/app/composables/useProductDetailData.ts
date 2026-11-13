@@ -53,8 +53,7 @@ export function useProductDetailData(slug: Ref<string>) {
   })
   const pending = computed(() => productPending.value || extrasPending.value)
 
-  // Noindex preview page: structured data here is never surfaced to search results,
-  // but staying schema-accurate now avoids re-deriving it at public cutover time.
+  // Product + Offer, BreadcrumbList and FAQ in the server-rendered HTML: what Google Search and Merchant Center read.
   const runtimeConfig = useRuntimeConfig()
   const jsonLd = computed(() => {
     const p = product.value
@@ -82,9 +81,11 @@ export function useProductDetailData(slug: Ref<string>) {
         url: canonicalUrl,
         priceCurrency: pricing.currency,
         price: pricing.salePrice ?? pricing.regularPrice,
-        // The shop sells new equipment only. Stock, delivery time and return days are not claimed here: the
-        // site has no stock count, and the return terms live in the policy pages.
+        // The shop sells new equipment only. A listed product with a price is on sale, the same as the Merchant
+        // feed (/google-shopping.xml) says; Merchant Center rejects offers without availability.
         itemCondition: 'https://schema.org/NewCondition',
+        availability: 'https://schema.org/InStock',
+        seller: { '@id': `${siteOrigin}/#organization` },
       }
     }
     if (extras.value && extras.value.reviews.total > 0) {
@@ -98,11 +99,12 @@ export function useProductDetailData(slug: Ref<string>) {
     const nodes: Record<string, unknown>[] = [productNode, {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
+      // Home › Sản phẩm › the category chain › the product, as shown on the page.
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: canonicalPublicUrl(siteOrigin, '/') },
-        { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: canonicalPublicUrl(siteOrigin, '/san-pham/') },
-        { '@type': 'ListItem', position: 3, name: p.name, item: canonicalUrl },
-      ],
+        { name: 'Trang chủ', url: '/' },
+        ...(payload.value?.breadcrumbs?.length ? payload.value.breadcrumbs.map((crumb) => ({ name: crumb.label, url: crumb.url })) : [{ name: 'Sản phẩm', url: '/san-pham/' }]),
+        { name: p.name, url: p.url },
+      ].map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, name: crumb.name, item: canonicalPublicUrl(siteOrigin, crumb.url) })),
     }]
 
     if (payload.value?.content.faqs.length) {

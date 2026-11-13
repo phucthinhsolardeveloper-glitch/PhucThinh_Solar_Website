@@ -2,7 +2,7 @@
 import type { PublicNewsPayload } from '#shared/contracts/public-news'
 import { isPublicNewsPayload } from '#shared/contracts/public-news'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
+import { conciseSeoDescription, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsMasthead from '~/components/news/NewsMasthead.vue'
@@ -67,7 +67,9 @@ const pageNumbers = computed(() => {
   return result
 })
 const pageTitle = computed(() => publicSeoTitle(category.value?.seo?.title || category.value?.name, 'Kiến thức'))
-const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
+// No CMS text: a sentence naming the category, so the page never goes out without a meta description.
+const pageDescription = computed(() => category.value?.seo?.description || category.value?.description
+  || (category.value?.name ? conciseSeoDescription(`Chuyên mục ${category.value.name} của Phúc Thịnh Solar: tổng hợp các bài viết mới nhất.`) : ''))
 const socialDescription = computed(() => publicSeoDescription(pageDescription.value, site.value.brand.name))
 const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 

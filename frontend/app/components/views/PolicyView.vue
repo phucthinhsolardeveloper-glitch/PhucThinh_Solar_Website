@@ -5,7 +5,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 import { POLICY_PUBLIC_ROOT, editorialPublicResponseStatus, editorialPublicRouteRobots, isSafeEditorialSlug } from '#shared/editorial-public-route'
-import { canonicalPublicOrigin, canonicalPublicUrl, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
+import { canonicalPublicOrigin, canonicalPublicUrl, conciseSeoDescription, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
@@ -87,11 +87,13 @@ const policies = computed(() => site.value.footer?.policies ?? [])
 function isCurrentPolicy(href: string) { return href.replace(/\/+$/, '').endsWith(`/${slug.value}`) }
 
 const pageTitle = computed(() => publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ'))
-const socialDescription = computed(() => publicSeoDescription(data.value?.seo.description, site.value.brand.name))
+// No CMS text: the opening of the policy itself, so search results show what the page says.
+const metaDescription = computed(() => data.value?.seo.description || data.value?.description || conciseSeoDescription(data.value?.content.html.replace(/^\s*<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/i, '')))
+const socialDescription = computed(() => publicSeoDescription(metaDescription.value, site.value.brand.name))
 
 useSeoMeta({
   title: pageTitle,
-  description: computed(() => data.value?.seo.description || ''),
+  description: metaDescription,
   robots: computed(() => props.preview ? 'noindex, nofollow, noarchive' : editorialPublicRouteRobots(true, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({

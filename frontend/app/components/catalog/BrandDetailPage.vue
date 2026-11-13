@@ -3,7 +3,7 @@ import type { LocationQueryRaw } from 'vue-router'
 import type { PublicBrandDetailPayload } from '#shared/contracts/public-brand-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
+import { conciseSeoDescription, isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
 import { publicPageQueryValue } from '#shared/public-pagination'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
@@ -100,7 +100,10 @@ const brandIndexable = computed(() =>
   isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
   && !!data.value && !error.value && !['page', 'p', 'sort', 'price'].some((key) => key in route.query))
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
-const brandDescription = computed(() => data.value?.seo?.description || '')
+// No CMS text: a sentence built from the brand name and how many of its products are listed.
+const brandDescription = computed(() => data.value?.seo?.description || (data.value
+  ? conciseSeoDescription(`Sản phẩm ${data.value.brand.name} tại Phúc Thịnh Solar${data.value.pagination.total > 0 ? `: ${data.value.pagination.total} mẫu` : ''}. Xem giá, thông số kỹ thuật và nhận tư vấn chọn thiết bị phù hợp.`)
+  : ''))
 const brandSocialDescription = computed(() => brandDescription.value || site.value.brand.name || 'Phúc Thịnh Solar')
 const brandKeywords = computed(() => data.value?.seo?.keywords || '')
 const brandSocialImage = computed(() => data.value?.seo?.image || site.value.brand.logo || undefined)

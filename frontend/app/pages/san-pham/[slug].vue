@@ -55,7 +55,7 @@ usePublicSocialMeta({
   description: productDescription,
   canonicalPath: computed(() => payload.value?.canonical.url || route.path),
   image: computed(() => product.value?.media?.[0]),
-  type: 'article',
+  type: 'product',
 })
 </script>
 <template>

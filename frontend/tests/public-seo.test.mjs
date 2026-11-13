@@ -184,8 +184,18 @@ test('each renderable public content route wires the canonical and social metada
   for (const path of owners) assert.match(read(path), /usePublicSocialMeta\(/, `${path} needs public metadata`)
 })
 
-test('product detail Open Graph type matches the PHP router contract', () => {
-  assert.match(read('app/pages/san-pham/[slug].vue'), /usePublicSocialMeta\([\s\S]*type: 'article'/)
+test('product detail is an Open Graph product with a buyable, in-stock Offer and the category breadcrumb', () => {
+  assert.match(read('app/pages/san-pham/[slug].vue'), /usePublicSocialMeta\([\s\S]*type: 'product'/)
+  const schema = read('app/composables/useProductDetailData.ts')
+  assert.match(schema, /availability: 'https:\/\/schema\.org\/InStock'/)
+  assert.match(schema, /seller: \{ '@id': `\$\{siteOrigin\}\/#organization` \}/)
+  assert.match(schema, /payload\.value\?\.breadcrumbs/)
+})
+
+test('brand, policy and news-category pages never go out without a meta description', () => {
+  assert.match(read('app/components/catalog/BrandDetailPage.vue'), /conciseSeoDescription\(`Sản phẩm \$\{data\.value\.brand\.name\}/)
+  assert.match(read('app/components/views/PolicyView.vue'), /conciseSeoDescription\(data\.value\?\.content\.html\.replace/)
+  assert.match(read('app/components/news/NewsCategoryPage.vue'), /conciseSeoDescription\(`Chuyên mục \$\{category\.value\.name\}/)
 })
 
 test('SEO image fallbacks use the Admin SEO photo before the shared logo fallback', () => {

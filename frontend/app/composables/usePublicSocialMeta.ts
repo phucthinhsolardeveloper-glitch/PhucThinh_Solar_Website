@@ -27,10 +27,8 @@ export function usePublicSocialMeta(input: SocialMetaInput): void {
     link: computed(() => canonical.value ? [{ rel: 'canonical', href: canonical.value }] : []),
   })
   useSeoMeta({
-    // Nuxt's `ogType` type excludes Open Graph's `product` extension even
-    // though it is valid for product pages; keep article typed and use the
-    // widely supported website value for everything else.
-    ogType: computed(() => enabled.value ? (type.value === 'article' ? 'article' : 'website') : undefined),
+    // Nuxt's `ogType` type leaves out Open Graph's `product`, which is valid for product pages: cast it through.
+    ogType: computed(() => enabled.value ? type.value as 'article' | 'website' : undefined),
     ogSiteName: computed(() => enabled.value ? PUBLIC_SEO_SITE_NAME : undefined),
     ogTitle: computed(() => enabled.value ? title.value : undefined),
     ogDescription: computed(() => enabled.value ? description.value : undefined),
