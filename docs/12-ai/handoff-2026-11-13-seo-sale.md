@@ -5,7 +5,7 @@
 ## Trạng thái
 
 - Production (phucthinhsolar.com) đang chạy bản deploy 83a (`docs/06-operations/deployment-log.md`).
-- **3 commit dưới đây CHƯA push, CHƯA deploy.** Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
+- **Các commit dưới đây (d6f73ecd → 3d1fc3d0) CHƯA push, CHƯA deploy.** Chủ website chưa ra lệnh deploy. Hỏi trước khi push hoặc deploy.
 - Các worktree `~/orca/workspaces/Web_PTS_PHP/pts-editorial-*` là việc bài viết của agent khác. Không đụng vào.
 
 | Commit | Nội dung |
@@ -13,6 +13,9 @@
 | d6f73ecd | Product JSON-LD: Offer có `availability: InStock` + `seller` (#organization); BreadcrumbList đủ chuỗi danh mục; `og:type=product`; 30 trang thiếu meta description (thương hiệu, chính sách, chuyên mục tin) có mô tả tự sinh |
 | 7015f7a9 | Mobile: cuộn về đầu chờ `page:finish` (trước đây nhảy về đầu TRANG CŨ 0,5–1,5 s rồi mới đổi trang); header hiện lại không trượt; khối đầu trang danh mục giữ 156px, hàng chip luôn có (danh mục cấp 1 không có con thì hiện các danh mục cùng cấp), lưới sản phẩm luôn ở 505px; title chỉ thêm "\| Phúc Thịnh Solar" khi tổng ≤ 65 ký tự (Nuxt + Laravel) |
 | b1911945 | Migration `2026_11_13_000100` thêm 21 redirect cho link cũ còn 404 (Trụ đèn → Đèn Đường, /lienhe, /index.php, các trang thanh toán…); trang Giải pháp bỏ lối tắt tới danh mục không có sản phẩm; ô **"Mã đo Google Analytics 4"** trong Admin › Thông tin website › Đo lường (gtag.js, chỉ chạy trên domain thật, các sự kiện bán hàng được chuyển tiếp qua `pushDataLayer`) |
+
+| 3c8cb2a2 | Trang chủ: tiêu đề hero hiện ngay từ khung đầu trên điện thoại (LCP production 3,7 s do H1 fade từ opacity 0; local sau sửa 0,7–0,8 s). Script `audit/seo-20261113/vitals.cjs` |
+| 3d1fc3d0 | Slug gốc cũ của danh mục rỗng (`/tru-den`) chuyển 1 bước thẳng tới trang sống |
 
 Kiểm tra đã chạy: `php artisan test` 401 pass, 1 skip; phpstan 0 lỗi; `npm test` 515 pass; `nuxt typecheck` 0 lỗi; build OK. Đã chạy migration trên DB local.
 
@@ -36,7 +39,7 @@ Kiểm tra đã chạy: `php artisan test` 401 pass, 1 skip; phpstan 0 lỗi; `n
 ## Chưa làm được hoặc chưa chắc
 
 - "Thanh nav nhích khi rời trang chủ": Chromium không tái hiện được khi đứng yên. Đã sửa hai nguyên nhân đo được (cuộn sớm, header trượt). Chưa thử trên Safari iPhone (máy không có WebKit). Nếu vẫn còn, xin chủ website video quay màn hình.
-- `/tru-den` → `/danh-muc-san-pham/tru-den/` → Đèn Đường là 2 lần chuyển hướng (resolver slug gốc vẫn trỏ tới danh mục rỗng). Có thể rút còn 1.
+- Tốc độ: TBT 1,1–2,1 s (mô phỏng CPU chậm 4 lần), do hydrate khoảng 430KB JS. Chưa tối ưu, đây là việc lớn. PageSpeed API hết hạn mức ngày 13/11.
 - Wayback CDX bị lỗi 429, nên chưa có danh sách URL Google từng index ngoài các slug trong DB.
 
 ## Môi trường
