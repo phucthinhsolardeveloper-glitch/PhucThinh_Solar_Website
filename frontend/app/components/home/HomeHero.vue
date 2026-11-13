@@ -255,6 +255,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .hero-cta-arrow, .hero-steps { display: none; }
 @keyframes hero-rise { from { opacity: 0; transform: translateY(12px); } }
+/* The title is the page's largest text (LCP): it slides in but is visible from the first frame, since an element at
+   opacity 0 only counts as painted once the fade ends (measured 3.7 s LCP on a 4x-throttled phone). */
+@keyframes hero-rise-visible { from { transform: translateY(12px); } }
 @keyframes hero-step { to { transform: scaleX(1); } }
 @media (prefers-reduced-motion: reduce) {
   .hero-copy h1, .hero-copy p, .hero-copy > div { animation: none !important; }
@@ -305,7 +308,7 @@ onBeforeUnmount(() => {
   .hero-wash { background: linear-gradient(180deg, rgb(6 21 55 / 6%) 0%, rgb(6 21 55 / 0%) 34%, rgb(6 21 55 / 46%) 50%, var(--color-navy-950) 76%) !important; }
   .hero-copy-layer { padding-bottom: calc(236px + env(safe-area-inset-bottom, 0px)) !important; }
   .hero-copy-layer::before { display: none; }
-  .hero-copy h1 { font-size: 33px !important; font-weight: 800 !important; letter-spacing: -.025em !important; filter: drop-shadow(0 2px 10px rgb(6 21 55 / 45%)); animation: hero-rise .7s cubic-bezier(.22, 1, .36, 1) both; }
+  .hero-copy h1 { font-size: 33px !important; font-weight: 800 !important; letter-spacing: -.025em !important; filter: drop-shadow(0 2px 10px rgb(6 21 55 / 45%)); animation: hero-rise-visible .7s cubic-bezier(.22, 1, .36, 1) both; }
   .hero-accent { display: block; background-image: linear-gradient(105deg, #f6dc8e 0%, #e0b654 48%, #c9962e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
   .hero-copy p { color: #e4eaf4 !important; animation: hero-rise .7s .08s cubic-bezier(.22, 1, .36, 1) both; }
   .hero-copy p.text-justified { text-align: justify !important; }
