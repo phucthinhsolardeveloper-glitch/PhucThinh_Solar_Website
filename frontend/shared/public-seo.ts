@@ -73,12 +73,16 @@ export function catalogSeoDescription(input: { seo?: unknown; categoryName?: unk
 }
 
 /** Append the brand once to page titles. */
+/** Search results show about 60 characters; the brand suffix is added only when the whole title still fits. */
+export const PUBLIC_SEO_TITLE_MAX = 65
+
 export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
   const title = typeof value === 'string' ? value.trim() : ''
   const resolved = title || fallback
-  return resolved.toLocaleLowerCase('vi').includes('phúc thịnh s')
-    ? resolved
-    : `${resolved} | ${PUBLIC_SEO_SITE_NAME}`
+  if (resolved.toLocaleLowerCase('vi').includes('phúc thịnh s')) return resolved
+  const branded = `${resolved} | ${PUBLIC_SEO_SITE_NAME}`
+  // A long product or article name is worth more in the result than the shop name Google already shows beside it.
+  return branded.length <= PUBLIC_SEO_TITLE_MAX ? branded : resolved
 }
 
 function isSafePublicPath(path: unknown): path is string {

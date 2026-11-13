@@ -39,6 +39,8 @@ test('social image uses an approved site URL at 1200x630 and falls back to the l
 
 test('public page titles add the PHP brand suffix once, including truncated legacy suffixes', () => {
   assert.equal(publicSeoTitle('Tin mới nhất'), 'Tin mới nhất | Phúc Thịnh Solar')
+  // Too long with the suffix: the name alone, so search results do not cut the model code off.
+  assert.equal(publicSeoTitle('Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR2.0 (100W)'), 'Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR2.0 (100W)')
   assert.equal(publicSeoTitle('  Tin mới nhất  '), 'Tin mới nhất | Phúc Thịnh Solar')
   assert.equal(publicSeoTitle('Tin mới nhất | Phúc Thịnh Solar'), 'Tin mới nhất | Phúc Thịnh Solar')
   assert.equal(publicSeoTitle('Tin mới nhất | Phúc Thịnh So'), 'Tin mới nhất | Phúc Thịnh So')

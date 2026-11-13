@@ -233,7 +233,8 @@ final class CatalogLanding
             $image = $this->urls->visual($row['image'] ?? '', 'upload/seopage/');
         }
         $title = ! empty($row['title']) ? Text::seo($row['title']) : Text::seo(($categoryRow['name'] ?? '') ?: 'Sản phẩm');
-        if ($title !== '' && stripos($title, 'phúc thịnh s') === false) {
+        // The shop name only when the whole title still fits in a search result (about 65 characters).
+        if ($title !== '' && mb_stripos($title, 'phúc thịnh s') === false && mb_strlen($title.' | Phúc Thịnh Solar') <= 65) {
             $title .= ' | Phúc Thịnh Solar';
         }
 

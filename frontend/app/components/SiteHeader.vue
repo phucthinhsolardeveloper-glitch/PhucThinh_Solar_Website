@@ -602,11 +602,22 @@ watch(() => route.path, () => {
   catalogOpen.value = false
   navDropdownOpen.value = null
   if (mobileOpen.value) closeMobileMenu(false)
+})
+// It comes back in the same frame as the new page (which starts at the top), without sliding: sliding it
+// in over the old page while that page was still on screen read as the bar nudging on every navigation.
+const headerSnap = ref(false)
+const nuxtApp = useNuxtApp()
+const offPageFinish = nuxtApp.hook('page:finish', () => {
+  if (isHeaderHidden.value) {
+    headerSnap.value = true
+    requestAnimationFrame(() => requestAnimationFrame(() => { headerSnap.value = false }))
+  }
   isHeaderHidden.value = false
   isScrolled.value = false
   lastScrollY = 0
   accumulatedDelta = 0
 })
+onBeforeUnmount(() => offPageFinish())
 
 function handleHeaderFocusin() {
   isHeaderHidden.value = false
@@ -630,7 +641,7 @@ onBeforeUnmount(() => {
   <!-- The header keeps navigation, phone, search, cart and CTA on one row. -->
   <div
     class="pts-site-header sticky top-0 z-[1000]"
-    :class="['transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform transform-gpu', isHeaderHidden ? '-translate-y-full' : 'translate-y-0']"
+    :class="[headerSnap ? 'transition-none' : 'transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]', 'will-change-transform transform-gpu', isHeaderHidden ? '-translate-y-full' : 'translate-y-0']"
     @mouseleave="handleShellLeave"
     @focusin="handleHeaderFocusin"
   >

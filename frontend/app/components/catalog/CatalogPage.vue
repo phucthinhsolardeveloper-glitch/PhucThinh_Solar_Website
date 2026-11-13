@@ -147,15 +147,18 @@ const lightingRailOrder: Record<string, number> = {
   'den-op-tran': 50,
 }
 const categoryNavItems = computed(() => {
+  // A top category with no sub-categories (Quạt, Tấm pin) shows the other top categories instead of no row,
+  // so the chip row is always there and the page does not jump up when moving between categories.
+  const topLevel = (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
   const items = selectedCategory.value
-    ? selectedCategory.value.children.length ? selectedCategory.value.children : selectedCategoryParent.value?.children ?? []
-    : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
+    ? selectedCategory.value.children.length ? selectedCategory.value.children : selectedCategoryParent.value?.children ?? topLevel
+    : topLevel
 
   // The catalog applies this explicit lighting rail order after the Admin taxonomy query.
   if (activeCategoryRoot.value?.slug !== 'den-nlmt' || (selectedCategory.value?.url !== activeCategoryRoot.value?.url && selectedCategoryParent.value?.slug !== 'den-nlmt')) return items
   return [...items].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000))
 })
-const categoryAllHref = computed(() => links.generic((selectedCategory.value?.children.length ? selectedCategory.value.url : selectedCategoryParent.value?.url ?? selectedCategory.value?.url) ?? '/san-pham/'))
+const categoryAllHref = computed(() => links.generic((selectedCategory.value?.children.length ? selectedCategory.value.url : selectedCategoryParent.value ? selectedCategoryParent.value.url : '/san-pham/') ?? '/san-pham/'))
 const categoryAllActive = computed(() => !selectedCategory.value || selectedCategory.value.url === categoryAllHref.value)
 const sidebarCategories = computed(() => selectedCategory.value
   ? []

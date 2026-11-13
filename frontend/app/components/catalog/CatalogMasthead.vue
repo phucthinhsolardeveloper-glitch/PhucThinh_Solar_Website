@@ -235,7 +235,9 @@ const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 }
 /* Phones: the top of the page stays short so products appear soon. Nothing is removed. */
 @media (max-width: 820px) {
-  .masthead-inner { padding-block: 14px 12px; }
+  /* Same height with or without the brand row (title + two lines + logos), so moving between categories
+     does not pull the chips and products up and down. */
+  .masthead-inner { min-height: 156px; padding-block: 14px 12px; }
   .masthead-copy { min-width: 0; }
   .masthead-copy h1 { max-width: none; }
   .masthead-copy > p { margin-top: 4px; font-size: 14px; line-height: 1.45; }
