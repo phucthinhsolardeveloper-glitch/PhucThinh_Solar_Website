@@ -17,6 +17,12 @@ export function pushDataLayer(event: string, params: Record<string, unknown> = {
   // GA4 keeps the last ecommerce object; clearing it stops one event's items leaking into the next.
   if ('ecommerce' in params) target.push({ ecommerce: null })
   target.push({ event, ...params })
+  // Direct GA4 (Admin "Mã đo Google Analytics 4") reads gtag() calls, not these GTM objects: send the same event.
+  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag
+  if (typeof gtag === 'function') {
+    const { ecommerce, ...rest } = params as { ecommerce?: Record<string, unknown> } & Record<string, unknown>
+    gtag('event', event, { ...rest, ...(ecommerce ?? {}) })
+  }
 }
 
 export function pushEcommerce(event: 'view_item' | 'add_to_cart' | 'begin_checkout' | 'purchase', items: DataLayerItem[], extra: Record<string, unknown> = {}) {

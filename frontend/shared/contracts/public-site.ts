@@ -28,6 +28,7 @@ export interface PublicSitePayload {
   estimator?: boolean
   /** Google Tag Manager container from Admin, e.g. "GTM-57TJSRVM"; empty = no tag. */
   gtmId?: string
+  ga4Id?: string
   footer?: { companyName: string; contactText: PublicSanitizedRichText; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
@@ -69,6 +70,7 @@ export function isPublicSitePayload(value: unknown): value is PublicSitePayload 
   if (value.brand.zaloHref !== undefined && (typeof value.brand.zaloHref !== 'string' || !/^https:\/\/zalo\.me\/\d{8,15}$/.test(value.brand.zaloHref))) return false
   if (value.estimator !== undefined && typeof value.estimator !== 'boolean') return false
   if (value.gtmId !== undefined && !(value.gtmId === '' || typeof value.gtmId === 'string' && /^GTM-[A-Z0-9]{4,12}$/.test(value.gtmId))) return false
+  if (value.ga4Id !== undefined && !(value.ga4Id === '' || typeof value.ga4Id === 'string' && /^G-[A-Z0-9]{6,12}$/.test(value.ga4Id))) return false
   if (value.navigationSchemaVersion !== undefined && value.navigationSchemaVersion !== 1) return false
   if (value.locale !== undefined && !isText(value.locale)) return false
   if (!Array.isArray(value.productCategories) || !value.productCategories.every((row: unknown) => isRecord(row) && isId(row.id) && isText(row.name) && isText(row.slug) && isCategoryUrl(row.url))) return false

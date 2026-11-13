@@ -52,7 +52,7 @@ class SiteSettingsPage extends Page
 
     /** Keys this page edits besides the social ones; anything else in the table is left alone. */
     private const OWN_KEYS = ['site_name', 'hotline', 'hotline_technical', 'phone', 'zalo', 'email', 'address', 'working_hours',
-        'gtm_id', 'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
+        'gtm_id', 'ga4_id', 'bank_bin', 'bank_account_no', 'bank_account_name', 'shipping_sender_name', 'shipping_sender_phone', 'shipping_sender_address', 'shipping_sender_ward_id'];
 
     /** @return list<string> */
     public static function textKeys(): array
@@ -163,12 +163,17 @@ class SiteSettingsPage extends Page
                 Toggle::make(LeadRouting::SETTING)->label('Tự chia liên hệ mới cho nhân viên')
                     ->helperText('Giao cho người có quyền Liên hệ đang ít việc nhất, hẹn gọi lại sau 2 giờ làm việc (tính trong giờ T2–T7 8:00–17:00; ví dụ gửi 16:30 thì hẹn 9:30 hôm sau). Tắt thì liên hệ mới để chưa phân công.'),
             ]),
-            Section::make('Đo lường (Google Tag Manager)')->collapsed()->schema([
+            Section::make('Đo lường (Google Analytics, Tag Manager)')->collapsed()->schema([
                 // Either the id alone or the whole snippet Google gives: only the GTM-XXXX id is kept.
                 TextInput::make('gtm_id')->label('Mã vùng chứa GTM')->placeholder('GTM-57TJSRVM')->maxLength(4000)
                     ->regex('/GTM-[A-Z0-9]{4,12}/i')->validationMessages(['regex' => 'Không thấy mã dạng GTM-XXXXXXX (lấy trong Google Tag Manager).'])
                     ->dehydrateStateUsing(fn ($state) => preg_match('/GTM-[A-Z0-9]{4,12}/i', (string) $state, $m) ? strtoupper($m[0]) : '')
                     ->helperText('Nhập mã (ví dụ GTM-57TJSRVM) hoặc dán nguyên đoạn mã Google đưa, hệ thống tự lấy mã. Website tự gắn vào đầu <head> và ngay sau <body> trên mọi trang. Để trống là tắt.'),
+                // Direct GA4: page views plus the shop events (view_item, add_to_cart, purchase, generate_lead, ...).
+                TextInput::make('ga4_id')->label('Mã đo Google Analytics 4')->placeholder('G-XXXXXXXXXX')->maxLength(4000)
+                    ->regex('/G-[A-Z0-9]{6,12}/i')->validationMessages(['regex' => 'Không thấy mã dạng G-XXXXXXXXXX (Google Analytics → Quản trị → Luồng dữ liệu).'])
+                    ->dehydrateStateUsing(fn ($state) => preg_match('/\bG-[A-Z0-9]{6,12}\b/i', (string) $state, $m) ? strtoupper($m[0]) : '')
+                    ->helperText('Website tự gửi lượt xem trang và các sự kiện bán hàng (xem sản phẩm, thêm giỏ, đặt hàng, gửi liên hệ, bấm gọi/Zalo) vào GA4. Nếu trong GTM ở trên đã có thẻ GA4 cùng mã thì để trống ô này, kẻo đếm hai lần.'),
             ]),
             Section::make('Tìm kiếm sản phẩm')->collapsed()->schema([
                 Textarea::make('search_synonyms')->label('Từ đồng nghĩa')->rows(8)->maxLength(4000)

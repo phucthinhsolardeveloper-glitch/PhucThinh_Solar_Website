@@ -53,7 +53,7 @@ class SolutionsListing extends PageSupport
         $solutions = $this->withImages(SolutionHub::solutions($this->db));
         $introRows = $this->withImages($this->section('solutions.intro'));
         $ctaRows = $this->withImages($this->section('solutions.cta'));
-        $products = array_map(fn ($row) => $row + ['_image' => $this->looseImage($row['image'], 'upload/product/')], SolutionHub::productGroups($this->db));
+        $products = array_map(fn ($row) => $row + ['_image' => $this->looseImage($row['image'], 'upload/product/')], SolutionHub::liveProductGroups($this->db));
         $groups = $this->db->table('post_categories as c')->where('c.kind', 'solution')->where('c.is_visible', true)
             ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts as p')->whereColumn('p.category_id', 'c.id')->where('p.kind', 'solution')->where(PostVisibility::live('p.'))->where('p.slug', '<>', ''))
             ->orderBy('c.sort_order')->orderByDesc('c.id')->get(['c.id', 'c.name', 'c.summary', 'c.slug', 'c.image'])->map(fn ($row) => (array) $row)->all();

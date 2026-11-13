@@ -289,3 +289,11 @@ test('product page and catalog feed one consistent description to meta, og and t
   assert.match(product, /usePublicSocialMeta\(\{[\s\S]*description: productDescription/)
   assert.doesNotMatch(read('app/components/catalog/CatalogPage.vue'), /Khám phá thiết bị chiếu sáng/)
 })
+
+test('GA4 measurement id from Admin loads gtag.js on the live domain only, and shop events reach it', () => {
+  const app = read('app/app.vue')
+  assert.match(app, /const ga4Id = computed\(\(\) => onLiveSite && \/\^G-\[A-Z0-9\]\{6,12\}\$\//)
+  assert.match(app, /googletagmanager\.com\/gtag\/js\?id=\$\{ga4Id\.value\}/)
+  assert.match(read('app/composables/useDataLayer.ts'), /gtag\('event', event, \{ \.\.\.rest, \.\.\.\(ecommerce \?\? \{\}\) \}\)/)
+  assert.match(read('shared/contracts/public-site.ts'), /value\.ga4Id !== undefined/)
+})

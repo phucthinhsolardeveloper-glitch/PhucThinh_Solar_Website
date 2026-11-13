@@ -117,6 +117,8 @@ class SiteAssembler
             'estimator' => app(SolarEstimator::class)->enabled(),
             // Google Tag Manager container set in Admin → Thông tin website; empty means no tag on the site.
             'gtmId' => preg_match('/^GTM-[A-Z0-9]{4,12}$/', $gtm = strtoupper(trim((string) ($options['gtm_id'] ?? '')))) ? $gtm : '',
+            // Google Analytics 4 measurement id loaded directly (gtag.js), for when the GTM container has no GA4 tag.
+            'ga4Id' => preg_match('/^G-[A-Z0-9]{6,12}$/', $ga4 = strtoupper(trim((string) ($options['ga4_id'] ?? '')))) ? $ga4 : '',
         ];
     }
 

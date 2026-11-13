@@ -2,6 +2,7 @@
 
 namespace App\Domain\Solutions;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Content\PostVisibility;
 use Illuminate\Database\Connection;
 
@@ -34,6 +35,19 @@ final class SolutionHub
      *
      * @return list<array{id: int, name: string, summary: string, image: string, slug: string, is_visible: bool, featured: bool}>
      */
+    /**
+     * Product groups whose page exists: a top category with no visible product answers 404, so a shortcut to it
+     * would be a dead link ("Trụ đèn" in the 2026-11-13 audit).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function liveProductGroups(Connection $db): array
+    {
+        $tree = new CategoryTree;
+
+        return array_values(array_filter(self::productGroups($db), fn (array $row) => $tree->hasVisibleProducts($row['id'])));
+    }
+
     public static function productGroups(Connection $db): array
     {
         return $db->table('categories')->where('depth', 1)->orderBy('sort_order')->orderByDesc('id')

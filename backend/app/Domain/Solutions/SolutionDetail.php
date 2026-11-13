@@ -53,7 +53,7 @@ class SolutionDetail extends PageSupport
                 'image' => $this->strictImage($item['cover_image'], 'upload/news/') ?: $this->strictImage($item['image'], 'upload/news/'), 'active' => $item['id'] === $id];
         }
         $equipment = [];
-        foreach (SolutionHub::select(SolutionHub::productGroups($this->db), true, 4) as $item) {
+        foreach (SolutionHub::select(SolutionHub::liveProductGroups($this->db), true, 4) as $item) {
             $name = self::text($item['name']);
             if ($name === '') {
                 continue;

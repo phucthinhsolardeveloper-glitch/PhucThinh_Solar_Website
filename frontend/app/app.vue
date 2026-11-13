@@ -28,6 +28,16 @@ useHead(() => gtmId.value ? {
   }],
 } : {})
 
+// Google Analytics 4 straight from gtag.js when Admin has a measurement id (same live-domain rule as GTM).
+// Enhanced measurement counts each in-app page change; shop events reach it through pushDataLayer.
+const ga4Id = computed(() => onLiveSite && /^G-[A-Z0-9]{6,12}$/.test(site.value?.ga4Id ?? '') ? site.value!.ga4Id! : '')
+useHead(() => ga4Id.value ? {
+  script: [
+    { key: 'pts-ga4-src', src: `https://www.googletagmanager.com/gtag/js?id=${ga4Id.value}`, async: true },
+    { key: 'pts-ga4', innerHTML: `window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${ga4Id.value}');` },
+  ],
+} : {})
+
 useHead({
   script: [
     {
