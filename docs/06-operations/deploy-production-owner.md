@@ -1,5 +1,18 @@
 # Deploy production cho chủ website
 
+> **Cập nhật 16/11/2026 — đọc trước.** Quy trình một lệnh trong tài liệu này
+> (`scripts/deploy-production.sh`, `/srv/phucthinhsolar/...`, `deploy-release.sh`,
+> `rollback-release.sh`, `verify-stack.sh`) là của **stack PHP cũ đã gỡ ngày
+> 10/11/2026** và không còn dùng được. Production hiện là Laravel 13 + Nuxt tại
+> `/srv/pts-laravel13` (container `pts-laravel13-backend`, `pts-laravel13-nuxt`).
+> Deploy và rollback Laravel làm theo [`deploy/laravel13/README.md`](../../deploy/laravel13/README.md)
+> (build image candidate bằng `build-candidate.sh`, kiểm bằng `verify-candidate.sh`,
+> rollback bằng image candidate cũ + `releases/rollback-<sha>/stack.env.before`);
+> lịch sử từng lần ở [`deployment-log.md`](deployment-log.md). Backup: xem
+> [`backup-restore.md`](backup-restore.md). VPS dùng chung với Zalo CRM,
+> sales-training và hyans-mcp; chỉ thao tác tài nguyên của `pts-laravel13`.
+
+
 Tài liệu này là đường ngắn để tự deploy khi không có AI/developer hỗ trợ. Các
 runbook dài vẫn là tài liệu cứu hộ; thao tác hằng ngày dùng script một lệnh.
 

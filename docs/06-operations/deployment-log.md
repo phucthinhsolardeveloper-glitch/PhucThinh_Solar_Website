@@ -4,6 +4,34 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-16 — dọn dung lượng VPS và cập nhật chính sách backup
+
+- Theo checkpoint vận hành VPS: mức sử dụng đĩa giảm từ 94% xuống 79%. Đã xóa
+  9 full backup PTS cũ, backup/ảnh PHP cũ, 2 bản build Laravel cũ và build cache
+  cũ hơn 72 giờ. Không đụng Zalo CRM, sales-training hoặc MCP staging.
+- Stack website đang chạy là `/srv/pts-laravel13`; thao tác/backup website không
+  dùng stack PHP cũ `/srv/phucthinhsolar`. Backup ứng dụng hiện nằm trong
+  `/srv/pts-laravel13/backups/`; backup DB trước khi cập nhật ảnh là
+  `/srv/pts-laravel13/backups/20261116T095908Z-db`.
+- Thay đổi source trong nhánh vận hành: full backup mặc định giữ 2 bản mới nhất
+  (`BACKUP_KEEP_FULL`, tối thiểu 1); DB-only tiếp tục theo
+  `BACKUP_RETENTION_DAYS` (mặc định 7 ngày). Bản vừa tạo được bảo vệ. Test script
+  bằng thư mục giả tạo 5 full + 10 DB xác nhận giữ 2 full mới nhất, giữ DB trong
+  cửa sổ 7 ngày, xóa DB cũ hơn, bảo vệ bản mới và không chạm thư mục ngoài mẫu.
+- Ảnh đại diện sản phẩm (dữ liệu, không đổi code): 167 sản phẩm đổi `products.image`
+  sang bản chuẩn 1600 px `*-chuan1600.jpg` (căn giữa, cạnh dài sản phẩm 80%/72%
+  khung). File cũ giữ nguyên trong `upload/product/`; UPDATE có điều kiện ảnh cũ,
+  trong một transaction, 167/167 dòng; 1 dòng `admin_audit_events`
+  `product.image_standardise`. Rollback: CSV
+  `/srv/pts-laravel13/state/hero-1600-20261116/rollback-anh-dai-dien-20261116.csv`
+  (id, ảnh cũ, ảnh mới) + backup DB `20261116T095908Z-db`.
+- Script backup: `backup.sh` + `backup-retention.sh` cài vào
+  `/srv/pts-laravel13/scripts/` (systemd gọi bản ở đó; không đi qua image). Bản
+  `backup.sh` cũ lưu cạnh với hậu tố `.bak-20261116`. Nếu thiếu
+  `backup-retention.sh`, `backup.sh` quay về xoay theo ngày như trước.
+- Rollback: chép lại `backup.sh.bak-20261116`; ảnh theo CSV ở trên; file đã dọn
+  chỉ phục hồi được từ snapshot CloudFly.
+
 ## 2026-11-13 — release e94a3f71: feed dùng ảnh chính, chữ Giải pháp rút gọn, gom bài nháp
 
 - Runtime source: commit `e94a3f718f74d3a82a4b74bee349d115eb1c4084` (đã push `origin/master`). Image backend

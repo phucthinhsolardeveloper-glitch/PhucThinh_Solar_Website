@@ -8,6 +8,7 @@
 # Không chép runtime/*.env vào backup: file đó chứa mật khẩu, giữ riêng.
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 stack_root="${PTS_STACK_ROOT:-/srv/pts-laravel13}"
 app_dir="$stack_root/app/deploy/laravel13"
 mode="${1:---full}"
@@ -66,12 +67,15 @@ printf 'created_at_utc=%s\nkind=%s\ndatabase=%s\nupload_source=%s\nsource_revisi
 mv "$tmp_dir" "$final_dir"
 trap - EXIT
 
-# 7 ngày: bản full khoảng 1,3 GB nên giữ lâu hơn là hết đĩa (VPS 116 GB).
-retention="${BACKUP_RETENTION_DAYS:-7}"
-if ! printf '%s' "$retention" | grep -Eq '^[0-9]+$' || [ "$retention" -lt 3 ]; then
-    echo "WARN: BACKUP_RETENTION_DAYS không hợp lệ; không xoay backup." >&2
+# Full backups are count-retained; DB-only backups keep the existing age policy.
+# The helper is installed next to this script (/srv/pts-laravel13/scripts on the VPS, not inside app/).
+retention_helper="$script_dir/backup-retention.sh"
+if [ -x "$retention_helper" ]; then
+    "$retention_helper" "$stack_root/backups" "${BACKUP_RETENTION_DAYS:-7}" "${BACKUP_KEEP_FULL:-2}" "$timestamp"
 else
-    find "$stack_root/backups" -mindepth 1 -maxdepth 1 -type d -name '20????????T??????Z-*' -mtime "+$retention" -print -exec rm -rf -- {} +
+    echo "WARN: thiếu $retention_helper; xoay mọi backup theo ${BACKUP_RETENTION_DAYS:-7} ngày như trước." >&2
+    find "$stack_root/backups" -mindepth 1 -maxdepth 1 -type d -name '20????????T??????Z-*' -mtime "+${BACKUP_RETENTION_DAYS:-7}" \
+        ! -name "$timestamp" -print -exec rm -rf -- {} +
 fi
 
 echo "WARN: backup chỉ nằm trên VPS này; chưa có bản sao ngoài máy chủ." >&2
