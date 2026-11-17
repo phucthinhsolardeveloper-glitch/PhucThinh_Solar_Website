@@ -4,6 +4,17 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
+
+- Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
+  gói `/srv/pts-laravel13/releases/3fb268fe/` SHA-256 khớp, ID image trên VPS khớp manifest. Build từ worktree sạch (không chứa `ContentBatchPatch.php`). Nuxt giữ `a66efc27-candidate`.
+- Phạm vi: `Fields::bulkImages()` thêm ô "Kéo thả nhiều ảnh vào đây" phía trên danh sách thư viện ảnh ở Sản phẩm và Album: mỗi tệp lưu ngay và thêm thành một dòng thư viện (hiển thị, không chú thích),
+  ô tự dọn, không thêm trùng ảnh đã có; trước đó phải bấm "Thêm ảnh" cho từng ảnh. Chỉ đổi Admin, trang khách không đổi.
+- Kiểm: backend 414 pass/1 skip, Pint sạch; trình duyệt thật trên Admin local (tài khoản thử đã xóa): 5 tệp một lần thêm 5 dòng, lô thứ hai 2 tệp thêm 2 dòng, Lưu được. PHPStan chỉ báo 2 lỗi ở
+  `ContentBatchPatch.php` (file chưa commit của việc khác, không nằm trong image).
+- Backup `20261117T082538Z-db`; thay backend, worker, scheduler; HTTPS 6 đường chính 200, mã mới có trong image, log 3 phút 0 lỗi. Chưa kiểm trên Admin production (không dùng tài khoản thật).
+- Rollback: `releases/rollback-3fb268fe/stack.env.before` (backend `a66efc27-candidate`).
+
 ## 2026-11-17 — dữ liệu: thứ tự hãng và danh mục đồng bộ với bảng giá (không đổi code)
 
 - Mọi danh sách hãng (bộ lọc "Thương hiệu", dải logo ở trang sản phẩm, trang hãng, tìm kiếm, trang giới thiệu) lấy từ `brands.sort_order` rồi `id` giảm dần; dải logo trang sản phẩm là hãng có
