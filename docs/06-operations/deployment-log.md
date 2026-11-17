@@ -32,6 +32,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T132138Z`. Thêm 32 bộ sạc MPPT/PWM Blue Carbon (ảnh thiết bị mang logo LDSOLAR của nhà sản xuất, chủ website chấp nhận dùng đúng ảnh đang hiển thị, ghép nguyên pixel), tấm pin SHARP (id 361, bỏ dòng công suất vì dữ liệu nghi sai), kẹp biên (id 375). Kiểm: 0 file mất, 0 ảnh bìa trùng ảnh Shopping.
 - Còn ảnh cũ (24): JD-T100/T200/T300 (tay người/logo BOLAR), DB3-PRO ×4 (nhãn GERINA), DB60100, DB01-ECO, DB-16400W, BCT-WW5.0-MONO, ASTRO N7 610W (chỉ có ảnh 630W), EPV230 ×7 và MPPT-TD2310TU/TD2410TU ×4 (ảnh ghép nhiều model), DAY-BCT-WW1-5M (dây nối). Cần ảnh sạch từng mã từ nhà cung cấp.
 
+## 2026-11-17 — dữ liệu: ảnh đại diện concept lượt 9 (+23, tổng 329/330)
+
+- Backup DB `20261117T134930Z` và lần ghi sau. Thêm 15 mã (ASTRO N7 610W dùng ảnh 630W cùng dòng, dây nối BCT-WW1.0, DB-16400W, DB01-ECO, EPV230 ×7 dùng một thiết bị đại diện, MPPT-TD2310TU/2410TU ×4 dùng ảnh thiết bị nhãn TD3210) và 8 đèn pha (BCT-WW5.0-MONO dùng ảnh đèn cùng dòng WW5.0, DB60100 bỏ hộp in chữ, DB3-PRO ×4 giữ nguyên nhãn trên máy, JD-T100/T200 đã xóa bàn tay bằng sửa ảnh trong vùng tay theo duyệt của chủ website). Kiểm: 0 file mất, 0 ảnh bìa trùng ảnh Shopping.
+- Còn ảnh cũ: JD-T300 (xóa tay còn vết sau nhiều lần thử).
+- Lưu ý dữ liệu: DB60100 kích thước đèn "245 × 198 × 600 mm" (nghi 60), SHARP 395 Wp (nghi sai công suất).
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
