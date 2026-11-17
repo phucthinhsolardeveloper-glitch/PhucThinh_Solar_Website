@@ -74,6 +74,11 @@ const summaryText = computed(() => {
 })
 const descriptionOpen = ref(false)
 const descriptionRef = ref<HTMLElement | null>(null)
+// The description starts closed everywhere. Only the chip that points at it opens it; the other chips just scroll.
+function openDescriptionFromNav(event: MouseEvent) {
+  const link = (event.target as HTMLElement | null)?.closest('a')
+  if (link?.getAttribute('href') === '#tong-quan') descriptionOpen.value = true
+}
 function toggleDescription() {
   descriptionOpen.value = !descriptionOpen.value
   if (descriptionOpen.value) return
@@ -159,7 +164,7 @@ function toggleDescription() {
       class="sticky m-glass-light z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
       aria-label="Mục nội dung sản phẩm"
-      @click="descriptionOpen = true"
+      @click="openDescriptionFromNav"
     >
       <div class="flex min-w-max gap-1.5 py-2">
         <a
@@ -176,7 +181,7 @@ function toggleDescription() {
 
     <!-- Phone: long description stays one tap away instead of pushing specs and reviews down. -->
     <div ref="descriptionRef" class="pdp-description" :class="{ 'is-open': descriptionOpen }">
-      <ProductDetailContent :content="content" />
+      <ProductDetailContent v-model:open="descriptionOpen" :content="content" />
     </div>
     <button type="button" class="m-more-button mb-1 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription"><span>{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</span></button>
     <ProductDetailApplications v-if="applications?.items.length" :applications="applications" />
@@ -218,9 +223,8 @@ function toggleDescription() {
 @media (max-width: 820px) {
   .pdp-photo { margin-inline: calc(50% - 50vw); }
   .pdp-sheet { position: relative; z-index: 1; margin: -22px calc(50% - 50vw) 0; padding: 18px 16px 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 24px rgb(6 21 55 / 10%); }
-  /* One control for the description on phones: the button under it. */
+  /* One control for the description on phones: the button under it opens and closes the same <details>. */
   .pdp-description :deep(details) { border: 0; }
   .pdp-description :deep(details > summary) { display: none; }
-  .pdp-description:not(.is-open) { max-height: 460px; overflow: hidden; mask-image: linear-gradient(180deg, #000 70%, transparent); }
 }
 </style>

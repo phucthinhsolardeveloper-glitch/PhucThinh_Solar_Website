@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { PublicProductContent } from '#shared/contracts/public-product-detail'
 
-defineProps<{ content: PublicProductContent }>()
+defineProps<{ content: PublicProductContent; open?: boolean }>()
+const emit = defineEmits<{ 'update:open': [open: boolean] }>()
 </script>
 
 <template>
@@ -23,7 +24,7 @@ defineProps<{ content: PublicProductContent }>()
       </ul>
     </div>
 
-    <details v-if="content.blocks.length" class="group border-y border-gray-200">
+    <details v-if="content.blocks.length" :open="open" class="group border-y border-gray-200" @toggle="emit('update:open', ($event.target as HTMLDetailsElement).open)">
       <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-3.5 text-base font-extrabold text-navy-800 select-none [&::-webkit-details-marker]:hidden">
         <span>Xem mô tả chi tiết</span>
         <span class="text-xl text-gold-700 transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>

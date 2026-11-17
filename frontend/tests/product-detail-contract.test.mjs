@@ -151,6 +151,13 @@ test('PDP mirrors PHP highlights and collapsed long description', () => {
   assert.match(content, /<details v-if="content\.blocks\.length"[\s\S]*Xem mô tả chi tiết/)
   // Owner decision 2026-11-17: the long description starts closed; the visitor opens it when they want to read.
   assert.doesNotMatch(content, /<details[^>]*\sopen[\s>]/)
+  // One open/closed state drives desktop (the <details> summary) and phones (the button under the block).
+  assert.match(content, /:open="open"/)
+  assert.match(content, /emit\('update:open'/)
+  const page = readFileSync(new URL('../app/components/product-detail/ProductDetailPage.vue', import.meta.url), 'utf8')
+  assert.match(page, /<ProductDetailContent v-model:open="descriptionOpen"/)
+  assert.doesNotMatch(page, /max-height: 460px/)
+  assert.match(page, /getAttribute\('href'\) === '#tong-quan'/)
 })
 
 test('validates inherited content source and FAQ limits', () => {
