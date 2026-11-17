@@ -37,3 +37,17 @@ it('keeps both PHP lookup orders: the table tries needles first, metrics walk sp
     expect($table['value'])->toBe('12.000-12.800 lm')
         ->and($metric['value'])->toBe('12.000 - 12.800 LM');
 });
+
+it('shows size and IP code on their own rows, without the "cấp bảo vệ" wording, and keeps hand-typed size rows', function () {
+    $row = ['pdp_profile' => 'lighting', 'lamp_dimensions' => '400 × 315 × 90 mm', 'waterproof_rating' => 'IP66', 'additional_specs' => json_encode([
+        ['label' => 'Kích thước thùng', 'value' => '45 × 40 × 12 cm'],
+        ['label' => 'Cấp bảo vệ', 'value' => 'IP66'],
+    ], JSON_UNESCAPED_UNICODE)];
+    $table = collect($this->specs->table($row, 'lighting'));
+
+    expect($table->firstWhere('key', 'lamp_dimensions'))->toMatchArray(['label' => 'Kích thước', 'value' => '400 × 315 × 90 mm'])
+        ->and($table->firstWhere('key', 'waterproof_rating'))->toMatchArray(['label' => 'Chuẩn IP', 'value' => 'IP66'])
+        ->and($table->pluck('label')->filter(fn ($l) => str_contains(mb_strtolower($l), 'cấp bảo vệ'))->all())->toBe([])
+        ->and($table->firstWhere('label', 'Kích thước thùng')['value'] ?? null)->toBe('45 × 40 × 12 cm');
+    expect(config('pdp.profiles.solar_panel.fields.waterproof_rating') ?? 'Chuẩn IP')->toBe('Chuẩn IP');
+});

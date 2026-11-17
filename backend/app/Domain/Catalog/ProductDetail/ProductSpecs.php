@@ -302,8 +302,6 @@ class ProductSpecs
         $structured = $this->structured($row, $profileKey);
         $fields = $this->profile($profileKey)['fields'] ?? [];
         if ($profileKey === 'lighting') {
-            $waterproof = $this->value($row, 'waterproof_rating');
-            $dimensions = trim($this->value($row, 'lamp_dimensions').($waterproof !== '' ? ' - '.$waterproof : ''), ' -');
             $rows = [
                 ['cong_suat', 'Công suất LED thực', $this->value($row, 'cong_suat')],
                 ['quang_thong', 'Quang thông', $this->lookup($structured, ['quang thông', 'lumen'])],
@@ -312,7 +310,9 @@ class ProductSpecs
                 ['light_color', 'Màu ánh sáng', $this->value($row, 'light_color')],
                 ['housing_color', 'Màu sắc thân đèn', $this->lookup($structured, 'màu sắc')],
                 ['operating_mode', 'Chế độ hoạt động', $this->lookup($structured, 'chế độ')],
-                ['lamp_dimensions', 'Kích thước & cấp bảo vệ', $dimensions],
+                // Size and IP code on their own rows: "IP66" needs no "cấp bảo vệ" wording around it.
+                ['lamp_dimensions', 'Kích thước', $this->value($row, 'lamp_dimensions')],
+                ['waterproof_rating', 'Chuẩn IP', $this->value($row, 'waterproof_rating')],
                 ['installation_height', 'Chiều cao lắp đặt', $this->value($row, 'installation_height')],
                 ['impact_rating', 'Chuẩn chống va đập', $this->lookup($structured, 'chống va đập')],
                 ['installation_spacing', 'Khoảng cách lắp đặt khuyến nghị', $this->lookup($structured, 'khoảng cách lắp đặt')],
@@ -335,7 +335,10 @@ class ProductSpecs
             $key = preg_match('/^[a-z0-9_]+$/', $rawKey) ? $rawKey : 'spec_'.count($specs);
             $label = Text::plain($rawLabel);
             $value = Text::plain($rawValue);
-            $usedLabels[] = mb_strtolower(trim($label));
+            // The split size/IP rows keep matching hand-typed extras exactly as the former combined
+            // "Kích thước & cấp bảo vệ" row did, so no extra row ("Kích thước thùng"…) disappears.
+            $usedLabels[] = $profileKey === 'lighting' && in_array($key, ['lamp_dimensions', 'waterproof_rating'], true)
+                ? 'kích thước & cấp bảo vệ' : mb_strtolower(trim($label));
             if ($label !== '' && ($value !== '' || ! in_array($key, $optional, true))) {
                 $specs[] = ['key' => $key, 'label' => $label, 'value' => $value];
             }

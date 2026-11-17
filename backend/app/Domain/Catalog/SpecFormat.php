@@ -44,7 +44,7 @@ final class SpecFormat
             str_contains($label, 'bảo hành') => 'duration',
             str_contains($label, 'nhiệt độ màu') => 'cct',
             str_contains($label, 'dung lượng pin'), str_contains($label, 'công suất tấm pin'), str_contains($label, 'điện áp') => 'electric',
-            str_contains($label, 'cấp bảo vệ'), str_contains($label, 'chống nước') => 'ip',
+            str_contains($label, 'cấp bảo vệ'), str_contains($label, 'chuẩn ip'), str_contains($label, 'chống nước') => 'ip',
             str_contains($label, 'số lượng') && str_contains($label, 'thùng') => 'carton',
             str_contains($label, 'thời gian') => 'time',
             str_contains($label, 'diện tích') => 'area',
