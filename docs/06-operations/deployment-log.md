@@ -35,7 +35,7 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 ## 2026-11-17 — dữ liệu: ảnh đại diện concept lượt 9 (+23, tổng 329/330)
 
 - Backup DB `20261117T134930Z` và lần ghi sau. Thêm 15 mã (ASTRO N7 610W dùng ảnh 630W cùng dòng, dây nối BCT-WW1.0, DB-16400W, DB01-ECO, EPV230 ×7 dùng một thiết bị đại diện, MPPT-TD2310TU/2410TU ×4 dùng ảnh thiết bị nhãn TD3210) và 8 đèn pha (BCT-WW5.0-MONO dùng ảnh đèn cùng dòng WW5.0, DB60100 bỏ hộp in chữ, DB3-PRO ×4 giữ nguyên nhãn trên máy, JD-T100/T200 đã xóa bàn tay bằng sửa ảnh trong vùng tay theo duyệt của chủ website). Kiểm: 0 file mất, 0 ảnh bìa trùng ảnh Shopping.
-- Còn ảnh cũ: JD-T300 (xóa tay còn vết sau nhiều lần thử).
+- Cập nhật cuối: JD-T200 được dựng lại và JD-T300 được thêm (ảnh xóa tay lần 3, đèn/tấm pin sai khác 0 ngoài vùng tay; cutout tấm pin tự vá để giữ khung kính trắng). Toàn bộ 330/330 sản phẩm hiển thị đã có ảnh đại diện concept.
 - Lưu ý dữ liệu: DB60100 kích thước đèn "245 × 198 × 600 mm" (nghi 60), SHARP 395 Wp (nghi sai công suất).
 
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
