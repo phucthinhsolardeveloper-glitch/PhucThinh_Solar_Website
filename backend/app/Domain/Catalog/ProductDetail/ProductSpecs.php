@@ -195,7 +195,7 @@ class ProductSpecs
             'cong_suat' => 'Công suất', 'light_source' => 'Nguồn sáng', 'lamp_dimensions' => 'Kích thước đèn',
             'color_temperature' => 'Nhiệt độ màu (CCT)', 'light_color' => 'Màu ánh sáng', 'battery_capacity' => 'Dung lượng pin',
             'panel_power' => 'Công suất tấm pin', 'material' => 'Chất liệu', 'charging_time' => 'Thời gian sạc',
-            'lighting_time' => 'Thời gian chiếu sáng', 'waterproof_rating' => 'Chỉ số chống nước', 'led_chip' => 'Loại chip LED',
+            'lighting_time' => 'Thời gian chiếu sáng', 'waterproof_rating' => 'Chuẩn IP', 'led_chip' => 'Loại chip LED',
             'lighting_area' => 'Diện tích chiếu sáng', 'installation_height' => 'Độ cao lắp đặt', 'panel_dimensions' => 'Kích thước tấm pin',
             'package_contents' => 'Bộ sản phẩm gồm', 'carton_quantity' => 'Số lượng / thùng', 'carton_dimensions' => 'Kích thước thùng', 'warranty' => 'Bảo hành',
         ];
@@ -328,17 +328,23 @@ class ProductSpecs
             }
         }
 
-        $optional = ['light_color', 'lighting_area', 'housing_color', 'operating_mode', 'impact_rating', 'installation_spacing', 'package_contents'];
+        $optional = ['waterproof_rating', 'light_color', 'lighting_area', 'housing_color', 'operating_mode', 'impact_rating', 'installation_spacing', 'package_contents'];
         $specs = [];
         $usedLabels = [];
         foreach ($rows as [$rawKey, $rawLabel, $rawValue]) {
             $key = preg_match('/^[a-z0-9_]+$/', $rawKey) ? $rawKey : 'spec_'.count($specs);
             $label = Text::plain($rawLabel);
             $value = Text::plain($rawValue);
-            // The split size/IP rows keep matching hand-typed extras exactly as the former combined
+            // The split size/IP rows match hand-typed extras the way the former combined
             // "Kích thước & cấp bảo vệ" row did, so no extra row ("Kích thước thùng"…) disappears.
-            $usedLabels[] = $profileKey === 'lighting' && in_array($key, ['lamp_dimensions', 'waterproof_rating'], true)
-                ? 'kích thước & cấp bảo vệ' : mb_strtolower(trim($label));
+            // An empty one hides nothing, so a hand-typed "Kích thước đèn" / "IP rate" row still shows.
+            if ($profileKey === 'lighting' && in_array($key, ['lamp_dimensions', 'waterproof_rating'], true)) {
+                if ($value !== '') {
+                    $usedLabels[] = $key === 'lamp_dimensions' ? 'kích thước & cấp bảo vệ' : 'cấp bảo vệ';
+                }
+            } else {
+                $usedLabels[] = mb_strtolower(trim($label));
+            }
             if ($label !== '' && ($value !== '' || ! in_array($key, $optional, true))) {
                 $specs[] = ['key' => $key, 'label' => $label, 'value' => $value];
             }
@@ -356,6 +362,9 @@ class ProductSpecs
             $label = Text::plain($extra['label']);
             $value = Text::plain($extra['value']);
             $lower = mb_strtolower($label);
+            if (preg_match('/^(?:cấp bảo vệ|cấp độ bảo vệ|ip rate)$/u', $lower)) {
+                $label = 'Chuẩn IP';
+            }
             if ($label === '' || $value === '' || in_array($lower, $denylist, true)) {
                 continue;
             }
