@@ -49,6 +49,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — ảnh phụ 05 "Bộ sản phẩm gồm" cho 64 đèn pha
+
+- Backup DB (lần ghi ảnh 05); thêm 64 dòng `product_images` slot sort_order 4 (`p2-05-<hash>.jpg`): nền mẫu 5 đã xóa chữ, sản phẩm thật trên bục, `package_contents` nguyên văn, nhãn đèn/tấm pin/remote có đường chấm trỏ đúng vật (điểm chỉ ghi tay theo từng mã, nhãn remote chỉ khi ảnh có remote). Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
+- Chưa làm: 8 mã không tách nền (BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO ×4).
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
