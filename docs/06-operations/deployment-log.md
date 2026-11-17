@@ -15,6 +15,13 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Còn nghi vấn chưa sửa: DB60100 kích thước đèn ghi ×600 mm (nhiều khả năng 60); JD-8500L bảng thông số cũ ghi 60Ah/75W trái với 48Ah/70W; mô tả dài của JD-8860L và JD-8200L nhắc nhầm tên sản phẩm khác.
 - Kiểm: DB 63/63 có ảnh mới, file đủ; trang danh mục đèn pha hiển thị ảnh mới đầu danh sách; trang chi tiết og:image là bìa mới; feed Shopping dùng ảnh nền trắng. Ảnh ORIANA còn lẫn phụ kiện (ốc vít, pin AA, dây) vì ảnh nguồn là ảnh bộ sản phẩm; để xử lý ở lượt sau.
 
+## 2026-11-17 — dữ liệu: ảnh đại diện concept cho toàn bộ danh mục (lượt 6), 258/330 sản phẩm
+
+- Backup DB `20261117T121959Z` (đèn), `T123758Z` (biến tần/lưu trữ), `T123807Z` (đo lường), `T123818Z` (tấm pin/quạt/bơm). Ghi `products.image` = `<mã>-bia-<hash>.jpg`, `sort_order - 10000` (lên đầu trong danh mục), ảnh Shopping: mã chưa có hoặc mất file được gán ảnh cũ (JPG) hoặc bản làm phẳng nền trắng `*-shopping-trang.jpg`. Rollback `state/noi-dung-20261117/avatar-rollback-*.json`; ảnh cũ giữ nguyên.
+- Đã lên: 115 đèn (đường, trụ cổng, treo tường, sân vườn, ốp trần, UFO), 37 biến tần/ESS/pin, 3 thiết bị đo lường SolaX, 40 tấm pin/quạt/biến tần bơm. Cộng đèn pha lượt trước = 258.
+- Chưa lên (72): 9 đèn pha (nguồn có tay người/logo BOLAR/nhãn GERINA/poster), 5 đèn (DB02-3, DB-OT1000, JDL-OT400 ảnh nền cỏ có chú thích; DB-16400W ảnh có hộp in chữ; DB01-ECO phụ kiện lẫn), 36 bộ sạc MPPT/PWM Blue Carbon (ảnh mang logo LDSOLAR), 10 mã tấm pin/bơm (ảnh ghép EPV230, ảnh 630W dùng cho 610W), 13 sản phẩm không có mã.
+- Kiểm: 0 file ảnh mất, 0 ảnh bìa trùng ảnh Shopping, danh mục đèn đường/hòa lưới/tấm pin hiển thị ảnh mới, feed Shopping không dùng ảnh bìa.
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
