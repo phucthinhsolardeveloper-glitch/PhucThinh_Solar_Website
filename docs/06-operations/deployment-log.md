@@ -4,6 +4,16 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — dữ liệu: thứ tự hãng và danh mục đồng bộ với bảng giá (không đổi code)
+
+- Mọi danh sách hãng (bộ lọc "Thương hiệu", dải logo ở trang sản phẩm, trang hãng, tìm kiếm, trang giới thiệu) lấy từ `brands.sort_order` rồi `id` giảm dần; dải logo trang sản phẩm là hãng có
+  sản phẩm trước rồi hãng chưa có sản phẩm. Đặt lại 22 hãng: BLUE CARBON 1, ORIANA 2, SolaX 3, JINDIAN 4, EPSIVO 5, Hober 6 (theo số file bảng giá), rồi hãng tấm pin theo bảng giá
+  (LONGi, Canadian Solar, AESOLAR, Astronergy, TCL Solar), rồi các hãng chưa có sản phẩm theo thứ tự dải logo cũ. Backup `20261117T071156Z-db`; rollback `state/noi-dung-20261117/rollback-thu-tu-hang.json`.
+- Danh mục con trước đó cùng `sort_order = 1` nên sidebar hiện ngược (Sân Vườn, Ốp Trần, UFO, Đường, Pha) trong khi sản phẩm xếp theo bảng cứng của chủ site (Pha, Đường, Sân vườn, UFO, Ốp trần;
+  `CatalogFilters::defaultOrder`). Đặt lại 10 danh mục: đèn theo thứ tự đó; Hybrid trước Hòa lưới, Pin/Battery → BMS/Rack → ESS, PWM trước MPPT (đúng bảng giá). Backup `20261117T071300Z-db`;
+  rollback `state/noi-dung-20261117/rollback-thu-tu-danh-muc.json`. Kiểm qua API catalog và chụp trang thật: sidebar, dải logo, danh mục đều khớp.
+- Thứ tự cứng trong code (`defaultOrder`) khớp với dữ liệu; nếu sau này đổi thứ tự danh mục đèn trong Admin, cần đổi cả bảng đó.
+
 ## 2026-11-17 — dữ liệu: thứ tự toàn bộ sản phẩm theo 8 bảng giá (không đổi code)
 
 - Mở rộng đợt JINDIAN cho cả 399 sản phẩm: `products.sort_order = số file × 1000 + thứ tự đầu mục trong bảng giá` (1 BLUE CARBON, 2 ORIANA và SolaX inverter,
