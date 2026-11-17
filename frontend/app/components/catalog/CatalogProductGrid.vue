@@ -182,7 +182,7 @@ onBeforeUnmount(() => clearTimeout(fullTimer))
       <article
       v-for="(product, productIndex) in products"
       :key="product.id"
-      class="group relative flex h-full min-w-0 flex-col"
+      class="group relative flex h-full min-w-0 flex-col [container-type:inline-size]"
       :class="props.layout === 'rail' ? 'snap-start' : ''"
     >
       <NuxtLink
@@ -317,13 +317,13 @@ onBeforeUnmount(() => clearTimeout(fullTimer))
 </template>
 
 <style scoped>
-.card-compare { position: absolute; bottom: 8px; right: 8px; z-index: 4; display: inline-flex; min-height: 36px; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid rgb(10 34 81 / 14%); border-radius: 999px; background: rgb(255 255 255 / 94%); color: var(--color-navy-800); font-size: 12.5px; font-weight: 800; cursor: pointer; opacity: 0; transition: opacity .2s ease, border-color .2s ease, background-color .2s ease; }
+.card-compare { position: absolute; top: calc(100cqw - 44px); right: 8px; z-index: 4; display: inline-flex; min-height: 36px; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid rgb(10 34 81 / 14%); border-radius: 999px; background: rgb(255 255 255 / 94%); color: var(--color-navy-800); font-size: 12.5px; font-weight: 800; cursor: pointer; opacity: 0; transition: opacity .2s ease, border-color .2s ease, background-color .2s ease; }
 .group:hover .card-compare, .card-compare:focus-visible, .card-compare.is-on, .card-compare.is-full { opacity: 1; }
 .card-compare:hover { border-color: var(--color-gold-500); }
 .card-compare.is-on { border-color: transparent; background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); }
 .card-compare.is-full { border-color: #f59e0b; color: #92400e; }
 /* Touch screens have no hover: the toggle stays visible as a compact icon. */
-@media (hover: none), (max-width: 820px) { .card-compare { right: auto; left: 8px; opacity: 1; width: 36px; justify-content: center; padding: 0; } .card-compare__label { display: none; } .card-compare.is-full { width: auto; padding: 0 10px; } .card-compare.is-full .card-compare__label { display: inline; } }
+@media (hover: none), (max-width: 820px) { .card-compare { opacity: 1; width: 36px; justify-content: center; padding: 0; } .card-compare__label { display: none; } .card-compare.is-full { width: auto; padding: 0 10px; } .card-compare.is-full .card-compare__label { display: inline; } }
 @media (prefers-reduced-motion: reduce) { .card-compare { transition: none; } }
 .grid-added { display: inline-flex; align-items: center; gap: 6px; animation: grid-added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes grid-added-in { from { opacity: 0; transform: translateY(5px) scale(0.95); } }
