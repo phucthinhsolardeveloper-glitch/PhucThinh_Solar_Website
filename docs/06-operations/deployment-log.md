@@ -38,6 +38,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Cập nhật cuối: JD-T200 được dựng lại và JD-T300 được thêm (ảnh xóa tay lần 3, đèn/tấm pin sai khác 0 ngoài vùng tay; cutout tấm pin tự vá để giữ khung kính trắng). Toàn bộ 330/330 sản phẩm hiển thị đã có ảnh đại diện concept.
 - Lưu ý dữ liệu: DB60100 kích thước đèn "245 × 198 × 600 mm" (nghi 60), SHARP 395 Wp (nghi sai công suất).
 
+## 2026-11-17 — ảnh avatar cân đối lề (329 mã), sửa nút so sánh (0e4f6b7a), ảnh phụ dùng chung cho 72 đèn pha
+
+- Ảnh đại diện: dựng lại 329 ảnh với lề phải/đáy tối thiểu 58 px (trước ~31 px, sản phẩm dính góc), bằng đúng bộ dựng đã duyệt; thay trên production (backup `20261117T153249Z-db`). JD-6128 chưa dựng lại.
+- Frontend `0e4f6b7a` (Nuxt only; rollback `releases/rollback-0e4f6b7a/stack.env.before`): nút "So sánh" trên thẻ sản phẩm hạ z-index dưới thanh lọc dính và đặt ở góc dưới phải khung ảnh (trước: z-index 20 nổi trên thanh dính, che tiêu đề ảnh bìa).
+- Ảnh phụ dùng chung (backup `20261117T163744Z-db`): thư viện ảnh của 72 đèn pha thêm 180 dòng — 02 "Chiếu sáng linh hoạt ngoài trời" (dùng chung), 07 "An tâm lựa chọn" (2 bản theo bảo hành 2/5 năm), 08 giấy ủy quyền (Blue Carbon, JINDIAN; ORIANA chưa có giấy). Slot cố định theo sort_order (1=02, 2=03, 3=04, 4=05, 5=06, 6=07, 7=08); ảnh cũ dời +100. Rollback `state/noi-dung-20261117/phu-rollback-*.json`. Lưu ý: giấy ủy quyền ghi hạn đã qua (Blue Carbon 09/09/2025, JINDIAN 30/12/2024).
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
