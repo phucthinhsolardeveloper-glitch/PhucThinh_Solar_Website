@@ -44,6 +44,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Frontend `0e4f6b7a` (Nuxt only; rollback `releases/rollback-0e4f6b7a/stack.env.before`): nút "So sánh" trên thẻ sản phẩm hạ z-index dưới thanh lọc dính và đặt ở góc dưới phải khung ảnh (trước: z-index 20 nổi trên thanh dính, che tiêu đề ảnh bìa).
 - Ảnh phụ dùng chung (backup `20261117T163744Z-db`): thư viện ảnh của 72 đèn pha thêm 180 dòng — 02 "Chiếu sáng linh hoạt ngoài trời" (dùng chung), 07 "An tâm lựa chọn" (2 bản theo bảo hành 2/5 năm), 08 giấy ủy quyền (Blue Carbon, JINDIAN; ORIANA chưa có giấy). Slot cố định theo sort_order (1=02, 2=03, 3=04, 4=05, 5=06, 6=07, 7=08); ảnh cũ dời +100. Rollback `state/noi-dung-20261117/phu-rollback-*.json`. Lưu ý: giấy ủy quyền ghi hạn đã qua (Blue Carbon 09/09/2025, JINDIAN 30/12/2024).
 
+## 2026-11-18 — ảnh phụ 06 "Cấu hình kỹ thuật" cho 64 đèn pha
+
+- Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
+- Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
