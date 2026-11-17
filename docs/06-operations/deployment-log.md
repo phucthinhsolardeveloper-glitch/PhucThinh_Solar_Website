@@ -4,6 +4,16 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — dữ liệu: ảnh đại diện concept mới cho 63/72 đèn pha, sửa thông số BCT-WW6.0, ảnh Shopping thiếu
+
+- Phạm vi: chỉ dữ liệu và file ảnh trên production, không đổi code. Backup DB `20261117T100753Z-db` (sửa thông số) và `20261117T103557Z-db` (ảnh đại diện).
+- Ảnh đại diện: bìa theo mẫu `1.png` của chủ website, dựng bằng mã (nền lấy từ chính mẫu đã xóa chữ, sản phẩm ghép nguyên pixel từ ảnh Shopping nền trắng, chữ/số lấy từ thông số). 63 sản phẩm đèn pha có `products.image = <mã>-bia-<hash>.jpg`; ảnh cũ giữ nguyên trên máy chủ. Các sản phẩm này đồng thời `sort_order - 10000` nên đứng đầu trong danh mục; thứ tự theo bảng giá trong nhóm không đổi. Rollback: `state/noi-dung-20261117/avatar-rollback-*.json` (image, feed_image, sort_order cũ), nhật ký `admin_audit_events` action `product.avatar_replace_concept3`.
+- Chưa làm (giữ ảnh cũ, 9 mã): BCT-WW5.0-MONO (ảnh nguồn là poster), JD-T100/T200/T300 (khung chữ, chú thích kích thước), DB60100 (có thùng hộp in chữ), DB3-PRO-200W/400W/800W/1000W (đèn trong ảnh gốc mang nhãn GERINA, sai hãng).
+- Ảnh Google Shopping: 6 mã trống hoặc mất file (BCT-WR1.0, BCT-WR4.0, BCT-WW5.0, BCT-WW5.0-MONO, JD-18200, JD-18300) được gán ảnh nền trắng `*-shopping-trang.jpg` làm phẳng từ ảnh sản phẩm cũ, để feed không dùng bìa có chữ.
+- Thông số: đối chiếu 72 đèn pha với bảng giá hiện hành, chỉ lệch BCT-WW6.0 (tấm pin 5V/150W (MONO) → 5V/120W) và BCT-WW6.0-MONO (5V/30W → 5V/150W (MONO), kèm sửa phần "điểm nổi bật" chép nhầm 1800Lm/20Ah/IP66). Rollback `state/noi-dung-20261117/ww6-rollback.json`.
+- Còn nghi vấn chưa sửa: DB60100 kích thước đèn ghi ×600 mm (nhiều khả năng 60); JD-8500L bảng thông số cũ ghi 60Ah/75W trái với 48Ah/70W; mô tả dài của JD-8860L và JD-8200L nhắc nhầm tên sản phẩm khác.
+- Kiểm: DB 63/63 có ảnh mới, file đủ; trang danh mục đèn pha hiển thị ảnh mới đầu danh sách; trang chi tiết og:image là bìa mới; feed Shopping dùng ảnh nền trắng. Ảnh ORIANA còn lẫn phụ kiện (ốc vít, pin AA, dây) vì ảnh nguồn là ảnh bộ sản phẩm; để xử lý ở lượt sau.
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
