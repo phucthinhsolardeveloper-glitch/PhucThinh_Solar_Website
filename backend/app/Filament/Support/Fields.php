@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -116,6 +117,47 @@ final class Fields
                 }
 
                 return $component->getUploadedFile($file, $storedFileNames);
+            });
+    }
+
+    /**
+     * One drop zone for many pictures at once. Every file is stored as soon as it is uploaded and added as a row of the
+     * gallery repeater next to it (same schema level), so the editor drags a whole folder in instead of adding one
+     * empty row per picture. The zone empties itself afterwards; the rows can be reordered, captioned or removed.
+     */
+    public static function bulkImages(string $folder, string $repeater, string $label = 'Kéo thả nhiều ảnh vào đây'): FileUpload
+    {
+        return self::image('bulk_'.$repeater, $folder, $label)
+            ->multiple()->maxFiles(60)->dehydrated(false)->live()
+            ->hintActions([])
+            ->extraFieldWrapperAttributes(['class' => 'pts-bulk-images'])
+            // The files are listed as gallery rows right below, so the drop zone itself only shows its drop area.
+            ->helperText(new HtmlString('<style>.pts-bulk-images .filepond--list-scroller{display:none}.pts-bulk-images .filepond--root{height:72px!important}.pts-bulk-images .filepond--drop-label{min-height:72px!important}</style>Chọn hoặc kéo thả nhiều ảnh một lần. Ảnh tự thêm vào danh sách bên dưới; kéo từng ô để đổi thứ tự.'))
+            ->afterStateUpdated(function (FileUpload $component, Get $get, Set $set) use ($repeater): void {
+                // saveUploadedFiles() and state([]) run this hook again; handle each batch once.
+                static $busy = false;
+                if ($busy) {
+                    return;
+                }
+                $busy = true;
+                try {
+                    $component->saveUploadedFiles();
+                    $names = collect(Arr::wrap($component->getRawState()))->filter(fn ($name) => is_string($name) && $name !== '')->values();
+                    if ($names->isEmpty()) {
+                        return;
+                    }
+                    $rows = Arr::wrap($get($repeater));
+                    $have = collect($rows)->flatMap(fn ($row) => Arr::wrap(is_array($row) ? ($row['path'] ?? []) : []))->filter(fn ($name) => is_string($name))->all();
+                    foreach ($names as $name) {
+                        if (! in_array($name, $have, true)) {
+                            $rows[(string) Str::uuid()] = ['path' => [(string) Str::uuid() => $name], 'caption' => null, 'is_visible' => true];
+                        }
+                    }
+                    $set($repeater, $rows);
+                    $component->state([]);
+                } finally {
+                    $busy = false;
+                }
             });
     }
 

@@ -57,3 +57,21 @@ it('uploads, reorders and removes product gallery entries through Filament', fun
     expect($product->fresh()->images->pluck('caption')->all())->toBe(['Ảnh hai']);
     Storage::disk('upload_product')->assertExists($rows[0]['path'][0]);
 });
+
+it('adds many pictures to the product gallery from one drop zone', function () {
+    Storage::fake('upload_product');
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'product-bulk-owner', 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    $product = Product::query()->create(['name' => 'Sản phẩm kéo thả', 'slug' => 'bulk-drop-'.bin2hex(random_bytes(4)), 'category_id' => Category::query()->value('id'), 'is_visible' => false]);
+
+    Livewire::test(EditProduct::class, ['record' => $product->id])
+        ->set('data.bulk_images', [UploadedFile::fake()->image('a.jpg'), UploadedFile::fake()->image('b.jpg'), UploadedFile::fake()->image('c.jpg')])
+        ->call('save')->assertHasNoFormErrors();
+
+    $images = $product->fresh()->images;
+    expect($images)->toHaveCount(3)->and($images->pluck('is_visible')->unique()->all())->toBe([true]);
+    foreach ($images as $image) {
+        Storage::disk('upload_product')->assertExists($image->path);
+    }
+});

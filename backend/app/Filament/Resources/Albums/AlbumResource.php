@@ -49,6 +49,7 @@ class AlbumResource extends Resource
                 Fields::image('image', 'product', 'Ảnh đại diện'),
                 Section::make()->schema([Fields::visible()]),
             ]),
+            Fields::bulkImages('product', 'images'),
             Repeater::make('images')->label('Ảnh trong album')->relationship()->orderColumn('sort_order')->reorderable()
                 ->schema([Fields::image('path', 'product')->required(), TextInput::make('caption')->label('Chú thích'), Fields::visible('Hiển thị')])
                 ->grid(3)->collapsible()->defaultItems(0)->addActionLabel('Thêm ảnh'),
