@@ -27,6 +27,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T124608Z`. Thêm 11 sản phẩm không có mã (khóa bằng id: đèn cắm cỏ, cáp THIPHA ×3, quạt Blue Fan, băng keo, keo foam, ống ruột gà ×3, cọc tiếp địa) và 3 đèn từng bị loại (DB02-3, DB-OT1000, JDL-OT400, nay có bản tách sạch). Giữ ảnh cũ: id-361 PV Module SHARP 395 Wp (dữ liệu công suất nghi sai: 395W trên tấm 500×340 mm) và id-375 kẹp biên (thanh mã chỉ ghi "35"), chờ xác nhận.
 - Còn ảnh cũ: 36 bộ sạc Blue Carbon (ảnh mang logo LDSOLAR), 9 đèn pha, 2 đèn (DB-16400W, DB01-ECO), 10 mã tấm pin/biến tần bơm (ảnh ghép EPV230, ảnh 630W cho mã 610W) và 2 sản phẩm cần xác nhận ở trên.
 
+## 2026-11-17 — dữ liệu: ảnh đại diện concept lượt 8 (+34, tổng 306/330)
+
+- Backup DB `20261117T132138Z`. Thêm 32 bộ sạc MPPT/PWM Blue Carbon (ảnh thiết bị mang logo LDSOLAR của nhà sản xuất, chủ website chấp nhận dùng đúng ảnh đang hiển thị, ghép nguyên pixel), tấm pin SHARP (id 361, bỏ dòng công suất vì dữ liệu nghi sai), kẹp biên (id 375). Kiểm: 0 file mất, 0 ảnh bìa trùng ảnh Shopping.
+- Còn ảnh cũ (24): JD-T100/T200/T300 (tay người/logo BOLAR), DB3-PRO ×4 (nhãn GERINA), DB60100, DB01-ECO, DB-16400W, BCT-WW5.0-MONO, ASTRO N7 610W (chỉ có ảnh 630W), EPV230 ×7 và MPPT-TD2310TU/TD2410TU ×4 (ảnh ghép nhiều model), DAY-BCT-WW1-5M (dây nối). Cần ảnh sạch từng mã từ nhà cung cấp.
+
 ## 2026-11-17 — release 3fb268fe: một ô kéo thả nhiều ảnh cho thư viện ảnh sản phẩm và album (Admin)
 
 - Runtime source: commit `3fb268fef6d00ef4c5296fff5510ed1bf901c4c1` (đã push). Image backend `sha256:818e4f265edd264e245899c78774becb453377b0f6fcf6147e4c7009f4079250`,
