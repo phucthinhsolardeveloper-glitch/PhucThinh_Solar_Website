@@ -4,6 +4,36 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — release a66efc27: mô tả đóng mặc định, bỏ zoom rê chuột, đèn đủ 4 chỉ số đầu trang; ảnh bộ VIP1
+
+- Runtime source: commit `a66efc277a49abb44a1c2ffdd6224302352266b2` (đã push). Image backend
+  `sha256:d028fd408bba7f71318c0518ddf7bcab02d057fbe5ae701e16ed689758ff08e5`, Nuxt
+  `sha256:498d35efb9fb16dfb9e6512c50962313820c3c4a5295864f4b1fac0a5d6f5e57`; gói `/srv/pts-laravel13/releases/a66efc27/`
+  SHA-256 khớp, ID image trên VPS khớp manifest. Build từ worktree sạch `pts-release-e5fb18cd` (checkout đúng commit); image không chứa
+  `ContentBatchPatch.php` hay `resources/product-gallery` của việc khác.
+- Phạm vi code: khối "Xem mô tả chi tiết" đóng mặc định (một trạng thái `descriptionOpen` điều khiển cả nút trong khối trên máy tính và nút
+  "Xem toàn bộ mô tả" trên điện thoại; chip Tổng quan mới mở mô tả); bỏ hiệu ứng zoom khi rê chuột trên ảnh chính (bấm vẫn mở ảnh lớn, gợi ý
+  "Bấm để xem ảnh lớn"); đèn thiếu quang thông/chiều cao dùng thời gian chiếu sáng, tấm pin, chuẩn IP để đủ chỉ số đầu trang
+  (203/203 sản phẩm đèn có 4 chỉ số, trước đó 111 sản phẩm chỉ có 2).
+- Kiểm trước: backend 413 pass/1 skip, PHPStan 0, Pint sạch; frontend 515 pass, typecheck 0; ProductSpecs bản mới chạy thử chỉ đọc trên container
+  production với 353 sản phẩm hiển thị, không lỗi. Bản Nuxt mới còn chạy thử ở local (cổng riêng, API thật) trên máy tính và điện thoại.
+- SỰ CỐ trong lúc phát hành: bản đầu `e5fb18cd` đóng mô tả mặc định nhưng trang điện thoại ẩn nút trong khối và chỉ dùng nút bên dưới, nút đó chỉ
+  đổi chiều cao khung cắt, nên khách điện thoại không mở được mô tả. Phát hiện bằng kiểm trình duyệt ngay sau khi đổi image; Nuxt được trả
+  về `748efd01-candidate` trong vài phút (backend giữ bản mới), rồi sửa ở `a66efc27` và chạy thử local trước khi đổi lại. Bài học: đổi hành vi
+  mặc định của khối đã có logic riêng cho điện thoại thì phải chạy thử điện thoại trước khi đổi image.
+- Lỗi thao tác: lệnh compose đầu thiếu `-p pts-laravel13` nên không thay được container và tạo ba mạng thừa `pts_laravel13_candidate_*`; đã xác minh
+  không có container gắn vào và xóa. Từ nay luôn dùng `docker compose -p pts-laravel13 -f docker-compose.yml -f docker-compose.production.yml --env-file runtime/stack.env`.
+- Dữ liệu cùng ngày (không đổi code): nội dung 325 sản phẩm (lô 04–28) và meta SEO 54 sản phẩm (rollback
+  `state/noi-dung-20261117/rollback-lo-04-28.json`, `rollback-seo-54.json`, `rollback-hype-5.json`); bộ ảnh VIP1 cho 43 sản phẩm đèn (avatar =
+  ảnh số nhỏ nhất, thư viện = phần còn lại, ảnh Shopping giữ nguyên; ảnh thư viện cũ chỉ ẩn; rollback
+  `state/noi-dung-20261117/rollback-anh-vip1.json`).
+- Backup trước khi đổi image: `20261117T060136Z-db` và `20261117T063601Z-db`. Trên VPS chỉ thay backend, Nuxt, worker, scheduler; DB, Caddy, ZCRM, training giữ nguyên.
+  Sau đổi: HTTPS `/`, trang sản phẩm, `/health`, `/api/v1/site`, `/google-shopping.xml` đều 200; trên trang thật, máy tính và điện thoại đều có mô tả đóng lúc đầu, mở/đóng
+  được, rê chuột không phóng to, 4 chỉ số, 0 lỗi JS; log 3 phút sau: 0 lỗi ở bốn dịch vụ.
+- Rollback: `releases/rollback-a66efc27/stack.env.before` (backend `e5fb18cd-candidate`, Nuxt `748efd01-candidate`) hoặc `releases/rollback-e5fb18cd/stack.env.before`
+  (cả hai `748efd01-candidate`); image cũ còn trên VPS.
+- Rủi ro còn lại: baseline API (`product-detail`...) chưa lưu lại sau đợt ảnh và nội dung; lượt 2 viết lại mô tả bằng Codex chưa chạy (Codex hết hạn mức).
+
 ## 2026-11-17 — release 748efd01: "Chuẩn IP" thay "cấp bảo vệ"; dữ liệu thông số và mô tả
 
 - Runtime source: commit `748efd0154f188665437a041d9b5e34c2dd3a839` (đã push). Image backend
