@@ -4,6 +4,17 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — dữ liệu: thứ tự sản phẩm JINDIAN theo bảng giá (không đổi code)
+
+- Nguồn thứ tự: `Bảng giá/3. BẢNG GIÁ JD 29.05.xlsx`, sheet đang mở "Bảng giá JINDIAN in" (có JD-V100–V500). Danh sách chỉ xếp theo `products.sort_order`
+  (rồi `id` giảm dần; sản phẩm không ảnh luôn xuống cuối) nên chỉ đổi cột này. Quy ước dải: hãng thứ 3 theo số thứ tự file bảng giá = dải 300+
+  (BLUE CARBON 0/1 và ORIANA 2 giữ nguyên, nên danh sách hiện là BLUE CARBON → ORIANA → JINDIAN).
+- 36 sản phẩm: 21 đèn pha, 11 đèn đường (gồm #347 JD-L200NEW chưa gán hãng), 4 cần đèn (đang ẩn); `sort_order` 301–336 theo đúng thứ tự bảng giá,
+  bản ánh sáng vàng (-VANG) ngay sau bản trắng. Ghi có điều kiện (chỉ đổi khi giá trị cũ còn nguyên), 36 dòng audit `product.sort_order_price_list`.
+- Backup `20261117T070154Z-db`; rollback `state/noi-dung-20261117/rollback-thu-tu-jindian.json` (id, mã, sort_order cũ). Kiểm qua API catalog: đèn pha và đèn đường,
+  JINDIAN đúng thứ tự bảng giá, đèn pha thành ba khối BLUE CARBON → ORIANA → JINDIAN.
+- Chưa làm: BLUE CARBON và ORIANA (sắp theo bảng giá của hãng); các mã ORIANA nằm trong file JD (đèn trụ cổng, treo tường, UFO, ốp trần) thuộc bước ORIANA.
+
 ## 2026-11-17 — release a66efc27: mô tả đóng mặc định, bỏ zoom rê chuột, đèn đủ 4 chỉ số đầu trang; ảnh bộ VIP1
 
 - Runtime source: commit `a66efc277a49abb44a1c2ffdd6224302352266b2` (đã push). Image backend
