@@ -4,6 +4,30 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — release 748efd01: "Chuẩn IP" thay "cấp bảo vệ"; dữ liệu thông số và mô tả
+
+- Runtime source: commit `748efd0154f188665437a041d9b5e34c2dd3a839` (đã push). Image backend
+  `sha256:3c31838d5e928621b5e17280686edc0e47ba2971e404024c5b371fedc8366e79`, Nuxt
+  `sha256:1d918f6c5caf9918017aeac90310d49fe5d02bb2930d68b5c2a4c51e93621213`; gói `/srv/pts-laravel13/releases/748efd01/`
+  SHA-256 khớp, ID image trên VPS khớp manifest. Build từ worktree sạch đúng commit (thư mục master có file chưa commit
+  của việc khác, không được đóng vào image; đã kiểm `ContentBatchPatch.php` không có trong image).
+- Phạm vi code: bảng thông số đèn tách "Kích thước" và "Chuẩn IP"; nhãn `waterproof_rating` mọi profile là "Chuẩn IP";
+  dòng nhập tay "Cấp bảo vệ"/"IP rate" hiển thị "Chuẩn IP"; ô trống không còn che dòng nhập tay. Codex review chéo:
+  lần 1 NO-GO (dòng nhập tay bị che), lần 2 GO, các điểm "nên sửa" đã sửa. Backend 405 pass/1 skip, Pint, PHPStan sạch.
+- Dữ liệu (không đổi code, trước release): `pts:spec-keys --apply` gắn ô thông số cho 265 sản phẩm (265 dòng audit
+  `product.spec_keys` kèm giá trị cũ; backup `20261117T014351Z-db`); 49 sản phẩm Blue Carbon không phải đèn chuyển mô tả
+  sang kế thừa danh mục (content_sections mode inherit/category; audit `product.content_inherit_category`; backup
+  `20261117T014545Z-db`); gỡ 4 ảnh gallery SolaX sai concept (audit `product.gallery_remove`; file ở
+  `state/removed-solax-spec-cards-20261117/`; backup `20261117T013643Z-db`).
+- Checkpoint bỏ qua có chủ ý: không dựng candidate cô lập với DB phục hồi (không migration, thay đổi chỉ ở nhãn bảng thông số);
+  thay bằng bộ test đầy đủ và kiểm trực tiếp sau khi đổi image, rollback image sẵn trên VPS.
+- Trên VPS chỉ thay backend, Nuxt, worker, scheduler; DB, Caddy, ZCRM, training giữ nguyên. Backup trước đổi image:
+  `20261117T020243Z-db`. HTTPS 9 route chính 200; DB02-1 hiện "Kích thước 680 × 273 mm" và "Chuẩn IP IP66"; log 3 phút
+  sau: 0 lỗi ở backend/Nuxt/worker. Không còn nhãn "cấp bảo vệ" trong product-detail.
+- Baseline API cập nhật từ production: product-detail, product-extras, catalog, brand-detail, home, search (ảnh chuẩn hóa
+  16/11, nhãn IP, thông số gắn ô). Không lưu news, news-detail, site: lệch do bài và GA4 của việc khác.
+- Rollback: `releases/rollback-748efd01/stack.env.before` + image `e94a3f71-candidate` còn trên VPS; dữ liệu theo audit/backup ở trên.
+
 ## 2026-11-16 — dọn dung lượng VPS và cập nhật chính sách backup
 
 - Theo checkpoint vận hành VPS: mức sử dụng đĩa giảm từ 94% xuống 79%. Đã xóa
