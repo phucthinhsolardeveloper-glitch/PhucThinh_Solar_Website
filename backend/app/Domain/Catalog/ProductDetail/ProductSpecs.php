@@ -266,7 +266,7 @@ class ProductSpecs
         $order = ! empty($profile['metrics']) ? $profile['metrics'] : ['cong_suat', 'light_source', 'battery_capacity', 'panel_power', 'waterproof_rating', 'warranty', 'lighting_time', 'led_chip', 'color_temperature', 'charging_time', 'material', 'installation_height'];
         $prefix = ! empty($profile['fields']) ? $profile['fields'] : [
             'cong_suat' => 'Công suất', 'light_source' => 'Quang thông', 'battery_capacity' => 'Pin', 'panel_power' => 'Tấm pin',
-            'waterproof_rating' => 'Chống nước', 'warranty' => 'Bảo hành', 'lighting_time' => 'Chiếu sáng', 'led_chip' => 'Chip LED',
+            'waterproof_rating' => 'Chuẩn IP', 'warranty' => 'Bảo hành', 'lighting_time' => 'Chiếu sáng', 'led_chip' => 'Chip LED',
             'color_temperature' => 'Nhiệt độ màu', 'charging_time' => 'Sạc', 'material' => 'Chất liệu', 'installation_height' => 'Cao lắp đặt',
         ];
         $chips = [];
@@ -362,8 +362,10 @@ class ProductSpecs
             $label = Text::plain($extra['label']);
             $value = Text::plain($extra['value']);
             $lower = mb_strtolower($label);
-            if (preg_match('/^(?:cấp bảo vệ|cấp độ bảo vệ|ip rate)$/u', $lower)) {
+            if (preg_match('/^(?:cấp bảo vệ|cấp độ bảo vệ|ip rate|chuẩn ip)$/u', $lower)) {
+                // One canonical name for every spelling, so two IP rows cannot both show.
                 $label = 'Chuẩn IP';
+                $lower = 'cấp bảo vệ';
             }
             if ($label === '' || $value === '' || in_array($lower, $denylist, true)) {
                 continue;

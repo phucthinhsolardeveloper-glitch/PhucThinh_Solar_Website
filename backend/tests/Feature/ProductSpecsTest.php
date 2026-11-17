@@ -49,14 +49,16 @@ it('shows size and IP code on their own rows, without the "cấp bảo vệ" wor
         ->and($table->firstWhere('key', 'waterproof_rating'))->toMatchArray(['label' => 'Chuẩn IP', 'value' => 'IP66'])
         ->and($table->pluck('label')->filter(fn ($l) => str_contains(mb_strtolower($l), 'cấp bảo vệ'))->all())->toBe([])
         ->and($table->firstWhere('label', 'Kích thước thùng')['value'] ?? null)->toBe('45 × 40 × 12 cm');
-    expect(config('pdp.profiles.solar_panel.fields.waterproof_rating') ?? 'Chuẩn IP')->toBe('Chuẩn IP');
+    expect(config('pdp.profiles.general.fields.waterproof_rating'))->toBe('Chuẩn IP');
 });
 
 it('shows hand-typed size and IP rows when the typed fields are empty, relabelled without "cấp bảo vệ"', function () {
     $row = ['pdp_profile' => 'lighting', 'lamp_dimensions' => '', 'waterproof_rating' => '', 'additional_specs' => json_encode([
         ['label' => 'Kích thước đèn', 'value' => '555 × 218 mm'],
         ['label' => 'Cấp bảo vệ', 'value' => 'IP65'],
+        ['label' => 'IP rate', 'value' => 'IP65'],
     ], JSON_UNESCAPED_UNICODE)];
+    expect(collect($this->specs->table($row, 'lighting'))->where('label', 'Chuẩn IP')->count())->toBe(1);
     $visible = collect($this->specs->table($row, 'lighting'))->filter(fn ($s) => $s['value'] !== '');
 
     expect($visible->firstWhere('label', 'Kích thước đèn')['value'] ?? null)->toBe('555 × 218 mm')
