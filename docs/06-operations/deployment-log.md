@@ -4,6 +4,15 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-17 — dữ liệu: thứ tự toàn bộ sản phẩm theo 8 bảng giá (không đổi code)
+
+- Mở rộng đợt JINDIAN cho cả 399 sản phẩm: `products.sort_order = số file × 1000 + thứ tự đầu mục trong bảng giá` (1 BLUE CARBON, 2 ORIANA và SolaX inverter,
+  3 JINDIAN và biến tần bơm, 4 đèn sân vườn và pin Blue Carbon/MPPT, bảng giá tấm pin không số = 8). Sản phẩm không có trong bảng giá nào = 9000 + sort cũ (xuống cuối
+  danh mục, giữ thứ tự cũ). Nguồn là sheet đang mở của từng file; khớp mã bằng ranh giới (DB-7100 khác DB-71000), 374/399 khớp tự động, 8 mã gán tay
+  (trụ 6m ba cỡ, M25, hai tấm pin ORIANA, hai AELIO P60B200), 25 sản phẩm không có trong bảng giá (cáp, ruột gà, băng keo, quạt JD, ốp trần JD-L400, Sharp, LONGI450...).
+- 399 dòng audit `product.sort_order_price_list`; backup `20261117T070820Z-db`; rollback `state/noi-dung-20261117/rollback-thu-tu-toan-bo.json` (id, mã, sort_order cũ).
+  Kiểm qua API catalog 28 danh mục: đúng thứ tự bảng giá; chỗ lệch 1 cặp ở vài danh mục là do sản phẩm chưa có ảnh luôn xuống cuối (quy tắc sẵn có).
+
 ## 2026-11-17 — dữ liệu: thứ tự sản phẩm JINDIAN theo bảng giá (không đổi code)
 
 - Nguồn thứ tự: `Bảng giá/3. BẢNG GIÁ JD 29.05.xlsx`, sheet đang mở "Bảng giá JINDIAN in" (có JD-V100–V500). Danh sách chỉ xếp theo `products.sort_order`
