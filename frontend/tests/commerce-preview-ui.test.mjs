@@ -227,7 +227,8 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
   assert.match(gallery, /<AnimatePresence :initial="false">/)
   assert.match(gallery, /:transition="\{ duration: reducedMotion \? 0 : 0\.16/)
   assert.match(gallery, /@media \(prefers-reduced-motion: reduce\)/)
-  assert.match(gallery, /\.pdp-zoom-image \{\s*transition-duration: 0ms/)
+  // Owner decision 2026-11-17: no hover zoom on the product photo; a click opens the viewer instead.
+  assert.doesNotMatch(gallery, /pointermove|isZoomed|zoomOrigin|scale\(2\.2\)/)
 })
 
 test('browser translation widget initializes and follows route-owned header remounts', () => {

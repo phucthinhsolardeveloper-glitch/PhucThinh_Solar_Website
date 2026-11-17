@@ -66,3 +66,29 @@ it('shows hand-typed size and IP rows when the typed fields are empty, relabelle
         ->and($visible->pluck('label')->filter(fn ($l) => str_contains(mb_strtolower($l), 'cấp bảo vệ'))->all())->toBe([])
         ->and(collect($this->specs->table($row, 'lighting'))->firstWhere('key', 'waterproof_rating'))->toBeNull();
 });
+
+it('fills empty lighting metric slots with other real figures so the first screen keeps three or more facts', function () {
+    $row = ['pdp_profile' => 'lighting', 'warranty' => '24 tháng', 'additional_specs' => json_encode([
+        ['label' => 'Thời gian chiếu sáng', 'value' => '12–16 giờ'],
+        ['label' => 'Công suất tấm pin', 'value' => '5V/20W MONO'],
+        ['label' => 'Chuẩn IP', 'value' => 'IP66'],
+    ], JSON_UNESCAPED_UNICODE)];
+    $metrics = collect($this->specs->decisionMetrics($row, 'lighting'));
+    $shown = $metrics->filter(fn ($m) => $m['value'] !== '');
+
+    expect($metrics)->toHaveCount(4)
+        ->and($shown->count())->toBeGreaterThanOrEqual(3)
+        ->and($metrics->pluck('key')->all())->toContain('lighting_time', 'panel_power', 'warranty')
+        ->and($metrics->firstWhere('key', 'lighting_time')['value'])->toBe('12–16 giờ');
+});
+
+it('keeps the lumen and height slots when the lamp has them', function () {
+    $row = ['pdp_profile' => 'lighting', 'additional_specs' => json_encode([
+        ['label' => 'Quang thông', 'value' => '1800 lm'],
+        ['label' => 'Chiều cao lắp đặt', 'value' => '5–6 m'],
+        ['label' => 'Thời gian chiếu sáng', 'value' => '12–16 giờ'],
+    ], JSON_UNESCAPED_UNICODE)];
+    $keys = collect($this->specs->decisionMetrics($row, 'lighting'))->filter(fn ($m) => $m['value'] !== '')->pluck('key')->all();
+
+    expect($keys)->toContain('quang_thong', 'installation_height', 'lighting_time');
+});

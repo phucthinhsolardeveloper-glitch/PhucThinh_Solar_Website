@@ -426,7 +426,7 @@ class ProductSpecs
                 $metrics[] = ['key' => $key, 'label' => $label, 'value' => Text::plain($value), 'unit' => $unit, 'icon' => $icon, 'iconImage' => $images[$key], 'iconDir' => 'pdp-lighting'];
             }
 
-            return $metrics;
+            return $this->withLightingFallbacks($metrics, $structured);
         }
         $images = config('pdp_metrics.metric_images')[$profileKey] ?? [];
         foreach ((array) ($profile['metrics'] ?? []) as $key) {
@@ -443,6 +443,36 @@ class ProductSpecs
                 'iconImage' => $iconImage,
                 'iconDir' => $iconImage !== '' && in_array($key, config('pdp_metrics.metric_extra_dir_keys'), true) ? 'pdp-extra' : 'pdp',
             ];
+        }
+
+        return $metrics;
+    }
+
+    /**
+     * Many lamps have no lumen or mounting-height figure. An empty slot is then filled with another figure the
+     * product really has (lighting hours, solar panel, IP code), so the first screen still carries up to four facts.
+     *
+     * @param  list<array<string, string>>  $metrics
+     * @param  list<array<string, string>>  $structured
+     * @return list<array<string, string>>
+     */
+    private function withLightingFallbacks(array $metrics, array $structured): array
+    {
+        $fallbacks = [];
+        foreach ([
+            ['lighting_time', 'Thời gian chiếu sáng', ['thời gian chiếu sáng'], 'giờ', 'sun', 'thoigianhoatdong.png'],
+            ['panel_power', 'Tấm pin đi kèm', ['công suất tấm pin'], '', 'bolt', ''],
+            ['waterproof_rating', 'Chuẩn IP', ['chuẩn ip'], '', 'shield', 'chuanchongnuoc.png'],
+        ] as [$key, $label, $needles, $unit, $icon, $image]) {
+            $value = Text::plain($this->lookup($structured, $needles, false));
+            if ($value !== '' && ! $this->valueIsMissing($value)) {
+                $fallbacks[] = ['key' => $key, 'label' => $label, 'value' => $value, 'unit' => $unit, 'icon' => $icon, 'iconImage' => $image, 'iconDir' => 'pdp-extra'];
+            }
+        }
+        foreach ($metrics as $i => $metric) {
+            if ($metric['value'] === '' && $metric['key'] !== 'warranty' && $fallbacks !== []) {
+                $metrics[$i] = array_shift($fallbacks);
+            }
         }
 
         return $metrics;

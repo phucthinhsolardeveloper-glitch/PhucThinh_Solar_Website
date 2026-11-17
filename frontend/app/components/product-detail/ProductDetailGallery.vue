@@ -7,8 +7,6 @@ const selectedIndex = ref(0)
 const failedMedia = ref<Set<string>>(new Set())
 const retryVersion = ref(0)
 const lightboxOpen = ref(false)
-const isZoomed = ref(false)
-const zoomOrigin = ref('50% 50%')
 const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
 const displayedImage = ref<HTMLImageElement | null>(null)
@@ -20,7 +18,6 @@ watch(() => props.media, () => {
   failedMedia.value = new Set()
   retryVersion.value = 0
   lightboxOpen.value = false
-  isZoomed.value = false
 })
 
 const configuredIndexes = computed(() => props.media.map((image, index) => Boolean(image.trim()) ? index : -1).filter((index) => index >= 0))
@@ -33,7 +30,6 @@ function retryMedia() {
   failedMedia.value = new Set()
   selectedIndex.value = configuredIndexes.value[0] ?? 0
   retryVersion.value += 1
-  isZoomed.value = false
   lightboxOpen.value = false
 }
 
@@ -91,7 +87,6 @@ function trapFocus(event: KeyboardEvent) {
 function openLightbox(event: MouseEvent) {
   if (!selectedMediaAvailable.value) return
   lastTrigger.value = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
-  isZoomed.value = false
   lightboxOpen.value = true
 }
 function closeLightbox() {
@@ -117,23 +112,6 @@ function handleKey(event: KeyboardEvent) {
   } else if (event.key === 'ArrowLeft') moveLightbox(-1)
   else if (event.key === 'ArrowRight') moveLightbox(1)
   else if (event.key === 'Tab') trapFocus(event)
-}
-
-// Hover zoom is for a real mouse only. A touch sends no "leave", so the zoom would stay stuck, and on iOS a page
-// change during its compatibility mouse move also cancels the tap, so the viewer would never open.
-function handleMouseMove(event: PointerEvent) {
-  if (event.pointerType !== 'mouse') return
-  const target = event.currentTarget as HTMLElement
-  if (!target) return
-  const rect = target.getBoundingClientRect()
-  const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
-  const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))
-  zoomOrigin.value = `${(x * 100).toFixed(1)}% ${(y * 100).toFixed(1)}%`
-  isZoomed.value = true
-}
-
-function handleMouseLeave() {
-  isZoomed.value = false
 }
 
 function prevImage(event?: Event) {
@@ -219,17 +197,14 @@ function onStageClick(event: MouseEvent) {
 
 <template>
   <div>
-    <!-- Khung hiển thị ảnh sản phẩm chính với tính năng Zoom rê chuột & phím chuyển ảnh -->
+    <!-- Khung hiển thị ảnh sản phẩm chính: bấm để xem ảnh lớn, nút chuyển ảnh -->
     <div
       v-if="selectedMediaAvailable"
       class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-btn bg-white"
-      @pointermove="handleMouseMove"
-      @pointerleave="handleMouseLeave"
     >
       <button
         type="button"
-        class="pdp-studio-stage relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-50"
-        :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
+        class="pdp-studio-stage relative flex h-full w-full cursor-zoom-in items-center justify-center overflow-hidden bg-slate-50"
         :aria-label="'Phóng to ảnh ' + name"
         @click="onStageClick($event)"
         @touchstart.passive="onSwipeStart"
@@ -246,24 +221,13 @@ function onStageClick(event: MouseEvent) {
             loading="eager"
             fetchpriority="high"
             decoding="async"
-            class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-200 ease-out"
-            :style="{
-              transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
-              transformOrigin: zoomOrigin,
-            }"
+            class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0"
             width="720"
             height="720"
             @error="handleDisplayedMediaError"
           >
         </Transition>
       </button>
-
-      <!-- Hiệu ứng viền phản quang quang học khi zoom -->
-        <div
-        v-if="isZoomed"
-        class="pointer-events-none absolute inset-0 z-10 border border-gold-500/25 shadow-[inset_0_0_28px_rgba(201,150,46,0.12)] transition-opacity duration-200"
-        aria-hidden="true"
-      />
 
       <!-- Nút chuyển ảnh Trước (<) -->
       <button
@@ -287,15 +251,14 @@ function onStageClick(event: MouseEvent) {
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </button>
 
-      <!-- Huy hiệu hướng dẫn zoom -->
+      <!-- Gợi ý bấm để xem ảnh lớn -->
       <div
-        class="max-tb:hidden pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-navy-950/70 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs transition-opacity duration-200"
-        :class="isZoomed ? 'opacity-0' : 'opacity-85 group-hover:opacity-100'"
+        class="max-tb:hidden pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-navy-950/70 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs opacity-85 transition-opacity duration-200 group-hover:opacity-100"
       >
         <svg class="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/>
         </svg>
-        <span class="max-ph:hidden">Rê chuột phóng to</span>
+        <span class="max-ph:hidden">Bấm để xem ảnh lớn</span>
       </div>
 
       <!-- Số thứ tự ảnh -->
@@ -424,8 +387,7 @@ function onStageClick(event: MouseEvent) {
   .pdp-fade-enter-active,
   .pdp-fade-leave-active,
   .pdp-lightbox-enter-active,
-  .pdp-lightbox-leave-active,
-  .pdp-zoom-image {
+  .pdp-lightbox-leave-active {
     transition-duration: 0ms;
   }
 }

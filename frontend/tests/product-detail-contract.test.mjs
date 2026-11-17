@@ -149,6 +149,8 @@ test('PDP mirrors PHP highlights and collapsed long description', () => {
   const content = readFileSync(new URL('../app/components/product-detail/ProductDetailContent.vue', import.meta.url), 'utf8')
   assert.match(content, /content\.highlights\?\.length[\s\S]*Điểm nổi bật/)
   assert.match(content, /<details v-if="content\.blocks\.length"[\s\S]*Xem mô tả chi tiết/)
+  // Owner decision 2026-11-17: the long description starts closed; the visitor opens it when they want to read.
+  assert.doesNotMatch(content, /<details[^>]*\sopen[\s>]/)
 })
 
 test('validates inherited content source and FAQ limits', () => {
