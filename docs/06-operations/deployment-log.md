@@ -49,6 +49,14 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — bộ ảnh phụ đèn pha hoàn chỉnh (02, 03, 04, 05, 06, 07) cho 72 mã
+
+- Backup DB `20261118T001153Z-db`; một lượt ghi `product_images` cho 72 đèn pha: thêm 160 dòng, đổi 168 dòng (không xóa, không dời). Rollback `state/noi-dung-20261117/phu-rollback-0711.json`.
+- 02 và 07 thay ảnh dùng chung bằng ảnh theo từng mã (sản phẩm thật đứng ở chỗ trống của mẫu; 07 lấy "BẢO HÀNH" theo dữ liệu); 03 "Đặc điểm nhận diện" và 04 "Nạp năng lượng" thêm mới 72 mã (04 lấy 4 dòng + thời gian sạc/chiếu từ dữ liệu); 05 đổi 24 mã (nhãn đèn quá dài từng bị cắt chữ, nay tách 2 dòng) và thêm 8 mã mới; 06 thêm 8 mã mới.
+- 8 mã mới (JD-6128, BCT-WW5.0-MONO, JD-T100, DB60100, DB3-PRO ×4) dựng được nhờ nguồn `v9-input`; điểm chỉ ảnh 05 của 8 mã này là ước lượng.
+- Kiểm: 72 mã đủ 02–07, ORIANA không có 08 (chưa có giấy chứng nhận), không thiếu file trên server, ảnh trả 200.
+- Chưa làm: các danh mục khác; ẩn ảnh cũ "Chứng nhận & ủy quyền" (nhóm `vip1-12-*`) trên ORIANA (chờ chủ website quyết định).
+
 ## 2026-11-18 — ảnh phụ 05 "Bộ sản phẩm gồm" cho 64 đèn pha
 
 - Backup DB (lần ghi ảnh 05); thêm 64 dòng `product_images` slot sort_order 4 (`p2-05-<hash>.jpg`): nền mẫu 5 đã xóa chữ, sản phẩm thật trên bục, `package_contents` nguyên văn, nhãn đèn/tấm pin/remote có đường chấm trỏ đúng vật (điểm chỉ ghi tay theo từng mã, nhãn remote chỉ khi ảnh có remote). Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
