@@ -253,6 +253,31 @@ const gridServiceWires=[];
 const sunObjects=[];
 let sunBillboard=null;
 let skyLife=null;
+let wirePulses=null;
+// Smooth energy pulses: a soft glowing head with a short fading trail runs along a curve fitted through the route's own
+// animation path, in place of the three small spheres that jumped along the polyline.
+function wirePulseTick(elapsed,still){
+ if(!wirePulses)return;
+ for(const group of wirePulses){
+  const on=!still&&group.flow&&group.flow.visible;
+  for(const sprite of group.sprites)sprite.visible=false;
+  if(!on)continue;
+  for(let i=0;i<group.heads;i++){
+   const t=(elapsed*group.speed+i/group.heads)%1;
+   const envelope=Math.pow(Math.sin(Math.PI*Math.min(1,Math.max(0,t))),.6);
+   for(let j=0;j<group.trail;j++){
+    const sprite=group.sprites[i*group.trail+j];
+    const at=t-j*.017;
+    if(at<0||at>1)continue;
+    sprite.position.copy(group.curve.getPointAt(at));
+    const fade=1-j/group.trail;
+    sprite.scale.setScalar(group.size*(1-j*.16));
+    sprite.material.opacity=envelope*fade*(j===0?1:.62);
+    sprite.visible=true;
+   }
+  }
+ }
+}
 const skyObjects=[];
 const isNightNow=()=>livingMode?refreshSolar().daylight===false:(state.scenario==='backup'?!state.backupDaylight:scenarioData[state.scenario].night);
 // Slow ambient life around the house: clouds by day, moon and stars by night, glints on the panels, light dust in the sun rays.
@@ -1193,6 +1218,7 @@ function drawFlowFrame(now){
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
  sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
  skyLifeTick(clock.elapsedTime,reducedMotion.matches);
+ wirePulseTick(clock.elapsedTime,reducedMotion.matches);
  staticLayer.present(scene,camera);
  if(flowFrameAt&&now-flowFrameAt<1000){
   flowSum+=now-flowFrameAt;flowSamples++;
@@ -1330,6 +1356,7 @@ function animate(){
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
  sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
  skyLifeTick(clock.elapsedTime,reducedMotion.matches);
+ wirePulseTick(clock.elapsedTime,reducedMotion.matches);
   if(shadersReady){
    pvBatch?.setMerged(!roofLayers.busy&&!stage.classList.contains('is-roof-exploded'));
    shellBatch?.setMerged(!state.xray);
@@ -1534,6 +1561,43 @@ sunBillboard=(()=>{
  scene.add(rays,glow);
  sunObjects.push(rays,glow);
  return {glow,rays};
+})();
+wirePulses=(()=>{
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=64;
+ const ctx=canvas.getContext('2d');
+ const g=ctx.createRadialGradient(32,32,0,32,32,32);
+ g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.22,'rgba(255,255,255,.85)');g.addColorStop(.55,'rgba(255,255,255,.22)');g.addColorStop(1,'rgba(255,255,255,0)');
+ ctx.fillStyle=g;ctx.fillRect(0,0,64,64);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const groups=[];
+ for(const clip of gltf.animations){
+  if(!clip.name.startsWith('PHOTON__')||!/__00Action/.test(clip.name))continue;
+  const route=routeOf(clip.name);
+  const track=clip.tracks.find(item=>item.name.endsWith('.position'));
+  if(!route||!track)continue;
+  const node=model.getObjectByName(track.name.replace(/\.position$/,''));
+  if(!node||!node.parent)continue;
+  node.parent.updateWorldMatrix(true,false);
+  const points=[];
+  const step=Math.max(1,Math.floor(track.values.length/3/36));
+  for(let i=0;i<track.values.length;i+=3*step)points.push(node.parent.localToWorld(new THREE.Vector3(track.values[i],track.values[i+1],track.values[i+2])));
+  const last=track.values.length-3;
+  points.push(node.parent.localToWorld(new THREE.Vector3(track.values[last],track.values[last+1],track.values[last+2])));
+  if(points.length<2)continue;
+  const flow=routedObjects.find(item=>item.name.startsWith('FLOW__')&&routeOf(item.name)===route);
+  const baseColor=flow?.material?.color?flow.material.color.clone().lerp(new THREE.Color('#ffb02e'),.35):new THREE.Color('#ffb02e');
+  const heads=4,trail=5,sprites=[];
+  for(let i=0;i<heads*trail;i++){
+   // Normal blending with a saturated colour stays visible on the pale daytime backdrop; the head is lighter than its trail.
+   const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,color:baseColor.clone().lerp(new THREE.Color('#ffffff'),i%trail===0?.6:0),transparent:true,depthWrite:false,depthTest:false,toneMapped:false,opacity:0}));
+   sprite.name='SUN__WIRE_PULSE';sprite.visible=false;sprite.renderOrder=6;
+   scene.add(sprite);sprites.push(sprite);skyObjects.push(sprite);
+  }
+  groups.push({route,flow,curve:new THREE.CatmullRomCurve3(points,false,'centripetal'),sprites,heads,trail,speed:.13,size:.3});
+ }
+ // The old hard spheres stay in the file but are shrunk away; the pulses replace them.
+ for(const item of routedObjects)if(item.name.startsWith('PHOTON__'))item.scale.setScalar(.0001);
+ return groups;
 })();
 skyLife=(()=>{
  const makeTexture=(w,h,paint)=>{const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;paint(canvas.getContext('2d'),w,h);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;};
