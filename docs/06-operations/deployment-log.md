@@ -49,6 +49,15 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — tối ưu tốc độ, mặt trời trong cảnh 3D, logo hãng (release cd9c56b1, Nuxt only)
+
+- Đo trước khi sửa: ảnh/logo đi qua Apache chạy PHP; Apache chỉ giữ 5–10 worker rỗi nên khi trang xin vài chục ảnh cùng lúc thì fork ~1 worker/giây, logo hãng về cách nhau ~1 giây (có logo mất 2–4 s); `/upload/*` và `/thumbs/*` trả `Cache-Control: no-cache` nên lần xem nào cũng hỏi lại; `/assets`, `/fonts`, `/pts-living-energy` không có chỉ thị lưu đệm; cả 4 ảnh hero tải cùng lúc (Chrome tải ảnh lazy nằm trong khung nhìn dù opacity 0).
+- Caddy ngoài cùng (`/srv/phucthinhsolar/Caddyfile`, tải lại bằng `caddy reload`, không gián đoạn; bản cũ `Caddyfile.bak-cache-20261118`): thêm `Cache-Control` ghi đè header upstream: `/upload/*`, `/thumbs/*` 14 ngày + stale-while-revalidate 1 ngày; `/assets/*`, `/pts-living-energy/*` 7 ngày; `/fonts/be-vietnam-pro/*` 1 năm immutable. Lưu ý: file không đổi tên (ví dụ `src/power-map.js` do `main.js` import) sẽ bị giữ tối đa 7 ngày; khi sửa phải đổi tên hoặc tăng `?v=`.
+- Apache trong container backend (graceful, không gián đoạn): StartServers 16, MinSpareServers 16, MaxSpareServers 32. Mất khi container được tạo lại; đã ghi vào `deploy/laravel13/backend.Dockerfile` để bản backend kế tiếp có sẵn.
+- Frontend `64512e7c` + `cd9c56b1` (backup `20261118T071455Z-db`, rollback `releases/rollback-cd9c56b1/stack.env.before`): hero chỉ tải slide đầu, slide kế sau khi trang tải xong, tự chạy sau khi `load`; `sizes` điện thoại 150vw; logo hãng ở đầu trang danh mục `loading="eager"`; cảnh 3D thêm mặt trời (sprite quầng sáng + tia xoay chậm, đặt tại điểm tia nắng xuất phát, chỉ hiện ban ngày), tăng `?v=20261118-1`.
+- Kết quả đo trang thật: desktop load ~1.3 s, LCP ~0.45–0.6 s; trước tải chỉ còn 1 ảnh hero; 0/160 yêu cầu thiếu lưu đệm; logo hãng 60–220 ms mỗi cái.
+- Chưa làm: GTM và gtag.js cùng tải (2 × ~180 KB, container GTM có vẻ cũng chứa cấu hình GA4, nên nghi tính trùng); file 3D `pts-technical-v05.glb` 1.6 MB; ảnh Shopping/ảnh sản phẩm lớn.
+
 ## 2026-11-18 — bảng thông số kỹ thuật dễ đọc hơn (release 35b2ca9a, Nuxt only) và sửa "Blue CarBon"
 
 - Frontend `35b2ca9a` (rollback `releases/rollback-35b2ca9a/stack.env.before`): `ProductDetailSpecs.vue` tách ô kiểu "- A. - B." hoặc "A; B" (dài > 50 ký tự) thành danh sách có chấm vàng; cột nhãn 38% / giá trị 62% trên máy tính; giá trị dài giảm độ đậm. Sao chép và tìm vẫn dùng nội dung gốc. 515 test qua.
