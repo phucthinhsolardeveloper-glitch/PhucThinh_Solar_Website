@@ -16,6 +16,13 @@ const requestHost = useRequestURL().hostname
 const onLiveSite = !!liveHost && (requestHost === liveHost || requestHost === `www.${liveHost}`)
 const gtmId = computed(() => onLiveSite && /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
 useHead(() => gtmId.value ? {
+  // gtag() bridge: the shop sends its events with gtag('event', ...) as well as dataLayer objects. With GTM alone there is no
+  // window.gtag, so those calls were dropped. This queues them on dataLayer, where the Google tag inside the container sends them.
+  script: [{
+    key: 'pts-gtag-bridge',
+    tagPriority: 'critical',
+    innerHTML: 'window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};',
+  }],
   noscript: [{
     key: 'pts-gtm-noscript',
     tagPosition: 'bodyOpen',
