@@ -49,6 +49,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — chỉnh ảnh 02 và 04 theo góp ý chủ website
+
+- Backup `20261118T045754Z-db`: ảnh 04 "Nạp năng lượng" của 190 sản phẩm (đèn pha, đèn đường, đèn khác, quạt) thay bằng hình minh họa dùng chung (không dùng ảnh sản phẩm lặp, thẻ thông số vẫn riêng từng mã); ảnh 02 của đèn đường làm lại với nhãn cảnh đúng đối tượng (đường nội bộ/công viên, bãi đỗ xe, mặt tiền công trình, khu công cộng); PL-0307 làm nét lại (nguồn ảnh duy nhất quá mềm) ở ảnh 03/06/07. Đổi 243 dòng, không thêm/xóa.
+- Ảnh 02 "Ứng dụng" chỉ còn cho đèn pha (72) và đèn đường (50). Với đèn khác, tấm pin/phụ kiện, bộ sạc/inverter, 195 ảnh 02 bị ẨN (`is_visible=0`, không xóa): bốn ảnh cảnh không hợp loại hàng và ảnh lặp. Hoàn tác: `state/noi-dung-20261117/an02-rollback-1158.json` (danh sách id dòng, đặt lại `is_visible=1`). Script `an-02.php`.
+
 ## 2026-11-18 — ảnh phụ concept cho 4 nhóm sản phẩm khác (đèn đường, đèn khác, tấm pin/phụ kiện, bộ sạc/inverter), 245 sản phẩm
 
 - Backup `20261118T040901Z-db`; một lượt `ghi-phu.php`: thêm 1141 dòng `product_images`, không đổi/dời/xóa dòng cũ. Ảnh `p2-0N` có sort_order 500+N nên luôn đứng sau ảnh thật và `vip1-` (kiểm lại bằng `sap-xep-anh.php`: 0 dòng cần đổi).
