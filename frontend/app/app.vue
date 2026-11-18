@@ -23,7 +23,7 @@ useHead(() => gtmId.value ? {
     tagPriority: 'critical',
     // Consent mode: measurement is on unless this visitor refused in the cookie notice (kept in localStorage 'pts-consent').
     innerHTML: 'window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};'
-      + 'try{var c=localStorage.getItem("pts-consent")==="denied"?"denied":"granted";gtag("consent","default",{analytics_storage:c,ad_storage:c,ad_user_data:c,ad_personalization:c})}catch(e){}',
+      + '(function(){var v="";try{v=localStorage.getItem("pts-consent")||""}catch(e){}if(!v){var m=document.cookie.match(/(?:^|; )pts_consent=([^;]*)/);v=m?m[1]:""}var c=v==="denied"?"denied":"granted";gtag("consent","default",{analytics_storage:c,ad_storage:c,ad_user_data:c,ad_personalization:c})})();',
   }],
   noscript: [{
     key: 'pts-gtm-noscript',

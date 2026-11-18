@@ -1,19 +1,29 @@
 <script setup lang="ts">
-// One short notice about measurement cookies. Measurement stays on until the visitor refuses; the choice is kept in this
-// browser only and is passed to Google (consent mode) so GTM tags for GA4 and ads can honour it.
+// One short notice about measurement cookies. Measurement stays on until the visitor refuses. The choice is kept in
+// localStorage AND a first-party cookie (some browsers wipe one but not the other) and passed to Google (consent mode)
+// so GTM tags for GA4 and ads can honour it.
 const STORAGE_KEY = 'pts-consent'
+const COOKIE_KEY = 'pts_consent'
 const visible = ref(false)
 const links = usePublicLinks()
 
-onMounted(() => {
+function readChoice(): string {
   try {
-    if (!localStorage.getItem(STORAGE_KEY)) window.setTimeout(() => { visible.value = true }, 1500)
-  } catch { /* Storage can be blocked: then the notice simply shows on every visit. */ }
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) return stored
+  } catch { /* Storage blocked: try the cookie. */ }
+  const match = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_KEY}=([^;]*)`))
+  return match?.[1] ?? ''
+}
+
+onMounted(() => {
+  if (!readChoice()) window.setTimeout(() => { visible.value = true }, 1500)
 })
 
 function choose(value: 'granted' | 'denied') {
   visible.value = false
-  try { localStorage.setItem(STORAGE_KEY, value) } catch { /* Not remembered; shown again next visit. */ }
+  try { localStorage.setItem(STORAGE_KEY, value) } catch { /* Cookie below still remembers it. */ }
+  try { document.cookie = `${COOKIE_KEY}=${value}; path=/; max-age=15552000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}` } catch { /* Shown again next visit. */ }
   const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag
   if (typeof gtag === 'function') {
     gtag('consent', 'update', { analytics_storage: value, ad_storage: value, ad_user_data: value, ad_personalization: value })
