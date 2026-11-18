@@ -251,6 +251,12 @@ const routeAnimations=[];
 const batteryObjects=[];
 const gridServiceWires=[];
 const sunObjects=[];
+let sunBillboard=null;
+function sunBillboardTick(elapsed,still){
+ if(!sunBillboard||!sunBillboard.glow.visible)return;
+ sunBillboard.glow.scale.setScalar(4.2*(still?1:1+.045*Math.sin(elapsed*1.6)));
+ sunBillboard.rays.material.rotation=still?0:elapsed*.07;
+}
 const sunActions=[];
 const technicalHighlights=new Map();
 const meshForPicking=[];
@@ -1141,6 +1147,7 @@ function drawFlowFrame(now){
  const dt=Math.min(.05,clock.getDelta());
  if(mixer&&ambientFlow)mixer.update(dt);
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
+ sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
  staticLayer.present(scene,camera);
  if(flowFrameAt&&now-flowFrameAt<1000){
   flowSum+=now-flowFrameAt;flowSamples++;
@@ -1276,6 +1283,7 @@ function animate(){
  if(embeddedMode)controls.enableDamping=true;
  hotspotLayout();
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
+ sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
   if(shadersReady){
    pvBatch?.setMerged(!roofLayers.busy&&!stage.classList.contains('is-roof-exploded'));
    shellBatch?.setMerged(!state.xray);
@@ -1448,6 +1456,39 @@ function finishLoading(gltf){
   document.body.classList.toggle('living-exploring',embeddedMode&&document.body.classList.contains('pts-embed-active')&&!embedStory.intro);
  }
  if(journey.pending){journey.pending=false;window.setTimeout(startJourney,80);}
+// A stylised sun where the incident rays start, so the daylight scenes show where the light comes from.
+// It joins sunObjects: visible only in daylight, drawn on the moving layer with the other sun parts.
+sunBillboard=(()=>{
+ const sourceDisc=sourceNodes.get('SUN__SOURCE_DISC');
+ const position=sourceDisc?sourceDisc.getWorldPosition(new THREE.Vector3()):new THREE.Vector3(-7.35,9.2,4.2);
+ const makeTexture=(size,paint)=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=size;paint(canvas.getContext('2d'),size);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;};
+ const glowTexture=makeTexture(256,(ctx,size)=>{
+  const gradient=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+  gradient.addColorStop(0,'rgba(255,253,240,1)');gradient.addColorStop(.1,'rgba(255,246,196,1)');gradient.addColorStop(.19,'rgba(255,222,120,.92)');
+  gradient.addColorStop(.38,'rgba(255,190,84,.42)');gradient.addColorStop(.68,'rgba(255,170,64,.12)');gradient.addColorStop(1,'rgba(255,160,50,0)');
+  ctx.fillStyle=gradient;ctx.fillRect(0,0,size,size);
+ });
+ const raysTexture=makeTexture(512,(ctx,size)=>{
+  const center=size/2;ctx.translate(center,center);
+  const rayCount=16;
+  for(let i=0;i<rayCount;i++){
+   const long=i%2===0,length=center*(long?.96:.66),width=long?.075:.05;
+   ctx.save();ctx.rotate(i*Math.PI*2/rayCount);
+   const gradient=ctx.createLinearGradient(center*.2,0,length,0);
+   gradient.addColorStop(0,'rgba(255,236,150,.85)');gradient.addColorStop(1,'rgba(255,214,110,0)');
+   ctx.fillStyle=gradient;ctx.beginPath();ctx.moveTo(center*.2,-center*width);ctx.lineTo(length,0);ctx.lineTo(center*.2,center*width);ctx.closePath();ctx.fill();ctx.restore();
+  }
+ });
+ const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture,transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending}));
+ const rays=new THREE.Sprite(new THREE.SpriteMaterial({map:raysTexture,transparent:true,depthWrite:false,toneMapped:false,opacity:.9}));
+ glow.name='SUN__HERO_GLOW';rays.name='SUN__HERO_RAYS';
+ glow.position.copy(position);rays.position.copy(position);
+ glow.scale.setScalar(4.2);rays.scale.setScalar(6.4);
+ glow.renderOrder=3;rays.renderOrder=2;
+ scene.add(rays,glow);
+ sunObjects.push(rays,glow);
+ return {glow,rays};
+})();
  updateXray();
  activeMode(livingMode?(solarSample?.daylight?'day':'night_storage'):state.scenario);
  renderer.render(scene,camera);

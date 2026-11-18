@@ -27,6 +27,10 @@ RUN sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-availabl
     && printf '<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\n' > /etc/apache2/conf-available/pts-laravel.conf \
     && a2enconf pts-laravel
 
+# Images and thumbnails are served through PHP, and a page asks for dozens at once. With the stock 5/10 spare workers
+# Apache forks about one new worker per second, so logos arrived one second apart. Keep more workers ready.
+RUN sed -ri 's/^(\s*StartServers\s+).*/\116/;s/^(\s*MinSpareServers\s+).*/\116/;s/^(\s*MaxSpareServers\s+).*/\132/' /etc/apache2/mods-available/mpm_prefork.conf
+
 EXPOSE 80
 HEALTHCHECK --interval=15s --timeout=8s --start-period=30s --retries=4 \
     CMD php -r '$c=stream_context_create(["http"=>["timeout"=>5,"ignore_errors"=>true]]); $b=@file_get_contents("http://127.0.0.1/health",false,$c); exit($b!==false && isset($http_response_header[0]) && str_contains($http_response_header[0]," 200 ") ? 0 : 1);'

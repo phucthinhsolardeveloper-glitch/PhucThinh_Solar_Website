@@ -106,7 +106,7 @@ const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
               :data-active="brand.active"
               class="masthead-brand"
             >
-              <img v-if="brand.logo" :src="brand.logo" :alt="brand.name" width="120" height="40" loading="lazy" decoding="async">
+              <img v-if="brand.logo" :src="brand.logo" :alt="brand.name" width="120" height="40" loading="eager" decoding="async">
               <span v-else>{{ brand.name }}</span>
             </component>
           </nav>

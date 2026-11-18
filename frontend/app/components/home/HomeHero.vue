@@ -5,6 +5,15 @@ const props = defineProps<{ hero: PublicHomePayload['hero'] }>()
 const active = ref(0)
 const current = computed(() => props.hero[active.value] || null)
 const failedImages = ref(new Set<string>())
+// Only the first slide (and the next one, after the page has loaded) downloads its picture. Chrome lazy-loads every image
+// that sits in the viewport even at opacity 0, so without this all four slides (about 1.4 MB) compete with the first one.
+const warm = ref(new Set<number>([0]))
+function warmSlide(index: number) {
+  if (!props.hero.length) return
+  const wanted = [index, (index + 1) % props.hero.length]
+  if (wanted.every((i) => warm.value.has(i))) return
+  warm.value = new Set([...warm.value, ...wanted])
+}
 const heroImageUnavailable = computed(() => {
   const image = current.value?.image?.trim() ?? ''
   return !image || failedImages.value.has(image)
@@ -37,6 +46,7 @@ function heroImageSrcSet(src: string): string | undefined {
 function showSlide(index: number) {
   if (!props.hero.length) return
   active.value = (index + props.hero.length) % props.hero.length
+  warmSlide(active.value)
 }
 
 function markImageFailed(event: Event) {
@@ -125,6 +135,9 @@ watch(() => props.hero, () => {
 })
 
 onMounted(() => {
+  const warmNext = () => window.setTimeout(() => warmSlide(active.value), 1200)
+  if (document.readyState === 'complete') warmNext()
+  else window.addEventListener('load', warmNext, { once: true })
   motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
   reducedMotion.value = motionPreference.matches
   motionPreference.addEventListener('change', onMotionPreferenceChange)
@@ -171,9 +184,9 @@ onBeforeUnmount(() => {
             class="hero-slide-image absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center] motion-reduce:!animate-none"
             :class="index === active ? 'is-active' : ''"
             :style="{ '--hero-pan-x': index % 2 === 0 ? '-1.4%' : '1.4%' }"
-            :src="heroImageCandidate(slide.image, 1600)"
-            :srcset="heroImageSrcSet(slide.image)"
-            sizes="(max-width: 640px) 200vw, 100vw"
+            :src="warm.has(index) ? heroImageCandidate(slide.image, 1600) : undefined"
+            :srcset="warm.has(index) ? heroImageSrcSet(slide.image) : undefined"
+            sizes="(max-width: 640px) 150vw, 100vw"
             :alt="slide.name"
             :fetchpriority="index === 0 ? 'high' : 'low'"
             :loading="index === 0 ? 'eager' : 'lazy'"

@@ -52,7 +52,7 @@ test('homepage media uses the same PHP thumbnail contracts and prioritizes the f
   const about = read('app/components/home/HomeAbout.vue')
   assert.match(hero, /thumbUrl\(src, width, height\)/)
   assert.match(hero, /heroImageCandidate\(src, 960\).*960w,.*heroImageCandidate\(src, 1600\).*1600w,.*heroImageCandidate\(src, 2000\).*2000w,.*HERO_MASTER_WIDTH/s)
-  assert.match(hero, /sizes="\(max-width: 640px\) 200vw, 100vw"/)
+  assert.match(hero, /sizes="\(max-width: 640px\) 150vw, 100vw"/)
   assert.match(hero, /:fetchpriority="index === 0 \? 'high' : 'low'"/)
   assert.match(hero, /:loading="index === 0 \? 'eager' : 'lazy'"/)
   assert.match(homeCatalog, /:src="slot\.image"/)

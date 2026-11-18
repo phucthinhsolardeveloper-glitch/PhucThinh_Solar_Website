@@ -36,7 +36,7 @@ let loadTimer: ReturnType<typeof setTimeout> | undefined
 let scrolling = false
 
 const baseURL = runtime.app.baseURL.endsWith('/') ? runtime.app.baseURL : `${runtime.app.baseURL}/`
-const viewerURL = `${baseURL}pts-living-energy/index.html?embed=1&v=20261107-5`
+const viewerURL = `${baseURL}pts-living-energy/index.html?embed=1&v=20261118-1`
 // The poster is the real first frame, drawn by this viewer with the same camera, so nothing jumps at the swap.
 const isNight = ref(false)
 const posterURL = (device: 'desktop' | 'phone') => `${baseURL}pts-living-energy/assets/pts-model-${device}-${isNight.value ? 'night' : 'day'}.webp`
