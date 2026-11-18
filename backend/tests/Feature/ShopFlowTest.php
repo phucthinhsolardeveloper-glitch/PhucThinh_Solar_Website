@@ -167,3 +167,24 @@ it('accepts the classic checkout form and sends errors back to the cart as a one
         ->assertJsonMissingPath('messages.99');
     shop('GET', '/api/v1/checkout-notice')->assertJsonPath('messages', []);
 });
+
+it('stops showing prices and taking cart lines when prices are switched off for the whole site or for one product', function () {
+    $product = buyableProduct();
+    $token = FormToken::issue();
+    $detail = fn () => $this->getJson('/api/v1/product-detail?slug='.$product->slug)->assertOk()->json('pricing.mode');
+
+    expect($detail())->toBe('price');
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => $token, 'productId' => $product->id, 'quantity' => 1])->assertOk();
+
+    // One product quote-only: its price goes, other products stay on sale, and it cannot be added.
+    DB::table('products')->where('id', $product->id)->update(['quote_only' => true]);
+    expect($detail())->toBe('quote');
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => $token, 'productId' => $product->id, 'quantity' => 1])->assertStatus(409);
+    DB::table('products')->where('id', $product->id)->update(['quote_only' => false]);
+
+    // Whole site: the setting "Hiện giá sản phẩm trên website" off.
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('0')]);
+    app(App\Support\SiteSettings::class)->clear();
+    expect($detail())->toBe('quote');
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => $token, 'productId' => $product->id, 'quantity' => 1])->assertStatus(409)->assertJsonPath('error.code', 'QUOTE_ONLY');
+});

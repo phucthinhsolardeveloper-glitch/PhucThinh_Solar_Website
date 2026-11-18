@@ -51,7 +51,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Admin lists keep their filters, search and sort when staff come back from a record.
-        Table::configureUsing(fn (Table $table) => $table->persistFiltersInSession()->persistSearchInSession()->persistSortInSession());
+        Table::configureUsing(fn (Table $table) => $table->persistFiltersInSession()->persistSearchInSession()->persistSortInSession()
+            ->paginationPageOptions([10, 25, 50, 100, 200])->defaultPaginationPageOption(25));
         Auth::provider('admin-users', fn ($app) => new AdminUserProvider($app['hash'], $app->make(PasswordVerifier::class)));
         // Fixing a product, post or SEO title must not leave the old error list on screen for ten minutes.
         foreach ([Product::class, Post::class, SeoMeta::class] as $model) {

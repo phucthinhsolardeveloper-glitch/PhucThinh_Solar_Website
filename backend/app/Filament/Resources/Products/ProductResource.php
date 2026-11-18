@@ -10,6 +10,7 @@ use App\Filament\Support\Options;
 use App\Filament\Support\PublicStatusColumn;
 use App\Filament\Support\PublishGate;
 use App\Filament\Support\TypedSpecsForm;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
@@ -32,6 +33,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -171,24 +174,50 @@ class ProductResource extends Resource
         ]);
     }
 
+    /** The pencil on the list: name, category, brand and prices turn into boxes that save as soon as you leave them. */
+    private static function inlineEditing(Table $table): bool
+    {
+        $page = $table->getLivewire();
+
+        return $page instanceof Pages\ListProducts && $page->inlineEdit && self::canBulkImport();
+    }
+
     public static function table(Table $table): Table
     {
+        $edit = self::inlineEditing($table);
+        // Read once: a closure would run again for every row of a 200-row page.
+        $categoryOptions = $edit ? Options::categoryPaths() : [];
+        $brandOptions = $edit ? Brand::query()->orderBy('name')->pluck('name', 'id')->all() : [];
+
         return $table
+            ->paginationPageOptions([10, 25, 50, 100, 200])->defaultPaginationPageOption(50)
+            ->description($edit ? 'Đang sửa trên bảng: sửa ô nào, ô đó được lưu ngay khi bạn bấm ra ngoài. Bấm "Xong sửa" để thoát.' : null)
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['seo', 'category', 'brand'])->withCount('visibleArticles'))
             ->defaultSort('id', 'desc')
             ->reorderable('sort_order', fn () => self::canBulkImport())->paginatedWhileReordering(false)
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->square()->height(48),
-                TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
-                    ->description(fn (Product $record) => $record->code),
-                TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
-                    ->description(fn (Product $record) => data_get($record, 'brand.name')),
-                TextColumn::make('price')->label('Giá')
-                    ->state(fn (Product $record) => match (true) {
-                        $record->quote_only => 'Báo giá',
-                        (float) ($record->sale_price ?: $record->regular_price) > 0 => number_format((float) ($record->sale_price ?: $record->regular_price), 0, ',', '.').'đ',
-                        default => 'Chưa có giá',
-                    }),
+                ...($edit ? [
+                    TextInputColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->rules(['required', 'string', 'max:255']),
+                    TextColumn::make('code')->label('Mã')->searchable()->toggleable(),
+                    SelectColumn::make('category_id')->label('Danh mục')->options($categoryOptions)->searchable()->selectablePlaceholder(false)->rules(['required']),
+                    SelectColumn::make('brand_id')->label('Thương hiệu')->options($brandOptions)->searchable()->placeholder('Chưa có'),
+                    TextInputColumn::make('regular_price')->label('Giá bán (đ)')->type('number')->extraInputAttributes(['min' => 0, 'step' => 'any'])
+                        ->rules(['nullable', 'numeric', 'min:0']),
+                    TextInputColumn::make('sale_price')->label('Giá khuyến mãi (đ)')->type('number')->extraInputAttributes(['min' => 0, 'step' => 'any'])
+                        ->rules(fn (Product $record) => ['nullable', 'numeric', 'min:0', ...((float) $record->regular_price > 0 ? ['lte:'.(float) $record->regular_price] : [])]),
+                ] : [
+                    TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
+                        ->description(fn (Product $record) => $record->code),
+                    TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
+                        ->description(fn (Product $record) => data_get($record, 'brand.name')),
+                    TextColumn::make('price')->label('Giá')
+                        ->state(fn (Product $record) => match (true) {
+                            $record->quote_only => 'Báo giá',
+                            (float) ($record->sale_price ?: $record->regular_price) > 0 => number_format((float) ($record->sale_price ?: $record->regular_price), 0, ',', '.').'đ',
+                            default => 'Chưa có giá',
+                        }),
+                ]),
                 TextColumn::make('sales_readiness')->label('Cần bổ sung')
                     ->state(function (Product $record): string {
                         $issues = app(ProductSalesReadiness::class)->issues($record);
@@ -205,7 +234,7 @@ class ProductResource extends Resource
                         return $state;
                     }),
                 PublicStatusColumn::make(besideSwitch: true),
-                ToggleColumn::make('quote_only')->label('Báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
+                ToggleColumn::make('quote_only')->label('Ẩn giá / báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: ! $edit),
                 ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])

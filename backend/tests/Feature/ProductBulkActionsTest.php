@@ -69,3 +69,37 @@ it('keeps products that have reviews when deleting in bulk', function () {
     expect(app(ProductBulkUpdate::class)->delete($products))->toBe(['deleted' => 1, 'kept' => 1])
         ->and(Product::query()->whereKey($products[0]->id)->exists())->toBeTrue();
 });
+
+it('edits name, category, brand and prices right on the list once the pencil is on, and refuses bad values', function () {
+    $this->actingAs(bulkAdmin(), 'admin');
+    $product = pricedProducts(1)[0];
+    $brand = Brand::query()->where('id', '<>', (int) $product->brand_id)->firstOrFail();
+    $category = App\Models\Category::query()->where('id', '<>', $product->category_id)->firstOrFail();
+    $key = (string) $product->getKey();
+
+    Livewire\Livewire::test(ListProducts::class)->assertTableColumnDoesNotExist('regular_price');
+    $page = Livewire\Livewire::withQueryParams(['sua' => 1])->test(ListProducts::class)->assertTableColumnExists('regular_price');
+    $page->call('updateTableColumnState', 'regular_price', $key, '2000000')
+        ->call('updateTableColumnState', 'sale_price', $key, '1800000')
+        ->call('updateTableColumnState', 'brand_id', $key, (string) $brand->id)
+        ->call('updateTableColumnState', 'category_id', $key, (string) $category->id)
+        ->call('updateTableColumnState', 'name', $key, 'Tên mới sửa trên bảng');
+    $fresh = $product->fresh();
+    expect((int) $fresh->regular_price)->toBe(2_000_000)->and((int) $fresh->sale_price)->toBe(1_800_000)
+        ->and($fresh->brand_id)->toBe($brand->id)->and($fresh->category_id)->toBe($category->id)->and($fresh->name)->toContain('Tên mới sửa trên bảng');
+
+    // A sale price above the regular price, and an empty name, are refused and nothing is saved.
+    $page->call('updateTableColumnState', 'sale_price', $key, '9000000')->call('updateTableColumnState', 'name', $key, '');
+    expect((int) $product->fresh()->sale_price)->toBe(1_800_000)->and($product->fresh()->name)->not->toBe('');
+
+    // People without the bulk permission never get the pencil.
+    $this->flushSession();
+    $this->actingAs(bulkAdmin(['catalog']), 'admin');
+    Livewire\Livewire::test(ListProducts::class)->assertActionHidden('inlineEdit');
+});
+
+it('offers 100 and 200 rows per page on lists', function () {
+    $this->actingAs(bulkAdmin(), 'admin');
+    Livewire\Livewire::test(ListProducts::class)->set('tableRecordsPerPage', 200)->assertSuccessful();
+    expect(Filament\Tables\Table::make(Livewire\Livewire::test(ListProducts::class)->instance())->getPaginationPageOptions())->toContain(100, 200);
+});
