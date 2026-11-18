@@ -49,6 +49,16 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 (tối) — đăng 13 bài hẹn giờ, đổi tiêu đề, gộp 107, cây bút cho bảng bài viết, cookie dự phòng (release 496cb883)
+
+- **13 bài 144–156**: áp nội dung viết lại (`pts:content-batch-patch`, backup DB `20261118T113036Z-db`, backup dòng bài `…/state/noi-dung-20261117/bai-viet-20261118/`), chạy `PublishChecks->post` (13/13 không lỗi) rồi bật `is_visible`. Giữ nguyên `published_at` theo lịch: 144–152 đã hiện (HTTP 200, 0 lỗi), 153 (19:30 18/11), 154–155 (19/11), 156 (19:30 19/11) tự lên đúng giờ (đến giờ mới hết 404).
+- **Tiêu đề** 10 bài (100–102, 104–106, 108–111) đổi sang chữ thường, đường dẫn giữ nguyên; cập nhật cả `seo_metas.title` khi có. **107** ẩn + 301 `/den-nang-luong-mat-troi-nhung-ly-do-ban-nen-chon/` → `/den-nang-luong-mat-troi-nhung-ly-do-nen-chon/` (nguồn `manual`), không còn trong sitemap. Hoàn tác: `state/noi-dung-20261117/bai-viet-20261118/titles-107-rollback.json`, backup DB `20261118T113138Z-db`.
+- **Cây bút** thêm cho danh sách Bài viết/Giải pháp/Dự án/Chính sách (`HasInlineEditMode`, `?sua=1`): Hiển thị (qua `PublishChecks`) và Ngày đăng (ngày/tháng/năm giờ:phút); không cho sửa tiêu đề/slug; chỉ người có quyền đăng. ListProducts dùng chung trait. Phí giao theo phường/xã đã có sẵn sửa trực tiếp; bảng SEO trang chỉ 11 dòng nên không thêm.
+- **Cookie dự phòng**: lựa chọn lưu cả localStorage lẫn cookie `pts_consent` (180 ngày); script consent mặc định đọc cả hai. Đã kiểm: xóa localStorage vẫn nhớ nhờ cookie; GA4 vẫn nhận page_view/view_item/add_to_cart/begin_checkout.
+- Lệnh `pts:content-batch-patch` nay nằm trong ảnh backend (lần trước phải nạp tay qua `/tmp/runpatch.php`).
+- Sự cố đã xử lý: phiên bị ngắt giữa lúc phát hành 071d5445→ddf18515 làm tệp ảnh gửi lên máy chủ rỗng (20 byte) trong khi `stack.env` đã trỏ sang ảnh chưa tồn tại; đã hoàn lại cấu hình trước khi container bị tạo lại, không gián đoạn. Từ nay kiểm kích thước tệp (> 100 MB) trước khi đổi cấu hình.
+- Docker Desktop ở `%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe` (không có dấu cách trong tên thư mục).
+
 ## 2026-11-18 — viết lại giọng văn 19 bài đang hiện (dữ liệu, không đổi code)
 
 - Quy trình: sổ tay giọng văn `docs/07-features/editorial-voice-guide-20261118.md` + bài mẫu và công cụ chấm `tools/editorial-voice/` (`doc-giong.py` bắt câu dài, câu ra lệnh, rào chắn, từ cứng, ghi chú nội bộ lọt vào bài, số liệu/liên kết lệch). Codex (gpt-6-luna) viết, Claude đọc bằng mắt và trả lại 3 vòng; báo cáo từng lô ở `backend/resources/editorial/2026-11-18/bao-cao-*.md`.
