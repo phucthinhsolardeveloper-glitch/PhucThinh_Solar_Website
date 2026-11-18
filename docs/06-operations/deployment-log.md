@@ -49,6 +49,14 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — ảnh phụ concept cho 4 nhóm sản phẩm khác (đèn đường, đèn khác, tấm pin/phụ kiện, bộ sạc/inverter), 245 sản phẩm
+
+- Backup `20261118T040901Z-db`; một lượt `ghi-phu.php`: thêm 1141 dòng `product_images`, không đổi/dời/xóa dòng cũ. Ảnh `p2-0N` có sort_order 500+N nên luôn đứng sau ảnh thật và `vip1-` (kiểm lại bằng `sap-xep-anh.php`: 0 dòng cần đổi).
+- Theo loại ảnh: 02/03/07 mỗi loại 245 mã, 04: 118, 05: 57, 06: 233 (cộng với đèn pha, tổng p2-02/03/07 = 317 sản phẩm). Ảnh nào chưa dựng hoặc thiếu dữ liệu thì KHÔNG đưa lên (xem `output/<nhóm>/ngoai-le.md`).
+- Không đưa ảnh 08 (giấy ủy quyền Blue Carbon hạn 09/09/2025, JINDIAN hạn 30/12/2024 đã quá hạn) cho 4 nhóm này; chờ chủ website quyết.
+- Bộ sạc/inverter: ảnh 06 tách ô gộp "MPPT/Cấu hình/Thông tin" thành ô có nhãn rõ (chỉ tách từ chuỗi dữ liệu gốc); ảnh 04 chữ lớn là thông số pin thật.
+- Chưa có ảnh: 11 mã PWM-SD (ảnh nguồn là hộp in sẵn chữ model khác), `id-354`, `DAY-BCT-WW1-5M`.
+
 ## 2026-11-18 — phóng to ảnh 02/04/05 đèn pha và sắp lại thứ tự thư viện ảnh (ảnh thật trước, ảnh concept cuối)
 
 - Backup `20261118T012830Z-db`: đổi 216 dòng `product_images` (ảnh 02, 04, 05 của 72 đèn pha dựng lại với sản phẩm to hơn theo khoanh đỏ của chủ website).
