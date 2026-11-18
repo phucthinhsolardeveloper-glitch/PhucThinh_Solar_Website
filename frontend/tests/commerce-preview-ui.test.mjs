@@ -87,6 +87,7 @@ test('PDP keeps the source section order, PHP navigation labels, and FAQ placeme
   const productContent = read('components/product-detail/ProductDetailContent.vue')
   const pageOrder = [
     productPage.indexOf('<ProductDetailContent'),
+    productPage.indexOf('<ProductVideoBlock'),
     productPage.indexOf('<ProductDetailApplications'),
     productPage.indexOf('<ProductDetailBuyingGuide'),
     productPage.indexOf('<ProductDetailSpecs'),
@@ -116,8 +117,11 @@ test('PDP support, reviews, consultation and related items follow the PHP sectio
 
   assert.match(productPage, /<ProductSupportExtras :extras="extras" :documents="documents" \/>/)
   assert.doesNotMatch(productPage, /<ProductDetailDocuments/)
-  assert.match(support, /id="video-san-pham"/)
-  assert.match(support, /Video đang được cập nhật/)
+  const video = read('components/product-detail/ProductVideoBlock.vue')
+  assert.match(video, /id="video-san-pham"/)
+  assert.match(video, /Video đang được cập nhật/)
+  assert.doesNotMatch(support, /video-san-pham|videoEmbedUrl/)
+  assert.match(productPage, /id: 'video-san-pham', label: 'Video'/)
   assert.match(support, /id="tai-lieu-san-pham"/)
   assert.match(support, /id="chinh-sach-bao-hanh"/)
 

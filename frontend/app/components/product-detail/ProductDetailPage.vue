@@ -10,6 +10,7 @@ import ProductDetailApplications from './ProductDetailApplications.vue'
 import ProductDetailBuyingGuide from './ProductDetailBuyingGuide.vue'
 import ProductPurchasePanel from './ProductPurchasePanel.vue'
 import ProductSupportExtras from './ProductSupportExtras.vue'
+import ProductVideoBlock from './ProductVideoBlock.vue'
 import ProductReviews from './ProductReviews.vue'
 import ProductConsultationForm from './ProductConsultationForm.vue'
 import ProductTrustRelated from './ProductTrustRelated.vue'
@@ -41,6 +42,7 @@ useActiveHorizontalRail(productNavRef)
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
   if (props.content.blocks.length) items.push({ id: 'tong-quan', label: 'Tổng quan' })
+  if (props.extras?.videoEmbedUrl) items.push({ id: 'video-san-pham', label: 'Video' })
   if (props.applications?.items.length) items.push({ id: 'ung-dung-san-pham', label: 'Ứng dụng' })
   if (props.buyingGuides?.length) items.push({ id: 'huong-dan-lua-chon', label: 'Lựa chọn' })
   items.push({ id: 'thong-so-ky-thuat', label: 'Thông số kỹ thuật' })
@@ -102,10 +104,14 @@ function toggleDescription() {
           {{ product.name }}
         </h1>
 
-        <div v-if="product.code || product.brand || extras?.reviews.total" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600 max-tb:order-3 max-tb:mb-2 max-tb:text-[13px]">
+        <div v-if="product.code || product.brand || extras?.reviews.total || extras?.videoEmbedUrl" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600 max-tb:order-3 max-tb:mb-2 max-tb:text-[13px]">
           <span v-if="product.code">Mã sản phẩm: <strong class="font-bold text-navy-800">{{ product.code }}</strong></span>
           <span v-if="product.code && product.brand" class="text-slate-300" aria-hidden="true">·</span>
           <span v-if="product.brand">Thương hiệu: <strong class="font-bold text-navy-800">{{ product.brand }}</strong></span>
+          <template v-if="extras?.videoEmbedUrl">
+            <span v-if="product.code || product.brand" class="text-slate-300" aria-hidden="true">·</span>
+            <a href="#video-san-pham" class="inline-flex min-h-9 items-center gap-1 font-bold text-gold-700 no-underline hover:underline"><span aria-hidden="true">▶</span> Xem video</a>
+          </template>
           <template v-if="extras?.reviews.total">
             <span class="text-slate-300" aria-hidden="true">·</span>
             <a href="#danh-gia-san-pham" class="inline-flex items-center gap-1 font-bold text-gold-700 no-underline hover:underline" @click.prevent="openReviewsSection">
@@ -184,6 +190,7 @@ function toggleDescription() {
       <ProductDetailContent v-model:open="descriptionOpen" :content="content" />
     </div>
     <button type="button" class="m-more-button mb-1 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription"><span>{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</span></button>
+    <ProductVideoBlock :extras="extras" />
     <ProductDetailApplications v-if="applications?.items.length" :applications="applications" />
     <ProductDetailBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
     <ProductDetailSpecs :specifications="product.specifications" />

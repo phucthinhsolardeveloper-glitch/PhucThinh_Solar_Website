@@ -4,8 +4,8 @@ import type { PublicProductDocument } from '#shared/contracts/public-product-det
 
 const props = defineProps<{ extras: PublicProductExtrasPayload | null; documents: PublicProductDocument[] }>()
 const links = usePublicLinks()
-const { openConsultation } = useStorefrontModal()
-const hasMediaColumn = computed(() => Boolean(props.extras?.videoEmbedUrl) || props.documents.length > 0)
+const hasMediaColumn = computed(() => props.documents.length > 0)
+const hasWarranty = computed(() => Boolean(props.extras && (props.extras.warranty.summary || props.extras.warranty.override || props.extras.warranty.policies.length)))
 
 function documentHref(document: PublicProductDocument): string {
   return document.url
@@ -13,13 +13,13 @@ function documentHref(document: PublicProductDocument): string {
 </script>
 
 <template>
-  <section data-fold="480"
+  <section v-if="hasWarranty || documents.length" data-fold="480"
     class="grid gap-8 border-t border-gray-200 py-12 tb:py-16 nav:gap-12"
     :class="hasMediaColumn ? 'nav:grid-cols-[1.25fr_0.75fr]' : 'nav:grid-cols-[1fr_auto] nav:items-start'"
-    aria-label="Video, tài liệu và bảo hành sản phẩm"
+    aria-label="Tài liệu và bảo hành sản phẩm"
   >
     <div
-      v-if="extras && (extras.warranty.summary || extras.warranty.override || extras.warranty.policies.length)"
+      v-if="extras && hasWarranty"
       id="chinh-sach-bao-hanh"
       class="min-w-0 scroll-mt-24"
       :class="hasMediaColumn ? 'nav:order-2' : ''"
@@ -53,41 +53,7 @@ function documentHref(document: PublicProductDocument): string {
       </div>
     </div>
 
-    <div class="min-w-0 space-y-8" :class="hasMediaColumn ? 'nav:order-1' : ''">
-      <div id="video-san-pham" class="min-w-0 scroll-mt-24">
-        <template v-if="extras?.videoEmbedUrl">
-          <h2 class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-900">Video sản phẩm &amp; lắp đặt</h2>
-          <div class="aspect-video overflow-hidden rounded-chip bg-black">
-            <iframe
-              :src="extras.videoEmbedUrl"
-              title="Video thực tế sản phẩm"
-              class="h-full w-full border-0"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              referrerpolicy="strict-origin-when-cross-origin"
-            />
-          </div>
-        </template>
-        <div v-else class="flex flex-wrap items-center justify-between gap-3 pts-note px-4 py-3.5 text-slate-600" aria-label="Video đang được cập nhật">
-          <div class="flex items-center gap-3">
-            <span class="inline-grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs text-gold-700 shadow-xs" aria-hidden="true">▶</span>
-            <div>
-              <strong class="block text-sm font-bold text-navy-900">Video sản phẩm &amp; lắp đặt</strong>
-              <p class="m-0 text-xs text-slate-500">Video đang được cập nhật · Hỗ trợ gửi video thực tế và sơ đồ đấu nối qua Zalo</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            class="product-support-link inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-chip bg-navy-900 px-3 py-1.5 text-xs font-bold text-gold-300 transition-colors hover:bg-navy-800"
-            @click="openConsultation('Yêu cầu video thực tế & tài liệu kỹ thuật sản phẩm')"
-          >
-            <span>Nhận tài liệu & video</span>
-            <span aria-hidden="true">→</span>
-          </button>
-        </div>
-      </div>
-
+    <div v-if="documents.length" class="min-w-0 space-y-8" :class="hasMediaColumn ? 'nav:order-1' : ''">
       <div v-if="documents.length" id="tai-lieu-san-pham" class="min-w-0 scroll-mt-24">
         <h2 class="mb-4 text-[clamp(22px,2.5vw,28px)] font-black tracking-tight text-navy-900">Tài liệu sản phẩm</h2>
         <div class="grid gap-2">
