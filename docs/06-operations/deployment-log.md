@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — 3D: bầu trời sống + dòng điện mượt; mã theo dõi tải sau (release e7c5f36f, Nuxt only)
+
+- Frontend `e7c5f36f` (backup `20261118T073451Z-db`, rollback `releases/rollback-e7c5f36f/stack.env.before`), gồm: (1) cảnh 3D `pts-living-energy/src/main.js` (`?v=20261118-3`): mây mềm trôi, bụi sáng dọc tia nắng, lấp lánh trên tấm pin ban ngày; trăng, hai lớp sao nhấp nháy ban đêm; (2) xung điện phát sáng chạy theo đường cong làm mượt từ chính đường animation của từng tuyến, thay ba quả cầu nhỏ (cầu cũ thu nhỏ về 0, vẫn còn trong file GLB); (3) `app.vue`: GTM và gtag.js chỉ tải khi trang xong và rảnh (tối đa 4 s) hoặc khi khách tương tác lần đầu; `gtag('config')` vẫn chạy ngay, sự kiện đẩy sớm xếp hàng trong dataLayer.
+- Kiểm trang thật: vẫn đúng 1 lần `page_view` cho `G-8002FNNPR9` (không đếm trùng); container GTM `GTM-57TJSRVM` hiện không có thẻ nào (chỉ biến). Điện thoại 4G chậm giả lập: load 17.2 s → 10.3 s, 3.3 MB → 1.9 MB trước khi load; laptop ~0.8 s.
+- Sự kiện dataLayer sẵn có để gắn Meta/TikTok Pixel qua GTM: `view_item`, `add_to_cart`, `begin_checkout`, `purchase`, `generate_lead`, `click` liên kết.
+
 ## 2026-11-18 — tối ưu tốc độ, mặt trời trong cảnh 3D, logo hãng (release cd9c56b1, Nuxt only)
 
 - Đo trước khi sửa: ảnh/logo đi qua Apache chạy PHP; Apache chỉ giữ 5–10 worker rỗi nên khi trang xin vài chục ảnh cùng lúc thì fork ~1 worker/giây, logo hãng về cách nhau ~1 giây (có logo mất 2–4 s); `/upload/*` và `/thumbs/*` trả `Cache-Control: no-cache` nên lần xem nào cũng hỏi lại; `/assets`, `/fonts`, `/pts-living-energy` không có chỉ thị lưu đệm; cả 4 ảnh hero tải cùng lúc (Chrome tải ảnh lazy nằm trong khung nhìn dù opacity 0).
