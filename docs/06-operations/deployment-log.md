@@ -49,6 +49,13 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — release e6f76da2 (Nuxt only): khối video ngay dưới mô tả sản phẩm; dọn ảnh trùng
+
+- Frontend `5182832b` (đi kèm `e6f76da2`): khối "Video sản phẩm & lắp đặt" chuyển từ gần cuối trang lên ngay dưới "Xem mô tả chi tiết"; nút "Nhận tài liệu & video" nền vàng; khi sản phẩm có video thật thì có mục "Video" trên thanh điều hướng và liên kết "▶ Xem video" cạnh mã. Component `ProductVideoBlock.vue`; 515 test + typecheck qua.
+- Backup DB `20261118T050900Z-db`. Chỉ thay Nuxt (`0e4f6b7a-candidate` → `e6f76da2-candidate`); backend giữ `3fb268fe-candidate`. Rollback: `releases/rollback-e6f76da2/stack.env.before`. Image build bằng `docker compose build nuxt` (Docker Desktop khởi động lại trước đó).
+- Sau đổi: `/`, trang sản phẩm, `/health`, `/api/v1/site`, `/google-shopping.xml` đều 200; trang thật máy tính và điện thoại đều có thứ tự mô tả → video → thông số → bảo hành, 0 lỗi JS.
+- Quét ảnh trùng trên 318 sản phẩm (backup `20261118T050402Z-db`): không có đường dẫn lặp, không ảnh nào giống ảnh đại diện, không file thiếu; 2 ảnh trùng nội dung ở sản phẩm #325 (khác tên file) đã ẩn (dòng 710, 711; hoàn tác `state/noi-dung-20261117/an-trung-325-rollback.json`). 482 file `p2-*` cũ không còn dòng nào dùng (ảnh đã thay bản mới) vẫn nằm trên đĩa, chưa xóa.
+
 ## 2026-11-18 — chỉnh ảnh 02 và 04 theo góp ý chủ website
 
 - Backup `20261118T045754Z-db`: ảnh 04 "Nạp năng lượng" của 190 sản phẩm (đèn pha, đèn đường, đèn khác, quạt) thay bằng hình minh họa dùng chung (không dùng ảnh sản phẩm lặp, thẻ thông số vẫn riêng từng mã); ảnh 02 của đèn đường làm lại với nhãn cảnh đúng đối tượng (đường nội bộ/công viên, bãi đỗ xe, mặt tiền công trình, khu công cộng); PL-0307 làm nét lại (nguồn ảnh duy nhất quá mềm) ở ảnh 03/06/07. Đổi 243 dòng, không thêm/xóa.
