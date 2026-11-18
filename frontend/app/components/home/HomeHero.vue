@@ -19,15 +19,19 @@ let motionPreference: MediaQueryList | undefined
 
 const phpResizableHeroImage = /^\/(?:upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
 
-function heroImageCandidate(src: string, width: 960 | 1600): string {
+// The hero box is about 16:10 on desktop and a tall slice on phones, so the picture is requested at 16:10 (no side crop wasted).
+// /thumbs allows 2000 px at most; the full-size file (2880 px wide) is the last candidate for retina and large screens.
+const HERO_MASTER_WIDTH = 2880
+
+function heroImageCandidate(src: string, width: 960 | 1600 | 2000): string {
   if (!phpResizableHeroImage.test(src)) return src
-  const height = Math.round(width * 720 / 1600)
+  const height = Math.round(width * 10 / 16)
   return thumbUrl(src, width, height)
 }
 
 function heroImageSrcSet(src: string): string | undefined {
   if (!phpResizableHeroImage.test(src)) return undefined
-  return `${heroImageCandidate(src, 960)} 960w, ${heroImageCandidate(src, 1600)} 1600w`
+  return `${heroImageCandidate(src, 960)} 960w, ${heroImageCandidate(src, 1600)} 1600w, ${heroImageCandidate(src, 2000)} 2000w, ${src} ${HERO_MASTER_WIDTH}w`
 }
 
 function showSlide(index: number) {
@@ -169,13 +173,13 @@ onBeforeUnmount(() => {
             :style="{ '--hero-pan-x': index % 2 === 0 ? '-1.4%' : '1.4%' }"
             :src="heroImageCandidate(slide.image, 1600)"
             :srcset="heroImageSrcSet(slide.image)"
-            sizes="100vw"
+            sizes="(max-width: 640px) 200vw, 100vw"
             :alt="slide.name"
             :fetchpriority="index === 0 ? 'high' : 'low'"
             :loading="index === 0 ? 'eager' : 'lazy'"
             decoding="async"
             width="1600"
-            height="720"
+            height="1000"
             @error="markImageFailed"
           >
           <!-- Cinematic layered lighting overlay -->
