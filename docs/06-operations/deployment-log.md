@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — chuyển website sang hộp GTM của chủ website (dữ liệu, không đổi code)
+
+- Backup `20261118T080725Z-db`. Bảng `settings`: `gtm_id` `GTM-57TJSRVM` (hộp trống, không rõ chủ) → `GTM-52JWR8Q7` (tài khoản GTM "PTS Solar - Production Web" của chủ website, đã có thẻ Google tag cho `G-8002FNNPR9`); `ga4_id` `G-8002FNNPR9` → rỗng để GA4 chỉ nạp qua GTM (tránh gtag trực tiếp + thẻ trong hộp cùng gửi page_view). Hoàn tác: `state/noi-dung-20261117/gtm-ga4-rollback.json`.
+- Kiểm trên trang thật: chỉ nạp `gtm.js?id=GTM-52JWR8Q7`, đúng 1 hit `page_view` tới `G-8002FNNPR9`.
+- Việc kế (làm trong GTM, không cần code): tạo thẻ GA4 Event đọc dataLayer cho view_item, add_to_cart, begin_checkout, purchase, generate_lead, click gọi/Zalo; rồi thêm Meta/TikTok/Google Ads/Zalo khi có ID.
+
 ## 2026-11-18 — 3D nét hơn, dòng điện trả về hạt gốc có quầng, nén GLB (release cc0bb16f, Nuxt only)
 
 - Caddy (`caddy reload`; bản cũ `Caddyfile.bak-glb-20261118`): thêm khối `encode zstd gzip` với `match header Content-Type model/gltf-binary*` vì `.glb` không thuộc danh sách kiểu nén mặc định: `pts-technical-v05.glb` 1.64 MB → ~1.16 MB khi tải (lossless).
