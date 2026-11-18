@@ -237,8 +237,15 @@ const metadataDescription = computed(() => catalogSeoDescription({
 }))
 const socialDescription = metadataDescription
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
-const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
-const catalogFilterKeys = new Set(['category', 'page', 'p', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
+// Page 2, 3… of a catalog are real lists of different products: they stay indexable (links followed) with their own canonical.
+// Filters, sorting and page size still produce noindex pages that canonicalise to the clean list.
+const currentPageNumber = computed(() => Number(publicPageQueryValue(route.query.page, route.query.p)) || 1)
+const metadataCanonicalPath = computed(() => {
+  const base = route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path)
+  const clean = base.split('?')[0] || route.path
+  return currentPageNumber.value > 1 && !hasQueryFilters.value ? `${clean}?page=${currentPageNumber.value}` : clean
+})
+const catalogFilterKeys = new Set(['category', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
 const hasQueryFilters = computed(() => Object.keys(route.query).some((key) => catalogFilterKeys.has(key)))
 const catalogIndexable = computed(() => {
   const enabled = route.path.startsWith('/danh-muc-san-pham/')

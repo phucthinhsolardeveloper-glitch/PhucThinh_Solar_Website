@@ -36,7 +36,7 @@ export interface PublicCheckoutNoticePayload {
 export interface PublicOrderThanksPayload {
   schemaVersion: 1
   locale: 'vi'
-  order: { code: string; customerName: string; totalPrice: number }
+  order: { code: string; customerName: string; totalPrice: number; items?: Array<{ id: number; name: string; price: number; quantity: number }> }
   paymentState: 'accepted' | 'pending' | 'paid' | 'failed' | 'awaiting_transfer'
   conversionPending: boolean
   /** Fixed VietQR instruction of a bank-transfer order; scanning it pays nothing by itself. */

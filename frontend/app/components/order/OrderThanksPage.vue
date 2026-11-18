@@ -77,7 +77,8 @@ function trackOrderConversion() {
     currency: 'VND',
   })
   // The same order in the GA4 shape, for Google Ads / GA4 purchase conversions (one per order, same guard as above).
-  pushDataLayer('purchase', { ecommerce: { transaction_id: current.order.code, value: current.order.totalPrice, currency: 'VND' } })
+  const items = (current.order.items ?? []).map((line) => ({ item_id: String(line.id), item_name: line.name, price: line.price, quantity: line.quantity }))
+  pushDataLayer('purchase', { ecommerce: { transaction_id: current.order.code, value: current.order.totalPrice, currency: 'VND', ...(items.length ? { items } : {}) } })
   trackedConversions.add(currentToken)
 }
 onMounted(trackOrderConversion)

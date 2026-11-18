@@ -25,3 +25,11 @@ it('lists visible products, brands and posts by their canonical address', functi
         expect($locs)->not->toContain($origin.'/san-pham/'.$hidden);
     }
 });
+
+it('does not list an editorial category that has no live post, because that page is noindex', function () {
+    $kind = 'article';
+    $id = DB::table('post_categories')->insertGetId(['kind' => $kind, 'parent_id' => null, 'depth' => 1, 'name' => 'Trống', 'slug' => 'chuyen-muc-trong-test', 'is_visible' => true, 'sort_order' => 999, 'created_at' => now(), 'updated_at' => now()]);
+    $origin = rtrim((string) config('site.canonical_origin'), '/');
+    expect($this->get('/sitemap.xml')->getContent())->not->toContain($origin.'/chuyen-muc-trong-test');
+    DB::table('post_categories')->where('id', $id)->delete();
+});

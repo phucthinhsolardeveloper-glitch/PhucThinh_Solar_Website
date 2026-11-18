@@ -21,6 +21,8 @@ test('catalog, brand, and search routes map legacy PHP pagination into their API
   for (const source of [catalog, brand, search]) {
     assert.match(source, /publicPageQueryValue\(route\.query\.page, route\.query\.p\)/)
   }
-  assert.match(catalog, /catalogFilterKeys = new Set\(\[.*'p'/)
+  // Page 2, 3… of a catalog stay indexable with their own canonical; only filters, sorting and page size are noindex.
+  assert.match(catalog, /catalogFilterKeys = new Set\(\[(?!.*'(?:page|p)').*\]\)/)
+  assert.match(catalog, /\?page=\$\{currentPageNumber\.value\}/)
   assert.match(brand, /\['page', 'p', 'sort', 'price'\]/)
 })

@@ -411,8 +411,14 @@ class Shop
         $all[$token]['conversion_pending'] = false;
         $this->session->put('order_thanks', $all);
 
+        // Lines for the GA4 purchase event: product, name, unit price and quantity only; nothing about the customer.
+        $items = DB::table('order_items')->where('order_id', $order->id)->orderBy('id')->limit(50)->get(['product_id', 'name', 'regular_price', 'sale_price', 'quantity'])
+            ->map(fn ($line) => ['id' => (int) $line->product_id, 'name' => trim(strip_tags((string) $line->name)),
+                'price' => max(0, (int) round((float) ((float) $line->sale_price > 0 ? $line->sale_price : $line->regular_price))), 'quantity' => max(1, (int) $line->quantity)])
+            ->values()->all();
+
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'order' => ['code' => trim((string) $order->code), 'customerName' => trim(strip_tags((string) $order->fullname)),
-            'totalPrice' => max(0, (int) round((float) $order->total_price))], 'paymentState' => $paymentState, 'conversionPending' => $fire]
+            'totalPrice' => max(0, (int) round((float) $order->total_price)), 'items' => $items], 'paymentState' => $paymentState, 'conversionPending' => $fire]
             + ($instruction ? ['transfer' => self::transfer($instruction, $order->transfer_reported_at !== null)] : [])];
     }
 

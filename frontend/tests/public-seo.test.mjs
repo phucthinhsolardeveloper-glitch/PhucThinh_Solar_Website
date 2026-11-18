@@ -297,3 +297,10 @@ test('GA4 measurement id from Admin loads gtag.js on the live domain only, and s
   assert.match(read('app/composables/useDataLayer.ts'), /gtag\('event', event, \{ \.\.\.rest, \.\.\.\(ecommerce \?\? \{\}\) \}\)/)
   assert.match(read('shared/contracts/public-site.ts'), /value\.ga4Id !== undefined/)
 })
+
+test('a catalog canonical may carry one page number, nothing else', () => {
+  assert.equal(canonicalPublicUrl('https://phucthinhsolar.com', '/danh-muc-san-pham/den-nlmt/?page=2'), 'https://phucthinhsolar.com/danh-muc-san-pham/den-nlmt/?page=2')
+  assert.equal(canonicalPublicUrl('https://phucthinhsolar.com', '/danh-muc-san-pham/den-nlmt/?page=2&sort=price'), null)
+  assert.equal(canonicalPublicUrl('https://phucthinhsolar.com', '/san-pham/?page=0'), null)
+  assert.equal(canonicalPublicUrl('https://phucthinhsolar.com', '/san-pham/?q=<x>'), null)
+})

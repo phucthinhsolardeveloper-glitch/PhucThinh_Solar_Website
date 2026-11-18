@@ -60,7 +60,8 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
     expect(DB::table('orders')->where('checkout_token', $order->checkout_token)->count())->toBe(1);
 
     $thanks = '/api/v1/order-thanks?token='.$placed->json('thanksToken');
-    shop('GET', $thanks)->assertOk()->assertJsonPath('order.code', $order->code)->assertJsonPath('paymentState', 'accepted')->assertJsonPath('conversionPending', true);
+    shop('GET', $thanks)->assertOk()->assertJsonPath('order.code', $order->code)->assertJsonPath('paymentState', 'accepted')->assertJsonPath('conversionPending', true)
+        ->assertJsonStructure(['order' => ['items' => [['id', 'name', 'price', 'quantity']]]]);
     shop('GET', $thanks)->assertOk()->assertJsonPath('conversionPending', false);
     shop('GET', '/api/v1/cart')->assertJsonPath('count', 0);
 });

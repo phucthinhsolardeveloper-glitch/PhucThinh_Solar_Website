@@ -86,7 +86,8 @@ export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME):
 }
 
 function isSafePublicPath(path: unknown): path is string {
-  if (typeof path !== 'string' || !/^\/[A-Za-z0-9/_.-]*$/.test(path) || path.startsWith('//')) return false
+  // A list page may carry exactly one `?page=N` / `?p=N` so page 2, 3… of a catalog can have their own canonical.
+  if (typeof path !== 'string' || !/^\/[A-Za-z0-9/_.-]*(?:\?(?:page|p)=[1-9][0-9]{0,3})?$/.test(path) || path.startsWith('//')) return false
   if (path.includes('//') || path.split('/').some((segment) => segment === '.' || segment === '..')) return false
   return true
 }

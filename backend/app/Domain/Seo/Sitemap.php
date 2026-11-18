@@ -51,7 +51,12 @@ class Sitemap
 
         // Editorial: top categories are bare paths without a slash, posts follow their kind.
         foreach (['article', 'solution', 'project'] as $kind) {
-            $this->add($entries, DB::table('post_categories')->where('kind', $kind)->where('depth', 1)->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/'.$slug);
+            // A category with no live post answers noindex, so it is not listed (posts may sit in a child category).
+            $this->add($entries, DB::table('post_categories')->where('kind', $kind)->where('depth', 1)->where('is_visible', true)
+                ->whereExists(fn ($q) => $q->selectRaw('1')->from('posts')->where('posts.kind', $kind)->where(PostVisibility::live('posts.'))
+                    ->where(fn ($q) => $q->whereColumn('posts.category_id', 'post_categories.id')
+                        ->orWhereIn('posts.category_id', fn ($c) => $c->select('id')->from('post_categories as child')->whereColumn('child.parent_id', 'post_categories.id'))))
+                ->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/'.$slug);
         }
         $paths = ['article' => fn ($slug) => '/'.$slug, 'project' => fn ($slug) => '/'.$slug, 'solution' => fn ($slug) => '/giai-phap/'.$slug.'/', 'policy' => fn ($slug) => '/ho-tro/'.$slug.'/'];
         foreach ($paths as $kind => $path) {
