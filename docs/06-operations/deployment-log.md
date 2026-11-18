@@ -49,6 +49,14 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — viết lại giọng văn 19 bài đang hiện (dữ liệu, không đổi code)
+
+- Quy trình: sổ tay giọng văn `docs/07-features/editorial-voice-guide-20261118.md` + bài mẫu và công cụ chấm `tools/editorial-voice/` (`doc-giong.py` bắt câu dài, câu ra lệnh, rào chắn, từ cứng, ghi chú nội bộ lọt vào bài, số liệu/liên kết lệch). Codex (gpt-6-luna) viết, Claude đọc bằng mắt và trả lại 3 vòng; báo cáo từng lô ở `backend/resources/editorial/2026-11-18/bao-cao-*.md`.
+- Đăng bằng `pts:content-batch-patch` (có cổng duyệt, sao lưu nguyên dòng posts/seo_metas, kiểm hash baseline). Lệnh chưa nằm trong ảnh production nên chép tạm vào container và nạp qua `/tmp/runpatch.php` (ảnh chạy khóa danh sách lớp). `--approval-ref=chat-chu-website-2026-11-18-viet-lai-het-bai-hien-co`; reviewer ghi là chủ website; cờ `sources_verified`/`images_verified` đặt true vì ảnh và liên kết nguồn của từng bài được giữ nguyên so với bài đang đăng (đã kiểm tự động).
+- Đăng thử 139 trước (xem trên website thật), rồi 18 bài còn lại: 100–106, 108–111, 136–138, 140–143. Backup DB `20261118T105244Z-db`, `20261118T105433Z-db`; backup dòng bài: `/var/www/html/storage/app/private/content-batch-patch/20261118-175246-*.json` và `20261118-175435-*.json` trong container backend (mất khi tạo lại container: sao ra ngoài nếu cần giữ lâu).
+- Kiểm trên website thật: 19/19 trang 200, không vỡ ảnh, không tràn ngang trên điện thoại, 0 lỗi JS.
+- 107 trùng thân bài 102: chưa đổi, chờ chủ website quyết gộp (301) hay viết góc khác. Các nháp ẩn 144–156 đã viết lại giọng văn nhưng CHƯA áp vào DB (chờ duyệt kỹ thuật): `backend/resources/editorial/2026-11-18/voice-drafts-hidden/`.
+
 ## 2026-11-18 — thông báo cookie + consent mode, mô tả SEO từng trang, ảnh phụ feed (release 8a768306)
 
 - Backup `20261118T084807Z-db`. Backend + Nuxt (8a768306). Không migration. Hoàn tác code: `releases/rollback-8a768306/stack.env.before`.
