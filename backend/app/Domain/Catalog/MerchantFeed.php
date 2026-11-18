@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class MerchantFeed
 {
-    public const HEADERS = ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price', 'sale_price', 'brand', 'condition', 'identifier_exists', 'product_type'];
+    public const HEADERS = ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price', 'sale_price', 'brand', 'condition', 'identifier_exists', 'product_type', 'additional_image_link'];
 
     public function __construct(private readonly SiteSettings $settings) {}
 
@@ -70,8 +70,12 @@ final class MerchantFeed
         foreach ($rows as $row) {
             $out .= '<item>';
             foreach (self::HEADERS as $i => $tag) {
-                if (($row[$i] ?? '') !== '') {
-                    $out .= '<g:'.$tag.'>'.$e($row[$i]).'</g:'.$tag.'>';
+                if (($row[$i] ?? '') === '') {
+                    continue;
+                }
+                // Several pictures are kept comma-joined in one cell (the CSV form) and become one element each in XML.
+                foreach ($tag === 'additional_image_link' ? explode(',', $row[$i]) : [$row[$i]] as $value) {
+                    $out .= '<g:'.$tag.'>'.$e($value).'</g:'.$tag.'>';
                 }
             }
             $out .= "</item>\n";
@@ -115,7 +119,33 @@ final class MerchantFeed
         return [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
             rtrim($origin, '/').'/upload/product/'.rawurlencode($image), 'in_stock', number_format($price, 0, '.', '').' VND',
             $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', self::plain((string) ($brands[$product->brand_id] ?? '')), 'new', 'no',
-            str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? ''))];
+            str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? '')), $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin)];
+    }
+
+    /**
+     * Up to five more REAL photos of the product (its second picture, then the first slots of its gallery). The numbered concept/poster pictures
+     * (sort_order 100 and above) carry text and are not offered to Google as product photos.
+     */
+    private function extraImages(int $productId, string $mainImage, string $secondImage, string $origin): string
+    {
+        $urls = [];
+        $rows = DB::table('product_images')->where('product_id', $productId)->where('is_visible', true)->where('sort_order', '<', 100)->orderBy('sort_order')->orderBy('id')->limit(12)->pluck('path');
+        foreach ([$secondImage, ...$rows->all()] as $path) {
+            $file = trim((string) $path);
+            if ($file === '' || $file === $mainImage || basename($file) !== $file || ! preg_match('/\.(?:jpe?g|png|webp|gif)$/i', $file)) {
+                continue;
+            }
+            $size = @getimagesize(Storage::disk('upload_product')->path($file));
+            if (! $size || $size[0] < 500 || $size[1] < 500) {
+                continue;
+            }
+            $urls[] = rtrim($origin, '/').'/upload/product/'.rawurlencode($file);
+            if (count($urls) === 5) {
+                break;
+            }
+        }
+
+        return implode(',', array_unique($urls));
     }
 
     private static function plain(string $text, int $limit = 0): string

@@ -260,3 +260,23 @@ it('serves the Merchant Center feed as RSS at /google-shopping.xml, and nothing 
         ->and((string) $items[0]->children('g', true)->price)->toBe('1000000 VND')
         ->and(isset($items[0]->children('g', true)->sale_price))->toBeFalse();
 });
+
+it('offers only real photos as additional images in the Merchant feed, never the numbered poster pictures', function () {
+    Storage::fake('upload_product');
+    foreach (['chinh.jpg', 'that-1.jpg', 'poster.jpg', 'be.jpg'] as $file) {
+        Storage::disk('upload_product')->put($file, UploadedFile::fake()->image($file, $file === 'be.jpg' ? 200 : 800, $file === 'be.jpg' ? 200 : 800)->get());
+    }
+    DB::table('products')->update(['feed_image' => null]);
+    $product = sampleProduct();
+    $product->update(['code' => 'FEED-X2', 'name' => 'Đèn thử', 'image' => 'chinh.jpg', 'feed_image' => null, 'image_secondary' => null, 'regular_price' => 1_000_000, 'sale_price' => null, 'quote_only' => false]);
+    $now = now();
+    foreach ([['that-1.jpg', 1], ['be.jpg', 2], ['poster.jpg', 502]] as [$path, $order]) {
+        DB::table('product_images')->insert(['product_id' => $product->id, 'path' => $path, 'is_visible' => true, 'sort_order' => $order, 'created_at' => $now, 'updated_at' => $now]);
+    }
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    Cache::forget('merchant-feed-xml');
+    $feed = simplexml_load_string($this->get('/google-shopping.xml')->assertOk()->getContent());
+    $extra = collect($feed->channel->item[0]->children('g', true)->additional_image_link)->map(fn ($u) => basename((string) $u))->values()->all();
+    expect($extra)->toBe(['that-1.jpg']);
+});

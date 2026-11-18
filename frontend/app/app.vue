@@ -21,7 +21,9 @@ useHead(() => gtmId.value ? {
   script: [{
     key: 'pts-gtag-bridge',
     tagPriority: 'critical',
-    innerHTML: 'window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};',
+    // Consent mode: measurement is on unless this visitor refused in the cookie notice (kept in localStorage 'pts-consent').
+    innerHTML: 'window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};'
+      + 'try{var c=localStorage.getItem("pts-consent")==="denied"?"denied":"granted";gtag("consent","default",{analytics_storage:c,ad_storage:c,ad_user_data:c,ad_personalization:c})}catch(e){}',
   }],
   noscript: [{
     key: 'pts-gtm-noscript',
@@ -111,6 +113,7 @@ useHead({
       <StorefrontDealerModal />
       <CartFeedback />
       <CompareTray />
+      <CookieNotice />
     </UApp>
   </MotionConfig>
 </template>
