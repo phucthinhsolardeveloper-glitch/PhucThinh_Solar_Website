@@ -15,6 +15,21 @@ const filteredSpecifications = computed(() => {
   )
 })
 
+// Some model records keep a whole list in one cell ("- A. - B. - C." or "A; B"). Show it as a list instead of one run-on line.
+// Only the display changes; the copied text and search still use the original value.
+function specItems(value: string): string[] | null {
+  const text = value.trim()
+  if (/^-\s+\S/.test(text)) {
+    const parts = text.replace(/^-\s+/, '').split(/\s+-\s+(?=\S)/).map((part) => part.trim().replace(/[.;]$/, '')).filter(Boolean)
+    if (parts.length >= 2) return parts
+  }
+  if (text.length > 50 && text.includes(';')) {
+    const parts = text.split(/\s*;\s*/).map((part) => part.trim()).filter(Boolean)
+    if (parts.length >= 2) return parts
+  }
+  return null
+}
+
 async function copySpecs() {
   if (!import.meta.client || !navigator.clipboard) return
   const text = visibleSpecifications.value.map((item) => `${item.label}: ${item.value}`).join('\n')
@@ -81,8 +96,8 @@ onBeforeUnmount(() => {
       <table class="w-full table-fixed border-collapse">
         <thead>
           <tr class="bg-navy-900 text-white">
-            <th scope="col" class="w-1/2 px-[18px] py-3.5 text-left text-[13.5px] font-bold max-ph:w-[42%] max-ph:px-3">Hạng mục</th>
-            <th scope="col" class="w-1/2 px-[18px] py-3.5 text-left text-[13.5px] font-bold max-ph:w-[58%] max-ph:px-3">Thông tin theo model</th>
+            <th scope="col" class="w-[38%] px-[18px] py-3.5 text-left text-[13.5px] font-bold max-ph:w-[42%] max-ph:px-3">Hạng mục</th>
+            <th scope="col" class="w-[62%] px-[18px] py-3.5 text-left text-[13.5px] font-bold max-ph:w-[58%] max-ph:px-3">Thông tin theo model</th>
           </tr>
         </thead>
         <tbody>
@@ -92,11 +107,17 @@ onBeforeUnmount(() => {
             class="border-t border-[#e8edf3] transition-colors hover:bg-amber-50/40"
             :class="index % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'"
           >
-            <th scope="row" class="w-1/2 px-[18px] py-3.5 text-left align-top text-[15px] font-semibold text-slate-700 max-ph:w-[42%] max-ph:px-3 max-ph:py-3">
+            <th scope="row" class="w-[38%] px-[18px] py-3.5 text-left align-top text-[15px] font-semibold text-slate-700 max-ph:w-[42%] max-ph:px-3 max-ph:py-3">
               {{ item.label }}
             </th>
-            <td class="w-1/2 px-[18px] py-3.5 text-left align-top text-[15.5px] font-extrabold text-navy-900 tabular-nums max-ph:w-[58%] max-ph:px-3 max-ph:py-3">
-              {{ item.value }}
+            <td class="w-[62%] px-[18px] py-3.5 text-left align-top text-navy-900 tabular-nums max-ph:w-[58%] max-ph:px-3 max-ph:py-3">
+              <ul v-if="specItems(item.value)" class="m-0 grid list-none gap-1.5 p-0 text-[15px] font-semibold leading-snug">
+                <li v-for="(part, partIndex) in specItems(item.value)" :key="partIndex" class="flex gap-2.5">
+                  <span class="mt-[7px] size-1.5 shrink-0 rounded-full bg-gold-600" aria-hidden="true" />
+                  <span class="min-w-0">{{ part }}</span>
+                </li>
+              </ul>
+              <span v-else class="block text-[15.5px] leading-snug" :class="item.value.length > 48 ? 'font-semibold' : 'font-extrabold'">{{ item.value }}</span>
             </td>
           </tr>
         </tbody>
