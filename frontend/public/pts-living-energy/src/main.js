@@ -252,6 +252,50 @@ const batteryObjects=[];
 const gridServiceWires=[];
 const sunObjects=[];
 let sunBillboard=null;
+let skyLife=null;
+const skyObjects=[];
+const isNightNow=()=>livingMode?refreshSolar().daylight===false:(state.scenario==='backup'?!state.backupDaylight:scenarioData[state.scenario].night);
+// Slow ambient life around the house: clouds by day, moon and stars by night, glints on the panels, light dust in the sun rays.
+function skyLifeTick(elapsed,still){
+ if(!skyLife)return;
+ const night=isNightNow(),dayGoal=night?0:1,nightGoal=night?1:0,fade=still?1:.06;
+ skyLife.day+=(dayGoal-skyLife.day)*fade;skyLife.night+=(nightGoal-skyLife.night)*fade;
+ const day=skyLife.day,dark=skyLife.night;
+ const showDay=day>.01&&state.sun,showNight=dark>.01;
+ for(const cloud of skyLife.clouds){
+  cloud.visible=showDay;
+  if(!showDay)continue;
+  const x=((cloud.userData.x0+(still?0:elapsed*cloud.userData.speed)+22)%44)-22;
+  cloud.position.set(x,cloud.userData.y,cloud.userData.z);
+  const edge=1-Math.min(1,Math.max(0,(Math.abs(x)-15)/7));
+  cloud.material.opacity=cloud.userData.opacity*day*edge;
+ }
+ skyLife.moon.visible=showNight;skyLife.moonGlow.visible=showNight;skyLife.stars.visible=showNight;
+ if(showNight){
+  skyLife.moon.material.opacity=dark;skyLife.moonGlow.material.opacity=dark*.55;
+  skyLife.stars.material.opacity=dark*(still?.9:.72+.28*Math.sin(elapsed*1.3));
+  skyLife.starsB.material.opacity=dark*(still?.9:.72+.28*Math.sin(elapsed*1.3+2.4));
+ }
+ skyLife.starsB.visible=showNight;
+ for(const glint of skyLife.glints){
+  if(!showDay||still||!skyLife.panels.length){glint.visible=false;continue;}
+  const cycle=(elapsed+glint.userData.offset)%glint.userData.period;
+  const life=cycle/1.1;
+  if(life>=1){glint.visible=false;if(glint.userData.armed){glint.userData.armed=false;}continue;}
+  if(!glint.userData.armed){glint.userData.armed=true;glint.position.copy(skyLife.panels[Math.floor(Math.random()*skyLife.panels.length)]);glint.position.y+=.08;}
+  glint.visible=true;
+  const k=Math.sin(Math.PI*life);glint.scale.setScalar(.15+.85*k);glint.material.opacity=k*day;glint.material.rotation=life*1.2;
+ }
+ for(const mote of skyLife.motes){
+  if(!showDay||still){mote.visible=false;continue;}
+  mote.visible=true;
+  const t=((elapsed*.045+mote.userData.phase)%1);
+  mote.position.lerpVectors(skyLife.sunPosition,skyLife.roofPoint,t);
+  mote.position.x+=Math.sin(elapsed*.6+mote.userData.phase*9)*.18;mote.position.y+=Math.cos(elapsed*.5+mote.userData.phase*7)*.12;
+  mote.material.opacity=Math.sin(Math.PI*t)*.8*day;
+  mote.scale.setScalar(.09+.05*Math.sin(elapsed*1.7+mote.userData.phase*12));
+ }
+}
 function sunBillboardTick(elapsed,still){
  if(!sunBillboard||!sunBillboard.glow.visible)return;
  sunBillboard.glow.scale.setScalar(4.2*(still?1:1+.045*Math.sin(elapsed*1.6)));
@@ -1148,6 +1192,7 @@ function drawFlowFrame(now){
  if(mixer&&ambientFlow)mixer.update(dt);
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
  sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
+ skyLifeTick(clock.elapsedTime,reducedMotion.matches);
  staticLayer.present(scene,camera);
  if(flowFrameAt&&now-flowFrameAt<1000){
   flowSum+=now-flowFrameAt;flowSamples++;
@@ -1284,6 +1329,7 @@ function animate(){
  hotspotLayout();
  utilitySource.tick(clock.elapsedTime,reducedMotion.matches);
  sunBillboardTick(clock.elapsedTime,reducedMotion.matches);
+ skyLifeTick(clock.elapsedTime,reducedMotion.matches);
   if(shadersReady){
    pvBatch?.setMerged(!roofLayers.busy&&!stage.classList.contains('is-roof-exploded'));
    shellBatch?.setMerged(!state.xray);
@@ -1489,6 +1535,78 @@ sunBillboard=(()=>{
  sunObjects.push(rays,glow);
  return {glow,rays};
 })();
+skyLife=(()=>{
+ const makeTexture=(w,h,paint)=>{const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;paint(canvas.getContext('2d'),w,h);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;};
+ const soft=(ctx,x,y,r,rgb,alpha)=>{const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(${rgb},${alpha})`);g.addColorStop(1,`rgba(${rgb},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);};
+ const cloudTextures=[0,1,2].map(seed=>makeTexture(256,128,(ctx,w,h)=>{
+  // Many wide, faint puffs on a flat base read as a soft cumulus instead of a few round bubbles.
+  let state=seed*7919+13;const rnd=()=>{state=(state*1664525+1013904223)>>>0;return state/4294967296;};
+  for(let i=0;i<16;i++){
+   const t=i/15,bx=w*(.14+.72*t+(rnd()-.5)*.06);
+   const bump=Math.sin(Math.PI*t);
+   const by=h*(.66-.2*bump-rnd()*.07);
+   const br=w*(.1+.13*bump+rnd()*.04);
+   ctx.save();ctx.translate(bx,by);ctx.scale(1.35,.72);
+   soft(ctx,0,0,br,'160,190,222',.34);
+   ctx.restore();
+  }
+  for(let i=0;i<12;i++){
+   const t=i/11,bx=w*(.2+.6*t+(rnd()-.5)*.05),bump=Math.sin(Math.PI*t);
+   const by=h*(.55-.2*bump-rnd()*.06);
+   ctx.save();ctx.translate(bx,by);ctx.scale(1.3,.7);
+   soft(ctx,0,0,w*(.07+.1*bump),'255,255,255',.5);
+   ctx.restore();
+  }
+ }));
+ const clouds=[];
+ const cloudSpec=[[-14,9.6,-5,.16,.95,7.5,0],[-5,11.4,-7,.11,.8,9.5,1],[3,10.2,-4,.2,.95,6.5,2],[10,11.8,-8,.09,.75,10.5,0],[-11,8.4,-2,.13,.7,5.6,1],[7.5,9.0,-3,.17,.8,5.2,2]];
+ for(const [x0,y,z,speed,opacity,size,tex] of cloudSpec){
+  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:cloudTextures[tex],transparent:true,depthWrite:false,toneMapped:false,opacity}));
+  sprite.name='SUN__SKY_CLOUD';sprite.scale.set(size,size*.5,1);sprite.userData={x0,y,z,speed,opacity};sprite.renderOrder=0;
+  scene.add(sprite);clouds.push(sprite);skyObjects.push(sprite);
+ }
+ const moon=new THREE.Sprite(new THREE.SpriteMaterial({map:makeTexture(256,256,(ctx,w,h)=>{
+  ctx.fillStyle='#fff6d8';ctx.beginPath();ctx.arc(w/2,h/2,w*.34,0,Math.PI*2);ctx.fill();
+  ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(w/2+w*.14,h/2-h*.05,w*.31,0,Math.PI*2);ctx.fill();
+ }),transparent:true,depthWrite:false,toneMapped:false}));
+ const moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:makeTexture(256,256,(ctx,w,h)=>soft(ctx,w/2,h/2,w/2,'200,222,255',.85)),transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending}));
+ moon.name='SUN__SKY_MOON';moonGlow.name='SUN__SKY_MOON_GLOW';
+ moon.position.set(6.5,10.4,-3.5);moonGlow.position.copy(moon.position);moon.scale.setScalar(2.1);moonGlow.scale.setScalar(6);moon.renderOrder=2;moonGlow.renderOrder=1;
+ scene.add(moonGlow,moon);skyObjects.push(moon,moonGlow);
+ const starTexture=makeTexture(64,64,(ctx,w)=>soft(ctx,w/2,w/2,w/2,'235,244,255',1));
+ const makeStars=(count,seed)=>{
+  const positions=new Float32Array(count*3);let state=seed;const rnd=()=>{state=(state*1664525+1013904223)>>>0;return state/4294967296;};
+  for(let i=0;i<count;i++){positions[i*3]=-18+rnd()*40;positions[i*3+1]=7+rnd()*9;positions[i*3+2]=-10+rnd()*7;}
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+  const points=new THREE.Points(geometry,new THREE.PointsMaterial({map:starTexture,size:.34,transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending,sizeAttenuation:true,color:'#e8f3ff'}));
+  points.name='SUN__SKY_STARS';points.frustumCulled=false;scene.add(points);skyObjects.push(points);return points;
+ };
+ const stars=makeStars(70,11),starsB=makeStars(70,97);
+ const sparkleTexture=makeTexture(128,128,(ctx,w,h)=>{
+  soft(ctx,w/2,h/2,w*.5,'255,246,214',.9);
+  ctx.translate(w/2,h/2);
+  for(const angle of [0,Math.PI/2]){ctx.save();ctx.rotate(angle);const g=ctx.createLinearGradient(-w/2,0,w/2,0);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,w*.5,h*.028,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+ });
+ const panels=[];
+ model.updateMatrixWorld(true);
+ model.traverse(obj=>{if(/^PV\b/.test(obj.name)&&obj.isMesh){panels.push(obj.getWorldPosition(new THREE.Vector3()));}});
+ const glints=[];
+ for(let i=0;i<5;i++){
+  const glint=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkleTexture,transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending,opacity:0}));
+  glint.name='SUN__SKY_GLINT';glint.visible=false;glint.userData={offset:i*1.17,period:5.4+i*.37,armed:false};glint.renderOrder=4;
+  scene.add(glint);glints.push(glint);skyObjects.push(glint);
+ }
+ const moteTexture=makeTexture(64,64,(ctx,w)=>soft(ctx,w/2,w/2,w/2,'255,236,170',1));
+ const sunPosition=sunBillboard?sunBillboard.glow.position.clone():new THREE.Vector3(-7.35,9.2,4.2);
+ const roofPoint=panels.length?panels.reduce((a,b)=>a.clone().add(b)).multiplyScalar(1/panels.length):new THREE.Vector3(-1.5,4.2,0);
+ const motes=[];
+ for(let i=0;i<9;i++){
+  const mote=new THREE.Sprite(new THREE.SpriteMaterial({map:moteTexture,transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending,opacity:0}));
+  mote.name='SUN__SKY_MOTE';mote.visible=false;mote.userData={phase:i/9};mote.renderOrder=3;
+  scene.add(mote);motes.push(mote);skyObjects.push(mote);
+ }
+ return {clouds,moon,moonGlow,stars,starsB,glints,motes,panels,sunPosition,roofPoint,day:1,night:0};
+})();
  updateXray();
  activeMode(livingMode?(solarSample?.daylight?'day':'night_storage'):state.scenario);
  renderer.render(scene,camera);
@@ -1497,7 +1615,7 @@ sunBillboard=(()=>{
   staticLayer=createStaticLayer(THREE,renderer);
   if(staticLayer){
    for(const light of [hemi,key,fill])light.layers.enable(MOVING_LAYER);
-   const moving=[...routedObjects,...sunObjects];
+   const moving=[...routedObjects,...sunObjects,...skyObjects];
    scene.traverse(obj=>{if(obj.name.startsWith('PTS_UI / Grid service direction marker'))moving.push(obj);});
    for(const root of moving)root.traverse(obj=>obj.layers.set(MOVING_LAYER));
    camera.layers.enable(MOVING_LAYER);
