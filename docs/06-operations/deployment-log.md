@@ -49,6 +49,13 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — thay 4 ảnh hero banner trang chủ
+
+- Backup `20261118T062329Z-db`. Hero là dữ liệu bảng `banners` (placement `hero-carousel`, id 137–140), không phải code: chỉ đổi cột `image` sang 4 file mới trong `upload/photo/` (WebP 2400×1080, tỉ lệ 2.22:1 như ảnh cũ, 430–720 KB): `hero-mai-xuong-20261118.webp` (mái xưởng), `hero-dien-gio-xanh-20261118.webp`, `hero-binh-minh-20261118.webp`, `hero-toan-canh-20261118.webp`. Nguồn: bộ ảnh Pexels chủ website chọn (`~/refs/pts-hero-20261118/originals`, ảnh 05, 02, 01, 07), cắt từ bản gốc 4K–9K. Ảnh 07 cắt bỏ cột tuabin lớn bên trái để không đè tiêu đề.
+- Rollback: `state/noi-dung-20261117/hero-anh-cu-rollback.json` (id → tên file cũ `hero-*-20260924.webp`, còn nguyên trên đĩa).
+- Kiểm trang thật máy tính và điện thoại: 4 slide đúng ảnh mới, 0 lỗi JS. Lưu ý: chữ mô tả nhỏ góc dưới phải (màu xanh đậm, quầng trắng) khó đọc hơn trên nền tấm pin tối của ảnh mới; chưa sửa code.
+- Giấy phép: Pexels License; không phải ảnh công trình của Phúc Thịnh Solar.
+
 ## 2026-11-18 — ảnh VIP1 dùng chung xuống cuối thư viện
 
 - Backup `20261118T055953Z-db`: ảnh VIP1 dùng chung (cùng một file ở ≥ 2 sản phẩm) đổi sort_order 600+ nên đứng sau cả ảnh concept `p2-0N` (500+N); ảnh thật 1.., VIP1 riêng từng mã 100... 437 dòng, 44 sản phẩm, không ẩn/xóa. Hoàn tác: `state/noi-dung-20261117/sapxep-chung-cuoi-rollback.json`. Script `sap-xep-anh.php`.
