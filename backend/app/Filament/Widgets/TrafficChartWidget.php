@@ -31,7 +31,7 @@ class TrafficChartWidget extends ChartWidget
         $before = $this->totals(Periods::previousFrom($period)->toDateString(), $period['from']->toDateString());
         $change = Periods::change($now['visitors'], $before['visitors']);
 
-        return number_format($now['views'], 0, ',', '.').' lượt xem trang · '.number_format($now['visitors'], 0, ',', '.').' người xem'.($change !== '' ? ' · '.$change : '');
+        return number_format($now['views'], 0, ',', '.').' lượt xem trang · '.number_format($now['visitors'], 0, ',', '.').' lượt khách ghé (mỗi người tính một lần mỗi ngày)'.($change !== '' ? ' · '.$change : '');
     }
 
     protected function getData(): array

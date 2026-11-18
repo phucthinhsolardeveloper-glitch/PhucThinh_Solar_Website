@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Domain\Analytics\Periods;
 use App\Filament\Resources\Orders\OrderResource;
 use Filament\Widgets\ChartWidget;
@@ -27,8 +28,8 @@ class TopProductsWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $rows = DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id')
-            ->where('o.status', '!=', 'cancelled')->where('o.created_at', '>=', now()->subDays(90))
+        $rows = CountedOrders::apply(DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id'), 'o.')
+            ->where('o.created_at', '>=', now()->subDays(90))
             ->selectRaw('max(i.name) as name, sum(i.quantity) as qty')
             ->groupByRaw('coalesce(i.product_id, i.name)')->orderByDesc('qty')->limit(8)->get();
 

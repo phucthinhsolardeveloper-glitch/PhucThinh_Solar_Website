@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Domain\Analytics\Periods;
 use App\Filament\Resources\Orders\OrderResource;
 use Filament\Widgets\ChartWidget;
@@ -41,7 +42,7 @@ class SalesChartWidget extends ChartWidget
     protected function getData(): array
     {
         $period = Periods::make((string) $this->filter);
-        $rows = DB::table('orders')->where('status', '!=', 'cancelled')->where('created_at', '>=', $period['from'])
+        $rows = CountedOrders::apply(DB::table('orders'))->where('created_at', '>=', $period['from'])
             ->selectRaw($period['sql'].' as bucket, count(*) as orders, sum(total) as total')->groupBy('bucket')->get()->keyBy('bucket');
 
         return [
@@ -69,7 +70,7 @@ class SalesChartWidget extends ChartWidget
     /** @return array{orders: int, total: float} */
     private function totals(\DateTimeInterface $from, ?\DateTimeInterface $until): array
     {
-        $row = DB::table('orders')->where('status', '!=', 'cancelled')->where('created_at', '>=', $from)
+        $row = CountedOrders::apply(DB::table('orders'))->where('created_at', '>=', $from)
             ->when($until, fn ($q) => $q->where('created_at', '<', $until))->selectRaw('count(*) as orders, coalesce(sum(total), 0) as total')->first();
 
         return ['orders' => (int) ($row->orders ?? 0), 'total' => (float) ($row->total ?? 0)];

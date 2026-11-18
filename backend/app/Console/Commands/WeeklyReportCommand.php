@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Domain\Admin\DataQuality;
 use App\Domain\Outbox\Outbox;
 use App\Mail\AdminNotification;
@@ -22,15 +23,14 @@ class WeeklyReportCommand extends Command
         $to = $from->copy()->endOfWeek();
         $before = [$from->copy()->subWeek(), $to->copy()->subWeek()];
         $money = fn (float $v) => number_format($v, 0, ',', '.').'đ';
-        $orders = fn (Carbon $a, Carbon $b) => DB::table('orders')->whereBetween('created_at', [$a, $b])->where('status', '!=', 'cancelled')
+        $orders = fn (Carbon $a, Carbon $b) => CountedOrders::apply(DB::table('orders'))->whereBetween('created_at', [$a, $b])
             ->selectRaw('count(*) as n, coalesce(sum(total), 0) as t')->first();
         [$now, $prev] = [$orders($from, $to), $orders(...$before)];
         $leads = DB::table('leads')->whereBetween('created_at', [$from, $to])->where('status', '!=', 'spam')->count();
         $leadsPrev = DB::table('leads')->whereBetween('created_at', $before)->where('status', '!=', 'spam')->count();
         $views = DB::table('page_views')->whereBetween('day', [$from->toDateString(), $to->toDateString()])->count();
         $change = fn (float $a, float $b) => $b > 0 ? ' ('.(($p = (int) round(($a - $b) / $b * 100)) >= 0 ? '+' : '').$p.'% so với tuần trước)' : '';
-        $top = DB::table('order_items')->join('orders', 'orders.id', '=', 'order_items.order_id')->whereBetween('orders.created_at', [$from, $to])
-            ->where('orders.status', '!=', 'cancelled')->selectRaw('order_items.name, sum(order_items.quantity) as q')->groupBy('order_items.name')->orderByDesc('q')->limit(3)->get();
+        $top = CountedOrders::apply(DB::table('order_items')->join('orders', 'orders.id', '=', 'order_items.order_id'), 'orders.')->whereBetween('orders.created_at', [$from, $to])->selectRaw('order_items.name, sum(order_items.quantity) as q')->groupBy('order_items.name')->orderByDesc('q')->limit(3)->get();
         $problems = collect($quality->report())->where('severity', 'error')->sum('count');
 
         $fields = [
@@ -39,7 +39,7 @@ class WeeklyReportCommand extends Command
             'Khách để lại liên hệ' => $leads.$change($leads, $leadsPrev),
             'Lượt xem website' => number_format($views, 0, ',', '.'),
             'Bán chạy' => $top->map(fn ($r) => $r->q.' × '.$r->name)->implode('; ') ?: '—',
-            'Đang chờ xử lý' => DB::table('orders')->where('status', 'new')->count().' đơn mới · '.DB::table('leads')->where('status', 'new')->count().' liên hệ chưa gọi',
+            'Đang chờ xử lý' => CountedOrders::apply(DB::table('orders'))->where('status', 'new')->count().' đơn mới · '.DB::table('leads')->where('status', 'new')->count().' liên hệ chưa gọi',
             'Dữ liệu cần sửa' => $problems > 0 ? $problems.' lỗi (Admin → Chất lượng dữ liệu)' : 'Không có lỗi',
         ];
         $copy = ['subject' => '[Phúc Thịnh Solar] Báo cáo tuần '.$from->format('d/m').'–'.$to->format('d/m'),

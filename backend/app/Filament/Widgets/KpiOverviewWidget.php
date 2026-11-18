@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Filament\Pages\WorkQueuePage;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\Orders\OrderResource;
@@ -27,18 +28,18 @@ class KpiOverviewWidget extends StatsOverviewWidget
         $monthStart = now()->startOfMonth();
         $sameDayLastMonth = now()->subMonthNoOverflow();
         if (OrderResource::canViewAny()) {
-            $revenue = $this->sum('orders', 'total', $monthStart, now(), fn ($q) => $q->where('status', '!=', 'cancelled'));
-            $before = $this->sum('orders', 'total', $sameDayLastMonth->copy()->startOfMonth(), $sameDayLastMonth, fn ($q) => $q->where('status', '!=', 'cancelled'));
+            $revenue = $this->sum('orders', 'total', $monthStart, now(), fn ($q) => CountedOrders::apply($q));
+            $before = $this->sum('orders', 'total', $sameDayLastMonth->copy()->startOfMonth(), $sameDayLastMonth, fn ($q) => CountedOrders::apply($q));
             $stats[] = Stat::make('Doanh số tháng '.now()->format('n'), number_format($revenue, 0, ',', '.').'đ')
                 ->description($this->versus($revenue, $before, 'cùng kỳ tháng trước'))->descriptionIcon($revenue >= $before ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($revenue >= $before ? 'success' : 'danger')->chart($this->daily('orders', 'sum(total)', fn ($q) => $q->where('status', '!=', 'cancelled')))
+                ->color($revenue >= $before ? 'success' : 'danger')->chart($this->daily('orders', 'sum(total)', fn ($q) => CountedOrders::apply($q)))
                 ->url(OrderResource::getUrl());
-            $orders = $this->count('orders', now()->subDays(29)->startOfDay(), now(), fn ($q) => $q->where('status', '!=', 'cancelled'));
-            $waiting = DB::table('orders')->where('status', 'new')->count();
+            $orders = $this->count('orders', now()->subDays(29)->startOfDay(), now(), fn ($q) => CountedOrders::apply($q));
+            $waiting = CountedOrders::apply(DB::table('orders'))->where('status', 'new')->count();
             $stats[] = Stat::make('Đơn hàng 30 ngày', number_format($orders, 0, ',', '.'))
                 ->description($waiting > 0 ? $waiting.' đơn mới đang chờ xử lý' : 'Không có đơn chờ xử lý')
                 ->descriptionIcon($waiting > 0 ? 'heroicon-m-clock' : 'heroicon-m-check-circle')->color($waiting > 0 ? 'warning' : 'success')
-                ->chart($this->daily('orders', 'count(*)', fn ($q) => $q->where('status', '!=', 'cancelled')))
+                ->chart($this->daily('orders', 'count(*)', fn ($q) => CountedOrders::apply($q)))
                 ->url($waiting > 0 ? OrderResource::getUrl().'?tableFilters[status][value]=new' : OrderResource::getUrl());
         }
         if (LeadResource::canViewAny()) {
@@ -54,7 +55,7 @@ class KpiOverviewWidget extends StatsOverviewWidget
         $viewsBefore = (int) DB::table('page_views')->whereBetween('day', [now()->subDays(13)->toDateString(), now()->subDays(7)->toDateString()])->count();
         $visitors = (int) (DB::table('page_views')->where('day', '>=', now()->subDays(6)->toDateString())->selectRaw('count(distinct day, visitor) as n')->value('n') ?? 0);
         $stats[] = Stat::make('Lượt xem website 7 ngày', number_format($views, 0, ',', '.'))
-            ->description(number_format($visitors, 0, ',', '.').' người xem · '.$this->versus($views, $viewsBefore, '7 ngày trước'))
+            ->description(number_format($visitors, 0, ',', '.').' lượt khách ghé (mỗi người tính một lần mỗi ngày) · '.$this->versus($views, $viewsBefore, '7 ngày trước'))
             ->descriptionIcon('heroicon-m-eye')->color('gray')
             ->chart($this->dailyViews());
 
