@@ -17,12 +17,15 @@ export function createStaticLayer(THREE,renderer){
  const quadScene=new THREE.Scene();
  const quadCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
  const material=new THREE.ShaderMaterial({
-  uniforms:{tColor:{value:target.texture},tDepth:{value:target.depthTexture}},
+  uniforms:{tColor:{value:target.texture},tDepth:{value:target.depthTexture},uTexel:{value:new THREE.Vector2(1/4,1/4)},uSharp:{value:.45}},
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
   fragmentShader:`
-   uniform sampler2D tColor;uniform sampler2D tDepth;varying vec2 vUv;
+   uniform sampler2D tColor;uniform sampler2D tDepth;uniform vec2 uTexel;uniform float uSharp;varying vec2 vUv;
    void main(){
     vec4 c=texture2D(tColor,vUv);
+    // Mild unsharp mask: the still image is shrunk to the screen by the browser, which softens fine texture.
+    vec4 n=(texture2D(tColor,vUv+vec2(uTexel.x,0.))+texture2D(tColor,vUv-vec2(uTexel.x,0.))+texture2D(tColor,vUv+vec2(0.,uTexel.y))+texture2D(tColor,vUv-vec2(0.,uTexel.y)))*.25;
+    c.rgb=max(c.rgb+clamp(c.rgb-n.rgb,-.12,.12)*uSharp,0.);
     float a=max(c.a,.0001);
     gl_FragColor=vec4(c.rgb/a,1.);
     #include <tonemapping_fragment>
@@ -40,7 +43,7 @@ export function createStaticLayer(THREE,renderer){
 
  function renderStill(scene,camera){
   renderer.getDrawingBufferSize(size);
-  if(target.width!==size.x||target.height!==size.y)target.setSize(size.x,size.y);
+  if(target.width!==size.x||target.height!==size.y){target.setSize(size.x,size.y);material.uniforms.uTexel.value.set(1/size.x,1/size.y);}
   camera.layers.set(STILL_LAYER);
   renderer.setRenderTarget(target);
   renderer.render(scene,camera);

@@ -9,7 +9,7 @@ import {createPowerMap} from './power-map.js';
 import {createEnergyTimeline} from './timeline.js';
 import {batchStaticFoliage,batchStaticDetails} from './scene-batching.js';
 import {solarAt,simulatedDate,siteParts,formatSolarTime,SOLAR_SITE} from './solar-clock.js';
-import {createStaticLayer,MOVING_LAYER} from './static-layer.js';
+import {createStaticLayer,MOVING_LAYER} from './static-layer.js?v=20261118-4';
 
 const $=selector=>document.querySelector(selector);
 const stage=$('#scenePanel');
@@ -251,6 +251,15 @@ const routeAnimations=[];
 const batteryObjects=[];
 const gridServiceWires=[];
 const sunObjects=[];
+const _fadeCam=new THREE.Vector3(),_fadeSky=new THREE.Vector3();
+// Sky parts stand at fixed spots in the world. When the visitor orbits to their side they would sit in front of the house,
+// so they fade out as the camera comes round to the same side and return when it goes back.
+function skySideFade(position,spread=.45){
+ _fadeCam.set(camera.position.x-controls.target.x,0,camera.position.z-controls.target.z).normalize();
+ _fadeSky.set(position.x-controls.target.x,0,position.z-controls.target.z).normalize();
+ const t=Math.min(1,Math.max(0,(_fadeCam.dot(_fadeSky)-.12)/spread));
+ return 1-t*t*(3-2*t);
+}
 let sunBillboard=null;
 let skyLife=null;
 let wirePulses=null;
@@ -259,22 +268,23 @@ let wirePulses=null;
 function wirePulseTick(elapsed,still){
  if(!wirePulses)return;
  for(const group of wirePulses){
-  const on=!still&&group.flow&&group.flow.visible;
-  for(const sprite of group.sprites)sprite.visible=false;
-  if(!on)continue;
-  for(let i=0;i<group.heads;i++){
-   const t=(elapsed*group.speed+i/group.heads)%1;
-   const envelope=Math.pow(Math.sin(Math.PI*Math.min(1,Math.max(0,t))),.6);
-   for(let j=0;j<group.trail;j++){
-    const sprite=group.sprites[i*group.trail+j];
-    const at=t-j*.017;
-    if(at<0||at>1)continue;
-    sprite.position.copy(group.curve.getPointAt(at));
-    const fade=1-j/group.trail;
-    sprite.scale.setScalar(group.size*(1-j*.16));
-    sprite.material.opacity=envelope*fade*(j===0?1:.62);
-    sprite.visible=true;
-   }
+  const on=!still&&group.item.visible&&group.item.parent!==null;
+  if(!on){for(const sprite of group.sprites)sprite.visible=false;group.history.length=0;continue;}
+  group.item.getWorldPosition(group.point);
+  group.history.unshift({t:elapsed,p:group.point.clone()});
+  while(group.history.length>1&&elapsed-group.history[group.history.length-1].t>.5)group.history.pop();
+  const toward=camera.position;
+  for(let k=0;k<group.sprites.length;k++){
+   const sprite=group.sprites[k];
+   const lag=k*.07;
+   let sample=group.history[0];
+   for(const entry of group.history){sample=entry;if(elapsed-entry.t>=lag)break;}
+   // A small nudge toward the camera keeps the glow from sinking into the floor or the roof.
+   sprite.position.copy(sample.p).addScaledVector(group.dir.copy(toward).sub(sample.p).normalize(),.07);
+   const fade=1-k/group.sprites.length;
+   sprite.scale.setScalar(group.size*(k===0?1:.78-k*.1));
+   sprite.material.opacity=(k===0?.8:.5)*fade;
+   sprite.visible=true;
   }
  }
 }
@@ -293,13 +303,14 @@ function skyLifeTick(elapsed,still){
   const x=((cloud.userData.x0+(still?0:elapsed*cloud.userData.speed)+22)%44)-22;
   cloud.position.set(x,cloud.userData.y,cloud.userData.z);
   const edge=1-Math.min(1,Math.max(0,(Math.abs(x)-15)/7));
-  cloud.material.opacity=cloud.userData.opacity*day*edge;
+  cloud.material.opacity=cloud.userData.opacity*day*edge*skySideFade(cloud.position);
  }
  skyLife.moon.visible=showNight;skyLife.moonGlow.visible=showNight;skyLife.stars.visible=showNight;
  if(showNight){
-  skyLife.moon.material.opacity=dark;skyLife.moonGlow.material.opacity=dark*.55;
-  skyLife.stars.material.opacity=dark*(still?.9:.72+.28*Math.sin(elapsed*1.3));
-  skyLife.starsB.material.opacity=dark*(still?.9:.72+.28*Math.sin(elapsed*1.3+2.4));
+  const moonFade=skySideFade(skyLife.moon.position),starFade=skySideFade(skyLife.starCenter,.6);
+  skyLife.moon.material.opacity=dark*moonFade;skyLife.moonGlow.material.opacity=dark*.55*moonFade;
+  skyLife.stars.material.opacity=dark*starFade*(still?.9:.72+.28*Math.sin(elapsed*1.3));
+  skyLife.starsB.material.opacity=dark*starFade*(still?.9:.72+.28*Math.sin(elapsed*1.3+2.4));
  }
  skyLife.starsB.visible=showNight;
  for(const glint of skyLife.glints){
@@ -317,12 +328,14 @@ function skyLifeTick(elapsed,still){
   const t=((elapsed*.045+mote.userData.phase)%1);
   mote.position.lerpVectors(skyLife.sunPosition,skyLife.roofPoint,t);
   mote.position.x+=Math.sin(elapsed*.6+mote.userData.phase*9)*.18;mote.position.y+=Math.cos(elapsed*.5+mote.userData.phase*7)*.12;
-  mote.material.opacity=Math.sin(Math.PI*t)*.8*day;
+  mote.material.opacity=Math.sin(Math.PI*t)*.8*day*skySideFade(skyLife.sunPosition);
   mote.scale.setScalar(.09+.05*Math.sin(elapsed*1.7+mote.userData.phase*12));
  }
 }
 function sunBillboardTick(elapsed,still){
  if(!sunBillboard||!sunBillboard.glow.visible)return;
+ const fade=skySideFade(sunBillboard.glow.position);
+ sunBillboard.glow.material.opacity=fade;sunBillboard.rays.material.opacity=.9*fade;
  sunBillboard.glow.scale.setScalar(4.2*(still?1:1+.045*Math.sin(elapsed*1.6)));
  sunBillboard.rays.material.rotation=still?0:elapsed*.07;
 }
@@ -1174,8 +1187,9 @@ const hostIdle=()=>new Promise(resolve=>{const check=()=>hostScrolling?setTimeou
 // The still image is drawn once, so it can afford real sharpness; capped for very large screens.
 function restRenderScale(){
  const bounds=stage.getBoundingClientRect();
- const wanted=Math.min(2,Math.max(1.25,window.devicePixelRatio||1));
- return Math.min(wanted,Math.sqrt(4.5e6/Math.max(1,bounds.width*bounds.height)));
+ // Sharper still image: at least 1.5x supersampling even on a 100% screen (a still is drawn once), area-capped for big screens.
+ const wanted=Math.min(2,Math.max(1.5,window.devicePixelRatio||1));
+ return Math.min(wanted,Math.sqrt(5.5e6/Math.max(1,bounds.width*bounds.height)));
 }
 let staticLayer=null;
 let renderScale=1,learnedScale=1,frameSum=0,frameSamples=0,lastActiveFrameAt=0,lastDrawAt=0,scaleCapped=false;
@@ -1562,41 +1576,43 @@ sunBillboard=(()=>{
  sunObjects.push(rays,glow);
  return {glow,rays};
 })();
+// Oblique surfaces (the wooden deck, plaster, floor tiles) were sampled with no anisotropic filtering and looked soft.
+{
+ const maxAnisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+ const seen=new Set();
+ model.traverse(obj=>{
+  if(!obj.isMesh)return;
+  for(const material of Array.isArray(obj.material)?obj.material:[obj.material]){
+   if(!material||seen.has(material))continue;seen.add(material);
+   for(const key of ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap']){
+    const texture=material[key];
+    if(texture&&texture.anisotropy<maxAnisotropy)texture.anisotropy=maxAnisotropy;
+   }
+  }
+ });
+}
 wirePulses=(()=>{
  const canvas=document.createElement('canvas');canvas.width=canvas.height=64;
  const ctx=canvas.getContext('2d');
  const g=ctx.createRadialGradient(32,32,0,32,32,32);
- g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.22,'rgba(255,255,255,.85)');g.addColorStop(.55,'rgba(255,255,255,.22)');g.addColorStop(1,'rgba(255,255,255,0)');
+ g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.3,'rgba(255,255,255,.55)');g.addColorStop(.65,'rgba(255,255,255,.14)');g.addColorStop(1,'rgba(255,255,255,0)');
  ctx.fillStyle=g;ctx.fillRect(0,0,64,64);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
  const groups=[];
- for(const clip of gltf.animations){
-  if(!clip.name.startsWith('PHOTON__')||!/__00Action/.test(clip.name))continue;
-  const route=routeOf(clip.name);
-  const track=clip.tracks.find(item=>item.name.endsWith('.position'));
-  if(!route||!track)continue;
-  const node=model.getObjectByName(track.name.replace(/\.position$/,''));
-  if(!node||!node.parent)continue;
-  node.parent.updateWorldMatrix(true,false);
-  const points=[];
-  const step=Math.max(1,Math.floor(track.values.length/3/36));
-  for(let i=0;i<track.values.length;i+=3*step)points.push(node.parent.localToWorld(new THREE.Vector3(track.values[i],track.values[i+1],track.values[i+2])));
-  const last=track.values.length-3;
-  points.push(node.parent.localToWorld(new THREE.Vector3(track.values[last],track.values[last+1],track.values[last+2])));
-  if(points.length<2)continue;
-  const flow=routedObjects.find(item=>item.name.startsWith('FLOW__')&&routeOf(item.name)===route);
-  const baseColor=flow?.material?.color?flow.material.color.clone().lerp(new THREE.Color('#ffb02e'),.35):new THREE.Color('#ffb02e');
-  const heads=4,trail=5,sprites=[];
-  for(let i=0;i<heads*trail;i++){
-   // Normal blending with a saturated colour stays visible on the pale daytime backdrop; the head is lighter than its trail.
-   const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,color:baseColor.clone().lerp(new THREE.Color('#ffffff'),i%trail===0?.6:0),transparent:true,depthWrite:false,depthTest:false,toneMapped:false,opacity:0}));
+ // Keeps the original energy beads (they hide correctly behind the building) and gives each a soft halo and a fading tail.
+ for(const item of routedObjects){
+  if(!item.name.startsWith('PHOTON__'))continue;
+  const route=routeOf(item.name);
+  const flow=routedObjects.find(other=>other.name.startsWith('FLOW__')&&routeOf(other.name)===route);
+  const base=flow?.material?.color?flow.material.color.clone().lerp(new THREE.Color('#ffb02e'),.3):new THREE.Color('#ffb02e');
+  const sprites=[];
+  for(let k=0;k<4;k++){
+   const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,color:base.clone().lerp(new THREE.Color('#ffffff'),k===0?.35:0),transparent:true,depthWrite:false,depthTest:true,toneMapped:false,opacity:0}));
    sprite.name='SUN__WIRE_PULSE';sprite.visible=false;sprite.renderOrder=6;
    scene.add(sprite);sprites.push(sprite);skyObjects.push(sprite);
   }
-  groups.push({route,flow,curve:new THREE.CatmullRomCurve3(points,false,'centripetal'),sprites,heads,trail,speed:.13,size:.3});
+  groups.push({item,sprites,history:[],point:new THREE.Vector3(),dir:new THREE.Vector3(),size:.3});
  }
- // The old hard spheres stay in the file but are shrunk away; the pulses replace them.
- for(const item of routedObjects)if(item.name.startsWith('PHOTON__'))item.scale.setScalar(.0001);
  return groups;
 })();
 skyLife=(()=>{
@@ -1669,7 +1685,7 @@ skyLife=(()=>{
   mote.name='SUN__SKY_MOTE';mote.visible=false;mote.userData={phase:i/9};mote.renderOrder=3;
   scene.add(mote);motes.push(mote);skyObjects.push(mote);
  }
- return {clouds,moon,moonGlow,stars,starsB,glints,motes,panels,sunPosition,roofPoint,day:1,night:0};
+ return {clouds,moon,moonGlow,stars,starsB,glints,motes,panels,sunPosition,roofPoint,starCenter:new THREE.Vector3(2,12,-6.5),day:1,night:0};
 })();
  updateXray();
  activeMode(livingMode?(solarSample?.daylight?'day':'night_storage'):state.scenario);
