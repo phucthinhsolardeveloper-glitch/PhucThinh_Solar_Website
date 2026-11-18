@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — bảng thông số kỹ thuật dễ đọc hơn (release 35b2ca9a, Nuxt only) và sửa "Blue CarBon"
+
+- Frontend `35b2ca9a` (rollback `releases/rollback-35b2ca9a/stack.env.before`): `ProductDetailSpecs.vue` tách ô kiểu "- A. - B." hoặc "A; B" (dài > 50 ký tự) thành danh sách có chấm vàng; cột nhãn 38% / giá trị 62% trên máy tính; giá trị dài giảm độ đậm. Sao chép và tìm vẫn dùng nội dung gốc. 515 test qua.
+- Dữ liệu (backup `20261118T064518Z-db`): `products.additional_specs` đổi "Blue CarBon" → "Blue Carbon" ở 11 sản phẩm. Hoàn tác `state/noi-dung-20261117/carbon-rollback.json`. Chưa đổi `table_product` (bảng cũ) và 1 bài `posts`/`table_news` cũng có chữ này.
+- Kiểm trên trang thật: dòng "Nâng cấp" hiện 4 gạch đầu dòng, 0 lỗi JS, 0 lỗi nhật ký.
+
 ## 2026-11-18 — hero banner nét hơn (release 7756baf1, Nuxt only)
 
 - Nguyên nhân mờ: trang yêu cầu `/thumbs/1600x720x1` (cắt 2.22:1) rồi trình duyệt phóng ×1.25 (màn 1440×900) đến ×2.5 (retina) để phủ khung ~1.6:1. Ảnh cũ cũng bị vậy.
