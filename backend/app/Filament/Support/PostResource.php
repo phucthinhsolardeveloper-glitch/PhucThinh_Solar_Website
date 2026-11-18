@@ -120,10 +120,19 @@ abstract class PostResource extends Resource
                     ->helperText($kind === 'article' ? 'Chọn sản phẩm phù hợp để liên kết trực tiếp từ bài viết tới trang bán hàng. Tối đa 4 sản phẩm sẽ hiện trên bài.' : null),
             ]) : null,
             Section::make()->columns(3)->schema(array_values(array_filter([
-                Fields::visible()->default($kind !== 'article'),
+                Fields::visible()->default($kind !== 'article')->live()
+                    ->helperText(fn (Get $get) => ! $get('is_visible') && $get('published_at') && \Illuminate\Support\Carbon::parse($get('published_at'))->isFuture()
+                        ? 'Công tắc đang TẮT nên bài sẽ KHÔNG tự đăng dù đã chọn ngày. Bật lên để bài tự lên đúng giờ hẹn.' : null),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
-                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())
+                DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        // Picking a future time means "publish then": switch the post on, so the date alone is enough.
+                        if ($state && \Illuminate\Support\Carbon::parse($state)->isFuture() && ! $get('is_visible') && AdminActor::current()->canPerform('content_publish')) {
+                            $set('is_visible', true);
+                            Notification::make()->title('Đã bật Hiển thị để bài tự lên đúng giờ hẹn')->body('Tắt lại nếu chưa muốn đăng.')->info()->send();
+                        }
+                    })
                     ->helperText('Chọn ngày giờ trong tương lai để hẹn giờ: bài bật hiển thị sẽ tự lên website đúng lúc đó.'),
             ]))),
             Fields::seo('news'),

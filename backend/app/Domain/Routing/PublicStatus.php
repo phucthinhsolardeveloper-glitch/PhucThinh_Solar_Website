@@ -45,7 +45,9 @@ final class PublicStatus
     private static function resolve(Model $record): array
     {
         if (array_key_exists('is_visible', $record->getAttributes()) && ! $record->getAttribute('is_visible')) {
-            return [self::HIDDEN, 'Công tắc hiển thị đang tắt.'];
+            return [self::HIDDEN, $record instanceof Post && $record->published_at
+                ? 'Công tắc hiển thị đang tắt: ngày đăng không tự bật công tắc, bài chỉ lên website khi bạn bật hiển thị.'
+                : 'Công tắc hiển thị đang tắt.'];
         }
         if ($record instanceof Post && PostVisibility::isScheduled($record)) {
             return [self::SCHEDULED, 'Tự hiện trên website khi đến ngày đăng.'];

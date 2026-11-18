@@ -229,13 +229,8 @@ const catalogBreadcrumbItems = computed(() => {
   const parents = (catalogData.value?.breadcrumbs ?? []).map((crumb) => ({ label: crumb.label, to: crumb.url }))
   return category.value ? [root, ...parents, { label: heading.value }] : [root]
 })
-// The brands hub shares the catalog payload, whose SEO text is the product page's: give it its own.
-const isBrandsHub = computed(() => route.path === '/thuong-hieu/')
-const metadataTitle = computed(() => isBrandsHub.value ? 'Thương hiệu năng lượng mặt trời | Phúc Thịnh Solar'
-  : catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
-const metadataDescription = computed(() => isBrandsHub.value
-  ? 'Các thương hiệu thiết bị năng lượng mặt trời tại Phúc Thịnh Solar: Blue Carbon, Jindian, Oriana, SolaX, LONGi, Astronergy. Chọn hãng để xem sản phẩm và thông số.'
-  : catalogSeoDescription({
+const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
+const metadataDescription = computed(() => catalogSeoDescription({
   seo: catalogData.value?.seo.description,
   categoryName: catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : '',
   total: catalogData.value?.pagination.total,
@@ -246,7 +241,8 @@ const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
 // Filters, sorting and page size still produce noindex pages that canonicalise to the clean list.
 const currentPageNumber = computed(() => Number(publicPageQueryValue(route.query.page, route.query.p)) || 1)
 const metadataCanonicalPath = computed(() => {
-  const base = route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path)
+  // /thuong-hieu/ lists the same products as /san-pham/ (the brand filter lives on that page), so it points search engines there.
+  const base = route.path === '/thuong-hieu/' ? '/san-pham/' : (catalogData.value?.canonical.url || route.path)
   const clean = base.split('?')[0] || route.path
   return currentPageNumber.value > 1 && !hasQueryFilters.value ? `${clean}?page=${currentPageNumber.value}` : clean
 })

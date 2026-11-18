@@ -55,3 +55,19 @@ it('says on the lists what the website really does with a row', function () {
     Livewire\Livewire::test(ListProducts::class)->assertSuccessful();
     expect(collect((new AttentionWidget)->items())->pluck('text')->implode(' | '))->toContain('hẹn giờ đăng');
 });
+
+it('switches a new article on when a future publish time is picked, so the date alone schedules it', function () {
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'sc-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    $page = Livewire\Livewire::test(\App\Filament\Resources\Articles\Pages\CreateArticle::class)->assertFormSet(['is_visible' => false]);
+    $page->set('data.published_at', now()->addDays(2)->format('Y-m-d H:i:s'))->assertFormSet(['is_visible' => true]);
+});
+
+it('does not switch an article on for a past time', function () {
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'sp-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    Livewire\Livewire::test(\App\Filament\Resources\Articles\Pages\CreateArticle::class)
+        ->set('data.published_at', now()->subDay()->format('Y-m-d H:i:s'))->assertFormSet(['is_visible' => false]);
+});
