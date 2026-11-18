@@ -49,6 +49,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — ảnh VIP1 dùng chung xuống cuối thư viện
+
+- Backup `20261118T055953Z-db`: ảnh VIP1 dùng chung (cùng một file ở ≥ 2 sản phẩm) đổi sort_order 600+ nên đứng sau cả ảnh concept `p2-0N` (500+N); ảnh thật 1.., VIP1 riêng từng mã 100... 437 dòng, 44 sản phẩm, không ẩn/xóa. Hoàn tác: `state/noi-dung-20261117/sapxep-chung-cuoi-rollback.json`. Script `sap-xep-anh.php`.
+- Kiểm tra trước khi dọn: ảnh Shopping (`feed_image`, 330 sản phẩm) là ảnh nền trắng `*-clean-v1.png`, khác ảnh đại diện; không sản phẩm nào dùng file `p2-*` làm ảnh đại diện hay Shopping. 482 file `p2-*` cũ không dòng nào dùng nhưng KHÔNG xóa (theo chủ website).
+
 ## 2026-11-18 — ảnh 08 giấy ủy quyền cho 4 nhóm, ẩn "Chứng nhận & ủy quyền" trống của ORIANA
 
 - Backup `20261118T054202Z-db`: thêm ảnh 08 (khung giấy ủy quyền Blue Carbon/JINDIAN, giữ nguyên theo chủ website dù ghi hạn cũ) cho 76 sản phẩm của đèn đường, đèn khác, tấm pin/phụ kiện, bộ sạc/inverter. Hãng chưa có giấy (ORIANA, SolaX, LONGi, EPSIVO…) không có ảnh 08.
