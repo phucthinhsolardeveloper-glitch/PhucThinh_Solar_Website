@@ -49,6 +49,16 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — SEO chỉ mục trang 2+, sitemap, purchase có items, số liệu Admin (release 95b79a52 + 42a8feb7)
+
+- Backup `20261118T083622Z-db`. Không có migration. Backend + Nuxt (95b79a52), backend (42a8feb7). Hoàn tác: `releases/rollback-<sha>/stack.env.before`.
+- Danh mục `?page=N`/`?p=N`: `index, follow`, canonical riêng `?page=N` (trước: `noindex, nofollow` + canonical về trang 1). Lọc/sắp xếp/`per_page` vẫn noindex về trang sạch. `canonicalPublicUrl` chỉ cho phép đúng một `?page=N`/`?p=N`.
+- Sitemap chỉ liệt kê chuyên mục bài viết có bài đang hiện (loại `/tin-tuyen-dung`, vốn noindex).
+- Trang cảm ơn trả thêm `order.items` (id, tên, đơn giá, số lượng; không có dữ liệu khách) để sự kiện `purchase` gửi `items` cho GA4.
+- Thống kê Admin: đo chéo với nhật ký Caddy cùng khung giờ (76 lượt/9 người so với 83 beacon/8 IP): khớp. Sửa `CountedOrders`: đơn VNPay chưa trả tiền không tính vào doanh số/đơn chờ/sản phẩm bán chạy/báo cáo tuần. Nhãn "người xem" đổi thành "lượt khách ghé (mỗi người tính một lần mỗi ngày)".
+- Image backend lần này dựng lại từ Dockerfile nên Apache `StartServers/MinSpare/MaxSpare = 16/16/32` đã nằm trong image (không còn phụ thuộc chỉnh tay).
+- Chưa làm (cần chủ website quyết định): `availability` luôn `in_stock` và `identifier_exists=no` ở Merchant feed, vì bảng sản phẩm không có cột tồn kho/MPN/GTIN.
+
 ## 2026-11-18 — cầu gtag() để sự kiện mua hàng tới GA4 qua hộp GTM (release 25a3f135, Nuxt only)
 
 - Sau khi chuyển sang `GTM-52JWR8Q7` và bỏ gtag trực tiếp, GA4 chỉ nhận `page_view` và `user_engagement` (đo lại trên trang thật): `pushDataLayer` vẫn gọi `gtag('event', ...)` nhưng `window.gtag` không còn tồn tại. Đã thêm script `pts-gtag-bridge` trong `app.vue` (khi có GTM): `window.gtag` đẩy lệnh vào `dataLayer` để Google tag trong hộp gửi đi.
