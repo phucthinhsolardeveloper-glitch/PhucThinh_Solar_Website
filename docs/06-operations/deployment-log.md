@@ -49,6 +49,13 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — hero banner nét hơn (release 7756baf1, Nuxt only)
+
+- Nguyên nhân mờ: trang yêu cầu `/thumbs/1600x720x1` (cắt 2.22:1) rồi trình duyệt phóng ×1.25 (màn 1440×900) đến ×2.5 (retina) để phủ khung ~1.6:1. Ảnh cũ cũng bị vậy.
+- Backup `20261118T062729Z-db`: 4 ảnh hero dựng lại ở 2880×1800 (16:10, WebP q80, 0.9–1.3 MB, tên `hero-*-20261118b.webp`), ít phải cắt hai bên hơn; banners 137–140 trỏ sang file mới. Hoàn tác: `state/noi-dung-20261117/hero-ban-2-rollback.json` (về bản `...20261118.webp`) hoặc `hero-anh-cu-rollback.json` (về ảnh `20260924`).
+- Frontend `7756baf1` (backup `20261118T062918Z-db`, rollback `releases/rollback-7756baf1/stack.env.before`): `HomeHero.vue` yêu cầu rendition 16:10 ở 960/1600/2000 px (giới hạn `/thumbs`) và file gốc 2880 px làm ứng viên lớn nhất, `sizes="(max-width: 640px) 200vw, 100vw"` cho điện thoại; test hợp đồng ảnh cập nhật (515 test + typecheck qua).
+- Đo trên trang thật (độ phóng so với điểm ảnh màn hình cần, 1.0 = nét tuyệt đối): 1440×900 ×1: 0.9; retina 1440×900 ×2: 1.0; FullHD: 0.96; QHD: 0.89; laptop 4K 1728×1117 ×2: 1.24; điện thoại ×3: 1.41. Trước đây: 1.25 / 2.5 / ~1.7 / ~2.3 / ~3.1 / ~3.5.
+
 ## 2026-11-18 — thay 4 ảnh hero banner trang chủ
 
 - Backup `20261118T062329Z-db`. Hero là dữ liệu bảng `banners` (placement `hero-carousel`, id 137–140), không phải code: chỉ đổi cột `image` sang 4 file mới trong `upload/photo/` (WebP 2400×1080, tỉ lệ 2.22:1 như ảnh cũ, 430–720 KB): `hero-mai-xuong-20261118.webp` (mái xưởng), `hero-dien-gio-xanh-20261118.webp`, `hero-binh-minh-20261118.webp`, `hero-toan-canh-20261118.webp`. Nguồn: bộ ảnh Pexels chủ website chọn (`~/refs/pts-hero-20261118/originals`, ảnh 05, 02, 01, 07), cắt từ bản gốc 4K–9K. Ảnh 07 cắt bỏ cột tuabin lớn bên trái để không đè tiêu đề.
