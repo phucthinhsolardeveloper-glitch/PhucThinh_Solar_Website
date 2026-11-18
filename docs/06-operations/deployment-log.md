@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — ảnh 08 giấy ủy quyền cho 4 nhóm, ẩn "Chứng nhận & ủy quyền" trống của ORIANA
+
+- Backup `20261118T054202Z-db`: thêm ảnh 08 (khung giấy ủy quyền Blue Carbon/JINDIAN, giữ nguyên theo chủ website dù ghi hạn cũ) cho 76 sản phẩm của đèn đường, đèn khác, tấm pin/phụ kiện, bộ sạc/inverter. Hãng chưa có giấy (ORIANA, SolaX, LONGi, EPSIVO…) không có ảnh 08.
+- Backup `20261118T054211Z-db`: ẩn (`is_visible=0`) 11 ảnh VIP1 "CHỨNG NHẬN & ỦY QUYỀN" chỉ có khung trống của ORIANA (`vip1-01-016`, `02-030`, `03-043`, `04-057`, `05-067`, `06-077`, `12-135`, `13-149`, `16-182`, `18-196`, `19-210`), 29 dòng. Hoàn tác: `state/noi-dung-20261117/an-chung-nhan-trong-rollback.json`.
+- Ẩn thêm 14 ảnh VIP1 chứng nhận (có giấy thật) ở sản phẩm đã có ảnh 08 mới để khỏi trùng. Hoàn tác: `an-chung-nhan-trung-rollback.json`.
+
 ## 2026-11-18 — release e6f76da2 (Nuxt only): khối video ngay dưới mô tả sản phẩm; dọn ảnh trùng
 
 - Frontend `5182832b` (đi kèm `e6f76da2`): khối "Video sản phẩm & lắp đặt" chuyển từ gần cuối trang lên ngay dưới "Xem mô tả chi tiết"; nút "Nhận tài liệu & video" nền vàng; khi sản phẩm có video thật thì có mục "Video" trên thanh điều hướng và liên kết "▶ Xem video" cạnh mã. Component `ProductVideoBlock.vue`; 515 test + typecheck qua.
