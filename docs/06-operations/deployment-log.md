@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — cầu gtag() để sự kiện mua hàng tới GA4 qua hộp GTM (release 25a3f135, Nuxt only)
+
+- Sau khi chuyển sang `GTM-52JWR8Q7` và bỏ gtag trực tiếp, GA4 chỉ nhận `page_view` và `user_engagement` (đo lại trên trang thật): `pushDataLayer` vẫn gọi `gtag('event', ...)` nhưng `window.gtag` không còn tồn tại. Đã thêm script `pts-gtag-bridge` trong `app.vue` (khi có GTM): `window.gtag` đẩy lệnh vào `dataLayer` để Google tag trong hộp gửi đi.
+- Đo lại: GA4 nhận `page_view`, `view_item`, `add_to_cart`, `begin_checkout` (không cần tạo thẻ trong GTM). Lưu ý đính chính: lần kiểm trước chỉ đọc phần địa chỉ của các lượt gửi GA4 nên kết luận "sự kiện không tới GA4" khi dùng gtag trực tiếp có thể sai; không ảnh hưởng hiện tại.
+- Khi thêm pixel Meta/TikTok/Ads trong GTM, dùng trigger Custom Event theo các tên sự kiện dataLayer (`view_item`, `add_to_cart`, `begin_checkout`, `purchase`, `generate_lead`, `click_call`, `click_zalo`); KHÔNG thêm thẻ GA4 Event trùng.
+
 ## 2026-11-18 — chuyển website sang hộp GTM của chủ website (dữ liệu, không đổi code)
 
 - Backup `20261118T080725Z-db`. Bảng `settings`: `gtm_id` `GTM-57TJSRVM` (hộp trống, không rõ chủ) → `GTM-52JWR8Q7` (tài khoản GTM "PTS Solar - Production Web" của chủ website, đã có thẻ Google tag cho `G-8002FNNPR9`); `ga4_id` `G-8002FNNPR9` → rỗng để GA4 chỉ nạp qua GTM (tránh gtag trực tiếp + thẻ trong hộp cùng gửi page_view). Hoàn tác: `state/noi-dung-20261117/gtm-ga4-rollback.json`.
