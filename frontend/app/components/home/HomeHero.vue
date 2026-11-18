@@ -64,7 +64,8 @@ function stopAutoplay() {
 function startAutoplay() {
   stopAutoplay()
   if (props.hero.length > 1 && !reducedMotion.value && !document.hidden && !pointerInside && !focusInside && touchStartX === null) {
-    autoplayTimer = window.setInterval(() => showSlide(active.value + 1), 4200)
+    // No slide change while the page is still loading, so a slow connection does not start fetching later pictures early.
+    autoplayTimer = window.setInterval(() => { if (document.readyState === 'complete') showSlide(active.value + 1) }, 4200)
   }
 }
 
