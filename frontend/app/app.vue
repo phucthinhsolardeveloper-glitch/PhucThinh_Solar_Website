@@ -16,11 +16,6 @@ const requestHost = useRequestURL().hostname
 const onLiveSite = !!liveHost && (requestHost === liveHost || requestHost === `www.${liveHost}`)
 const gtmId = computed(() => onLiveSite && /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
 useHead(() => gtmId.value ? {
-  script: [{
-    key: 'pts-gtm',
-    tagPriority: 'critical',
-    innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId.value}');`,
-  }],
   noscript: [{
     key: 'pts-gtm-noscript',
     tagPosition: 'bodyOpen',
@@ -33,10 +28,38 @@ useHead(() => gtmId.value ? {
 const ga4Id = computed(() => onLiveSite && /^G-[A-Z0-9]{6,12}$/.test(site.value?.ga4Id ?? '') ? site.value!.ga4Id! : '')
 useHead(() => ga4Id.value ? {
   script: [
-    { key: 'pts-ga4-src', src: `https://www.googletagmanager.com/gtag/js?id=${ga4Id.value}`, async: true },
     { key: 'pts-ga4', innerHTML: `window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${ga4Id.value}');` },
   ],
 } : {})
+
+// Tracking scripts (GTM and gtag.js, about 470 KB together) wait until the page has loaded and is idle, or until the visitor
+// first interacts, so they do not compete with the hero picture and fonts. Events pushed before they arrive queue in dataLayer,
+// and the gtag('config') call above still runs at once, so nothing is lost.
+function loadTrackingScripts() {
+  const w = window as unknown as { __ptsTrackingLoaded?: boolean; dataLayer?: unknown[] }
+  if (w.__ptsTrackingLoaded) return
+  w.__ptsTrackingLoaded = true
+  const add = (src: string) => {
+    const script = document.createElement('script')
+    script.async = true
+    script.src = src
+    document.head.appendChild(script)
+  }
+  if (gtmId.value) {
+    w.dataLayer = w.dataLayer || []
+    w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+    add(`https://www.googletagmanager.com/gtm.js?id=${gtmId.value}`)
+  }
+  if (ga4Id.value) add(`https://www.googletagmanager.com/gtag/js?id=${ga4Id.value}`)
+}
+onMounted(() => {
+  if (!gtmId.value && !ga4Id.value) return
+  const requestIdle = (window as unknown as { requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number }).requestIdleCallback
+  const whenIdle = () => { if (requestIdle) requestIdle.call(window, loadTrackingScripts, { timeout: 4000 }); else window.setTimeout(loadTrackingScripts, 2000) }
+  if (document.readyState === 'complete') whenIdle()
+  else window.addEventListener('load', whenIdle, { once: true })
+  for (const type of ['pointerdown', 'keydown', 'scroll', 'touchstart']) window.addEventListener(type, loadTrackingScripts, { once: true, passive: true })
+})
 
 useHead({
   script: [
