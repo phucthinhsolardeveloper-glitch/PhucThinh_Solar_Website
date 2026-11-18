@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — 3D nét hơn, dòng điện trả về hạt gốc có quầng, nén GLB (release cc0bb16f, Nuxt only)
+
+- Caddy (`caddy reload`; bản cũ `Caddyfile.bak-glb-20261118`): thêm khối `encode zstd gzip` với `match header Content-Type model/gltf-binary*` vì `.glb` không thuộc danh sách kiểu nén mặc định: `pts-technical-v05.glb` 1.64 MB → ~1.16 MB khi tải (lossless).
+- Frontend `cc0bb16f` (backup `20261118T075128Z-db`, rollback `releases/rollback-cc0bb16f/stack.env.before`), `main.js?v=20261118-4`, `static-layer.js?v=20261118-4` (import có `?v` vì cache 7 ngày): (1) hoàn tác xung điện đường cong (lộ qua vật thể, chủ website thấy xấu), trả hạt sáng gốc kèm quầng sáng mềm và đuôi mờ, có che khuất đúng; (2) các thành phần bầu trời (mặt trời, mây, trăng, sao, bụi sáng) mờ dần khi camera xoay về cùng phía để không chói che mô hình khi xoay 360°; (3) nét hơn: anisotropy tối đa 8 cho mọi texture, ảnh tĩnh siêu lấy mẫu ≥ 1.5× (trước 1.25× ở màn 100%), bộ lọc làm nét nhẹ (unsharp mask) khi hiển thị ảnh tĩnh.
+- Kiểm cục bộ: xoay 4 góc, 0 lỗi JS; kéo xoay trên trang thật vẫn chạy.
+
 ## 2026-11-18 — 3D: bầu trời sống + dòng điện mượt; mã theo dõi tải sau (release e7c5f36f, Nuxt only)
 
 - Frontend `e7c5f36f` (backup `20261118T073451Z-db`, rollback `releases/rollback-e7c5f36f/stack.env.before`), gồm: (1) cảnh 3D `pts-living-energy/src/main.js` (`?v=20261118-3`): mây mềm trôi, bụi sáng dọc tia nắng, lấp lánh trên tấm pin ban ngày; trăng, hai lớp sao nhấp nháy ban đêm; (2) xung điện phát sáng chạy theo đường cong làm mượt từ chính đường animation của từng tuyến, thay ba quả cầu nhỏ (cầu cũ thu nhỏ về 0, vẫn còn trong file GLB); (3) `app.vue`: GTM và gtag.js chỉ tải khi trang xong và rảnh (tối đa 4 s) hoặc khi khách tương tác lần đầu; `gtag('config')` vẫn chạy ngay, sự kiện đẩy sớm xếp hàng trong dataLayer.
