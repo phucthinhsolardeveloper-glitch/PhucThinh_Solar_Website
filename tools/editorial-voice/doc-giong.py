@@ -109,6 +109,16 @@ def main() -> int:
         problems.append(f"Giọng người ngoài nhận xét chính website ({len(self_doubt)} chỗ: {', '.join(sorted(set(x.lower() for x in self_doubt))[:4])}). Đây là website của công ty: nói thẳng thông tin của công ty/sản phẩm; chứng cứ cần xác nhận chỉ ghi trong báo cáo")
     if re.search(r"\]\(http://", new_raw):
         problems.append("Có ảnh/liên kết http:// (không an toàn); dùng https:// hoặc đường dẫn /upload/…")
+    neg_pat = re.compile(r"(không phải|không thay|không cho biết|chưa phải|không đồng nghĩa|không có nghĩa|không thể kết luận|chưa đủ)", re.I)
+    neg_sents = [x for x in sents if neg_pat.search(x)]
+    if len(neg_sents) > max(2, words // 220):
+        problems.append(f"{len(neg_sents)} câu kiểu 'đây không phải… / không thay… / không cho biết…' (tối đa {max(2, words // 220)}). Nói điều ĐÚNG thay vì liệt kê điều không phải; ví dụ: “{neg_sents[0][:90]}…”")
+    if re.search(r"(?i)(ảnh bìa|ảnh tư liệu|ảnh minh họa[^.]*không|không phải nhân sự|chỉ là ví dụ,? không|chỉ là phép [^.]*không phải)", new_plain):
+        problems.append("Câu thanh minh vô ích về ảnh/ví dụ (ảnh bìa, 'chỉ là ví dụ, không phải…'): bỏ")
+    big = [m for m in re.findall(r"\b\d[\d.,/]{2,}\b", re.sub(r"^\s*\|.*$", "", new_plain, flags=re.M)) if not re.fullmatch(r"20\d\d", m)]
+    repeated = sorted({m for m in big if (("/" in m) or m.endswith("%")) and big.count(m) > 2})
+    if repeated:
+        problems.append(f"Con số/ngày lặp quá 2 lần trong thân bài: {', '.join(repeated[:6])}. Nêu một lần, đúng chỗ")
     maybe = lowered.count("có thể") + lowered.count("còn tùy") + lowered.count("còn phụ thuộc") + lowered.count("tùy mẫu") + lowered.count("tùy từng")
     if maybe > max(2, words // 120):
         problems.append(f"Rào chắn mềm (có thể/còn tùy/phụ thuộc…) {maybe} lần; tối đa {max(2, words // 120)}. Nói điều chắc chắn thật chắc, điều không chắc thì bỏ khỏi bài")

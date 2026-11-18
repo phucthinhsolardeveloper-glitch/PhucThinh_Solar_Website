@@ -1,7 +1,5 @@
 Để biết hệ có chạy khi cúp điện, hãy hỏi: bạn có cần điện dự phòng không? Bạn có chấp nhận lắp pin lưu trữ không? Tên inverter chưa trả lời được hai câu này.
 
-![Bảng so sánh chức năng inverter hòa lưới và inverter hybrid](/upload/news/pts-explainer-inverter-types.webp)
-
 | Nhu cầu | Hướng xem xét | Cần xác nhận |
 |---|---|---|
 | Không cần điện khi cúp | Inverter hòa lưới | Mức tự dùng, giới hạn lưới và giám sát |

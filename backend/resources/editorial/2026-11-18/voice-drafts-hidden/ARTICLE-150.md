@@ -1,7 +1,5 @@
 Màu đen hay xanh không đủ để kết luận tấm pin nào tốt hơn. Hãy xem ảnh đúng model rồi so thông số, kích thước, nhiệt độ vận hành và bảo hành.
 
-![Hình minh họa tấm pin màu đen và xanh và sự khác biệt về hình thức](/upload/news/pts-explainer-module-colors.webp)
-
 Một tấm “đen” dùng khung và nền đen đồng màu; tấm khác chỉ có cell sẫm màu và khung bạc. Tên thương mại như “all-black” mô tả hình thức, không phải tiêu chuẩn kỹ thuật thống nhất.
 
 ## So model trước khi chọn màu

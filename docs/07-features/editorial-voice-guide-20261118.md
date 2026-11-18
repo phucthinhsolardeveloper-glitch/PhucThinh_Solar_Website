@@ -82,3 +82,15 @@ Khi viết xong, tự hỏi: *"Nếu chủ cửa hàng đọc bài này trước
 5. Không dùng câu "không có đủ dữ liệu trong bài để kết luận…" trong thân bài. Nếu không có số, đơn giản là không nêu.
 6. Ảnh và liên kết dùng `https://` hoặc `/upload/...`, không `http://`.
 7. Câu mệnh lệnh cuối bài ("Hãy hỏi…") chỉ giữ một câu mời liên hệ, không dặn dò dài.
+
+## 12. Bài học vòng 3: TÔN TRỌNG NGƯỜI ĐỌC (chủ website: "giống viết cho bọn ngu đọc")
+
+Chủ website đọc bài IEA và bực vì giọng dạy dỗ, đề phòng người đọc hiểu sai. Đây là phản ứng quá tay khi dặn tránh khoe và rào đón. Người đọc là người lớn, có đầu óc; họ cần THÔNG TIN, không cần được dặn.
+
+1. **Cấm câu "đây không phải X / không thay X / không cho biết X / chỉ là ví dụ, không phải dự báo / báo cáo không chọn inverter cho một hộ".** Nói điều ĐÚNG thay vì liệt kê điều không phải. Chỉ giữ một giới hạn khi nó thật sự đổi quyết định của người đọc, nói MỘT lần, dạng khẳng định ("công suất này đo ở điều kiện thử chuẩn, ngoài mái nhà sẽ thấp hơn").
+2. **Mỗi câu phải mang thông tin mới.** Thử xóa câu đó: người đọc có mất gì không? Không mất thì xóa.
+3. **Không giải thích điều hiển nhiên hay đơn vị không liên quan** (ví dụ "GW đo công suất, TWh đo sản lượng" trong bản tin cho người đọc ngành).
+4. **Không nhắc lại ngày hoặc con số đã nói ở trên.** Không có đoạn "tóm lại" lặp lại ngày/số.
+5. **Không thanh minh về ảnh hay ví dụ** ("ảnh bìa là ảnh tư liệu, không phải nhân sự công ty", "đây chỉ là ví dụ"). Ví dụ giả định thì cứ nêu như ví dụ ("giả sử…").
+6. **Tin thì viết như tin:** câu đầu nêu sự kiện, số liệu, bối cảnh; không bài giảng. Bài hướng dẫn thì nói thẳng việc cần làm.
+7. **Hình minh họa phải có thông tin thật.** Hình chỉ có hai cột, hộp trống, hay chữ "cách đọc" giải thích lại đúng con số trong bài thì GỠ, đừng giữ cho đủ ảnh. Không tự thêm ảnh biểu đồ/sơ đồ mới; chỉ giữ ảnh có sẵn trong bài.

@@ -1,7 +1,5 @@
 Tấm pin 720 W không mặc định phù hợp hơn tấm 600 W. Hãy xem kích thước đúng model và đặt thử lên bản vẽ mái trước khi so công suất.
 
-![Biểu đồ so sánh công suất danh định các mức tấm pin 600 620 650 720 Wp](/upload/news/pts-explainer-power-ratings.webp)
-
 ## Tấm nào vừa mái nhà?
 
 600 W, 620 W, 650 W và 720 W là công suất trong điều kiện thử chuẩn. Mức 720 Wp cao hơn mức 600 đúng 120 Wp, tương đương 20% trên nhãn. Phép tính đó chưa cho biết tấm lớn đến đâu, vừa được bao nhiêu vị trí trên mái hay tạo ra bao nhiêu điện trong năm.

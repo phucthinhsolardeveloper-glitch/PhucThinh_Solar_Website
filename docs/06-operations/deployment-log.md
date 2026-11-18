@@ -49,6 +49,16 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 (tối, muộn) — rà soát chất lượng bài, gỡ bài kém, sửa 147, gỡ hình minh hoạ vô ích, đổi ảnh bìa
+
+- Chủ website: bài IEA 147 "giống viết cho bọn ngu đọc", "không muốn content chất lượng kém lên web". Nguyên nhân thật: quá nhiều câu "đây không phải… / không thay… / không cho biết…", câu thanh minh vô ích ("ảnh bìa không phải nhân sự công ty"), giải thích điều hiển nhiên, lặp ngày/số, bài dài lặp ý; công cụ chấm không đo được các lỗi này (đã bổ sung luật, sổ tay mục 12). Người duyệt (Claude) chưa đọc 147 trước khi đăng: đã nhận lỗi.
+- Gỡ (ẩn) ngay: 144 (đoạn lủng củng nêu Gia Lai/Tây Nguyên không nguồn), 153 (dài ~1.000 từ, dồn thuật ngữ, rào đón; cần viết lại hẳn), 107 (trùng 102, đã 301). Tạm ẩn rồi bật lại sau khi đọc và sửa: 151, 154, 155, 156.
+- Viết lại 147 thành bản tin 260 từ (từ 691), bỏ đoạn lặp ngày/số. Gỡ 6 hình "explainer" gần như rỗng khỏi 145–150 (hình 600/620/650/720 Wp còn gây hiểu lầm vì cột không tỷ lệ). Giữ hai infographic số liệu thật (global-pv-2026, panel-650w).
+- Vòng 4 (Codex, mục 12 sổ tay): 103, 137, 139, 141, 146, 148, 150, 151, 152, 154, 155, 156 đã áp (`voice-v4/`, backup DB `20261118T115749Z-db`, backup dòng bài trong `state/noi-dung-20261117/bai-viet-20261118/`). Sửa tay thêm: bỏ ví dụ "vòi nước" ở 139, bỏ câu rỗng ở 150, gộp Voc/Vmp/Isc/Imp thành bảng ở 155, bỏ câu lặp ở 137.
+- Ảnh bìa: 102/104/111 trước là cùng một tranh hoạt hình đường phố; 110 có poster "TOP 1"; 149 dùng ảnh explainer. Đổi sang ảnh đèn thật (`pts-cover-den-01/02/03.webp`, `pts-cover-chip-led.webp` trong `/srv/upload/news/`) và `pts-photo-009.webp` cho 149. Hoàn tác: `covers-rollback.json`.
+- Kiểm tra trên web thật: 27 bài đang hiện, 0 lỗi JS, không vỡ ảnh/tràn ngang. Đang hiện 30 bài (3 hẹn giờ 154–156).
+- Còn ẩn, cần viết lại thật sự: 144, 153.
+
 ## 2026-11-18 (tối) — đăng 13 bài hẹn giờ, đổi tiêu đề, gộp 107, cây bút cho bảng bài viết, cookie dự phòng (release 496cb883)
 
 - **13 bài 144–156**: áp nội dung viết lại (`pts:content-batch-patch`, backup DB `20261118T113036Z-db`, backup dòng bài `…/state/noi-dung-20261117/bai-viet-20261118/`), chạy `PublishChecks->post` (13/13 không lỗi) rồi bật `is_visible`. Giữ nguyên `published_at` theo lịch: 144–152 đã hiện (HTTP 200, 0 lỗi), 153 (19:30 18/11), 154–155 (19/11), 156 (19:30 19/11) tự lên đúng giờ (đến giờ mới hết 404).

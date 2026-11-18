@@ -1,7 +1,5 @@
 Khi điện lưới mất, hệ hòa lưới thông thường dừng phát để chống đảo lưới. Hệ có nhánh dự phòng chỉ giữ các tải đã được chọn và tách riêng trong thiết kế.
 
-![Sơ đồ so sánh hòa lưới khi mất điện và hệ hybrid có nhánh dự phòng](/upload/news/pts-explainer-grid-outage.webp)
-
 ## Hòa lưới dừng khi mất điện
 
 Tấm pin tạo DC, inverter đổi thành AC và đồng bộ với điện áp, tần số, pha của lưới. Khi lưới mất, inverter ngắt khỏi đường AC. Nắng không biến hệ hòa lưới thành máy phát độc lập.

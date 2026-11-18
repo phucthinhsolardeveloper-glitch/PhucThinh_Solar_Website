@@ -1,7 +1,5 @@
 Hai gia đình cùng dùng 450 kWh trong 30 ngày vẫn có thể cần hệ điện mặt trời khác nhau. Lịch dùng điện ban ngày, buổi tối và nhu cầu dự phòng mới cho biết bước tiếp theo.
 
-![Sơ đồ phân tích điện tiêu thụ ban ngày và ban đêm cho thiết kế hệ PV](/upload/news/pts-explainer-load-profile.webp)
-
 Con số 450 kWh/tháng dưới đây là giả định, tương đương trung bình 15 kWh/ngày. Nó không cho biết điện được dùng vào giờ nào.
 
 ## Hộ có tải ban ngày

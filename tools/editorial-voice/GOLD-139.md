@@ -12,9 +12,9 @@ Cách nhớ dễ nhất là nghĩ đến vòi nước. kW là vòi đang mở m�
 
 Số kWh bằng số kW nhân với số giờ.
 
-Hóa đơn ghi 450 kWh nghĩa là cả kỳ nhà bạn đã dùng 450 kWh điện. Nó không có nghĩa là nhà đang chạy ở 450 kW. Hai con số này khác loại, nên không đem so với nhau được.
+Hóa đơn ghi 450 kWh nghĩa là cả kỳ nhà bạn đã dùng 450 kWh điện. Kilowatt (kW) và kilowatt giờ (kWh) là hai loại số khác nhau, nên đừng đem ra so với nhau.
 
-Thêm một ví dụ: tải 2 kW chạy đều 3 giờ thì dùng 6 kWh. Đó chỉ là phép đổi đơn vị, không phải dự báo sản lượng.
+Thêm một ví dụ: tải 2 kW chạy đều 3 giờ thì dùng 6 kWh.
 
 ## Những chỗ hay bị hiểu nhầm
 
@@ -23,7 +23,7 @@ Thêm một ví dụ: tải 2 kW chạy đều 3 giờ thì dùng 6 kWh. Đó ch
 - **Pin lưu trữ 10 kWh.** Là dung lượng ghi trên nhãn. Dùng được bao lâu còn tùy tải nặng hay nhẹ và phần dung lượng pin cho dùng thật.
 - **Ứng dụng báo 25 kWh hôm nay.** Là tổng điện hệ thống tạo ra trong cả ngày, không phải 25 kW chạy liên tục.
 - **Máy bơm 1,5 kW chạy 2 giờ.** Lý thuyết là 3 kWh. Máy bơm hay chạy ngắt quãng nên thực tế có thể thấp hơn.
-- **Tám tấm 625 Wp.** Cộng lại được 5 kWp. Đây mới là công suất ghi trên tấm, chưa phải điện làm ra mỗi ngày.
+- **Tám tấm 625 Wp.** Cộng lại được 5 kWp. Đó là công suất ghi trên tấm; điện làm ra mỗi ngày còn tùy nắng.
 - **Hệ 5 kWp có hôm tạo ít điện hơn.** Nắng, nhiệt độ, bóng che, hướng mái và hiệu suất inverter đều làm kết quả đổi theo ngày.
 
 ## Đọc báo giá thế nào cho đỡ nhầm
