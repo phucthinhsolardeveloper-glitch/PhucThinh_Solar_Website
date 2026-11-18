@@ -29,6 +29,8 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -216,9 +218,21 @@ abstract class PostResource extends Resource
         ];
     }
 
+    /** The pencil on the list: the publish date and the "Hiển thị" switch become editable on the spot (never the title or the address). */
+    private static function inlineEditing(Table $table): bool
+    {
+        $page = $table->getLivewire();
+
+        return in_array(\App\Filament\Concerns\HasInlineEditMode::class, class_uses_recursive($page), true) && $page->inlineEdit
+            && AdminActor::current()->canPerform('content_publish');
+    }
+
     public static function table(Table $table): Table
     {
+        $edit = static::inlineEditing($table);
+
         return $table
+            ->description($edit ? 'Đang sửa trên bảng: bật/tắt Hiển thị và đổi Ngày đăng, ô nào sửa là lưu ngay khi bấm ra ngoài. Tiêu đề và đường dẫn chỉ sửa trong từng bài. Bấm "Xong sửa" để thoát.' : null)
             ->defaultSort('id', 'desc')
             ->reorderable('sort_order', fn () => AdminActor::current()->canPerform('content_publish'))->paginatedWhileReordering(false)
             ->columns([
@@ -227,7 +241,32 @@ abstract class PostResource extends Resource
                 TextColumn::make('title')->label('Tiêu đề')->searchable()->sortable()->limit(70),
                 TextColumn::make('category.name')->label('Nhóm')->toggleable()->visible(static::$kind !== 'policy'),
                 PublicStatusColumn::make(),
-                TextColumn::make('published_at')->label('Ngày đăng')->sortable()->date('d/m/Y'),
+                ...($edit ? [
+                    ToggleColumn::make('is_visible')->label('Hiển thị')
+                        ->updateStateUsing(function (Post $record, bool $state): bool {
+                            if ($state) {
+                                $errors = app(\App\Domain\Content\PublishChecks::class)->post(\App\Domain\Content\PublishChecks::postData($record), (int) $record->id)['errors'] ?? [];
+                                if ($errors !== []) {
+                                    Notification::make()->danger()->title('Chưa bật được')->body(implode("\n", $errors))->send();
+
+                                    return false;
+                                }
+                            }
+                            $record->update(['is_visible' => $state]);
+
+                            return $state;
+                        }),
+                    TextInputColumn::make('published_at')->label('Ngày đăng (ngày/tháng/năm giờ:phút)')->placeholder('15/11/2026 19:30')
+                        ->getStateUsing(fn (Post $record) => $record->published_at ? \Illuminate\Support\Carbon::parse($record->published_at)->format('d/m/Y H:i') : '')
+                        ->rules(['required', 'date_format:d/m/Y H:i'])
+                        ->updateStateUsing(function (Post $record, $state) {
+                            $record->update(['published_at' => \Illuminate\Support\Carbon::createFromFormat('d/m/Y H:i', (string) $state)]);
+
+                            return $state;
+                        }),
+                ] : [
+                    TextColumn::make('published_at')->label('Ngày đăng')->sortable()->date('d/m/Y'),
+                ]),
             ])
             ->filters(array_values(array_filter([
                 static::$kind !== 'policy' ? SelectFilter::make('category_id')->label('Nhóm')->relationship('category', 'name', fn (Builder $query) => $query->where('kind', static::$kind)) : null,

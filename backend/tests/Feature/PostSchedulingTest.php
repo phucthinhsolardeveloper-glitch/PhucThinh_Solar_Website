@@ -71,3 +71,33 @@ it('does not switch an article on for a past time', function () {
     Livewire\Livewire::test(\App\Filament\Resources\Articles\Pages\CreateArticle::class)
         ->set('data.published_at', now()->subDay()->format('Y-m-d H:i:s'))->assertFormSet(['is_visible' => false]);
 });
+
+it('edits the publish date and the visible switch right on the article list once the pencil is on', function () {
+    $owner = User::query()->create(['name' => 'Chủ', 'username' => 'ib-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_OWNER, 'permissions' => [], 'is_active' => true]);
+    $this->actingAs($owner, 'admin');
+    $source = Post::query()->where('kind', 'article')->where('is_visible', true)->firstOrFail();
+    $post = $source->replicate()->fill(['slug' => 'sua-nhanh-'.bin2hex(random_bytes(3)), 'title' => 'Bài sửa nhanh', 'is_visible' => false, 'published_at' => now()->subDay()]);
+    $post->save();
+    $key = (string) $post->getKey();
+
+    Livewire\Livewire::test(ListArticles::class)->assertTableColumnDoesNotExist('is_visible')->assertTableColumnExists('published_at');
+    $page = Livewire\Livewire::withQueryParams(['sua' => 1])->test(ListArticles::class)->assertTableColumnExists('is_visible')->assertTableColumnExists('published_at');
+
+    // A future date typed in the box: saved as that moment; a malformed one is refused and nothing changes.
+    $page->call('updateTableColumnState', 'published_at', $key, '25/12/2026 08:30');
+    expect(Illuminate\Support\Carbon::parse($post->fresh()->published_at)->format('Y-m-d H:i'))->toBe('2026-12-25 08:30');
+    $page->call('updateTableColumnState', 'published_at', $key, 'hôm qua');
+    expect(Illuminate\Support\Carbon::parse($post->fresh()->published_at)->format('Y-m-d H:i'))->toBe('2026-12-25 08:30');
+
+    // Switching it on goes through the same publish checks as the edit form.
+    $page->call('updateTableColumnState', 'is_visible', $key, true);
+    expect((bool) $post->fresh()->is_visible)->toBe(true);
+
+    // Nobody without the publish permission gets the pencil.
+    $this->flushSession();
+    $editor = User::query()->create(['name' => 'Biên tập', 'username' => 'ie-'.bin2hex(random_bytes(4)), 'password' => 'test-password',
+        'role' => User::ROLE_EDITOR, 'permissions' => ['content'], 'is_active' => true]);
+    $this->actingAs($editor, 'admin');
+    Livewire\Livewire::test(ListArticles::class)->assertActionHidden('inlineEdit');
+});
