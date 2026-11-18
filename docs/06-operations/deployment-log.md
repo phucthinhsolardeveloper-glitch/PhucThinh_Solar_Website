@@ -49,6 +49,16 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — thông báo cookie + consent mode, mô tả SEO từng trang, ảnh phụ feed (release 8a768306)
+
+- Backup `20261118T084807Z-db`. Backend + Nuxt (8a768306). Không migration. Hoàn tác code: `releases/rollback-8a768306/stack.env.before`.
+- Dữ liệu `seo_metas` (9 trang cố định: san-pham, tin-tuc, gioi-thieu, giai-phap, du-an, dai-ly, lien-he, thu-vien-anh, video) trước đây dùng chung một đoạn 431 ký tự "ngọn cờ đầu…" hoặc chỉ 5–12 ký tự; đã viết riêng mỗi trang (≤ 160 ký tự). 3 thương hiệu 19–21 để trống title/description để dùng câu mặc định có số mẫu. Hoàn tác: `state/noi-dung-20261117/seo-metas-rollback-20261118.json`. Nuxt/Laravel giữ bản cũ vài phút (đã làm mới).
+- `/thuong-hieu/` có title/description riêng (trước dùng của /san-pham/).
+- Ảnh `alt=""` còn lại trên các trang là ảnh trang trí có chủ đích, không sửa.
+- Thông báo cookie (`CookieNotice.vue`): đo lường mặc định bật, "Từ chối" ghi `localStorage pts-consent=denied` và gọi `gtag('consent','update')`; script `pts-gtag-bridge` đặt `consent default` theo lựa chọn đã lưu. Thẻ pixel Meta/TikTok/Ads thêm trong GTM phải bật "Additional consent: ad_storage" để tôn trọng lựa chọn.
+- Merchant feed: thêm `additional_image_link` (tối đa 5 ảnh THẬT, sort_order < 100, ≥ 500 px; ảnh poster p2 không đưa): 41/315 sản phẩm có ảnh phụ. Chưa đổi `availability`/`identifier_exists`; 8 mã chưa có hãng (id 381–384, 391–396) chờ chủ website.
+- Dọn VPS: xóa tarball các release cũ (giữ 3 bản gần nhất), image candidate cũ, build cache. Đĩa 96% → 84%.
+
 ## 2026-11-18 — SEO chỉ mục trang 2+, sitemap, purchase có items, số liệu Admin (release 95b79a52 + 42a8feb7)
 
 - Backup `20261118T083622Z-db`. Không có migration. Backend + Nuxt (95b79a52), backend (42a8feb7). Hoàn tác: `releases/rollback-<sha>/stack.env.before`.
