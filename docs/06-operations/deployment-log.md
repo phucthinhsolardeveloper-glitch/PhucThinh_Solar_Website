@@ -49,6 +49,11 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-18 — phóng to ảnh 02/04/05 đèn pha và sắp lại thứ tự thư viện ảnh (ảnh thật trước, ảnh concept cuối)
+
+- Backup `20261118T012830Z-db`: đổi 216 dòng `product_images` (ảnh 02, 04, 05 của 72 đèn pha dựng lại với sản phẩm to hơn theo khoanh đỏ của chủ website).
+- Backup `20261118T015658Z-db`: sắp lại thứ tự 85 sản phẩm (1043 dòng, không ẩn/xóa ảnh nào): ảnh thật (không phải `vip1-`/`p2-`) sort_order 1.., ảnh `vip1-` riêng từng mã 100.., `vip1-` dùng chung 200.., ảnh concept `p2-0N` = 500+N (luôn sau ảnh thật). Rollback `state/noi-dung-20261117/sapxep-rollback-0857.json`. Script `sap-xep-anh.php` chạy lại được (idempotent); `ghi-phu.php` nay ghi ảnh `p2-` với sort_order 500+N.
+
 ## 2026-11-18 — bộ ảnh phụ đèn pha hoàn chỉnh (02, 03, 04, 05, 06, 07) cho 72 mã
 
 - Backup DB `20261118T001153Z-db`; một lượt ghi `product_images` cho 72 đèn pha: thêm 160 dòng, đổi 168 dòng (không xóa, không dời). Rollback `state/noi-dung-20261117/phu-rollback-0711.json`.
