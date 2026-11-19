@@ -6,11 +6,12 @@
 //   node audit/site-audit.cjs                 local preview on :3100
 //   AUDIT_BASE=https://phucthinhsolar.com node audit/site-audit.cjs
 //   AUDIT_ROUTES=/,/lien-he/ AUDIT_WIDTHS=412 node audit/site-audit.cjs
+// Default widths cover the real phone range: 360 (most Android incl. OPPO), 375/393 (iPhone), 412/430 (large phones), 768/820 (tablets).
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 
 const base = process.env.AUDIT_BASE || 'http://localhost:3100';
-const widths = (process.env.AUDIT_WIDTHS || '360,412,820,1440').split(',').map(Number);
+const widths = (process.env.AUDIT_WIDTHS || '360,375,393,412,430,768,820,1440').split(',').map(Number);
 const routes = (process.env.AUDIT_ROUTES || [
   '/', '/gioi-thieu/', '/giai-phap/', '/giai-phap/dien-mat-troi-ho-gia-dinh/', '/giai-phap/he-thong-luu-tru-bess/',
   '/san-pham/', '/danh-muc-san-pham/den-nlmt/', '/tim-kiem/?keyword=den+pha', '/tim-kiem/?keyword=zzzzzz',
