@@ -1,0 +1,13 @@
+{
+  "name": "pts-product-image-composer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "qa": "node qa.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1",
+    "sharp": "0.35.5"
+  }
+}
