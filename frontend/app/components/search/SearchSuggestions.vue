@@ -214,8 +214,9 @@ defineExpose({ handleKey, activeOptionId, listId, remember: history.remember })
 .sug-chip { display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--sug-line); border-radius: var(--radius-btn); background: var(--sug-tile); color: var(--sug-ink); font-size: 13.5px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
 .sug-chip:hover, .sug-chip.is-active { border-color: var(--color-gold-500); background: var(--sug-hover); }
 .sug-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
-.sug-tile { display: flex; min-height: 56px; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--sug-line); border-radius: var(--radius-sm); background: var(--sug-tile); color: var(--sug-ink); font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
-.sug-tile > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.sug-tiles > li { display: flex; }
+.sug-tile { flex: 1; display: flex; min-height: 56px; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--sug-line); border-radius: var(--radius-sm); background: var(--sug-tile); color: var(--sug-ink); font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
+.sug-tile > span:last-child { min-width: 0; overflow-wrap: break-word; }
 .sug-tile:hover { border-color: var(--color-gold-500); background: var(--sug-hover); transform: translateY(-1px); }
 .sug-icon { display: grid; width: 36px; height: 36px; flex: none; place-items: center; border-radius: var(--radius-btn); background: rgb(228 168 73 / 14%); color: var(--color-gold-700); }
 .sug-row { display: grid; min-height: 64px; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px; border-radius: var(--radius-sm); color: var(--sug-ink); text-decoration: none; transition: background-color .12s ease; }
@@ -234,7 +235,8 @@ defineExpose({ handleKey, activeOptionId, listId, remember: history.remember })
 @media (max-width: 640px) {
   .sug-row { grid-template-columns: 48px minmax(0, 1fr); }
   .sug-price { grid-column: 2; font-size: 13.5px; }
-  .sug-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* rem, so a larger text size drops to one column instead of breaking words in half. */
+  .sug-tiles { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sug-start, .sug-results { animation: none; }

@@ -899,7 +899,7 @@ onBeforeUnmount(() => {
               </button>
             </form>
             <div class="pts-search-quick flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1" :class="{ 'max-tb:hidden': searchKeyword.trim().length >= 2 }">
-              <span class="mr-1.5 text-[13px] font-semibold text-slate-500">Tra cứu nhanh</span>
+              <span class="mr-1.5 text-[13px] font-semibold text-slate-500 max-[1099px]:basis-full">Tra cứu nhanh</span>
               <button
                 v-for="term in popularSearchTerms"
                 :key="term"
