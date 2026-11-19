@@ -49,6 +49,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-19 (chiều, muộn) — căn giữa khối thẻ ít hơn số cột (release 5887a972, Nuxt only)
+
+- Khối "Chọn biến tần đúng nhu cầu" (và các khối thẻ khác) khai báo lưới 3 cột cố định, nên 1–2 mục bị dồn trái. Không có thành phần dùng chung: mỗi nơi tự viết lưới. Thêm lớp CSS chung `pts-cg` (+ `pts-cg-801`, `pts-cg-861`) trong `assets/css/main.css`: từ 768 px trở lên dùng flex căn giữa, 2 cột ≥768, 3 cột ≥1200; điện thoại giữ dải cuộn/1 cột cũ.
+- Áp cho: ứng dụng ở trang danh mục (CatalogPage), "Ứng dụng" và "Thông tin cần biết" ở trang sản phẩm, chiến dịch ở trang chủ, ba khối ở trang Giới thiệu. Đo trên web thật: biến tần (2 mục) cách mép trái/phải 233/233 px; các khối 3 mục lệch 0/0; không tràn ngang.
+- Khối mới có số mục thay đổi nên dùng `pts-cg` thay vì `grid-cols-3` cố định.
+
 ## 2026-11-19 (chiều) — sửa nút cây danh mục + dải ảnh sản phẩm, bật công cụ ước tính, cây bút cho 11 bảng CMS (release 65b334b6)
 
 - **Nút "Mở hết / Thu gọn hết" ở Danh mục không chạy**: trong hàm gắn vào nút, `this.$el` là chính cái nút (không phải cả cây) nên `querySelectorAll('.pts-tree-item')` rỗng; thêm nữa `Alpine.$data` không tồn tại trong Alpine đi kèm Livewire. Sửa: dùng `this.$root` và `Alpine.evaluate(item, 'open = …')`. Kiểm bằng trang thử Playwright (gập/mở đúng). File: `resources/views/filament/resources/categories/tree.blade.php`.
