@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Bulk;
 
+use App\Domain\Catalog\MerchantIdentifier;
 use App\Domain\Catalog\SpecFormat;
 use App\Filament\Support\Options;
 use App\Models\Product;
@@ -334,6 +335,9 @@ final class BulkPlanner
         // Specs are written one way whatever the file says ("4-6H" → "4–6 giờ"), so the preview shows what will be saved.
         if (! $clear) {
             $value = SpecFormat::cell((string) ($column['field'] ?? $key), $kind, $value);
+            if ($kind === 'mpn' && preg_match("/^'0\\d+$/D", $value) === 1) {
+                $value = substr($value, 1);
+            }
         }
         if ($clear && (in_array($key, ['code', 'name', 'slug', 'category'], true) || $kind === 'flag')) {
             $item['errors'][] = $column['label'].' không dùng được '.BulkColumns::CLEAR.'.';
@@ -382,6 +386,30 @@ final class BulkPlanner
             $item['columns'][$field] = $stored;
         };
         switch ($column['kind']) {
+            case 'availability':
+                if ($value === null || $value === 'in_stock') {
+                    $set($value);
+                } else {
+                    $item['errors'][] = $label.' chỉ nhận in_stock khi đã xác minh có thể giao ngay.';
+                }
+                break;
+            case 'gtin':
+                $gtin = $value === null ? null : MerchantIdentifier::gtin($value);
+                if ($value !== null && $gtin === '') {
+                    $item['errors'][] = $label.' phải là GTIN-8, GTIN-12, GTIN-13 hoặc GTIN-14 hợp lệ.';
+                } else {
+                    $set($gtin);
+                }
+                break;
+            case 'mpn':
+                $input = $value !== null && preg_match("/^'0\\d+$/D", $value) === 1 ? substr($value, 1) : $value;
+                $mpn = $input === null ? null : MerchantIdentifier::mpn($input);
+                if ($input !== null && $mpn === '') {
+                    $item['errors'][] = $label.' phải có từ 1 đến 70 ký tự hợp lệ.';
+                } else {
+                    $set($mpn);
+                }
+                break;
             case 'slug':
                 $set(Slugs::from($value));
                 break;
@@ -549,6 +577,13 @@ final class BulkPlanner
         if ($regular > 0 && $sale > $regular) {
             $item['errors'][] = 'Giá khuyến mãi không được lớn hơn giá gốc.';
         }
+        $gtin = (string) (array_key_exists('merchant_gtin', $item['columns']) ? ($item['columns']['merchant_gtin'] ?? '') : ($existing?->merchant_gtin ?? ''));
+        $mpn = (string) (array_key_exists('merchant_mpn', $item['columns']) ? ($item['columns']['merchant_mpn'] ?? '') : ($existing?->merchant_mpn ?? ''));
+        $identifiersAbsent = (bool) (array_key_exists('merchant_identifiers_absent', $item['columns']) ? $item['columns']['merchant_identifiers_absent'] : ($existing?->merchant_identifiers_absent ?? false));
+        $merchantColumnsChanged = array_intersect(['merchant_gtin', 'merchant_mpn', 'merchant_identifiers_absent'], array_keys($item['columns'])) !== [];
+        if ($merchantColumnsChanged && $identifiersAbsent && (trim($gtin) !== '' || trim($mpn) !== '')) {
+            $item['errors'][] = 'Không thể xác nhận không có GTIN/MPN khi một trong hai ô vẫn có dữ liệu.';
+        }
         $nothing = $item['columns'] === [] && $item['seo'] === [] && $item['gallery'] === null && $item['sections'] === null;
         if ($isCreate) {
             if (($item['columns']['is_visible'] ?? true) === false) {
@@ -596,6 +631,8 @@ final class BulkPlanner
             'multiline' => BulkText::cleanLines($value),
             'pairs', 'lines', 'specs' => (string) preg_replace('/[\t ]*\|[\t ]*/u', ' | ', BulkText::cleanLines($value)),
             'gallery' => implode("\n", self::names($value)),
+            'gtin' => MerchantIdentifier::gtin($value) ?: $value,
+            'mpn' => MerchantIdentifier::mpn(preg_match("/^'0\\d+$/D", $value) === 1 ? substr($value, 1) : $value) ?: $value,
             default => $value,
         };
     }

@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'merchant_feed' => [
+        // The public legacy feed stays active until inventory attributes are reviewed and this release gate is enabled.
+        'verified_enabled' => (bool) env('MERCHANT_FEED_VERIFIED_ENABLED', false),
+        // The last owner-provided Merchant Center snapshot had 286 approved items; review this floor before release.
+        'verified_minimum_items' => (int) env('MERCHANT_FEED_VERIFIED_MINIMUM_ITEMS', 286),
+    ],
+
 ];

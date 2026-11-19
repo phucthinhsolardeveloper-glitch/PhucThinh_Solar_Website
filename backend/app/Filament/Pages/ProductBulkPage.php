@@ -150,6 +150,8 @@ class ProductBulkPage extends Page
             ])->label('Ảnh')->icon(Heroicon::OutlinedPhoto)->button()->color('gray'),
             Action::make('feed')->label('Feed Google Shopping')->icon(Heroicon::OutlinedShoppingBag)->color('gray')
                 ->action(fn () => $this->downloadFeed()),
+            Action::make('verifiedFeedPreview')->label('Xem trước feed Merchant mới')->icon(Heroicon::OutlinedEye)->color('gray')
+                ->action(fn () => $this->downloadVerifiedFeedPreview()),
             Action::make('previewFile')->label('Nhập tệp')->icon(Heroicon::OutlinedArrowUpTray)
                 ->modalHeading('Chọn tệp để xem trước')->modalDescription('Chưa có gì được ghi cho tới khi bạn bấm Áp dụng.')->modalSubmitActionLabel('Xem trước')
                 ->schema([self::upload('file', 'Tệp Excel hoặc CSV (tối đa 10 MB)', [
@@ -210,6 +212,28 @@ class ProductBulkPage extends Page
         Notification::make()->success()->title('Feed gồm '.count($result['rows']).' sản phẩm')->body('Bỏ qua '.$result['skipped'].' sản phẩm chưa đủ điều kiện.')->send();
 
         return $feed->download($result['rows']);
+    }
+
+    private function downloadVerifiedFeedPreview()
+    {
+        $feed = app(MerchantFeed::class);
+        if (! $feed->pricesArePublic()) {
+            Notification::make()->warning()->title('Chưa tạo được bản xem trước')->body('Website đang ẩn giá. Bật hiển thị giá trước để feed khớp trang sản phẩm.')->persistent()->send();
+
+            return null;
+        }
+        $result = $feed->build((string) config('site.canonical_origin'), true);
+        if ($result['rows'] === []) {
+            Notification::make()->warning()->title('Chưa có sản phẩm đã xác minh')->body('Feed public hiện tại chưa đổi. Hãy xác minh tình trạng giao ngay ở sản phẩm hoặc workbook.')->persistent()->send();
+
+            return null;
+        }
+        $minimum = (int) config('services.merchant_feed.verified_minimum_items', 286);
+        Notification::make()->warning()->title('Bản xem trước: '.count($result['rows']).' sản phẩm')
+            ->body('Tệp này chưa thay feed public. Đối chiếu ID với feed hiện tại; release gate yêu cầu tối thiểu '.$minimum.' dòng. Bỏ qua '.$result['skipped'].' dòng.')
+            ->persistent()->send();
+
+        return $feed->download($result['rows'], true);
     }
 
     private function previewFile(array $data): void

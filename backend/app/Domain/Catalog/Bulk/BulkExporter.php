@@ -34,7 +34,8 @@ final class BulkExporter
                 $row = [];
                 foreach (array_keys($columns) as $key) {
                     $value = $values[$key] ?? '';
-                    $row[] = $value !== '' && in_array($value[0], ['=', '+', '-', '@'], true) ? "'".$value : $value;
+                    $preserveLeadingZero = in_array($key, ['merchant_gtin', 'merchant_mpn'], true) && preg_match('/^0\d+$/D', $value) === 1;
+                    $row[] = $value !== '' && ($preserveLeadingZero || in_array($value[0], ['=', '+', '-', '@'], true)) ? "'".$value : $value;
                 }
                 fputcsv($out, $row, ',', '"', '');
             }
@@ -75,6 +76,9 @@ final class BulkExporter
         foreach ($columns as $key => $column) {
             $sheet->setCellValueExplicit($letters[$key].'1', $column['label'], DataType::TYPE_STRING);
             $sheet->getColumnDimension($letters[$key])->setWidth(! empty($column['wide']) ? 45 : 18);
+            if (in_array($key, ['merchant_gtin', 'merchant_mpn'], true)) {
+                $sheet->getStyle($letters[$key].'2:'.$letters[$key].self::LAST_ROW)->getNumberFormat()->setFormatCode('@');
+            }
         }
         $header = $sheet->getStyle('A1:'.$last.'1');
         $header->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
@@ -138,7 +142,8 @@ final class BulkExporter
 
     private function pickLists(Worksheet $sheet, array $letters, array $ranges): void
     {
-        $lists = $ranges + ['action' => '"create,update,archive,skip"', 'is_visible' => '"1,0"', 'is_bestseller' => '"1,0"', 'quote_only' => '"1,0"'];
+        $lists = $ranges + ['action' => '"create,update,archive,skip"', 'is_visible' => '"1,0"', 'is_bestseller' => '"1,0"', 'quote_only' => '"1,0"',
+            'merchant_availability' => '"in_stock"', 'merchant_identifiers_absent' => '"1,0"'];
         foreach ($lists as $key => $formula) {
             $rule = new DataValidation;
             $rule->setType(DataValidation::TYPE_LIST)->setErrorStyle(DataValidation::STYLE_STOP)->setAllowBlank(true)
@@ -169,6 +174,7 @@ final class BulkExporter
             ['Cột Thao tác', 'Để trống là tự nhận biết. create = tạo mới; update = cập nhật; archive = ẩn khỏi website, không xóa; skip = bỏ qua dòng.'],
             ['Giá', 'Nhập số, có thể viết 1.235.000 hoặc 1235000. Giá khuyến mãi không được lớn hơn giá gốc.'],
             ['Cột 1/0', 'Hiển thị, Bán chạy, Liên hệ báo giá: 1 = bật, 0 = tắt. Sản phẩm mới để trống sẽ hiển thị.'],
+            ['Dữ liệu Google Merchant', 'Chỉ chọn “in_stock” khi đã xác minh có thể giao ngay. GTIN phải là mã nhà sản xuất hợp lệ; MPN là mã hãng. Chỉ đánh dấu không có mã khi đã xác minh. Ưu tiên XLSX để giữ số 0 đầu mã; CSV thêm dấu nháy bảo vệ khi mở bằng Excel. Không nhập GTIN/MPN dạng số trong Excel.'],
             ['Danh mục, thương hiệu', 'Chọn trong danh sách hoặc gõ đúng tên. Thương hiệu mới sẽ được hỏi tạo, ghép hay bỏ trống ở màn xem trước.'],
             ['Điểm nổi bật', 'Mỗi dòng: Tiêu đề | Giải thích. Tối đa 6 dòng.'],
             ['Mô tả dài / FAQ', "## Tiêu đề\n- Danh sách\n[faq] Câu hỏi | Trả lời\n![Chú thích](ten-anh.jpg)\nCác khối cách nhau một dòng trống. [ẩn] để không hiện khối mô tả."],

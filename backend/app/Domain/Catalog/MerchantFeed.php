@@ -16,6 +16,8 @@ final class MerchantFeed
 {
     public const HEADERS = ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price', 'sale_price', 'brand', 'condition', 'identifier_exists', 'product_type', 'additional_image_link'];
 
+    public const VERIFIED_HEADERS = ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price', 'sale_price', 'brand', 'condition', 'identifier_exists', 'gtin', 'mpn', 'product_type', 'additional_image_link'];
+
     public function __construct(private readonly SiteSettings $settings) {}
 
     public function pricesArePublic(): bool
@@ -24,14 +26,14 @@ final class MerchantFeed
     }
 
     /** @return array{rows: list<list<string>>, skipped: int} */
-    public function build(string $origin): array
+    public function build(string $origin, bool $verified = false): array
     {
         $paths = Options::categoryPaths();
         $brands = DB::table('brands')->pluck('name', 'id');
         $rows = [];
         $skipped = 0;
         foreach (DB::table('products')->where('is_visible', true)->orderBy('id')->cursor() as $product) {
-            $row = $this->row($product, $origin, $paths, $brands);
+            $row = $this->row($product, $origin, $paths, $brands, $verified);
             if ($row === null) {
                 $skipped++;
             } else {
@@ -43,11 +45,13 @@ final class MerchantFeed
     }
 
     /** @param list<list<string>> $rows */
-    public function download(array $rows): StreamedResponse
+    public function download(array $rows, bool $verified = false): StreamedResponse
     {
-        return response()->streamDownload(function () use ($rows): void {
+        $headers = $verified ? self::VERIFIED_HEADERS : self::HEADERS;
+
+        return response()->streamDownload(function () use ($rows, $headers): void {
             $out = fopen('php://output', 'wb');
-            fputcsv($out, self::HEADERS, ',', '"', '');
+            fputcsv($out, $headers, ',', '"', '');
             foreach ($rows as $row) {
                 fputcsv($out, $row, ',', '"', '');
             }
@@ -61,15 +65,16 @@ final class MerchantFeed
      *
      * @param  list<list<string>>  $rows
      */
-    public function xml(array $rows, string $origin): string
+    public function xml(array $rows, string $origin, bool $verified = false): string
     {
+        $headers = $verified ? self::VERIFIED_HEADERS : self::HEADERS;
         $e = fn (string $text) => htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
         $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0"><channel>'
             .'<title>'.$e($this->settings->siteName() ?: 'Phúc Thịnh Solar').'</title><link>'.$e(rtrim($origin, '/').'/').'</link>'
             .'<description>Sản phẩm Phúc Thịnh Solar</description>'."\n";
         foreach ($rows as $row) {
             $out .= '<item>';
-            foreach (self::HEADERS as $i => $tag) {
+            foreach ($headers as $i => $tag) {
                 if (($row[$i] ?? '') === '') {
                     continue;
                 }
@@ -85,15 +90,29 @@ final class MerchantFeed
     }
 
     /** @return list<string>|null */
-    private function row(object $product, string $origin, array $paths, $brands): ?array
+    private function row(object $product, string $origin, array $paths, $brands, bool $verified): ?array
     {
         $code = trim((string) $product->code);
         $title = self::plain((string) $product->name, 150);
+        $availability = $verified ? trim((string) ($product->merchant_availability ?? '')) : 'in_stock';
+        $legacyBrand = (string) ($brands[$product->brand_id] ?? '');
+        $brand = self::plain($legacyBrand);
+        $rawGtin = trim((string) ($product->merchant_gtin ?? ''));
+        $rawMpn = trim((string) ($product->merchant_mpn ?? ''));
+        $gtin = MerchantIdentifier::gtin($rawGtin);
+        $mpn = MerchantIdentifier::mpn($rawMpn);
+        $identifierExists = MerchantIdentifier::exists(
+            $gtin,
+            $mpn,
+            $brand !== '',
+            (bool) ($product->merchant_identifiers_absent ?? false),
+            $rawGtin !== '' || $rawMpn !== '',
+        );
         // The clean Shopping picture when there is one; otherwise the main product picture (owner decision 2026-11-13).
         // Google may still reject an individual product whose picture carries text or a logo; the others are unaffected.
         $image = trim((string) $product->feed_image) !== '' ? trim((string) $product->feed_image) : trim((string) $product->image);
         // The ID must not change between syncs, so an over-long code is left out instead of being cut.
-        if ($code === '' || mb_strlen($code, 'UTF-8') > 50 || $title === '' || (string) $product->slug === '' || $product->quote_only) {
+        if (($verified && $availability !== 'in_stock') || $code === '' || mb_strlen($code, 'UTF-8') > 50 || $title === '' || (string) $product->slug === '' || $product->quote_only) {
             return null;
         }
         if ($image === '' || basename($image) !== $image || ! preg_match('/\.(?:jpe?g|png|webp|gif)$/i', $image)) {
@@ -116,9 +135,18 @@ final class MerchantFeed
             $description .= ' Công suất: '.rtrim(rtrim(number_format((float) $product->power_watts, 2, '.', ''), '0'), '.').' W.';
         }
 
-        return [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
+        $row = [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
             rtrim($origin, '/').'/upload/product/'.rawurlencode($image), 'in_stock', number_format($price, 0, '.', '').' VND',
-            $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', self::plain((string) ($brands[$product->brand_id] ?? '')), 'new', 'no',
+            $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', $brand, 'new', 'no',
+            str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? '')), $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin)];
+
+        if (! $verified) {
+            return $row;
+        }
+
+        return [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
+            rtrim($origin, '/').'/upload/product/'.rawurlencode($image), $availability, number_format($price, 0, '.', '').' VND',
+            $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', $brand, 'new', $identifierExists, $gtin, $mpn,
             str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? '')), $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin)];
     }
 

@@ -13,7 +13,7 @@ class ProductDuplicator
     {
         return DB::transaction(function () use ($source): Product {
             $source = Product::query()->whereKey($source->id)->lockForUpdate()->firstOrFail();
-            $copy = $source->replicate();
+            $copy = $source->replicate(['merchant_availability', 'merchant_gtin', 'merchant_mpn', 'merchant_identifiers_absent']);
             $copy->name = mb_substr($source->name, 0, 240).' (bản sao)';
             $copy->slug = $this->newSlug($source->slug);
             $copy->code = null;

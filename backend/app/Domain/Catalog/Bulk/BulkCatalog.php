@@ -72,6 +72,7 @@ final class BulkCatalog
                 'money' => (float) $raw > 0 ? (string) (int) $raw : '0',
                 'decimal' => $raw === null ? '' : (string) BulkText::decimal((string) $raw),
                 'flag' => $raw ? '1' : '0',
+                'mpn' => trim((string) $raw),
                 'html' => BulkText::htmlToText((string) $raw),
                 'pairs' => BulkText::linesFrom((string) $raw, true),
                 'lines' => BulkText::linesFrom((string) $raw, false),

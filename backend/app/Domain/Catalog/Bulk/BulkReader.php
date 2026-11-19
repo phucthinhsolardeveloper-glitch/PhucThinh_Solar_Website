@@ -3,6 +3,8 @@
 namespace App\Domain\Catalog\Bulk;
 
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Throwable;
@@ -50,8 +52,15 @@ final class BulkReader
             self::fail('Tệp CSV phải lưu dạng UTF-8. Trong Excel chọn “CSV UTF-8”, hoặc dùng XLSX.');
         }
         $handle = fopen($path, 'rb');
+        $hasBom = str_starts_with($content, "\xEF\xBB\xBF");
+        if ($hasBom) {
+            fseek($handle, 3);
+        }
         $first = (string) fgets($handle);
         rewind($handle);
+        if ($hasBom) {
+            fseek($handle, 3);
+        }
         $counts = [',' => substr_count($first, ','), ';' => substr_count($first, ';'), "\t" => substr_count($first, "\t")];
         arsort($counts);
         $grid = [];
@@ -72,7 +81,27 @@ final class BulkReader
             $reader->setReadEmptyCells(false);
             @ini_set('memory_limit', '768M');
             $book = $reader->load($path);
-            $grid = self::grid($book->getSheetByName('SanPham') ?? $book->getSheet(0));
+            $sheet = $book->getSheetByName('SanPham') ?? $book->getSheet(0);
+            $grid = self::grid($sheet);
+            if ($grid !== []) {
+                $identifierColumns = [];
+                foreach ($grid[0] as $index => $header) {
+                    $key = BulkColumns::headerMap()[BulkColumns::header($header)] ?? null;
+                    if (in_array($key, ['merchant_gtin', 'merchant_mpn'], true)) {
+                        $identifierColumns[] = $index;
+                    }
+                }
+                foreach ($identifierColumns as $index) {
+                    foreach (array_slice($grid, 1, null, true) as $rowIndex => $row) {
+                        $coordinate = Coordinate::stringFromColumnIndex($index + 1).($rowIndex + 1);
+                        $cell = $sheet->getCell($coordinate);
+                        if ($cell->getValue() !== null && $cell->getValue() !== '' && $cell->getDataType() === DataType::TYPE_NUMERIC) {
+                            // Numeric Excel cells may already have lost leading zeroes; force normal field validation to reject them.
+                            $grid[$rowIndex][$index] = str_repeat('X', 71);
+                        }
+                    }
+                }
+            }
             $baseline = [];
             $system = $book->getSheetByName('_HeThong');
             if ($system) {

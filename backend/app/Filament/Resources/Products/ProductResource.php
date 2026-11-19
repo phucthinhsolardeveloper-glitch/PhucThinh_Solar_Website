@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Domain\Catalog\MerchantIdentifier;
 use App\Domain\Catalog\ProductSalesReadiness;
 use App\Domain\Catalog\SpecFormat;
 use App\Domain\Shipping\Warehouses;
@@ -16,6 +17,7 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
@@ -112,6 +114,32 @@ class ProductResource extends Resource
                         ->helperText('Dùng để tính phí Nhất Tín lúc khách đặt hàng. Để trống thì nhân viên báo phí giao hàng sau.'),
                     Select::make('warehouse_id')->label(NewFeatures::label('Kho giữ hàng', 'kho-san-pham'))->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa gán kho')
                         ->helperText('Kho nào đang giữ sản phẩm này. Đơn có sản phẩm này sẽ xuất từ kho đó; phí giao hàng cũng tính từ kho đó.'),
+                ]),
+                Tab::make('Google Merchant')->columns(2)->schema([
+                    Select::make('merchant_availability')->label('Tình trạng Merchant')->options([
+                        'in_stock' => 'Sẵn sàng giao ngay (đã xác minh)',
+                    ])->placeholder('Chưa xác minh')->helperText('Chỉ chọn sau khi kiểm tra khả năng giao ngay. Trạng thái trống vẫn giữ dữ liệu feed cũ cho tới khi bật release gate; không đồng nghĩa đã xác minh.'),
+                    TextInput::make('merchant_gtin')->label('GTIN nhà sản xuất')->maxLength(32)
+                        ->helperText('Nhập GTIN-8/12/13/14 từ nhãn hoặc tài liệu hãng. Mã được giữ dạng chuỗi để bảo toàn số 0 đầu.')
+                        ->rules([fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (filled($value) && MerchantIdentifier::gtin((string) $value) === '') {
+                                $fail('GTIN phải đúng độ dài, checksum và không thuộc dải hạn chế/coupon.');
+                            }
+                        }])->dehydrateStateUsing(fn ($state) => filled($state) ? MerchantIdentifier::gtin((string) $state) : null),
+                    TextInput::make('merchant_mpn')->label('MPN nhà sản xuất')->maxLength(70)
+                        ->helperText('Nhập đúng mã part number của hãng; không dùng mã sản phẩm nội bộ.')
+                        ->rules([fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (filled($value) && MerchantIdentifier::mpn((string) $value) === '') {
+                                $fail('MPN phải có từ 1 đến 70 ký tự và không chứa ký tự điều khiển.');
+                            }
+                        }])->dehydrateStateUsing(fn ($state) => filled($state) ? MerchantIdentifier::mpn((string) $state) : null),
+                    Toggle::make('merchant_identifiers_absent')->label('Đã xác minh không có GTIN/MPN')
+                        ->helperText('Chỉ đánh dấu sau khi kiểm tra với hãng hoặc nhà cung cấp. Feed dùng yes khi có GTIN hợp lệ hoặc có cả MPN và thương hiệu; MPN thiếu thương hiệu vẫn chưa kết luận.')
+                        ->rules([fn (Get $get) => function (string $attribute, mixed $value, Closure $fail) use ($get): void {
+                            if ($value && (filled($get('merchant_gtin')) || filled($get('merchant_mpn')))) {
+                                $fail('Hãy xóa GTIN và MPN trước khi xác nhận sản phẩm không có mã.');
+                            }
+                        }]),
                 ]),
                 Tab::make('Ảnh & video')->schema([
                     Grid::make(2)->schema([
@@ -224,6 +252,7 @@ class ProductResource extends Resource
                         }),
                 ]),
                 TextColumn::make('warehouse_id')->label('Kho giữ hàng')->formatStateUsing(fn ($state) => $warehouseOptions[(int) $state] ?? 'Chưa gán')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('merchant_availability')->label('Merchant')->formatStateUsing(fn ($state) => $state === 'in_stock' ? 'Đã xác minh giao ngay' : 'Chưa xác minh')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sales_readiness')->label('Cần bổ sung')
                     ->state(function (Product $record): string {
                         $issues = app(ProductSalesReadiness::class)->issues($record);

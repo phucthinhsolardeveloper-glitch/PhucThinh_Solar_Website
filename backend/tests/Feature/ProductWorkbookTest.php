@@ -17,9 +17,13 @@ use App\Support\SiteSettings;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 function bulkRow(array $cells, int $row = 2): array
 {
@@ -53,12 +57,94 @@ function exportedBook(): string
 it('exports every column with pick lists, a locked ID, a guide and a hidden snapshot', function () {
     $book = IOFactory::load(exportedBook());
     $sheet = $book->getSheetByName('SanPham');
+    $gtinColumn = Coordinate::stringFromColumnIndex((int) array_search('merchant_gtin', array_keys(BulkColumns::exported()), true) + 1);
     expect($book->getSheetNames())->toBe(['SanPham', 'DanhMuc', 'HuongDan', '_HeThong'])
         ->and($book->getSheetByName('_HeThong')->getSheetState())->toBe('veryHidden')
         ->and(count($sheet->toArray()[0]))->toBe(count(BulkColumns::exported()))
         ->and(count(BulkColumns::exported()))->toBeGreaterThan(45)
         ->and($sheet->getProtection()->getSheet())->toBeTrue()
-        ->and($sheet->getDataValidationCollection())->not->toBeEmpty();
+        ->and($sheet->getDataValidationCollection())->not->toBeEmpty()
+        ->and($sheet->getStyle($gtinColumn.'2')->getNumberFormat()->getFormatCode())->toBe('@');
+});
+
+it('exports and imports Merchant attributes without losing a GTIN leading zero', function () {
+    $product = sampleProduct();
+    $product->update(['merchant_gtin' => '042100005264', 'merchant_mpn' => '00012345', 'merchant_availability' => 'in_stock', 'merchant_identifiers_absent' => false]);
+    $catalog = new BulkCatalog(Product::query()->with(['seo', 'images', 'contentSection'])->whereKey($product->id)->get());
+    $xlsxResponse = (new BulkExporter)->xlsx($catalog, 'merchant');
+    $xlsx = (new BulkReader)->read($xlsxResponse->getFile()->getPathname(), 'merchant.xlsx');
+    expect($xlsx['rows'][0])->toMatchArray([
+        'merchant_gtin' => '042100005264',
+        'merchant_mpn' => '00012345',
+        'merchant_availability' => 'in_stock',
+        'merchant_identifiers_absent' => '0',
+    ]);
+
+    $csvResponse = (new BulkExporter)->csv($catalog, 'merchant');
+    ob_start();
+    $csvResponse->sendContent();
+    $csvPath = tempnam(sys_get_temp_dir(), 'merchant-csv-');
+    file_put_contents($csvPath, (string) ob_get_clean());
+    $csv = (new BulkReader)->read($csvPath, 'merchant.csv');
+    unlink($csvPath);
+    expect($csv['rows'][0]['merchant_gtin'])->toBe("'042100005264")
+        ->and($csv['rows'][0]['merchant_mpn'])->toBe("'00012345");
+
+    $product->update(['merchant_gtin' => null]);
+    $plan = bulkPlan([bulkRow(['id' => (string) $product->id, 'merchant_gtin' => "'042100005264"])]);
+    expect($plan['errors'])->toBe(0)
+        ->and($plan['rows'][0]['columns'])->toBe(['merchant_gtin' => '042100005264']);
+
+    $product->update(['merchant_mpn' => null]);
+    $mpnPlan = bulkPlan([bulkRow(['id' => (string) $product->id, 'merchant_mpn' => "'00012345"])]);
+    expect($mpnPlan['errors'])->toBe(0)->and($mpnPlan['rows'][0]['columns'])->toBe(['merchant_mpn' => '00012345']);
+
+    $invalid = bulkPlan([bulkRow(['id' => (string) $product->id, 'merchant_gtin' => '042100005265'])]);
+    expect($invalid['errors'])->toBe(1)->and($invalid['rows'][0]['columns'])->toBe([]);
+
+    $invalidAvailability = bulkPlan([bulkRow(['id' => (string) $product->id, 'merchant_availability' => 'out_of_stock'])]);
+    expect($invalidAvailability['errors'])->toBe(1)->and($invalidAvailability['rows'][0]['columns'])->toBe([]);
+
+    $product->update(['merchant_mpn' => '00012345']);
+    $contradiction = bulkPlan([bulkRow(['id' => (string) $product->id, 'merchant_identifiers_absent' => '1'])]);
+    expect($contradiction['errors'])->toBe(1)->and($contradiction['rows'][0]['columns'])->toBe(['merchant_identifiers_absent' => true]);
+});
+
+it('rejects numeric Excel identifier cells that can lose leading zeroes', function () {
+    $sourcePath = exportedBook();
+    $book = IOFactory::load($sourcePath);
+    $sheet = $book->getSheetByName('SanPham');
+    $keys = array_keys(BulkColumns::exported());
+    $gtinColumn = Coordinate::stringFromColumnIndex((int) array_search('merchant_gtin', $keys, true) + 1);
+    $mpnColumn = Coordinate::stringFromColumnIndex((int) array_search('merchant_mpn', $keys, true) + 1);
+    $sheet->setCellValueExplicit($gtinColumn.'2', 42100005264, DataType::TYPE_NUMERIC);
+    $sheet->setCellValueExplicit($mpnColumn.'2', 12345, DataType::TYPE_NUMERIC);
+    $path = tempnam(sys_get_temp_dir(), 'numeric-ids-').'.xlsx';
+    (new Xlsx($book))->save($path);
+    $book->disconnectWorksheets();
+
+    $read = (new BulkReader)->read($path, 'numeric-ids.xlsx');
+    $plan = bulkPlan([$read['rows'][0]]);
+    unlink($path);
+
+    expect($plan['errors'])->toBeGreaterThan(0)
+        ->and(collect($plan['rows'][0]['errors'])->join(' '))->toContain('GTIN nhà sản xuất vượt quá 32 ký tự')
+        ->and(collect($plan['rows'][0]['errors'])->join(' '))->toContain('MPN nhà sản xuất vượt quá 70 ký tự')
+        ->and($plan['rows'][0]['columns'])->toBe([]);
+});
+
+it('adds nullable Merchant columns under a unique migration name without backfilling legacy products', function () {
+    $product = sampleProduct();
+    $product->update(['merchant_availability' => null, 'merchant_gtin' => null, 'merchant_mpn' => null]);
+    $migrationNames = array_map('basename', glob(database_path('migrations/2026_11_19_*.php') ?: []));
+
+    expect(Schema::hasColumn('products', 'merchant_availability'))->toBeTrue()
+        ->and(Schema::hasColumn('products', 'merchant_gtin'))->toBeTrue()
+        ->and(Schema::hasColumn('products', 'merchant_mpn'))->toBeTrue()
+        ->and(Schema::hasColumn('products', 'warehouse_id'))->toBeTrue()
+        ->and($product->fresh()->merchant_availability)->toBeNull()
+        ->and($migrationNames)->toContain('2026_11_19_000100_add_warehouses.php', '2026_11_19_000300_add_merchant_product_attributes.php')
+        ->and(count(array_filter($migrationNames, fn (string $name) => str_starts_with($name, '2026_11_19_000100_'))))->toBe(1);
 });
 
 it('finds nothing to change when an exported file comes straight back', function () {
@@ -75,6 +161,13 @@ it('reads files issued by the old site, including its headers', function () {
 
     $bad = UploadedFile::fake()->createWithContent('x.csv', "ID sản phẩm,Cột lạ\n1,2\n");
     expect(fn () => (new BulkReader)->read($bad->getPathname(), 'x.csv'))->toThrow(ValidationException::class, 'Cột không được hỗ trợ');
+});
+
+it('reads quoted CSV headers after a UTF-8 BOM', function () {
+    $file = UploadedFile::fake()->createWithContent('quoted.csv', "\xEF\xBB\xBF\"Thao tác\",\"ID sản phẩm\",\"GTIN nhà sản xuất\"\nupdate,42,042100005264\n");
+    $rows = (new BulkReader)->read($file->getPathname(), 'quoted.csv')['rows'];
+
+    expect($rows[0])->toMatchArray(['action' => 'update', 'id' => '42', 'merchant_gtin' => '042100005264']);
 });
 
 it('keeps blanks, clears on request and drops values that did not change', function () {
@@ -259,6 +352,92 @@ it('serves the Merchant Center feed as RSS at /google-shopping.xml, and nothing 
         ->and((string) $items[0]->children('g', true)->title)->toBe('Đèn pha & bộ "A"')
         ->and((string) $items[0]->children('g', true)->price)->toBe('1000000 VND')
         ->and(isset($items[0]->children('g', true)->sale_price))->toBeFalse();
+});
+
+it('keeps the existing public feed until verified availability is explicitly released', function () {
+    config(['services.merchant_feed.verified_enabled' => false]);
+    Storage::fake('upload_product');
+    Storage::disk('upload_product')->put('merchant-old.jpg', UploadedFile::fake()->image('merchant-old.jpg', 800, 800)->get());
+    DB::table('products')->update(['feed_image' => null]);
+    $brandId = DB::table('brands')->insertGetId(['name' => '<b>Legacy & Solar</b>', 'slug' => 'merchant-legacy-brand', 'is_visible' => true, 'created_at' => now(), 'updated_at' => now()]);
+    $product = sampleProduct();
+    $product->update(['code' => 'FEED-LEGACY-NULL', 'brand_id' => $brandId, 'feed_image' => 'merchant-old.jpg', 'merchant_availability' => null, 'regular_price' => 100000]);
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    Cache::forget('merchant-feed-xml');
+
+    $response = $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy');
+    $items = simplexml_load_string($response->getContent())->channel->item;
+    expect($items)->toHaveCount(1)
+        ->and((string) $items[0]->children('g', true)->id)->toBe('FEED-LEGACY-NULL')
+        ->and((string) $items[0]->children('g', true)->availability)->toBe('in_stock')
+        ->and((string) $items[0]->children('g', true)->brand)->toBe('Legacy & Solar');
+
+    config(['services.merchant_feed.verified_enabled' => true, 'services.merchant_feed.verified_minimum_items' => 286]);
+    Cache::forget('merchant-feed-xml-verified-v1');
+    $fallback = $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy-fallback');
+    $fallbackItems = simplexml_load_string($fallback->getContent())->channel->item;
+    expect($fallbackItems)->toHaveCount(1)
+        ->and((string) $fallbackItems[0]->children('g', true)->id)->toBe('FEED-LEGACY-NULL')
+        ->and((string) $fallbackItems[0]->children('g', true)->availability)->toBe('in_stock')
+        ->and((string) $fallbackItems[0]->children('g', true)->brand)->toBe((string) $items[0]->children('g', true)->brand);
+});
+
+it('requires verified availability before replacing the legacy feed and does not cache an empty verified result', function () {
+    config(['services.merchant_feed.verified_enabled' => true]);
+    Storage::fake('upload_product');
+    Storage::disk('upload_product')->put('merchant-verified.jpg', UploadedFile::fake()->image('merchant-verified.jpg', 800, 800)->get());
+    DB::table('products')->update(['feed_image' => null]);
+    DB::table('products')->update(['merchant_availability' => null, 'merchant_gtin' => null, 'merchant_mpn' => null, 'merchant_identifiers_absent' => false]);
+    $product = sampleProduct();
+    $product->update(['code' => 'FEED-VERIFIED', 'feed_image' => 'merchant-verified.jpg', 'merchant_availability' => null,
+        'merchant_gtin' => '042100005264', 'regular_price' => 100000, 'sale_price' => null, 'quote_only' => false, 'is_visible' => true]);
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    Cache::forget('merchant-feed-xml-verified-v1');
+    Cache::forget('merchant-feed-xml');
+
+    $legacyFallback = $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy-fallback');
+    $fallbackXml = simplexml_load_string($legacyFallback->getContent());
+    $fallbackItems = $fallbackXml->channel->item;
+    expect($fallbackItems)->not->toBeEmpty()->and(Cache::has('merchant-feed-xml-verified-v1'))->toBeFalse();
+    $product->update(['merchant_availability' => 'in_stock']);
+    $otherProducts = Product::query()->where('is_visible', true)->whereKeyNot($product->id)->orderBy('id')->limit(5)->get();
+    $brandId = DB::table('brands')->insertGetId(['name' => 'Merchant MPN brand', 'slug' => 'merchant-mpn-brand', 'is_visible' => true, 'created_at' => now(), 'updated_at' => now()]);
+    $otherProducts[0]->update(['code' => 'FEED-MPN', 'brand_id' => $brandId, 'merchant_availability' => 'in_stock', 'merchant_mpn' => 'MPN-22', 'feed_image' => 'merchant-verified.jpg', 'regular_price' => 120000, 'sale_price' => null, 'quote_only' => false, 'is_visible' => true]);
+    $otherProducts[1]->update(['code' => 'FEED-NO-UPI', 'merchant_availability' => 'in_stock', 'merchant_identifiers_absent' => true, 'feed_image' => 'merchant-verified.jpg', 'regular_price' => 130000, 'sale_price' => null, 'quote_only' => false, 'is_visible' => true]);
+    $otherProducts[2]->update(['code' => 'FEED-OUT', 'merchant_availability' => 'out_of_stock', 'feed_image' => 'merchant-verified.jpg', 'regular_price' => 140000, 'sale_price' => null, 'quote_only' => false, 'is_visible' => true]);
+    $otherProducts[3]->update(['code' => 'FEED-QUOTE', 'merchant_availability' => 'in_stock', 'feed_image' => 'merchant-verified.jpg', 'regular_price' => 150000, 'sale_price' => null, 'quote_only' => true, 'is_visible' => true]);
+
+    config(['services.merchant_feed.verified_minimum_items' => 4]);
+    $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy-fallback');
+    config(['services.merchant_feed.verified_minimum_items' => 3]);
+    $response = $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'verified');
+    $items = simplexml_load_string($response->getContent())->channel->item;
+    $byId = [];
+    foreach ($items as $item) {
+        $merchantItem = $item->children('g', true);
+        $byId[(string) $merchantItem->id] = $merchantItem;
+    }
+    expect(array_keys($byId))->toBe(['FEED-VERIFIED', 'FEED-MPN', 'FEED-NO-UPI'])
+        ->and((string) $byId['FEED-VERIFIED']->availability)->toBe('in_stock')
+        ->and((string) $byId['FEED-VERIFIED']->gtin)->toBe('042100005264')
+        ->and((string) $byId['FEED-VERIFIED']->identifier_exists)->toBe('yes')
+        ->and((string) $byId['FEED-MPN']->mpn)->toBe('MPN-22')
+        ->and((string) $byId['FEED-MPN']->identifier_exists)->toBe('yes')
+        ->and((string) $byId['FEED-NO-UPI']->identifier_exists)->toBe('no');
+
+    $csvResponse = app(MerchantFeed::class)->download([array_values(array_combine(MerchantFeed::VERIFIED_HEADERS, [
+        'FEED-VERIFIED', 'Feed', 'Description', 'https://example.test/p', 'https://example.test/i.jpg', 'in_stock', '100000 VND', '', 'Brand', 'new', 'yes', '042100005264', '', '', '',
+    ]))], true);
+    ob_start();
+    $csvResponse->sendContent();
+    $csv = (string) ob_get_clean();
+    $lines = array_map(fn (string $line) => str_getcsv($line, ',', '"', ''), array_values(array_filter(explode("\n", trim($csv)), fn (string $line) => $line !== '')));
+    expect($lines[0])->toBe(MerchantFeed::VERIFIED_HEADERS)
+        ->and($lines[1][5])->toBe('in_stock')
+        ->and($lines[1][10])->toBe('yes')
+        ->and($lines[1][11])->toBe('042100005264');
 });
 
 it('offers only real photos as additional images in the Merchant feed, never the numbered poster pictures', function () {

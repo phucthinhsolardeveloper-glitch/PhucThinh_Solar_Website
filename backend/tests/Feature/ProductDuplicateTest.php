@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 it('duplicates a product and its editable content without exposing or linking commerce history', function () {
     $source = Product::query()->whereHas('contentSection')->whereHas('images')->firstOrFail();
+    $source->update(['merchant_availability' => 'in_stock', 'merchant_gtin' => '042100005264', 'merchant_mpn' => 'MFG-42', 'merchant_identifiers_absent' => false]);
     $copy = app(ProductDuplicator::class)->duplicate($source);
 
     expect($copy->id)->not->toBe($source->id)
@@ -16,6 +17,10 @@ it('duplicates a product and its editable content without exposing or linking co
         ->and($copy->code)->toBeNull()
         ->and($copy->views)->toBe(0)
         ->and($copy->regular_price)->toBe($source->regular_price)
+        ->and($copy->merchant_availability)->toBeNull()
+        ->and($copy->merchant_gtin)->toBeNull()
+        ->and($copy->merchant_mpn)->toBeNull()
+        ->and($copy->merchant_identifiers_absent)->toBeFalse()
         ->and($copy->category_id)->toBe($source->category_id)
         ->and($copy->images()->count())->toBe($source->images()->count())
         ->and($copy->documents()->count())->toBe($source->documents()->count())
