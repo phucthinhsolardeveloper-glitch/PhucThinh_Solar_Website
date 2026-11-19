@@ -269,19 +269,51 @@ final class Shipments
         if ($this->client->mode() !== 'mock' && ! config('shipping.nhattin.locations_verified')) {
             throw ValidationException::withMessages(['shipment' => 'Chưa đối chiếu mã tỉnh/phường với danh mục của Nhất Tín (MAPPING_REQUIRED).']);
         }
-        $senderWard = (int) $this->settings->get('shipping_sender_ward_id', 0);
-        $sender = $this->place($senderWard);
+        $sender = $this->senderFor($order);
         $receiver = $this->place((int) $order->ward_id);
-        if ($sender === null) {
-            throw ValidationException::withMessages(['shipment' => 'Chưa khai kho gửi hàng (Thông tin website → Kho gửi hàng).']);
-        }
         if ($receiver === null) {
             throw ValidationException::withMessages(['shipment' => 'Phường/xã của khách chưa có mã hành chính.']);
         }
 
-        return [$sender + ['name' => (string) $this->settings->get('shipping_sender_name', $this->settings->siteName()),
+        return [$sender, $receiver];
+    }
+
+    /**
+     * Where the parcel leaves from: the order's warehouse (chosen by staff or taken from its products), or the default
+     * sender in Admin when no warehouse is involved. An order whose products sit in several warehouses must be given one.
+     *
+     * @return array{province: string, ward: string, name: string, phone: string, address: string}
+     */
+    private function senderFor(Order $order): array
+    {
+        $warehouses = app(Warehouses::class);
+        $id = (int) $order->getAttribute('warehouse_id');
+        if ($id === 0) {
+            $held = $warehouses->holdingForOrder($order);
+            if (count($held['ids']) > 1) {
+                throw ValidationException::withMessages(['shipment' => 'Đơn có hàng ở nhiều kho: chọn "Kho xuất hàng" cho đơn trước khi tạo vận đơn.']);
+            }
+            $id = count($held['ids']) === 1 ? $held['ids'][0] : 0;
+        }
+        if ($id > 0) {
+            $warehouse = $warehouses->sender($id);
+            $place = $warehouse !== null ? $this->place($warehouse['ward_id']) : null;
+            if ($warehouse === null || $place === null) {
+                throw ValidationException::withMessages(['shipment' => 'Kho xuất hàng chưa khai phường/xã (Admin → Cửa hàng & chi nhánh).']);
+            }
+
+            return $place + ['name' => $warehouse['name'] !== '' ? $warehouse['name'] : (string) $this->settings->get('shipping_sender_name', $this->settings->siteName()),
+                'phone' => $warehouse['phone'] !== '' ? $warehouse['phone'] : (string) $this->settings->get('shipping_sender_phone', $this->settings->get('hotline', '')),
+                'address' => $warehouse['address']];
+        }
+        $place = $this->place((int) $this->settings->get('shipping_sender_ward_id', 0));
+        if ($place === null) {
+            throw ValidationException::withMessages(['shipment' => 'Chưa khai kho gửi hàng (Thông tin website → Kho gửi hàng).']);
+        }
+
+        return $place + ['name' => (string) $this->settings->get('shipping_sender_name', $this->settings->siteName()),
             'phone' => (string) $this->settings->get('shipping_sender_phone', $this->settings->get('hotline', '')),
-            'address' => (string) $this->settings->get('shipping_sender_address', $this->settings->get('address', ''))], $receiver];
+            'address' => (string) $this->settings->get('shipping_sender_address', $this->settings->get('address', ''))];
     }
 
     /** @return array{province: string, ward: string}|null */

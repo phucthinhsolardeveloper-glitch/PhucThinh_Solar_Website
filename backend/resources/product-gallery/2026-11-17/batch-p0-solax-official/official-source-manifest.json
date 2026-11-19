@@ -1,0 +1,56 @@
+{
+  "source_page": "https://vn.solaxpower.com/products/x1-lite-lv.html",
+  "source_kind": "manufacturer_official_product_page",
+  "same_physical_series_applies_to_three_variants": true,
+  "rights_note": "Manufacturer source; verify authorized dealer marketing rights if needed",
+  "assets": [
+    {
+      "source_url": "https://vn.solaxpower.com/uploadfile/30/202505/2656fff320.png",
+      "source_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/2656fff320.png",
+      "source_sha256": "1ec7f2430990f08cc6dc9d7c7e17ae2014caa2f6392d5c150c964961ff6aa05d",
+      "output_file": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+      "view": "front",
+      "output_sha256": "0f27766d17e31a1d0c4fda1633aeb5a3eda65b891cb9a354191d57985775a776",
+      "output_bytes": 43153,
+      "output_format": "JPEG 1200x1200"
+    },
+    {
+      "source_url": "https://vn.solaxpower.com/uploadfile/30/202505/e3a1b8240e.png",
+      "source_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/e3a1b8240e.png",
+      "source_sha256": "25cf46c911476eb0265bff95ea209447b4bda99180b12ac5611d36cd85dfa770",
+      "output_file": "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+      "view": "front-left",
+      "output_sha256": "a16f87d99529fae6bf87636a98ac5983ee8f9a2e39a2c27e3a8f0f0e3d84fcd8",
+      "output_bytes": 46141,
+      "output_format": "JPEG 1200x1200"
+    },
+    {
+      "source_url": "https://vn.solaxpower.com/uploadfile/30/202505/44ff1369f2.png",
+      "source_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/44ff1369f2.png",
+      "source_sha256": "d3e5efcd95bfe341c557ceafc79f20904c65ade3d9cb2dab693b2b88a5d52782",
+      "output_file": "pts-solax-x1-lite-lv-3-official-20261117.jpg",
+      "view": "front-right",
+      "output_sha256": "2538c2e2bbef48a60d7bb33bb94c2080d903994228fc6d399b0247e29a4f67d4",
+      "output_bytes": 43789,
+      "output_format": "JPEG 1200x1200"
+    }
+  ],
+  "products": [
+    {
+      "product_id": 808,
+      "sku": "X1-LITE-8-LV Hybrid 8kw",
+      "model_official": "X1-Lite-8.0-LV"
+    },
+    {
+      "product_id": 809,
+      "sku": "X1-LITE-10-LV Hybrid 10kw",
+      "model_official": "X1-Lite-10.0-LV"
+    },
+    {
+      "product_id": 810,
+      "sku": "X1-LITE-12-LV Hybrid 12kw",
+      "model_official": "X1-Lite-12.0-LV"
+    }
+  ],
+  "status": "READY_FOR_QA"
+}

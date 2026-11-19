@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-16",
+  "source": "LOCAL only",
+  "items": [
+    {
+      "id": 102,
+      "kind": "article",
+      "slug": "den-nang-luong-mat-troi-nhung-ly-do-nen-chon",
+      "original": {
+        "body_sha256": "8442728148e7284532a5c872611e8503306833aa744b3473eb88f756c2a8b958",
+        "summary_sha256": "bb4be2fd29144b6cd3aea550cf081ae40bb9f2740c8b7cf047a3255aaee004cd",
+        "seo_title_sha256": "70d0e8a3e0d458a9b6c1840bde641551e8bfc412d3131d5171ab82ebcf674322",
+        "seo_description_sha256": "bb4be2fd29144b6cd3aea550cf081ae40bb9f2740c8b7cf047a3255aaee004cd"
+      },
+      "proposed": {
+        "markdown_file": "2026-11-16/revisions/ARTICLE-102.md",
+        "summary": "Đèn năng lượng mặt trời có phù hợp với cổng, sân hay lối đi của bạn? Cách tự kiểm tra nắng, thời gian cần chiếu sáng và những trường hợp nên dùng điện lưới.",
+        "seo_description": "Đèn năng lượng mặt trời có phù hợp với cổng, sân hay lối đi của bạn? Cách tự kiểm tra nắng, thời gian cần chiếu sáng và những trường hợp nên dùng điện lưới."
+      },
+      "qa": {
+        "state": "editor_draft",
+        "sources_verified": false,
+        "images_verified": false,
+        "human_approved": false,
+        "reviewer": "pending human review"
+      },
+      "notes": "DRAFT ONLY: not approved or publishable. Baseline LOCAL only; production requires separate export and review."
+    },
+    {
+      "id": 104,
+      "kind": "article",
+      "slug": "top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi",
+      "original": {
+        "body_sha256": "f18169f8bcb856755100804b4b2909a598c0963b30c9f14618f79c6da478ecec",
+        "summary_sha256": "bb5660ff51a48dacd7fb61f94abc416d9e35262ce322482c7a07365e0657a5a1",
+        "seo_title_sha256": "3c44ed23ec911ac83bb87a61caf4feafcb80270c011f4a065955b1acc3bd449f",
+        "seo_description_sha256": "0b118d58874f788824ba9c02bee9d940eb2d3d89ed89e2883c5be4bdc2122d3e"
+      },
+      "proposed": {
+        "markdown_file": "2026-11-16/revisions/ARTICLE-104.md",
+        "summary": "Bốn lợi ích của đèn năng lượng mặt trời chỉ phát huy ở những vị trí phù hợp. Xem cách đánh giá nắng, đường dây, chi phí và nhu cầu chiếu sáng.",
+        "seo_description": "Bốn lợi ích của đèn năng lượng mặt trời chỉ phát huy ở những vị trí phù hợp. Xem cách đánh giá nắng, đường dây, chi phí và nhu cầu chiếu sáng."
+      },
+      "qa": {
+        "state": "editor_draft",
+        "sources_verified": false,
+        "images_verified": false,
+        "human_approved": false,
+        "reviewer": "pending human review"
+      },
+      "notes": "DRAFT ONLY: not approved or publishable. Baseline LOCAL only; production requires separate export and review."
+    },
+    {
+      "id": 105,
+      "kind": "article",
+      "slug": "4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi",
+      "original": {
+        "body_sha256": "997fa110edcff45356eeb6b7242fb52c8577879cd93d259fecec41d1320b0a24",
+        "summary_sha256": "6e8423ac0a31daba2401a1eba0536c116c6654ca8d73ca7c6337b861565d64c1",
+        "seo_title_sha256": "404cdf3b03beae7388175cb2ece50b5cd2a25ac976738bc60d84aeb5ce429c6c",
+        "seo_description_sha256": "aaf3970f90f26225b10d7d15e2bafd6c92d1dca850048199fbb8a72da96ce1e2"
+      },
+      "proposed": {
+        "markdown_file": "2026-11-16/revisions/ARTICLE-105.md",
+        "summary": "Đèn năng lượng mặt trời sáng yếu hoặc tắt sớm? Hướng dẫn kiểm tra vị trí nhận nắng, cảm biến và bảo dưỡng an toàn trước khi gọi kỹ thuật.",
+        "seo_description": "Đèn năng lượng mặt trời sáng yếu hoặc tắt sớm? Hướng dẫn kiểm tra vị trí nhận nắng, cảm biến và bảo dưỡng an toàn trước khi gọi kỹ thuật."
+      },
+      "qa": {
+        "state": "editor_draft",
+        "sources_verified": false,
+        "images_verified": false,
+        "human_approved": false,
+        "reviewer": "pending human review"
+      },
+      "notes": "DRAFT ONLY: not approved or publishable. Baseline LOCAL only; production requires separate export and review."
+    },
+    {
+      "id": 110,
+      "kind": "article",
+      "slug": "chip-led-cree-thuong-hieu-top-1",
+      "original": {
+        "body_sha256": "23c9a7b4eb2c47b79cbb5546420be8bbb5650742996b859fe745b21799af240f",
+        "summary_sha256": "fa403b87537722dc602951d2888f02af9db9d25eeefc31e4b664bffd6dbb5d8f",
+        "seo_title_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "seo_description_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "proposed": {
+        "markdown_file": "2026-11-16/revisions/ARTICLE-110.md",
+        "summary": "Chỉ nhìn tên chip LED CREE chưa đủ để biết đèn sáng và bền. Tìm hiểu cách kiểm tra quang thông, bộ nguồn, tản nhiệt và điều kiện thử của cả bộ đèn.",
+        "seo_description": "Chỉ nhìn tên chip LED CREE chưa đủ để biết đèn sáng và bền. Tìm hiểu cách kiểm tra quang thông, bộ nguồn, tản nhiệt và điều kiện thử của cả bộ đèn.",
+        "seo_title": "Chip LED CREE có quyết định chất lượng đèn không? | Phúc Thịnh Solar"
+      },
+      "qa": {
+        "state": "editor_draft",
+        "sources_verified": false,
+        "images_verified": false,
+        "human_approved": false,
+        "reviewer": "pending human review"
+      },
+      "notes": "DRAFT ONLY: not approved or publishable. Baseline LOCAL only; production requires separate export and review."
+    },
+    {
+      "id": 111,
+      "kind": "article",
+      "slug": "8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio",
+      "original": {
+        "body_sha256": "2ed2e71bf4c17dfe2c51ac03ab09bc80cf87d95fa1a636d38316d53220701e9a",
+        "summary_sha256": "96f7df4e07c2715c4f0bb1482dd0f871537409b24dca533f93c7e376c35481ed",
+        "seo_title_sha256": "695701bda7160bc43ed4b064678d1f5a5525cbb371fc6840323f75f160fdd754",
+        "seo_description_sha256": "2b215d6019a128a08700c94dd6adf2a180678b13f3320597dd9a032fc864d3d9"
+      },
+      "proposed": {
+        "markdown_file": "2026-11-16/revisions/ARTICLE-111.md",
+        "summary": "Đèn năng lượng mặt trời không dùng điện lưới nhưng chưa chắc rẻ hơn. Tự lập bảng so tổng chi phí thiết bị, thi công, điện năng và bảo trì.",
+        "seo_description": "Đèn năng lượng mặt trời không dùng điện lưới nhưng chưa chắc rẻ hơn. Tự lập bảng so tổng chi phí thiết bị, thi công, điện năng và bảo trì.",
+        "seo_title": "Chi phí đèn năng lượng mặt trời: cách so với đèn điện lưới | Phúc Thịnh Solar"
+      },
+      "qa": {
+        "state": "editor_draft",
+        "sources_verified": false,
+        "images_verified": false,
+        "human_approved": false,
+        "reviewer": "pending human review"
+      },
+      "notes": "DRAFT ONLY: not approved or publishable. Baseline LOCAL only; production requires separate export and review."
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "generated_at": "2026-11-16",
+  "scope": [136, 137, 138, 139, 140, 141, 142, 143],
+  "baseline": "docs/07-features/content-public-snapshot-2026-11-16.json (snapshot_at 2026-11-16T02:55:14Z, public API). 136/137/138 use the production snapshot as baseline, not local DB/Markdown.",
+  "rule": "Editor draft only. Not approved, not QA-passed, not synced to DB. Title, slug, date, visibility, cover image and canonical unchanged. existing_live_sha256 = body_public_sha256 from the snapshot (sanitized public HTML); do NOT use it for SQL CAS.",
+  "source_url_check": "All external URLs are copied from each article's live external_links in the snapshot. No new source added. URLs were not re-fetched in this session; reviewer must click-check before approval.",
+  "internal_link_rule": "Only slugs with http 200 in the snapshot are linked. Links use the snapshot canonical form '/slug' (no trailing slash); adjust if the site convention is '/slug/'. IDs 144-156 (http 404) are not linked.",
+  "cover_note": "Live bodies carry cover-image credit lines (136: 'Ảnh bìa minh họa từ Pexels...', 137: 'Ảnh bìa là ảnh tư liệu minh họa...', 138: 'Ảnh bìa là tư liệu minh họa về trang trại điện mặt trời tại Việt Nam...'). Drafts drop these self-negating lines from the body; the cover image itself and its credit/license must be kept in the CMS cover field. Reviewer decides whether a short credit line must stay in body.",
+  "articles": [
+    {
+      "id": 136,
+      "stage": "editor_draft",
+      "expected_url": "/dien-mat-troi-hoat-dong-nhu-the-nao",
+      "existing_live_sha256": "e3d58822cee71efb8439852133966d902195d2fb51b5b9e5e21e12285b81c5ff",
+      "search_intent": "Người mới: điện từ ánh nắng đi tới ổ cắm trong nhà ra sao, vì sao ban đêm/mất lưới lại khác.",
+      "differs_from": "139 = đơn vị; 140 = chức năng inverter chi tiết; 142 = chọn loại hệ. 136 chỉ dẫn chuỗi tổng quan và link ra.",
+      "sources": [
+        "https://www.energy.gov/cmei/systems/how-does-solar-energy-work",
+        "https://www.energy.gov/cmei/systems/articles/pv-cells-101-primer-solar-photovoltaic-cell"
+      ],
+      "internal_links": [
+        "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+        "/inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao",
+        "/co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi",
+        "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao"
+      ],
+      "needed_media": [
+        "Bảo tồn inline /upload/news/pts-diagram-solar-workflow.webp với alt nguyên văn của live; caption rút gọn thành 'Hình minh họa do Phúc Thịnh Solar biên soạn...'.",
+        "Giữ cover hiện hành + credit Pexels trong trường cover CMS. Không cần ảnh mới."
+      ],
+      "technical_checks": [
+        "Giữ nguyên mọi claim live: PV bán dẫn, DC, ánh sáng không phải nhiệt, nhiệt độ tế bào làm giảm công suất, 10 × 650 Wp = 6,5 kWp tại STC, MPPT, ba loại inverter, điện dư không mặc định bán lên lưới, chống đảo lưới, hybrid không mặc định cấp cả nhà, danh mục an toàn PV, khảo sát mái tôn/mái cũ, 4 dữ liệu trước khi chọn kWp.",
+        "Phần ba loại inverter chuyển từ bullet sang bảng; nội dung không đổi.",
+        "Ví dụ nhà A / nhà B ghi rõ là giả định (live đã có ví dụ tương tự không nhãn).",
+        "Không thêm số liệu mới."
+      ],
+      "proposed_summary": "Ánh nắng tạo điện DC ở tấm pin, inverter đổi thành AC cho thiết bị trong nhà. Bài đi qua từng bước, giải thích vì sao ban đêm, trời mây và lúc cúp điện hệ thống hoạt động khác nhau.",
+      "proposed_seo_description": "Ánh nắng → tấm pin tạo DC → inverter tạo AC → thiết bị trong nhà. Vì sao ban đêm, trời mây hay mất lưới hệ hòa lưới thông thường lại ngừng phát."
+    },
+    {
+      "id": 137,
+      "stage": "editor_draft",
+      "expected_url": "/cach-doc-datasheet-tam-pin-nang-luong-mat-troi",
+      "existing_live_sha256": "4a08db652ba265e9bff37927fce1a26d9ce8c2d801def0836972628432486320",
+      "search_intent": "Người chọn tấm pin / kỹ thuật viên: đọc bảng thông số hãng để so sánh và ghép với inverter.",
+      "differs_from": "140 = phía inverter; 137 = phía tấm pin. Phần chuyên sâu Voc/Vmp/Isc/Imp giữ đầy đủ; thêm lớp đọc nhanh 5 dòng ở đầu.",
+      "sources": [
+        "https://www.longi.com/en/products/modules/hi-mo-x10-guardian-anti-glare/",
+        "https://www.longi.com/vn/download/",
+        "https://static.longi.com/LR_7_72_HVH_630_650_M_30_30_and_15_Explorer_BGV_02_20241118_EN_Draft_426c93d9d1.pdf"
+      ],
+      "internal_links": [
+        "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+        "/inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao"
+      ],
+      "needed_media": [
+        "Bảo tồn inline /upload/news/pts-infographic-panel-650w.webp, alt và caption nguyên văn của live.",
+        "Giữ cover hiện hành; credit 'ảnh tư liệu minh họa' giữ ở trường cover. Không cần ảnh mới."
+      ],
+      "technical_checks": [
+        "Số liệu giữ nguyên từ live (datasheet LONGi BGV02, LR7-72HVH-650M): Pmax 650 W STC; 495 W NOCT; hiệu suất 24,1%; Voc 53,90 V; Vmp 44,56 V; Isc 15,29 A; Imp 14,59 A; hệ số nhiệt Pmax ~−0,260%/°C; 2.382 × 1.134 × 30 mm; 28,5 kg; STC 1.000 W/m², 25°C, AM1.5.",
+        "Phép tính mới, chỉ là số học từ số live: Vmp × Imp = 44,56 × 14,59 = 650,1 W; diện tích 2,382 × 1,134 = 2,701 m² → 650 / 2.701 = 24,06% ≈ 24,1%; 30°C × 0,26% = 7,8% → 650 × 0,922 ≈ 599 W; 28,5 / 2,701 ≈ 10,55 kg/m²; 10 tấm = 285 kg; chuỗi 10 tấm Voc STC = 539 V.",
+        "Không thêm hệ số nhiệt Voc (live không có số); bài chỉ nói phải lấy từ datasheet. Reviewer kỹ thuật có thể bổ sung sau khi đối chiếu PDF.",
+        "Không thêm số năm bảo hành (live không ghi cụ thể).",
+        "Đề nghị reviewer mở lại PDF BGV02 để xác nhận lần cuối 10 thông số trước khi duyệt."
+      ],
+      "proposed_summary": "Năm dòng người mua nên xem trước trên datasheet tấm pin, rồi đến Voc, Vmp, Isc, Imp, STC/NOCT và hệ số nhiệt cho người ghép với inverter, với ví dụ LONGi Hi-MO X10 650W.",
+      "proposed_seo_description": "Đọc datasheet tấm pin: Pmax, hiệu suất, kích thước, hệ số nhiệt, Voc, Vmp, Isc, Imp, STC và NOCT, với ví dụ LONGi Hi-MO X10 LR7-72HVH-650M."
+    },
+    {
+      "id": 138,
+      "stage": "editor_draft",
+      "expected_url": "/thi-truong-dien-mat-troi-toan-cau-2026-iea-pvps",
+      "existing_live_sha256": "3295259c8a73b6584e3d5211407072673b214b2438afd46d23d6438056e5d183",
+      "search_intent": "Người đọc tin: thị trường PV toàn cầu năm 2025 lớn cỡ nào theo IEA PVPS và điều đó có ý nghĩa gì.",
+      "differs_from": "Bản tin dữ liệu; không phải tin công ty, không dạy kỹ thuật (link sang 137, 141).",
+      "sources": [
+        "https://iea-pvps.org/trends_reports/trends-2026/",
+        "https://iea-pvps.org/snapshot-reports/snapshot-2026/"
+      ],
+      "internal_links": [
+        "/co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi",
+        "/cach-doc-datasheet-tam-pin-nang-luong-mat-troi"
+      ],
+      "needed_media": [
+        "Bảo tồn inline /upload/news/pts-infographic-global-pv-2026.webp, alt và caption nguyên văn của live.",
+        "Giữ cover hiện hành; credit 'tư liệu minh họa trang trại điện mặt trời tại Việt Nam' giữ ở trường cover. Không cần ảnh mới."
+      ],
+      "technical_checks": [
+        "Giữ nguyên số liệu và mốc thời gian: Trends in Photovoltaic Applications 2026 công bố tháng 9/2026; ~2,96 TW lũy kế cuối 2025; ~690 GW lắp mới 2025; +15% so với 2024; Trung Quốc 415 GW, Ấn Độ 54, Hoa Kỳ 43, Đức 18, Pakistan 14 GW; Trung Quốc gần 60%; ~36 quốc gia > 1 GW; Snapshot tháng 4/2026 ước tính ~698 GW.",
+        "Nhấn mạnh 'số liệu lắp đặt năm 2025, công bố năm 2026' ở đoạn 2 (giữ từ live).",
+        "Ghi chú 698 vs 690 GW chuyển từ ghi chú cuối bài vào thân bài (mục riêng); nội dung không đổi.",
+        "Phép tính mới: 415/690 = 60,1% (khớp 'gần 60%'); 2,96e12 W / 650 W ≈ 4,55 tỷ tấm, ghi rõ chỉ để hình dung. Không suy ngược công suất 2024 hay lũy kế 2024 (để tránh số chưa có nguồn).",
+        "Các claim định tính (chi phí module thấp, chuyển dịch N-type, TOPCon/HJT/BC, PV phân tán, BESS) giữ nguyên như live; reviewer đối chiếu lại báo cáo."
+      ],
+      "proposed_summary": "IEA PVPS (tháng 9/2026): thế giới có khoảng 2,96 TW điện mặt trời cuối năm 2025, riêng năm 2025 lắp mới khoảng 690 GW, tăng 15%. Ba con số chính, top 5 thị trường và ý nghĩa khi tính lắp ở Việt Nam.",
+      "proposed_seo_description": "IEA PVPS Trends 2026: khoảng 2,96 TW điện mặt trời toàn cầu cuối 2025, 690 GW lắp mới, Trung Quốc gần 60%. Vì sao Snapshot từng ghi 698 GW."
+    },
+    {
+      "id": 139,
+      "stage": "editor_draft",
+      "expected_url": "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+      "existing_live_sha256": "1094910c60c825f17e9684e6b4c7ae9d03b05e4f07beafac2083bf529b036367",
+      "search_intent": "Chủ nhà đọc báo giá/hóa đơn: kW, kWp, kWh khác nhau thế nào.",
+      "differs_from": "Bài đơn vị làm hub; 136, 137, 141, 142, 143 link về đây thay vì giải thích lại.",
+      "sources": [
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics",
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics",
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics"
+      ],
+      "internal_links": [
+        "/dien-mat-troi-hoat-dong-nhu-the-nao",
+        "/inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao",
+        "/co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi"
+      ],
+      "needed_media": [
+        "Live không có ảnh inline; không đề xuất ảnh mới. Giữ cover hiện hành."
+      ],
+      "technical_checks": [
+        "Giữ nguyên bảng 3 ký hiệu, công thức kWh = kW × h, ví dụ 450 kWh, đủ 7 tình huống, ví dụ 2 kW × 3 h = 6 kWh, 4 dòng so báo giá (dòng 3 bổ sung công suất xả kW).",
+        "Thêm: tỷ lệ DC/AC (6 kWp với inverter 5 kW) chỉ như ví dụ, nói rõ phải theo giới hạn model; ví dụ pin 10 kWh dùng 90% = 9 kWh ghi rõ giả định, tỷ lệ thật theo datasheet; kW xả của pin.",
+        "Trắc nghiệm: 600/30 = 20 kWh/ngày; 50 W × 10 h = 0,5 kWh."
+      ],
+      "proposed_summary": "kW là công suất lúc đang chạy, kWp là quy mô danh định của dàn pin, kWh là điện năng tích lũy. Bảy tình huống và ba lỗi hay gặp giúp đọc đúng hóa đơn và báo giá điện mặt trời.",
+      "proposed_seo_description": "kW là công suất, kWp là quy mô danh định dàn pin, kWh là điện năng. 7 tình huống đọc hóa đơn, báo giá và vì sao inverter 5 kW có thể đi với dàn 6 kWp."
+    },
+    {
+      "id": 140,
+      "stage": "editor_draft",
+      "expected_url": "/inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao",
+      "existing_live_sha256": "f1d747d1e3d83a47d4e63068a13788276197ca4597a18b262cf8978f92569586",
+      "search_intent": "Chủ nhà / người chọn thiết bị: inverter dùng để làm gì và đọc thông số nào trước khi chốt model.",
+      "differs_from": "142 = chọn loại hệ; 140 = chức năng và thông số inverter. Phần ghép chuỗi chuyên sâu dùng số tấm pin của 137 để không bịa thông số inverter.",
+      "sources": [
+        "https://blog.fronius.com/solar-energy/en/",
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics"
+      ],
+      "internal_links": [
+        "/cach-doc-datasheet-tam-pin-nang-luong-mat-troi",
+        "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao"
+      ],
+      "needed_media": [
+        "Live không có ảnh inline; không đề xuất ảnh mới. Giữ cover hiện hành."
+      ],
+      "technical_checks": [
+        "Giữ nguyên 3 chức năng, bảng 4 tình huống, câu 'nhiều MPPT không tự tạo thêm điện', 3 câu hỏi trước khi chốt, chống đảo lưới, cảnh báo tên hybrid/battery-ready.",
+        "Ví dụ 10 × 53,90 V = 539 V lấy từ datasheet LONGi trong 137; không ghi giới hạn DC của bất kỳ inverter cụ thể nào.",
+        "Nguồn Fronius là trang blog chung (giữ từ live); reviewer cân nhắc thay bằng trang kỹ thuật cụ thể nếu có bằng chứng."
+      ],
+      "proposed_summary": "Inverter đổi DC từ tấm pin thành AC, dò điểm công suất tốt nhất và tự ngắt khi mất lưới. Bảng tình huống mái nhà và ba câu hỏi về điện áp, dòng điện, dự phòng trước khi chốt model.",
+      "proposed_seo_description": "Inverter đổi DC thành AC, chạy MPPT và chống đảo lưới. Nên xem dải điện áp, dòng vào MPPT, cổng EPS và tải khởi động trước khi nhìn công suất kW."
+    },
+    {
+      "id": 141,
+      "stage": "editor_draft",
+      "expected_url": "/co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi",
+      "existing_live_sha256": "1420e81087aaa70b8d1dd961062d0809731cba95b194fee3d757fb718cb9e471",
+      "search_intent": "Gia đình dùng điện chủ yếu buổi tối: có đáng lắp không, theo hướng nào.",
+      "differs_from": "142 = mục tiêu dự phòng khi cúp; 141 = mục tiêu giảm tiền điện khi lịch tải lệch giờ nắng.",
+      "sources": [
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics",
+        "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+        "https://www.energy.gov/cmei/systems/solar-and-resilience-basics"
+      ],
+      "internal_links": [
+        "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+        "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao"
+      ],
+      "needed_media": [
+        "Live không có ảnh inline; không đề xuất ảnh mới. Giữ cover hiện hành."
+      ],
+      "technical_checks": [
+        "Giữ nguyên 600 kWh/tháng, mốc 19 giờ, bảng 3 hướng, câu pin 6 kWh, bài tập 4 bước, ví dụ hộ A/B.",
+        "Ví dụ hộ B 12/20 kWh sau giờ nắng là giả định, đã ghi rõ không phải dự báo hoàn vốn. 600/30 = 20 kWh/ngày.",
+        "Câu mở đầu trả lời thẳng: hòa lưới không pin chỉ giảm phần dùng giờ nắng (khớp claim live 136 về tự dùng)."
+      ],
+      "proposed_summary": "Nhà dùng điện chủ yếu sau 19 giờ vẫn có thể lắp, nhưng hòa lưới không pin chỉ giảm phần dùng giờ nắng. Ba hướng theo lịch dùng điện, ví dụ hai nhà cùng 600 kWh và bài tập hóa đơn 15 phút.",
+      "proposed_seo_description": "Nhà dùng điện nhiều buổi tối có nên lắp điện mặt trời? So hòa lưới, hybrid có pin và nhánh dự phòng theo lịch dùng điện, kèm bài tập hóa đơn 15 phút."
+    },
+    {
+      "id": 142,
+      "stage": "editor_draft",
+      "expected_url": "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao",
+      "existing_live_sha256": "b6c431e25e797f8b8e1fa61d484aec5992aedfa91f754fef8bdd76ec4dd8837e",
+      "search_intent": "Người cần chọn loại hệ, đặc biệt muốn có điện khi mất điện lưới.",
+      "differs_from": "140 = thông số inverter; 141 = lịch tải buổi tối. 142 tập trung vào backup khi cúp và cách ước lượng nhánh dự phòng.",
+      "sources": [
+        "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics",
+        "https://www.energy.gov/cmei/systems/solar-and-resilience-basics"
+      ],
+      "internal_links": [
+        "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+        "/co-nen-lap-dien-mat-troi-khi-nha-chi-dung-dien-nhieu-vao-buoi-toi",
+        "/inverter-dien-mat-troi-la-gi-no-thuc-hien-nhung-chuc-nang-nao"
+      ],
+      "needed_media": [
+        "Live không có ảnh inline; không đề xuất ảnh mới. Giữ cover hiện hành. Có thể cân nhắc sơ đồ nhánh dự phòng do PTS tự vẽ sau khi kỹ thuật duyệt (chưa có, không bắt buộc)."
+      ],
+      "technical_checks": [
+        "Giữ nguyên bảng quyết định 5 hàng × 3 hệ, đoạn 'một ngày mất điện' 3 hệ, 4 câu hỏi khảo sát, cảnh báo không tự đấu nguồn dự phòng.",
+        "Bảng ước lượng nhánh dự phòng mới: công suất thiết bị (150 W, 100 W, 30 W) và 4 giờ là GIẢ ĐỊNH, đã ghi rõ trong bài. Số học: 600 + 400 + 120 = 1.120 Wh; 150 + 100 + 30 = 280 W.",
+        "Dòng khởi động tủ lạnh chỉ ghi 'thường cao hơn lúc chạy ổn định', không ghi bội số (không có nguồn)."
+      ],
+      "proposed_summary": "Cần điện khi cúp thì hòa lưới thông thường không đáp ứng; hybrid giữ được một nhóm tải nếu thiết kế đúng; độc lập dành cho nơi không có lưới. Bảng quyết định và cách tự ước lượng nhánh dự phòng.",
+      "proposed_seo_description": "Hòa lưới, hybrid hay độc lập: hệ nào còn điện khi cúp? Bảng quyết định theo lưới, giờ dùng, thời gian dự phòng và cách ước lượng W, Wh cho tải ưu tiên."
+    },
+    {
+      "id": 143,
+      "stage": "editor_draft",
+      "expected_url": "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao",
+      "existing_live_sha256": "1afb2329c88ed51503ad954629bdd5eb6fbca68786a169f0947f73270fba2f9f",
+      "search_intent": "Người mua đèn: con số W quảng cáo nói gì, cần hỏi Wh, lumen, chế độ sáng ra sao.",
+      "differs_from": "104/105/110 (đèn, legacy) = lợi ích, lắp đặt, chip LED; 143 = đọc W/Wh/lumen trên báo giá. Bài lumen/lux riêng (slug lumen-lux-va-watt..., http 404) chưa công khai nên không link.",
+      "sources": [
+        "https://www.lightingglobal.org/resource/lighting-global-quality-standards/",
+        "https://www.signify.com/global/prof/outdoor-luminaires/solar/SMC_SOLAR_CA/category"
+      ],
+      "internal_links": [
+        "/kw-kwp-va-kwh-khac-nhau-the-nao-7-vi-du-tranh-nham",
+        "/4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi"
+      ],
+      "needed_media": [
+        "Live không có ảnh inline; không đề xuất ảnh mới. Nếu sau này thêm ảnh sản phẩm thật, phải dùng ảnh PTS có quyền và đúng model."
+      ],
+      "technical_checks": [
+        "Giữ nguyên bảng 4 vị trí, 6 câu hỏi báo giá, câu 'W chỉ nói công suất điện...', 'sáng 12 giờ phải đi kèm chế độ, mức sạc, thời tiết, tuổi pin', yêu cầu bản đồ vùng sáng.",
+        "Ví dụ pin 3,2 V × 30 Ah = 96 Wh và đèn 10 W → 9,6 h là GIẢ ĐỊNH, ghi rõ; không gắn với model nào.",
+        "Không đưa giá trị lumen/W hay lux khuyến nghị cụ thể (không có nguồn trong snapshot).",
+        "Định nghĩa lux = lumen trên mét vuông là định nghĩa đơn vị SI, không phải số liệu."
+      ],
+      "proposed_summary": "Con số W in to trên hộp đèn chưa cho biết đèn sáng đến đâu và bao lâu. Cách đọc Wh của pin, lumen của bộ đèn và công suất thực theo chế độ, kèm phiếu hỏi theo sân, cổng, lối đi.",
+      "proposed_seo_description": "Đèn năng lượng mặt trời ghi 200 W, 300 W nói lên điều gì? Cách đọc Wh của pin, lumen của bộ đèn, chế độ sáng và 6 câu cần có trong báo giá."
+    }
+  ]
+}

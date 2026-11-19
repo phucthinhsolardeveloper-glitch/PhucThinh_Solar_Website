@@ -1,0 +1,47 @@
+{
+  "name": "oriana-hb01-60w",
+  "model": "isnet-general-use",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/HB01-60W/2.png",
+  "source_sha256": "40596f31f31a9b85446830e26c9830b4efada49f5f4b24c983f947928a01a2b2",
+  "source_size": [
+    501,
+    528
+  ],
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-hb01-60w-1600-transparent.png",
+  "output_sha256": "24067fa5603f0155523432ee061c33f79c44c257f9ca1e50c6398ac30282ab36",
+  "output_bytes": 401495,
+  "alpha_before": {
+    "size": [
+      501,
+      528
+    ],
+    "transparency_fraction": 0.0,
+    "opaque_fraction": 1.0,
+    "soft_alpha_fraction": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      501,
+      528
+    ],
+    "alpha_bbox_fraction": 1.0
+  },
+  "alpha_after": {
+    "size": [
+      1600,
+      1600
+    ],
+    "transparency_fraction": 0.785,
+    "opaque_fraction": 0.17,
+    "soft_alpha_fraction": 0.045,
+    "alpha_bbox": [
+      188,
+      144,
+      1411,
+      1456
+    ],
+    "alpha_bbox_fraction": 0.627
+  },
+  "elapsed_s": 2.45,
+  "status": "QA_DRAFT_NOT_PUBLISHED"
+}

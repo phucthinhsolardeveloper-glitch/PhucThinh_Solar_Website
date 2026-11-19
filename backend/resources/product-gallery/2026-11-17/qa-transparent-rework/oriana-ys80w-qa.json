@@ -1,0 +1,47 @@
+{
+  "name": "oriana-ys80w",
+  "model": "isnet-general-use",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/YS-80W/2.png",
+  "source_sha256": "7a8f95be726a67483b92bed78aa09467bba8a048485d4fbe0647967640580f6e",
+  "source_size": [
+    600,
+    438
+  ],
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-ys80w-1600-transparent.png",
+  "output_sha256": "c6a600b7a4ab7f23d993294ee0d9c768b1891936dafc08beaaf4222604672778",
+  "output_bytes": 799538,
+  "alpha_before": {
+    "size": [
+      600,
+      438
+    ],
+    "transparency_fraction": 0.0,
+    "opaque_fraction": 1.0,
+    "soft_alpha_fraction": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      600,
+      438
+    ],
+    "alpha_bbox_fraction": 1.0
+  },
+  "alpha_after": {
+    "size": [
+      1600,
+      1600
+    ],
+    "transparency_fraction": 0.804,
+    "opaque_fraction": 0.155,
+    "soft_alpha_fraction": 0.042,
+    "alpha_bbox": [
+      144,
+      357,
+      1456,
+      1243
+    ],
+    "alpha_bbox_fraction": 0.454
+  },
+  "elapsed_s": 2.39,
+  "status": "QA_DRAFT_NOT_PUBLISHED"
+}

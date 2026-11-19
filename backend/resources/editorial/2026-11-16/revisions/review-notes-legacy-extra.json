@@ -1,0 +1,220 @@
+[
+  {
+    "id": 100,
+    "stage": "editor_draft",
+    "persona": "Đại lý/nhà phân phối hoặc người mua đang tìm tấm pin Sharp; trang lưu trữ corporate.",
+    "approx_syllables": 420,
+    "issue": "Bài live khẳng định 'nhập khẩu – phân phối độc quyền tấm pin Sharp', giá 3.xxx đ/Wp, hiệu suất 21,29% và 19,8% trong cùng bài, năm 1959 và 1963 mâu thuẫn, 'công ty đầu tiên trên thế giới', trụ sở Huntington Beach, danh sách chứng nhận, bảo hành 10/25 năm; có đoạn nhắc 'Gp solar' (dấu hiệu chép từ website khác, rủi ro bản quyền). Bản nháp chuyển thành bản lưu trữ trung lập, chỉ thuật lại bản gốc nói gì, nêu rõ chưa đối chiếu văn bản Sharp, và chuyển các con số thành câu hỏi người đọc cần hỏi người bán.",
+    "claims_blocked": [
+      "Phân phối độc quyền Sharp tại Việt Nam (chỉ giữ như lời của thông báo cũ)",
+      "Giá 3.xxx đ/Wp, 'giá ưu đãi nhất thị trường'",
+      "Dung sai 0 đến +5%, hiệu suất 21,29% / 19,8%, 10 busbar gắn với model",
+      "Bảo hành 10 năm sản phẩm / 25 năm công suất",
+      "Chứng nhận IEC/EN 61215, 61730, TÜV, VDE, ISO, CE, MCS; kiểm tra UL",
+      "Lịch sử Sharp: 'đầu tiên trên thế giới', 59 năm, 1959/1963, trụ sở Huntington Beach",
+      "Quyền lợi đối tác (chiết khấu, đào tạo, marketing) như chính sách hiện hành",
+      "Toàn bộ đoạn 'Gp solar' — không tái sử dụng"
+    ],
+    "source_urls": [
+      "https://vn.sharp/"
+    ],
+    "internal_links": [
+      "/cach-doc-datasheet-tam-pin-nang-luong-mat-troi/"
+    ],
+    "media_checks": [
+      "/upload/filemanager/sharp-khung-1095x1536.jpg: chỉ để ở dạng link, không nhúng; chưa xem nội dung ảnh (có thể chứa claim giá/độc quyền), chưa rõ quyền dùng logo/ảnh Sharp, chưa có credit/alt. Không tự xác nhận."
+    ],
+    "approval_needed": [
+      "Owner/legal: có văn bản Sharp hoặc đơn vị Sharp ủy quyền còn hiệu lực không; nếu không, quyết định giữ bản lưu trữ, noindex hay gỡ",
+      "Owner/SEO: title hiển thị mới (title live đang là claim độc quyền viết hoa) và summary/SEO description",
+      "Reviewer: click-check vn.sharp và link nội bộ datasheet",
+      "Kiểm tra quyền ảnh"
+    ],
+    "expected_url": "/phuc-thinh-solar-phan-phoi-doc-quyen-tam-pin-sharp-thuong-hieu-nhat-ban-tai-viet-nam-2024/"
+  },
+  {
+    "id": 101,
+    "stage": "hold",
+    "persona": "Nhà thầu/đại lý xem một giấy tờ phân phối; trang lưu trữ corporate.",
+    "approx_syllables": 340,
+    "issue": "Cùng search intent với 109 (Phúc Thịnh Solar là nhà phân phối độc quyền Blue Carbon). Bản nháp đã biên tập theo góc khác ('một thông báo phân phối cần có gì để kiểm chứng') và link sang 109, nhưng slug/URL vẫn mang cùng intent nên KHÔNG đề xuất apply cả 101 và 109. Khuyến nghị: 109 làm canonical (nhiều nội dung, có trích lời, catalog, chứng nhận), 101 chờ quyết định 301 về 109 sau khi so GSC/backlink. Chỉ dùng bản nháp này nếu owner quyết giữ 101 riêng.",
+    "claims_blocked": [
+      "'Nhà phân phối độc quyền Blue Carbon tại Việt Nam' như quan hệ hiện tại",
+      "Câu trích được ghi là của Blue Carbon (chưa có văn bản gốc của hãng)",
+      "Bảo hành chính hãng 5 năm không gắn model/điều kiện",
+      "'Hỗ trợ kỹ thuật chuyên sâu, thiết kế dự án quy mô lớn nhỏ' như cam kết dịch vụ",
+      "Ngày phát hành thông báo: không ghi trong bài; tên file ảnh (epoch 1696659927 ≈ 10/2023) chỉ là gợi ý, KHÔNG dùng làm bằng chứng ngày"
+    ],
+    "source_urls": [
+      "https://bluecarbon.solar/faq/"
+    ],
+    "source_note": "Mô tả FAQ Blue Carbon lấy theo ghi chú fact-check trong legacy-public/review-corporate.json (2026-11-12); phiên này không fetch lại.",
+    "internal_links": [
+      "/phuc-thinh-solar-chinh-thuc-la-doi-tac-phan-phoi-doc-quyen-den-nang-luong-mat-troi-blue-carbon-tai-viet-nam/"
+    ],
+    "media_checks": [
+      "/upload/filemanager/file_01696659927685.jpg: để dạng link, không nhúng; chưa đối chiếu tính xác thực, ngày, chữ ký; chưa rõ quyền tái sử dụng; không tự xác nhận."
+    ],
+    "approval_needed": [
+      "Owner/SEO: quyết định gộp 101 → 109 (301) hoặc giữ riêng; không apply song song cả hai",
+      "So GSC (clicks, impressions, query, ≥3 tháng), backlink và chuyển đổi của 101 và 109 trước khi 301",
+      "Owner/legal: văn bản Blue Carbon xác nhận phạm vi/thời hạn",
+      "Reviewer: click-check FAQ Blue Carbon"
+    ],
+    "expected_url": "/blue-carbon-thong-bao-phuc-thinh-solar-la-nha-phan-phoi-doc-quyen-den-nang-luong-mat-troi-thuong-hieu-blue-carbon-tai-viet-nam/"
+  },
+  {
+    "id": 103,
+    "stage": "editor_draft",
+    "persona": "Người đọc tin/chủ nhà quan tâm chính sách điện mặt trời mái nhà.",
+    "approx_syllables": 560,
+    "issue": "Bài live là tin ngày 10/6/2023 nhưng không ghi năm ở đầu bài, dễ bị đọc như chính sách hiện hành. Bản nháp ghi mốc 10/6/2023 và 3/6/2023 ngay từ đầu, tách rõ 'đề xuất năm 2023' với 'quy định hiện hành năm 2026', không khẳng định văn bản nào đang có hiệu lực, và chỉ hướng người đọc hỏi điện lực địa phương.",
+    "claims_blocked": [
+      "Bất kỳ khẳng định nào về quy định điện mặt trời mái nhà đang có hiệu lực năm 2026 (chưa đối chiếu toàn văn); reviewer có thể bổ sung văn bản hiện hành (ví dụ Nghị định 135/2024/NĐ-CP và văn bản sửa đổi/thay thế nếu có) SAU khi kiểm tra trên cổng văn bản chính thức",
+      "Mục tiêu 50% công sở / 50% nhà dân đến 2030 như mục tiêu hiện hành (cần đối chiếu bản Quy hoạch điện VIII đang hiệu lực, có thể đã điều chỉnh)",
+      "Giảm thuế, hỗ trợ mua sắm, khung giá phát lên lưới như chính sách đã ban hành (bài gốc chỉ là đề nghị)"
+    ],
+    "source_urls": [
+      "https://www2.en.baochinhphu.vn/khan-truong-hoan-thien-co-che-khuyen-khich-lap-dat-dien-mat-troi-mai-nha-102230610205935993.htm"
+    ],
+    "source_note": "URL và ngày 10/06/2023 lấy từ legacy-public/review-corporate.json (verified_event_date). Domain www2.en. với slug tiếng Việt là bất thường; reviewer cần click-check, nếu không mở được thì thay bằng URL tương đương trên baochinhphu.vn.",
+    "internal_links": [
+      "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao/"
+    ],
+    "media_checks": [
+      "/upload/filemanager/wp-legacy/2023/07/foreman-businessman-solar-energy-station-scaled.jpg: nhúng làm ảnh minh họa, alt đổi thành 'Ảnh minh họa trạm điện mặt trời'; tên file gợi ý ảnh stock, chưa có nguồn/license/credit; không được trình bày như công trình thật. Không tự xác nhận."
+    ],
+    "approval_needed": [
+      "Owner/legal: xác nhận cách diễn đạt 'không phải quy định đang áp dụng' và có bổ sung văn bản hiện hành hay không",
+      "Owner/SEO: title hiển thị nên có năm 2023 (ví dụ 'Năm 2023, Phó Thủ tướng đề nghị giải pháp thúc đẩy điện mặt trời mái nhà'); slug giữ nguyên",
+      "Kiểm tra license ảnh stock",
+      "Reviewer: click-check nguồn Chính phủ và link nội bộ"
+    ],
+    "expected_url": "/pho-thu-tuong-can-giai-phap-thuc-day-dien-mat-troi-mai-nha/"
+  },
+  {
+    "id": 106,
+    "stage": "editor_draft",
+    "persona": "Nhà thầu/chủ đầu tư dự án chiếu sáng đang cân nhắc đèn Blue Carbon.",
+    "approx_syllables": 590,
+    "issue": "Bài live là bài quảng bá với claim chưa có nguồn: sáng 8–12 giờ kể cả ngày mưa, LED ≥12 năm, tấm pin >25 năm, bảo hành 5 năm, '100 quốc gia', 'đầu tiên ở Đông Nam Á', thành lập 2009, 'đối tác độc quyền'. Bản nháp chuyển thành checklist hồ sơ dự án theo model, ghi tường minh mọi thông số Blue Carbon là 'cần xác minh' và chỉ hướng người đọc xin hồ sơ; bỏ phần claim độc quyền (đã có 109 là trang lưu trữ).",
+    "claims_blocked": [
+      "Thời gian sáng 8–12 giờ kể cả ngày mưa",
+      "Tuổi thọ LED ≥12 năm, tấm pin >25 năm",
+      "Bảo hành 5 năm tại Việt Nam",
+      "'Tin dùng tại hơn 100 quốc gia', 'nhiều dự án tại Việt Nam'",
+      "Blue Carbon Technology Inc. thành lập 2009, 'nhà cung cấp đầu tiên ở Đông Nam Á'",
+      "Phúc Thịnh Solar là đối tác độc quyền Blue Carbon",
+      "'Nguồn hàng luôn sẵn tại kho', 'hỗ trợ lắp đặt trọn gói', 'giao hàng nhanh' như cam kết",
+      "Mọi thông số theo model (quang thông, dung lượng pin, IP, chứng nhận) — không nêu trong bài"
+    ],
+    "source_urls": [
+      "https://betterbuildingssolutioncenter.energy.gov/resources/solar-powered-street-and-area-lighting-considerations-fact-sheet",
+      "https://www.lightingglobal.org/how-we-work/quality-assurance/"
+    ],
+    "source_note": "Hai nguồn lấy từ proposal legacy-public/ARTICLE-106.md và review-knowledge.json; chỉ chứng minh nguyên lý/checklist, không xác nhận Blue Carbon. Phiên này không fetch lại.",
+    "internal_links": [
+      "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/",
+      "/danh-muc-san-pham/den-nlmt/blue-carbon/"
+    ],
+    "media_checks": [
+      "BCT-OLK3-1.jpg: nhúng lại với alt trung lập; model trong ảnh chưa đối chiếu; quyền dùng/credit chưa xác minh.",
+      "BL-Wed-2.jpg, BL-Wed-1.jpg, z3853644387161_….jpg: không đưa vào bản nháp; chưa rõ nội dung/quyền; reviewer quyết định có dùng lại.",
+      "chung-nhan-scaled-2.jpg (alt 'đối tác độc quyền'): loại khỏi bản nháp vì tái khẳng định claim độc quyền chưa xác minh.",
+      "Không tự xác nhận bất kỳ ảnh nào."
+    ],
+    "approval_needed": [
+      "Technical reviewer: đối chiếu datasheet hãng nếu muốn thêm thông số model nào",
+      "Owner/SEO: title đề xuất 'Đèn năng lượng mặt trời Blue Carbon cho dự án: hồ sơ cần kiểm tra' (từ review-knowledge.json)",
+      "Xác nhận danh mục /danh-muc-san-pham/den-nlmt/blue-carbon/ còn sản phẩm đúng",
+      "Quyền ảnh"
+    ],
+    "expected_url": "/blue-carbon-den-nang-luong-mat-troi-cho-du-an/"
+  },
+  {
+    "id": 107,
+    "stage": "hold",
+    "issue": "Trùng 100% nội dung với 102 (cùng intent); không tạo bản bài public. Lý do và các bước quyết định ghi tại ARTICLE-107-HOLD.md.",
+    "claims_blocked": [
+      "Toàn bộ bài; không viết lại bản riêng"
+    ],
+    "source_urls": [],
+    "media_checks": [
+      "Bài live không có ảnh inline."
+    ],
+    "approval_needed": [
+      "Owner/SEO: chọn canonical 102 hoặc 107 theo GSC/backlink/chuyển đổi, sau đó 301; không unpublish/redirect trước quyết định",
+      "Không đặt internal link nào tới 107 (6 bản nháp ở đây không link tới 107)"
+    ],
+    "expected_url": "/den-nang-luong-mat-troi-nhung-ly-do-ban-nen-chon/"
+  },
+  {
+    "id": 108,
+    "stage": "editor_draft",
+    "persona": "Đối tác đại lý/nhà phân phối/đơn vị thi công chiếu sáng.",
+    "approx_syllables": 450,
+    "issue": "Bài live mở bằng claim thị trường không nguồn ('Việt Nam top tiêu thụ điện chiếu sáng'), liệt kê cam kết như chính sách chung: giá 'cạnh tranh nhất thị trường', CO/CQ cho 'tất cả sản phẩm', Cree 180 lm/W, LiFePO4 12 năm, CE/RoHS/IEC/ISO/CB, bảo hành 2–5 năm 'cho tất cả sản phẩm'. Bản nháp ghi rõ đây là nội dung tham khảo, không đại diện chính sách bán hiện hành, và đưa ra năm điều đối tác cần chốt bằng văn bản.",
+    "claims_blocked": [
+      "'Việt Nam nằm trong top tiêu thụ điện chiếu sáng'",
+      "'Giá tốt cạnh tranh nhất thị trường', 'nhập khẩu trực tiếp không qua trung gian'",
+      "Chip LED Cree 180 lm/W; Cree thành lập 1989",
+      "Pin LiFePO4 tuổi thọ 12 năm",
+      "Chứng nhận CE, RoHS, IEC, ISO, CB cho toàn bộ sản phẩm",
+      "Mọi sản phẩm có chứng nhận phân phối, CO/CQ/VAT",
+      "Bảo hành 2–5 năm cho tất cả sản phẩm; giám sát IoT như dịch vụ chuẩn",
+      "'Kinh doanh đèn năng lượng mặt trời chưa bao giờ dễ dàng đến thế'"
+    ],
+    "source_urls": [
+      "https://www.lightingglobal.org/how-we-work/quality-assurance/"
+    ],
+    "internal_links": [
+      "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/",
+      "/san-pham/"
+    ],
+    "media_checks": [
+      "/upload/filemanager/wp-legacy/2022/09/loi-ich-web-1200.jpg: không nhúng vào bản nháp vì ảnh có thể chứa các claim quyền lợi cũ; cần xem nội dung ảnh và quyền dùng trước khi đưa lại. Không tự xác nhận."
+    ],
+    "approval_needed": [
+      "Owner/sales: có chính sách đối tác hiện hành bằng văn bản không; nếu có, có muốn link tới nó",
+      "Owner: xác nhận hotline 0944 555 957 vẫn là kênh đối tác (lấy từ bài live)",
+      "Owner/SEO: title đề xuất 'Hợp tác cùng Phúc Thịnh Solar: những nội dung cần xác nhận trước khi ký' (từ review-corporate.json)",
+      "Reviewer: click-check link nội bộ và nguồn"
+    ],
+    "expected_url": "/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/"
+  },
+  {
+    "id": 109,
+    "stage": "editor_draft",
+    "persona": "Người tìm hiểu quan hệ Phúc Thịnh Solar – Blue Carbon (đối tác, nhà thầu); trang lưu trữ corporate.",
+    "approx_syllables": 420,
+    "issue": "Bài live khẳng định 'chính thức là đối tác phân phối độc quyền Blue Carbon', mở bằng COP26 và dự báo BloombergNEF 1 TWh không nguồn, bảo hành 'lên đến 5 năm'. Bản nháp giữ làm trang lưu trữ canonical cho cụm 101/109: thuật lại bản gốc với ngôn ngữ trung lập, nêu rõ chưa đối chiếu văn bản Blue Carbon, không chốt ngày công bố, bỏ phần COP26/BNEF.",
+    "claims_blocked": [
+      "Đối tác phân phối độc quyền Blue Carbon như quan hệ hiện tại",
+      "Năm/ngày công bố hợp tác (đường dẫn media 2022/09 và ngữ cảnh COP26 không phải bằng chứng)",
+      "Bảo hành 'lên đến 5 năm'",
+      "Dự báo BloombergNEF thị trường lưu trữ 1 TWh vào 2030, cam kết COP26 (lược bỏ, không nguồn)",
+      "Cam kết 'hỗ trợ kỹ thuật chuyên sâu', 'bảo hành chính hãng'"
+    ],
+    "source_urls": [
+      "https://bluecarbon.solar/faq/"
+    ],
+    "source_note": "Mô tả FAQ Blue Carbon theo ghi chú fact-check 2026-11-12; phiên này không fetch lại. Trích lời ông Mai Anh Tuấn lấy nguyên văn một đoạn từ bài live, cần owner xác nhận còn đồng ý cho dùng.",
+    "internal_links": [
+      "/blue-carbon-den-nang-luong-mat-troi-cho-du-an/",
+      "/danh-muc-san-pham/den-nlmt/blue-carbon/"
+    ],
+    "media_checks": [
+      "Catalog-Blue-Cacbon-ft-PTS-1-1.jpg: nhúng với alt trung lập 'Catalog chung … đăng kèm bài gốc'; alt cũ 'Đối tác độc quyền…' đã bỏ; quyền dùng logo/catalog chưa xác minh.",
+      "chung-nhan-scaled.jpg: để dạng link, không nhúng; tính xác thực, ngày hiệu lực, chữ ký chưa đối chiếu với Blue Carbon.",
+      "Không tự xác nhận ảnh nào."
+    ],
+    "approval_needed": [
+      "Owner/SEO: xác nhận 109 là canonical cụm Blue Carbon và 101 → 301 về 109 (sau so GSC)",
+      "Owner/legal: văn bản Blue Carbon xác nhận phạm vi/thời hạn; nếu không có, cân nhắc noindex",
+      "Owner: đồng ý giữ trích lời ông Mai Anh Tuấn",
+      "Link tới 106 phụ thuộc việc 106 được duyệt; nếu 106 vẫn hold thì bỏ link này",
+      "Owner/SEO: title đề xuất 'Phúc Thịnh Solar và Blue Carbon: ghi nhận một quan hệ phân phối'"
+    ],
+    "expected_url": "/phuc-thinh-solar-chinh-thuc-la-doi-tac-phan-phoi-doc-quyen-den-nang-luong-mat-troi-blue-carbon-tai-viet-nam/"
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "name": "oriana-pl0307",
+  "model": "isnet-general-use",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/PL-0307_300_300_H380/1.png",
+  "source_sha256": "e09f90bdf3d561bd66ae92e5083d96de32c1283ccb0f00b4e3aea3a8631676a5",
+  "source_size": [
+    790,
+    700
+  ],
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-pl0307-1600-transparent.png",
+  "output_sha256": "3b526022022dfd1bf737e98a6b7f0b5407da31b3e5527a5d53b43bb764b4c6f5",
+  "output_bytes": 857483,
+  "alpha_before": {
+    "size": [
+      790,
+      700
+    ],
+    "transparency_fraction": 0.0,
+    "opaque_fraction": 1.0,
+    "soft_alpha_fraction": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      790,
+      700
+    ],
+    "alpha_bbox_fraction": 1.0
+  },
+  "alpha_after": {
+    "size": [
+      1600,
+      1600
+    ],
+    "transparency_fraction": 0.659,
+    "opaque_fraction": 0.296,
+    "soft_alpha_fraction": 0.045,
+    "alpha_bbox": [
+      144,
+      218,
+      1456,
+      1381
+    ],
+    "alpha_bbox_fraction": 0.596
+  },
+  "elapsed_s": 2.88,
+  "status": "QA_DRAFT_NOT_PUBLISHED"
+}

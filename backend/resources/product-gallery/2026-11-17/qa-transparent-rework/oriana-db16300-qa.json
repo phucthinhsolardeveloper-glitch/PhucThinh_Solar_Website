@@ -1,0 +1,10 @@
+{
+  "name": "oriana-db16300",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/DB-16300W/1.png",
+  "method": "isnet_general_use",
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-db16300-1600-transparent.png",
+  "source_sha256": "23187aeb30aa846a74c68fd3bc3331f31cb0a1ce06ff37929dcf964a93693461",
+  "output_sha256": "e74eebe04812e964434a704ec9d640f5d3c177c0e8c6dbfe43d3850a0b8aed10",
+  "output_bytes": 770840,
+  "status": "DRAFT_QA_REQUIRED"
+}

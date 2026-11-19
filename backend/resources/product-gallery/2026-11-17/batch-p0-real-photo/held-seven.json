@@ -1,0 +1,37 @@
+[
+  {
+    "id": 511,
+    "sku": "DB03-3",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 512,
+    "sku": "DB03-4",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 520,
+    "sku": "YS-100W",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 521,
+    "sku": "YS-120W",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 523,
+    "sku": "HB02-80W",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 524,
+    "sku": "HB02-100W",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  },
+  {
+    "id": 525,
+    "sku": "HB02-120W",
+    "reason": "Phải xác minh ảnh dùng chung giữa các biến thể công suất; không tự động đưa lên production"
+  }
+]

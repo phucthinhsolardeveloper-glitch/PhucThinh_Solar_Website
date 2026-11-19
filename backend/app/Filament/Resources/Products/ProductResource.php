@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products;
 
 use App\Domain\Catalog\ProductSalesReadiness;
 use App\Domain\Catalog\SpecFormat;
+use App\Domain\Shipping\Warehouses;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\Options;
@@ -32,8 +33,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -108,6 +109,8 @@ class ProductResource extends Resource
                         ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
                     TextInput::make('weight_kg')->label('Cân nặng khi đóng gói (kg)')->numeric()->minValue(0.01)->maxValue(5000)
                         ->helperText('Dùng để tính phí Nhất Tín lúc khách đặt hàng. Để trống thì nhân viên báo phí giao hàng sau.'),
+                    Select::make('warehouse_id')->label('Kho giữ hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa gán kho')
+                        ->helperText('Kho nào đang giữ sản phẩm này. Đơn có sản phẩm này sẽ xuất từ kho đó; phí giao hàng cũng tính từ kho đó.'),
                 ]),
                 Tab::make('Ảnh & video')->schema([
                     Grid::make(2)->schema([
@@ -188,6 +191,7 @@ class ProductResource extends Resource
         // Read once: a closure would run again for every row of a 200-row page.
         $categoryOptions = $edit ? Options::categoryPaths() : [];
         $brandOptions = $edit ? Brand::query()->orderBy('name')->pluck('name', 'id')->all() : [];
+        $warehouseOptions = app(Warehouses::class)->options();
 
         return $table
             ->paginationPageOptions([10, 25, 50, 100, 200])->defaultPaginationPageOption(50)
@@ -218,6 +222,7 @@ class ProductResource extends Resource
                             default => 'Chưa có giá',
                         }),
                 ]),
+                TextColumn::make('warehouse_id')->label('Kho giữ hàng')->formatStateUsing(fn ($state) => $warehouseOptions[(int) $state] ?? 'Chưa gán')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sales_readiness')->label('Cần bổ sung')
                     ->state(function (Product $record): string {
                         $issues = app(ProductSalesReadiness::class)->issues($record);
@@ -243,6 +248,7 @@ class ProductResource extends Resource
                 SelectFilter::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->preload(),
                 TernaryFilter::make('is_visible')->label('Hiển thị'),
                 TernaryFilter::make('quote_only')->label('Chỉ báo giá'),
+                SelectFilter::make('warehouse_id')->label('Kho giữ hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Tất cả'),
                 TernaryFilter::make('weight_kg')->label('Cân nặng đóng gói')->trueLabel('Đã có')->falseLabel('Chưa có')
                     ->queries(true: fn (Builder $q) => $q->where('weight_kg', '>', 0), false: fn (Builder $q) => $q->where(fn ($q) => $q->whereNull('weight_kg')->orWhere('weight_kg', '<=', 0))),
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)

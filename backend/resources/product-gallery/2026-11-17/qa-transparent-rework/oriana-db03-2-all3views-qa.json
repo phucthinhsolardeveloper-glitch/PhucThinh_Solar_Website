@@ -1,0 +1,10 @@
+{
+  "name": "oriana-db03-2-all3views",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/DB03-2/3.png",
+  "method": "white_flood_242_retained_3_views",
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-db03-2-all3views-1600-transparent.png",
+  "source_sha256": "bc6c789fb1dfdfb5a8a4b6ae938b3f233c43fbfc200a4e808d2d1713e159ee78",
+  "output_sha256": "eabc42c4859fbe65fdef0c56dc2515e8b0797822706358ac38cdafe37b0b8fa6",
+  "output_bytes": 314127,
+  "status": "DRAFT_QA_REQUIRED"
+}

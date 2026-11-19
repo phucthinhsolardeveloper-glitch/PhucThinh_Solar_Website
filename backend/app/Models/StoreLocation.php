@@ -17,6 +17,7 @@ class StoreLocation extends Model
     {
         return [
             'is_visible' => 'boolean',
+            'is_warehouse' => 'boolean',
         ];
     }
 

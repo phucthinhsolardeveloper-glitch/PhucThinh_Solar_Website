@@ -288,6 +288,7 @@ class Shop
             'total' => $total,
             'requirements' => $requirements,
             'status' => 'new',
+            'warehouse_id' => $this->cart->parcel()['warehouse'],
             'created_at' => now(),
             'updated_at' => now(),
         ];

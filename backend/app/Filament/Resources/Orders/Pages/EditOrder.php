@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
+use App\Domain\Audit\Audit;
 use App\Domain\Commerce\BankTransfer;
 use App\Domain\Commerce\ManualPayment;
 use App\Domain\Commerce\OrderExporter;
@@ -36,6 +37,12 @@ class EditOrder extends EditRecord
     {
         /** @var Order $record */
         app(OrderLifecycle::class)->update($record, (string) $data['status'], $data['notes'] ?? null);
+        $warehouse = (int) ($data['warehouse_id'] ?? 0) ?: null;
+        if (array_key_exists('warehouse_id', $data) && $warehouse !== ((int) $record->warehouse_id ?: null) && ! $record->shipments()->exists()) {
+            $from = ['warehouse_id' => $record->warehouse_id];
+            $record->forceFill(['warehouse_id' => $warehouse])->save();
+            Audit::record('order.warehouse', 'Order', (int) $record->id, $from, ['warehouse_id' => $warehouse]);
+        }
 
         return $record;
     }

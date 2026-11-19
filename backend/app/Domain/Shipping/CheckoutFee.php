@@ -23,7 +23,7 @@ final class CheckoutFee
     public function __construct(private readonly NtlClient $client, private readonly SiteSettings $settings) {}
 
     /**
-     * @param  array{kg: float, known: bool}  $parcel
+     * @param  array{kg: float, known: bool, warehouse?: int|null}  $parcel
      * @return array{ok: true, priced: bool, provider: string, label: string, amount: float, note: string, quote_ref: string, source: string}|null
      */
     public function quote(int $wardId, array $parcel, float $subtotal): ?array
@@ -49,7 +49,10 @@ final class CheckoutFee
             return $manual('Hàng cồng kềnh: nhân viên báo giá vận chuyển riêng.');
         }
         $receiver = $this->place($wardId);
-        $sender = $this->place((int) $this->settings->get('shipping_sender_ward_id', 0)) ?? ($mode === 'mock' ? $receiver : null);
+        // Goods held in one warehouse are priced from that warehouse; otherwise from the default sender in Admin.
+        $warehouse = app(Warehouses::class)->sender($parcel['warehouse'] ?? null);
+        $senderWard = $warehouse !== null ? $warehouse['ward_id'] : (int) $this->settings->get('shipping_sender_ward_id', 0);
+        $sender = $this->place($senderWard) ?? ($mode === 'mock' ? $receiver : null);
         if ($receiver === null || $sender === null) {
             return $manual('Nhân viên báo phí giao hàng sau.');
         }

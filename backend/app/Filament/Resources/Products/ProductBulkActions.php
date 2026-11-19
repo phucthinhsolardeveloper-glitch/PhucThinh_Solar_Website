@@ -6,6 +6,7 @@ use App\Domain\Catalog\Bulk\BulkCatalog;
 use App\Domain\Catalog\Bulk\BulkExporter;
 use App\Domain\Catalog\ProductBulkUpdate;
 use App\Domain\Content\PublishChecks;
+use App\Domain\Shipping\Warehouses;
 use App\Filament\Support\Options;
 use App\Models\Brand;
 use App\Models\Product;
@@ -69,6 +70,10 @@ final class ProductBulkActions
                         Notification::make()->success()->title('Đã xóa '.$result['deleted'].' sản phẩm')
                             ->body($result['kept'] > 0 ? 'Giữ lại '.$result['kept'].' sản phẩm có đánh giá hoặc đơn hàng.' : null)->send();
                     }),
+                self::base('setWarehouse', 'Gán kho giữ hàng', Heroicon::OutlinedBuildingStorefront)
+                    ->modalDescription('Kho này sẽ là nơi xuất hàng khi khách đặt các sản phẩm đã chọn. Chọn các sản phẩm cùng một kho rồi gán một lần.')
+                    ->schema([Select::make('warehouse_id')->label('Kho giữ hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Bỏ kho (chưa gán)')])
+                    ->action(fn (Collection $records, array $data) => self::changed(app(ProductBulkUpdate::class)->set($records, ['warehouse_id' => $data['warehouse_id'] ?: null]))),
                 self::base('setWeight', 'Điền cân nặng đóng gói', Heroicon::OutlinedScale)
                     ->modalDescription('Dùng để tính phí giao hàng lúc khách đặt và cân nặng vận đơn. Chọn các sản phẩm cùng cỡ (ví dụ cùng dòng đèn 100W) rồi điền một lần.')
                     ->schema([

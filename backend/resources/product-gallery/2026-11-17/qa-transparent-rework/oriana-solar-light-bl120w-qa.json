@@ -1,0 +1,47 @@
+{
+  "name": "oriana-solar-light-bl120w",
+  "model": "isnet-general-use",
+  "source": "/home/admin01/src/Data/missing_photo_20261007/SOLAR-LIGHT-BL120W/3.png",
+  "source_sha256": "d8405d114e0589a39fe575e81e21c8e56a1764fe021d72f0f5e501e1f5e00b19",
+  "source_size": [
+    889,
+    772
+  ],
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-solar-light-bl120w-1600-transparent.png",
+  "output_sha256": "3d8d96f4d0aef388b337d42759edeb7d67686c959e9cffe75d2244a0c7373d75",
+  "output_bytes": 719086,
+  "alpha_before": {
+    "size": [
+      889,
+      772
+    ],
+    "transparency_fraction": 0.0,
+    "opaque_fraction": 1.0,
+    "soft_alpha_fraction": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      889,
+      772
+    ],
+    "alpha_bbox_fraction": 1.0
+  },
+  "alpha_after": {
+    "size": [
+      1600,
+      1600
+    ],
+    "transparency_fraction": 0.806,
+    "opaque_fraction": 0.142,
+    "soft_alpha_fraction": 0.051,
+    "alpha_bbox": [
+      144,
+      230,
+      1456,
+      1369
+    ],
+    "alpha_bbox_fraction": 0.584
+  },
+  "elapsed_s": 5.66,
+  "status": "QA_DRAFT_NOT_PUBLISHED"
+}

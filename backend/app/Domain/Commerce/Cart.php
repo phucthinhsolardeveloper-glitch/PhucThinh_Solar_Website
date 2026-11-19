@@ -4,6 +4,7 @@ namespace App\Domain\Commerce;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductRecord;
+use App\Domain\Shipping\Warehouses;
 use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
@@ -90,18 +91,20 @@ class Cart
         return $id > 0 ? (string) (DB::table('product_options')->where('kind', $kind)->where('id', $id)->value('name') ?? '') : '';
     }
 
-    /** @return array{kg: float, known: bool} packed weight of the cart; known is false when a product has no weight */
+    /** @return array{kg: float, known: bool, warehouse: int|null} packed weight of the cart; known is false when a product has no weight; warehouse is the one that holds every product, when there is one */
     public function parcel(): array
     {
         $kg = 0.0;
         $known = true;
+        $productIds = [];
         foreach ($this->lines() as $line) {
+            $productIds[] = (int) $line['product_id'];
             $weight = (float) DB::table('products')->where('id', (int) $line['product_id'])->value('weight_kg');
             $known = $known && $weight > 0;
             $kg += $weight * (int) $line['quantity'];
         }
 
-        return ['kg' => round($kg, 2), 'known' => $known && $kg > 0];
+        return ['kg' => round($kg, 2), 'known' => $known && $kg > 0, 'warehouse' => app(Warehouses::class)->singleFor($productIds)];
     }
 
     /** Sale price when set, else list price, times quantity. */

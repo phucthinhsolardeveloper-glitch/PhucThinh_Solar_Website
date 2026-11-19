@@ -1,0 +1,47 @@
+{
+  "name": "solax-front",
+  "model": "keep_original_alpha",
+  "source": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/2656fff320.png",
+  "source_sha256": "1ec7f2430990f08cc6dc9d7c7e17ae2014caa2f6392d5c150c964961ff6aa05d",
+  "source_size": [
+    516,
+    516
+  ],
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/solax-front-1600-transparent.png",
+  "output_sha256": "7b3faae557669f97551dbb6a469c73316bd3b335e9e7ba5b2e04a1ba88e341c1",
+  "output_bytes": 296083,
+  "alpha_before": {
+    "size": [
+      516,
+      516
+    ],
+    "transparency_fraction": 0.534,
+    "opaque_fraction": 0.459,
+    "soft_alpha_fraction": 0.006,
+    "alpha_bbox": [
+      106,
+      38,
+      410,
+      478
+    ],
+    "alpha_bbox_fraction": 0.502
+  },
+  "alpha_after": {
+    "size": [
+      1600,
+      1600
+    ],
+    "transparency_fraction": 0.569,
+    "opaque_fraction": 0.423,
+    "soft_alpha_fraction": 0.008,
+    "alpha_bbox": [
+      347,
+      144,
+      1253,
+      1456
+    ],
+    "alpha_bbox_fraction": 0.464
+  },
+  "elapsed_s": 0.01,
+  "status": "QA_DRAFT_NOT_PUBLISHED"
+}

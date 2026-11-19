@@ -1,0 +1,284 @@
+[
+  {
+    "name": "solax-front",
+    "model": "keep_original_alpha",
+    "source": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/2656fff320.png",
+    "source_sha256": "1ec7f2430990f08cc6dc9d7c7e17ae2014caa2f6392d5c150c964961ff6aa05d",
+    "source_size": [
+      516,
+      516
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/solax-front-1600-transparent.png",
+    "output_sha256": "7b3faae557669f97551dbb6a469c73316bd3b335e9e7ba5b2e04a1ba88e341c1",
+    "output_bytes": 296083,
+    "alpha_before": {
+      "size": [
+        516,
+        516
+      ],
+      "transparency_fraction": 0.534,
+      "opaque_fraction": 0.459,
+      "soft_alpha_fraction": 0.006,
+      "alpha_bbox": [
+        106,
+        38,
+        410,
+        478
+      ],
+      "alpha_bbox_fraction": 0.502
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.569,
+      "opaque_fraction": 0.423,
+      "soft_alpha_fraction": 0.008,
+      "alpha_bbox": [
+        347,
+        144,
+        1253,
+        1456
+      ],
+      "alpha_bbox_fraction": 0.464
+    },
+    "elapsed_s": 0.01,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  },
+  {
+    "name": "oriana-db03-2",
+    "model": "isnet-general-use",
+    "source": "/home/admin01/src/Data/missing_photo_20261007/DB03-2/3.png",
+    "source_sha256": "bc6c789fb1dfdfb5a8a4b6ae938b3f233c43fbfc200a4e808d2d1713e159ee78",
+    "source_size": [
+      970,
+      669
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-db03-2-1600-transparent.png",
+    "output_sha256": "0f9b69ce13eb3caae488b1dd564cf0e55bb1c65dbc5f056ebd9cc0927df6b2d5",
+    "output_bytes": 277147,
+    "alpha_before": {
+      "size": [
+        970,
+        669
+      ],
+      "transparency_fraction": 0.0,
+      "opaque_fraction": 1.0,
+      "soft_alpha_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        970,
+        669
+      ],
+      "alpha_bbox_fraction": 1.0
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.801,
+      "opaque_fraction": 0.183,
+      "soft_alpha_fraction": 0.017,
+      "alpha_bbox": [
+        144,
+        347,
+        1456,
+        1252
+      ],
+      "alpha_bbox_fraction": 0.464
+    },
+    "elapsed_s": 4.37,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  },
+  {
+    "name": "oriana-solar-light-bl120w",
+    "model": "isnet-general-use",
+    "source": "/home/admin01/src/Data/missing_photo_20261007/SOLAR-LIGHT-BL120W/3.png",
+    "source_sha256": "d8405d114e0589a39fe575e81e21c8e56a1764fe021d72f0f5e501e1f5e00b19",
+    "source_size": [
+      889,
+      772
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-solar-light-bl120w-1600-transparent.png",
+    "output_sha256": "3d8d96f4d0aef388b337d42759edeb7d67686c959e9cffe75d2244a0c7373d75",
+    "output_bytes": 719086,
+    "alpha_before": {
+      "size": [
+        889,
+        772
+      ],
+      "transparency_fraction": 0.0,
+      "opaque_fraction": 1.0,
+      "soft_alpha_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        889,
+        772
+      ],
+      "alpha_bbox_fraction": 1.0
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.806,
+      "opaque_fraction": 0.142,
+      "soft_alpha_fraction": 0.051,
+      "alpha_bbox": [
+        144,
+        230,
+        1456,
+        1369
+      ],
+      "alpha_bbox_fraction": 0.584
+    },
+    "elapsed_s": 5.66,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  },
+  {
+    "name": "oriana-ys80w",
+    "model": "isnet-general-use",
+    "source": "/home/admin01/src/Data/missing_photo_20261007/YS-80W/2.png",
+    "source_sha256": "7a8f95be726a67483b92bed78aa09467bba8a048485d4fbe0647967640580f6e",
+    "source_size": [
+      600,
+      438
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-ys80w-1600-transparent.png",
+    "output_sha256": "c6a600b7a4ab7f23d993294ee0d9c768b1891936dafc08beaaf4222604672778",
+    "output_bytes": 799538,
+    "alpha_before": {
+      "size": [
+        600,
+        438
+      ],
+      "transparency_fraction": 0.0,
+      "opaque_fraction": 1.0,
+      "soft_alpha_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        600,
+        438
+      ],
+      "alpha_bbox_fraction": 1.0
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.804,
+      "opaque_fraction": 0.155,
+      "soft_alpha_fraction": 0.042,
+      "alpha_bbox": [
+        144,
+        357,
+        1456,
+        1243
+      ],
+      "alpha_bbox_fraction": 0.454
+    },
+    "elapsed_s": 2.39,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  },
+  {
+    "name": "oriana-hb01-60w",
+    "model": "isnet-general-use",
+    "source": "/home/admin01/src/Data/missing_photo_20261007/HB01-60W/2.png",
+    "source_sha256": "40596f31f31a9b85446830e26c9830b4efada49f5f4b24c983f947928a01a2b2",
+    "source_size": [
+      501,
+      528
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-hb01-60w-1600-transparent.png",
+    "output_sha256": "24067fa5603f0155523432ee061c33f79c44c257f9ca1e50c6398ac30282ab36",
+    "output_bytes": 401495,
+    "alpha_before": {
+      "size": [
+        501,
+        528
+      ],
+      "transparency_fraction": 0.0,
+      "opaque_fraction": 1.0,
+      "soft_alpha_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        501,
+        528
+      ],
+      "alpha_bbox_fraction": 1.0
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.785,
+      "opaque_fraction": 0.17,
+      "soft_alpha_fraction": 0.045,
+      "alpha_bbox": [
+        188,
+        144,
+        1411,
+        1456
+      ],
+      "alpha_bbox_fraction": 0.627
+    },
+    "elapsed_s": 2.45,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  },
+  {
+    "name": "oriana-pl0307",
+    "model": "isnet-general-use",
+    "source": "/home/admin01/src/Data/missing_photo_20261007/PL-0307_300_300_H380/1.png",
+    "source_sha256": "e09f90bdf3d561bd66ae92e5083d96de32c1283ccb0f00b4e3aea3a8631676a5",
+    "source_size": [
+      790,
+      700
+    ],
+    "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/oriana-pl0307-1600-transparent.png",
+    "output_sha256": "3b526022022dfd1bf737e98a6b7f0b5407da31b3e5527a5d53b43bb764b4c6f5",
+    "output_bytes": 857483,
+    "alpha_before": {
+      "size": [
+        790,
+        700
+      ],
+      "transparency_fraction": 0.0,
+      "opaque_fraction": 1.0,
+      "soft_alpha_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        790,
+        700
+      ],
+      "alpha_bbox_fraction": 1.0
+    },
+    "alpha_after": {
+      "size": [
+        1600,
+        1600
+      ],
+      "transparency_fraction": 0.659,
+      "opaque_fraction": 0.296,
+      "soft_alpha_fraction": 0.045,
+      "alpha_bbox": [
+        144,
+        218,
+        1456,
+        1381
+      ],
+      "alpha_bbox_fraction": 0.596
+    },
+    "elapsed_s": 2.88,
+    "status": "QA_DRAFT_NOT_PUBLISHED"
+  }
+]

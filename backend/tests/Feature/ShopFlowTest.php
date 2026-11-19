@@ -2,6 +2,7 @@
 
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
+use App\Support\SiteSettings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -184,7 +185,30 @@ it('stops showing prices and taking cart lines when prices are switched off for 
 
     // Whole site: the setting "Hiện giá sản phẩm trên website" off.
     DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('0')]);
-    app(App\Support\SiteSettings::class)->clear();
+    app(SiteSettings::class)->clear();
     expect($detail())->toBe('quote');
     shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => $token, 'productId' => $product->id, 'quantity' => 1])->assertStatus(409)->assertJsonPath('error.code', 'QUOTE_ONLY');
+});
+
+it('records the warehouse that holds the cart on the order, and none when the goods are split or unassigned', function () {
+    $product = buyableProduct();
+    $ward = DB::table('wards as w')->join('provinces as p', 'p.id', '=', 'w.province_id')
+        ->where('w.is_visible', true)->where('p.is_visible', true)->select('w.id', 'w.province_id as id_city')->first();
+    $payment = DB::table('payment_methods')->where('is_visible', true)->value('id');
+    $warehouse = (int) DB::table('store_locations')->insertGetId(['name' => 'Kho thử', 'address' => 'x', 'is_visible' => true, 'is_warehouse' => true, 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()]);
+    $place = function () use ($ward, $payment, $product) {
+        RateLimiter::clear('form:checkout|127.0.0.1');
+        $GLOBALS['shopCookies'] = [];
+        shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 1]);
+        $checkout = shop('GET', '/api/v1/checkout')->assertOk();
+        $placed = shop('POST', '/api/v1/checkout', ['csrfToken' => $checkout->json('csrfToken'), 'checkoutToken' => $checkout->json('checkoutToken'), 'data' => [
+            'fullname' => 'Khách thử', 'phone' => '0912345678', 'email' => 'khach@example.test', 'city' => $ward->id_city, 'ward' => $ward->id, 'address' => '1 Đường Thử', 'payments' => $payment]])->assertOk();
+
+        return DB::table('orders')->where('code', $placed->json('orderCode'))->value('warehouse_id');
+    };
+
+    DB::table('products')->where('id', $product->id)->update(['warehouse_id' => null]);
+    expect($place())->toBeNull();
+    DB::table('products')->where('id', $product->id)->update(['warehouse_id' => $warehouse]);
+    expect((int) $place())->toBe($warehouse);
 });

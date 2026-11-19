@@ -1,0 +1,157 @@
+{
+  "generated_at": "2026-11-16",
+  "scope": [111, 110, 105, 104, 102],
+  "rule": "Editor draft only. Not approved, not QA-passed, not synced to DB. Slug, URL, date, visibility, cover image and canonical unchanged. proposed_title is a suggestion for reviewer.",
+  "inputs": [
+    "backend/resources/editorial/2026-11-12/legacy-public/ARTICLE-{id}.md",
+    "backend/resources/editorial/2026-11-12/legacy-public/review-knowledge.json",
+    "backend/resources/editorial/2026-11-12/legacy-public/voice-knowledge.md",
+    "docs/07-features/editorial-voice-and-review-standard.md",
+    "docs/07-features/content-brief-qa-template-v1-2026-11-16.md",
+    "backend/resources/api-snapshots/news.json (original title, slug, url)"
+  ],
+  "source_url_check": "All external URLs reuse the list marked verified_reference_sources in review-knowledge.json (2026-11-12). They were not re-fetched in this session; reviewer must click-check before approval.",
+  "internal_link_hub_note": "Four drafts link to /top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/ (104), 104 links to 105. Anchor text uses the proposed 104 title; if 104 title is not approved, adjust anchors. No draft links to 107 (HOLD_MERGE).",
+  "product_links": "None added. Product pages exist for Oriana and Blue Carbon lamps, but no draft names a specific model, so no product link is genuinely relevant yet.",
+  "articles": [
+    {
+      "id": 102,
+      "original_title": "ĐÈN NĂNG LƯỢNG MẶT TRỜI - NHỮNG LÝ DO NÊN CHỌN!",
+      "proposed_title": "Đèn năng lượng mặt trời có hợp với chỗ bạn định lắp không?",
+      "expected_url": "/den-nang-luong-mat-troi-nhung-ly-do-nen-chon/",
+      "search_intent": "Người mới: vị trí của tôi có nên dùng đèn năng lượng mặt trời không (có/không/cần tính riêng).",
+      "differs_from": "104 = đã quyết dùng, đặt từng đèn ở đâu để giữ lợi ích; 111 = so chi phí; 105 = lắp và bảo dưỡng.",
+      "internal_links": ["/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/"],
+      "source_list": [
+        "https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf",
+        "https://www.lightingglobal.org/how-we-work/quality-assurance/"
+      ],
+      "assumptions_in_body": ["Bảng ba tình huống (cổng 30 m, hiên dưới mái tôn, bãi xe xưởng) là ví dụ giả định, đã ghi rõ trong bài."],
+      "blocked_claims": [
+        "Lời hứa 'không tốn tiền điện' như tiết kiệm tổng thể",
+        "Sáng suốt đêm / số giờ sáng chung không gắn model",
+        "Tuổi thọ, bảo hành, IP chung",
+        "Số liệu tiết kiệm hoặc hoàn vốn"
+      ],
+      "duplicate_handling": {
+        "duplicate_of": 107,
+        "duplicate_url": "/den-nang-luong-mat-troi-nhung-ly-do-ban-nen-chon/",
+        "evidence": "voice-knowledge.md: HTML/text DB 102 và 107 giống 100% (SequenceMatcher 1.000), chỉ khác chữ 'bạn' trong title.",
+        "107_status": "HOLD — không viết bản sửa riêng, không sync, không unpublish, không redirect.",
+        "before_301": "Phân tích GSC cho cả hai URL (clicks, impressions, query, vị trí, khoảng ≥ 3–6 tháng), backlink chất lượng và chuyển đổi. URL thắng giữ bản này làm canonical; URL còn lại 301 về đó sau khi owner duyệt, cập nhật internal link, sitemap, theo dõi 404. Nếu không chênh lệch đáng kể, ưu tiên 102 (slug ngắn hơn).",
+        "risk_if_published_without_decision": "Bản 102 mới sẽ khác 107, nhưng 107 vẫn cạnh tranh cùng intent cho đến khi có quyết định 301."
+      },
+      "image": "Giữ cover hiện hành /upload/news/pts-light-benefits.webp; chưa có nguồn/license/credit.",
+      "reviewer_required": ["SEO/analytics (GSC 102 vs 107)", "editor"],
+      "stage": "editor_draft"
+    },
+    {
+      "id": 104,
+      "original_title": "TOP 4 LỢI ÍCH KHI SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI",
+      "proposed_title": "Bốn lợi ích của đèn năng lượng mặt trời và vị trí giữ được chúng",
+      "expected_url": "/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/",
+      "search_intent": "Người đang mua: lợi ích của đèn năng lượng mặt trời là gì và đặt ở đâu để thật sự có được lợi ích đó.",
+      "differs_from": "Khác 102 (có nên dùng không): 104 giữ đúng 4 lợi ích của bài cũ nhưng mỗi lợi ích gắn điều kiện vị trí giữ/mất. Khác 2026-11-12 baseline (bốn câu hỏi mua) để bám title/slug cũ 'lợi ích'.",
+      "internal_links": ["/4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi/"],
+      "source_list": [
+        "https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting",
+        "https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf"
+      ],
+      "assumptions_in_body": ["Ví dụ nhà có cổng cách 25 m và hàng cây phía tây là giả định, đã ghi rõ."],
+      "blocked_claims": [
+        "Lợi ích môi trường định lượng (giảm CO2…)",
+        "Tiết kiệm tiền điện bằng con số",
+        "Tuổi thọ, bảo hành, chống nước chung",
+        "Claim thương hiệu không có nguồn"
+      ],
+      "image": "Giữ cover hiện hành /upload/news/pts-light-advantages.webp; chưa có nguồn/license/credit.",
+      "reviewer_required": ["editor", "technical (mẫu tấm pin tách rời / đi dây)"],
+      "stage": "editor_draft"
+    },
+    {
+      "id": 105,
+      "original_title": "4 LƯU Ý QUAN TRỌNG KHI LẮP ĐẶT VÀ SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI",
+      "proposed_title": "Bốn lưu ý an toàn khi lắp và bảo dưỡng đèn năng lượng mặt trời",
+      "expected_url": "/4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi/",
+      "search_intent": "Người đã mua/lắp: đèn không sáng hoặc sáng yếu thì kiểm tra gì, bảo dưỡng an toàn thế nào.",
+      "differs_from": "Sắp theo thời điểm (trước lắp, tuần đầu, hằng tháng, sau bão); chỉ quan sát và vệ sinh từ mặt đất. Không chọn vị trí sâu như 104.",
+      "internal_links": ["/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/"],
+      "source_list": [
+        "https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf",
+        "Hướng dẫn lắp đặt/sử dụng của nhà sản xuất cho đúng model (chưa có trong baseline)"
+      ],
+      "safety_scope": "Không hướng dẫn đấu nối, thay pin, mở mạch, leo cao. Chỉ quan sát, lau tấm pin trong tầm với khi nguội, đổi hướng đèn tránh nguồn sáng.",
+      "blocked_claims": [
+        "6–8 giờ nắng mỗi ngày",
+        "Sáng ít nhất 8 giờ / suốt đêm",
+        "Góc nghiêng cố định chung",
+        "Mọi hướng dẫn đấu dây, thay pin, nối điện lưới"
+      ],
+      "image": "Giữ cover hiện hành; chưa có nguồn/license/credit.",
+      "reviewer_required": ["technical/safety reviewer", "editor"],
+      "stage": "editor_draft"
+    },
+    {
+      "id": 110,
+      "original_title": "CHIP LED CREE THƯƠNG HIỆU TOP 1",
+      "proposed_title": "Chip LED CREE nói gì về chất lượng một chiếc đèn?",
+      "expected_url": "/chip-led-cree-thuong-hieu-top-1/",
+      "publish_status": "HOLD",
+      "hold_reason": "Chưa có datasheet/chứng từ model Blue Carbon xác nhận cấu hình chip CREE, chưa xác minh tính liên quan và quyền dùng ảnh chứng nhận. Bản nháp không khẳng định bất kỳ model nào dùng CREE.",
+      "search_intent": "Người so báo giá: tên chip LED có nói lên chất lượng đèn không, cần hỏi gì thêm.",
+      "differs_from": "Không nhắc Blue Carbon/hồ sơ dự án (thuộc 106). Chỉ dạy đọc thông số chip so với cả bộ đèn.",
+      "internal_links": ["/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/"],
+      "source_list": [
+        "https://www.cree-led.com/products/leds/xlamp/",
+        "https://www.cree-led.com/products/leds/xlamp/xm/",
+        "https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting"
+      ],
+      "assumptions_in_body": ["Mẫu A/B là giả định, không gắn sản phẩm PTS."],
+      "removed_from_body": {
+        "image": "https://phucthinhsolar.com/upload/filemanager/wp-legacy/2023/07/chung-nhan-scaled.jpg",
+        "why": "Ảnh chứng nhận trong thân bài ngụ ý chứng nhận cho model; tính xác thực, liên quan và quyền chưa xác minh. URL giữ ở đây để reviewer kiểm tra."
+      },
+      "blocked_claims": [
+        "CREE là thương hiệu TOP 1",
+        "Đèn Blue Carbon / đèn PTS dùng chip CREE",
+        "Chứng nhận, tiêu chuẩn, quan hệ đối tác/độc quyền với CREE",
+        "Tương thích hay hiệu suất vượt trội của chip trong đèn cụ thể",
+        "Tuổi thọ chip/đèn bằng con số"
+      ],
+      "verification_needed": ["Datasheet đèn ghi mã chip", "Chứng từ nhà cung cấp", "Nguồn/quyền ảnh chứng nhận", "Cover /upload/news/chip-cree-6645.jpg: nguồn và quyền"],
+      "reviewer_required": ["technical/product", "legal/brand (tên CREE)", "editor"],
+      "stage": "editor_draft"
+    },
+    {
+      "id": 111,
+      "original_title": "8 LÝ DO BẠN NÊN SỬ DỤNG ĐÈN NĂNG LƯỢNG MẶT TRỜI NGAY BÂY GIỜ",
+      "proposed_title": "Đèn năng lượng mặt trời có rẻ hơn đèn điện lưới không? Cách tự so chi phí",
+      "expected_url": "/8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio/",
+      "search_intent": "Người cân nhắc chi phí: tính tổng chi phí đèn mặt trời so với đèn điện lưới cho một vị trí.",
+      "differs_from": "Bảng tổng chi phí tự điền; không lặp danh sách lợi ích của 102/104.",
+      "internal_links": ["/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/"],
+      "source_list": [
+        "https://bbsc.energy.gov/sites/default/files/attachments/Solar-Powered%20Street%20and%20Area%20Lighting%20Considerations%20-%20Factsheet.pdf",
+        "https://www.lightingglobal.org/how-we-work/quality-assurance/"
+      ],
+      "assumptions_in_body": ["Cổng cách tủ điện 30 m; phép tính 30 W × 10 giờ × 365 ≈ 110 kWh/năm là minh họa, không có giá điện, không kết luận tiết kiệm."],
+      "blocked_claims": [
+        "An toàn tuyệt đối / 100% (đã bỏ hoàn toàn, kể cả trong heading)",
+        "Tuổi thọ, bảo hành chung (vd 12/25 năm, pin 8–12 năm, bảo hành 5 năm)",
+        "Mức tiết kiệm phần trăm, thời gian hoàn vốn",
+        "'Ngay bây giờ' như lời thúc mua"
+      ],
+      "slug_note": "Slug cũ chứa '8-ly-do…ngay-bay-gio' không còn khớp nội dung; giữ nguyên theo quy định, SEO quyết định sau.",
+      "image": "Giữ cover hiện hành; chưa có nguồn/license/credit.",
+      "reviewer_required": ["editor", "SEO (slug lệch nội dung)"],
+      "stage": "editor_draft"
+    }
+  ],
+  "not_done": [
+    "Chưa QA độc lập/chấm rubric (tự chấm không được tính).",
+    "Chưa click-check external URLs trong phiên này.",
+    "Chưa có dữ liệu GSC cho 102/107.",
+    "Chưa có summary/meta description đề xuất.",
+    "Ảnh của cả 5 bài chưa có nguồn/license/credit."
+  ]
+}

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Bulk;
 
+use App\Domain\Shipping\Warehouses;
 use App\Filament\Support\Options;
 use App\Models\Product;
 use App\Support\Slugs;
@@ -20,6 +21,9 @@ final class BulkCatalog
 
     /** @var array<int, string> */
     public array $brands;
+
+    /** @var array<int, string> id => warehouse name */
+    public array $warehouses;
 
     /** @var array<string, list<array{table: string, id: int}>> */
     public array $slugOwners;
@@ -41,6 +45,7 @@ final class BulkCatalog
         $this->categoryPaths = Options::categoryPaths();
         $this->categoryParents = DB::table('categories')->pluck('parent_id', 'id')->map(fn ($id) => $id ? (int) $id : null)->all();
         $this->brands = DB::table('brands')->orderBy('sort_order')->orderBy('id')->pluck('name', 'id')->all();
+        $this->warehouses = app(Warehouses::class)->options();
         $this->slugOwners = Slugs::owners();
         $this->products = ($products ?? Product::query()->with(['seo', 'images', 'contentSection'])->orderBy('id')->get())->keyBy('id');
         foreach ($this->products as $product) {
@@ -63,6 +68,7 @@ final class BulkCatalog
                 'control' => $key === 'id' ? (string) $product->id : '',
                 'category' => $this->categoryPaths[(int) $raw] ?? '',
                 'brand' => $this->brands[(int) $raw] ?? '',
+                'warehouse' => $this->warehouses[(int) $raw] ?? '',
                 'money' => (float) $raw > 0 ? (string) (int) $raw : '0',
                 'decimal' => $raw === null ? '' : (string) BulkText::decimal((string) $raw),
                 'flag' => $raw ? '1' : '0',

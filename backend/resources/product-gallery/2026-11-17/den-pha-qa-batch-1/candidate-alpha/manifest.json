@@ -1,0 +1,497 @@
+{
+  "created_at": "2026-11-17",
+  "batch": "den-pha-phase1",
+  "production_modified": false,
+  "not_ready_to_publish": true,
+  "items": [
+    {
+      "sku": "DB-760",
+      "kind": "EMF_BACKGROUND_CUTOUT",
+      "origin": "internal-supplier-EMF",
+      "usage": "candidate_primary_alpha_upgrade",
+      "model_check": "exact model label DB760 on lamp visible",
+      "source_native": "EMF bounds about 548x619; rendered to 1644x1857; extra detail NOT guaranteed",
+      "crop": null,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/emf-converted/DB-760-gdi-render.png",
+      "native_size": [
+        1644,
+        1857
+      ],
+      "source_sha256": "3ececdfaca04be8fafafeea820ff2fb0349404ea428a1495a8c7de32a1f91908",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-760-01-qa-20261117.png",
+      "output_sha256": "ce4559276f054a800279739694d70e8287ecf979dee619d18e184dc7baa0a403",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 659854,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-760-01-qa-20261117.webp",
+      "webp_bytes": 442406,
+      "mask_coverage": 0.473,
+      "transparency_fraction": 0.526,
+      "alpha_bbox": [
+        179,
+        112,
+        1220,
+        1288
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "DB-7300",
+      "kind": "EMF_BACKGROUND_CUTOUT",
+      "origin": "internal-supplier-EMF",
+      "usage": "candidate_primary_alpha_upgrade",
+      "model_check": "exact model label DB7300 on lamp visible",
+      "source_native": "EMF bounds about 633x587; rendered to 1899x1761",
+      "crop": null,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/emf-converted/DB-7300-gdi-render.png",
+      "native_size": [
+        1899,
+        1761
+      ],
+      "source_sha256": "a8c7fbc5e42c80f90d4f3288da692e11cd5970acf8da1c77aed37dcf070388b4",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7300-02-qa-20261117.png",
+      "output_sha256": "b8de69d5eda6dd51e23c046f913c326ae76829fed5f77ce371e4abe9897f8c09",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 726388,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7300-02-qa-20261117.webp",
+      "webp_bytes": 496370,
+      "mask_coverage": 0.509,
+      "transparency_fraction": 0.49,
+      "alpha_bbox": [
+        112,
+        154,
+        1288,
+        1245
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "DB-7500",
+      "kind": "EMF_BACKGROUND_CUTOUT",
+      "origin": "internal-supplier-EMF",
+      "usage": "candidate_primary_alpha_upgrade",
+      "model_check": "exact model label DB7500 on lamp visible",
+      "source_native": "EMF bounds about 603x615; rendered to 1809x1845",
+      "crop": null,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/emf-converted/DB-7500-gdi-render.png",
+      "native_size": [
+        1809,
+        1845
+      ],
+      "source_sha256": "b8df989a86ad31d90c498f1efbd39bb8d063246de844089b295220ce300dc0d9",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7500-03-qa-20261117.png",
+      "output_sha256": "635c8a17950db0c431459327a7863b6514d1b4fb09e651de069e58320db1940b",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 932408,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7500-03-qa-20261117.webp",
+      "webp_bytes": 639548,
+      "mask_coverage": 0.563,
+      "transparency_fraction": 0.436,
+      "alpha_bbox": [
+        123,
+        112,
+        1276,
+        1288
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "DB-71000",
+      "kind": "EMF_BACKGROUND_CUTOUT",
+      "origin": "internal-supplier-EMF",
+      "usage": "candidate_primary_alpha_upgrade",
+      "model_check": "exact model label DB71000 on lamp visible",
+      "source_native": "EMF bounds about 448x571; rendered to 1344x1713",
+      "crop": null,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/emf-converted/DB-71000-gdi-render.png",
+      "native_size": [
+        1344,
+        1713
+      ],
+      "source_sha256": "41ce4652d7ef69fdb7f4147b5576344873a7198c5c3bf58da13d8721319381c6",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-71000-04-qa-20261117.png",
+      "output_sha256": "5b1e823c67a97c2c80f797bf53e9eeeecb6710d06c03b40d88aa4bc5209b185d",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 577239,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-71000-04-qa-20261117.webp",
+      "webp_bytes": 386258,
+      "mask_coverage": 0.409,
+      "transparency_fraction": 0.59,
+      "alpha_bbox": [
+        238,
+        112,
+        1161,
+        1288
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "BCT-WR1.0",
+      "kind": "WHITE_CUTOUT",
+      "origin": "blue-carbon-manufacturer-direct",
+      "usage": "candidate_gallery_front_side",
+      "model_check": "manufacturer product page BCT-WR1.0, physical lamp has 4 rectangular LED modules like live SKU",
+      "crop": [
+        0.14,
+        0.1,
+        0.93,
+        0.64
+      ],
+      "source_page": "https://www.bctvnergy.com/solar-light/solar-flood-light/blue-carbon-ce-solar-flood.html",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/BCT-WR1-0-official-04.jpg",
+      "native_size": [
+        720,
+        720
+      ],
+      "source_sha256": "def8c399cbec7b1a66c6756badb9f204c5bcd9495e3c32318c65687ac5e11572",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr1-0-05-qa-20261117.png",
+      "output_sha256": "fd90c3c49a9fccc22878ded52e8464e6f1c1cdd14701a0a0f8dc3d91c0000f60",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 417465,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr1-0-05-qa-20261117.webp",
+      "webp_bytes": 216730,
+      "mask_coverage": 0.224,
+      "transparency_fraction": 0.773,
+      "alpha_bbox": [
+        112,
+        274,
+        1288,
+        1125
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX",
+      "qa_note": "Removed disjoint floating specks/shadow; kept largest connected product silhouette. Needs human edge QA."
+    },
+    {
+      "sku": "BCT-WR1.0",
+      "kind": "KEEP_TECH_DIAGRAM",
+      "origin": "blue-carbon-manufacturer-direct",
+      "usage": "candidate_gallery_dimensions_reference",
+      "model_check": "official dimensions graphic; validate physical revision prior to publishing",
+      "crop": null,
+      "source_page": "https://www.bctvnergy.com/solar-light/solar-flood-light/blue-carbon-ce-solar-flood.html",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/BCT-WR1-0-official-06.jpg",
+      "native_size": [
+        720,
+        720
+      ],
+      "source_sha256": "d94c0cad969b1556ac9c124ba740aa1e4915ca75a20c9455777d27292909a70f",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr1-0-06-qa-20261117.png",
+      "output_sha256": "7c9fdce129cac446a8ed0745e93d66bf1582c83715ad8dd556cdf01ff8d3d002",
+      "output_size": [
+        720,
+        720
+      ],
+      "output_bytes": 101298,
+      "webp": null,
+      "webp_bytes": null,
+      "mask_coverage": 1.0,
+      "transparency_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        720,
+        720
+      ],
+      "auto_alpha_pass": null,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX"
+    },
+    {
+      "sku": "BCT-WR4.0",
+      "kind": "WHITE_CUTOUT",
+      "origin": "blue-carbon-manufacturer-direct",
+      "usage": "candidate_gallery_lamp_front",
+      "model_check": "manufacturer product page BCT-WR4.0, lamp visibly consistent with live 4x4 LED face",
+      "crop": [
+        0.11,
+        0.13,
+        0.94,
+        0.8
+      ],
+      "source_page": "https://www.bctvnergy.com/solar-light/solar-flood-light/30w-led-solar-flood-light.html",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/BCT-WR4-0-official-03.jpg",
+      "native_size": [
+        720,
+        720
+      ],
+      "source_sha256": "dea1889a6c744821221f0678e1c4350023b1db1a148dc0f7134c7a70ccfe24f8",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-07-qa-20261117.png",
+      "output_sha256": "b1dfa480ebcccf15602eabc06e7b95e9305b353196d5650fe8a51883fb4b0711",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 664627,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-07-qa-20261117.webp",
+      "webp_bytes": 347916,
+      "mask_coverage": 0.43,
+      "transparency_fraction": 0.566,
+      "alpha_bbox": [
+        112,
+        214,
+        1288,
+        1186
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX"
+    },
+    {
+      "sku": "BCT-WR4.0",
+      "kind": "WHITE_CUTOUT",
+      "origin": "blue-carbon-manufacturer-direct",
+      "usage": "candidate_gallery_lamp_angle",
+      "model_check": "manufacturer same BCT-WR4.0 page and visible housing",
+      "crop": [
+        0.1,
+        0.1,
+        0.95,
+        0.79
+      ],
+      "source_page": "https://www.bctvnergy.com/solar-light/solar-flood-light/30w-led-solar-flood-light.html",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/BCT-WR4-0-official-04.jpg",
+      "native_size": [
+        720,
+        720
+      ],
+      "source_sha256": "9d8bf51f4cd5f7ed2a746eacba49fd12828ecf2266ba652fab97a35c1f66e4e2",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-08-qa-20261117.png",
+      "output_sha256": "9180c7b937a5813cac763d63a55d75bcc84fd8d82b865339e78c5592f89d594c",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 514028,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-08-qa-20261117.webp",
+      "webp_bytes": 271178,
+      "mask_coverage": 0.332,
+      "transparency_fraction": 0.665,
+      "alpha_bbox": [
+        112,
+        278,
+        1288,
+        1121
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX"
+    },
+    {
+      "sku": "BCT-WR4.0",
+      "kind": "WHITE_CUTOUT",
+      "origin": "blue-carbon-manufacturer-direct",
+      "usage": "candidate_gallery_back_bracket",
+      "model_check": "manufacturer same BCT-WR4.0 page; rear bracket pictorial",
+      "crop": [
+        0.09,
+        0.43,
+        0.96,
+        0.93
+      ],
+      "source_page": "https://www.bctvnergy.com/solar-light/solar-flood-light/30w-led-solar-flood-light.html",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/BCT-WR4-0-official-06.jpg",
+      "native_size": [
+        720,
+        720
+      ],
+      "source_sha256": "408422c9be4a03f5fc8fa46063722f5153bb639d8eb5887a77c2d409f881feb4",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-09-qa-20261117.png",
+      "output_sha256": "ff19df2b034885ef600c5e0ec711db4727281b90635b6c8380fa4edc877e2cdc",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 304188,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-09-qa-20261117.webp",
+      "webp_bytes": 154514,
+      "mask_coverage": 0.38,
+      "transparency_fraction": 0.616,
+      "alpha_bbox": [
+        112,
+        261,
+        1288,
+        1138
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX",
+      "qa_note": "Removed disjoint floating specks/shadow; kept largest connected product silhouette. Needs human edge QA."
+    },
+    {
+      "sku": "JD-6128",
+      "kind": "ISNET_CUTOUT",
+      "origin": "internal-supplier-original",
+      "usage": "candidate_gallery_real_lamp_closeup",
+      "model_check": "same circular reflector fixture as live JD-6128 and local source file code",
+      "crop": null,
+      "source_path": "/home/admin01/src/Data/File_DuLieu_SanPham/Ảnh sản phẩm/JD-6128.jpg",
+      "native_size": [
+        1620,
+        1080
+      ],
+      "source_sha256": "4836ea4f9f10f48400b55ccab45dd65b7e9a25d8c0b104a62e863a47512a0947",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-6128-10-qa-20261117.png",
+      "output_sha256": "b767dfcf5d2e51927e42760821e77e021e10ad1833bc5d3028bd3056642028ee",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 1459390,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-6128-10-qa-20261117.webp",
+      "webp_bytes": 819832,
+      "mask_coverage": 0.533,
+      "transparency_fraction": 0.463,
+      "alpha_bbox": [
+        112,
+        124,
+        1288,
+        1276
+      ],
+      "auto_alpha_pass": true,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "JD-V200",
+      "kind": "KEEP_REFERENCE",
+      "origin": "third-party-retailer",
+      "usage": "reference_only_not_new_gallery_same_view_as_current",
+      "model_check": "JD-V200 LED arrangement; source and live view very similar",
+      "crop": null,
+      "source_page": "https://sunnysolar.vn/en/product/den-pha-nang-luong-mat-troi-jd-v-100w-500w/",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/JD-V200-sunny.jpeg",
+      "native_size": [
+        1080,
+        1080
+      ],
+      "source_sha256": "f6fc1697e89aecb31c7fb345385fcd4a09b507978c4f2a794845c1abd7d5739a",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-v200-11-qa-20261117.png",
+      "output_sha256": "d114fbfaf36c51d279d84046aaf2bc5e577fcc259dd79f898d2bcb12ff8ab607",
+      "output_size": [
+        1080,
+        1080
+      ],
+      "output_bytes": 608627,
+      "webp": null,
+      "webp_bytes": null,
+      "mask_coverage": 1.0,
+      "transparency_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        1080,
+        1080
+      ],
+      "auto_alpha_pass": null,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "JD-V300",
+      "kind": "KEEP_REFERENCE",
+      "origin": "third-party-retailer",
+      "usage": "reference_only_not_new_gallery_same_view_as_current",
+      "model_check": "JD-V300 LED arrangement; source and live view very similar",
+      "crop": null,
+      "source_page": "https://sunnysolar.vn/en/product/den-pha-nang-luong-mat-troi-jd-v-100w-500w/",
+      "requires_usage_permission": true,
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/JD-V300-sunny.jpeg",
+      "native_size": [
+        1080,
+        1080
+      ],
+      "source_sha256": "dce06a963aba92bd25f5ccde39f1eef20de8d0bf84cde9c44f5e1307add8724b",
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-v300-12-qa-20261117.png",
+      "output_sha256": "8c51c2c5dee851bd4b8655de1b98fb188a3ca49687513269f3f0ef9d867e8fc1",
+      "output_size": [
+        1080,
+        1080
+      ],
+      "output_bytes": 644621,
+      "webp": null,
+      "webp_bytes": null,
+      "mask_coverage": 1.0,
+      "transparency_fraction": 0.0,
+      "alpha_bbox": [
+        0,
+        0,
+        1080,
+        1080
+      ],
+      "auto_alpha_pass": null,
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "SOURCE_SUFFICIENT_TO_REVIEW"
+    },
+    {
+      "sku": "JD-18300",
+      "kind": "ISNET_CUTOUT",
+      "origin": "third-party-retailer",
+      "usage": "candidate_gallery_real_lamp_angle_300W",
+      "model_check": "photograph body label JD-18300 and 300W, physically matches 6-LED model in live avatar",
+      "source_path": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/external-review-only/JD-18300-real-2.webp",
+      "native_size": [
+        750,
+        750
+      ],
+      "source_url": "https://www.hoangquocbao.com/hoanghung/29/images/hinh-thuc-te-jd-18300-2.webp",
+      "source_page": "https://www.hoangquocbao.com/den-nang-luong-mat-troi/jd---18300---den-nang-luong-mat-troi-300w-jd---18300/",
+      "requires_usage_permission": true,
+      "output_file": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-18300-13-external-qareview-20261117.png",
+      "output_sha256": "c07f107fc937c3a9557ec3dad46c582a29149dcf4a3e883aa9053873a493caef",
+      "output_size": [
+        1400,
+        1400
+      ],
+      "output_bytes": 1428025,
+      "webp": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-18300-13-external-qareview-20261117.webp",
+      "qa_state": "DRAFT_REVIEW_ONLY_NO_PUBLISH",
+      "quality_flag": "NATIVE_SOURCE_UNDER_900PX",
+      "rights_state": "NOT_CONFIRMED",
+      "alpha_valid": true
+    }
+  ],
+  "held": [
+    {
+      "sku": "JD-18300",
+      "reason": "JD-18300.emf actually reads JD-18200/200W; 10/11 in folder reads JDE-8300; all excluded"
+    },
+    {
+      "sku": "BCT-WR1.0",
+      "reason": "local pricebook/4.png uses LED pattern different from live BCT-WR1.0, excluded"
+    },
+    {
+      "sku": "BCT-WR4.0",
+      "reason": "local pricebook/8.png displays different LED pattern vs live, excluded"
+    }
+  ]
+}

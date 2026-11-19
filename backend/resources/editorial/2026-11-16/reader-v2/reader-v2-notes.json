@@ -1,0 +1,140 @@
+{
+  "entries": [
+    {
+      "id": 100,
+      "proposed_title": "Chọn tấm pin Sharp phù hợp: đọc đúng mã, thông số và bảo hành",
+      "proposed_summary": "Cách chọn tấm pin Sharp bắt đầu từ mã model, kích thước và thông số điện. Đối chiếu tài liệu, phương án ghép inverter và điều khoản bảo hành trước khi đặt hàng.",
+      "proposed_meta_description": "Chọn tấm pin Sharp theo đúng mã model, Wp, Voc, Vmp, kích thước và bảo hành. Các bước đối chiếu bảng thông số với mái nhà và inverter.",
+      "stage": "hold",
+      "reason_for_hold": "Tiêu đề và slug đang công khai khẳng định Phúc Thịnh Solar phân phối độc quyền Sharp tại Việt Nam, nhưng chưa có chứng từ hợp tác hợp lệ trong hồ sơ được cung cấp. Không publish bản mới cho tới khi owner đồng ý đổi title và xử lý canonical/redirect, hoặc cung cấp tài liệu hợp tác còn hiệu lực. Không tự coi title đề xuất là đã được duyệt.",
+      "qa_requirements": [
+        "Kỹ thuật đối chiếu thuật ngữ và các dòng Voc, Vmp, Isc, Imp với đúng phạm vi hướng dẫn phổ thông.",
+        "Owner/SEO duyệt title, summary, meta và phương án canonical/redirect trước khi thay đổi trang đang live.",
+        "Đối chiếu mọi thông số của model cụ thể với tài liệu Sharp trước khi thêm số liệu vào nội dung.",
+        "Xác minh nguồn gốc, điều khoản bảo hành và quyền sử dụng ảnh cũ trước khi sử dụng lại media."
+      ],
+      "links_used": [
+        "/cach-doc-datasheet-tam-pin-nang-luong-mat-troi/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại chứa claim phân phối độc quyền Sharp và có năm 2024. Cần owner/SEO quyết định canonical, redirect và xử lý URL trước khi publish title mới."
+    },
+    {
+      "id": 103,
+      "proposed_title": "Phó Thủ tướng đề nghị giải pháp thúc đẩy điện mặt trời mái nhà (10/6/2023)",
+      "proposed_summary": "Tin ngày 10/6/2023 về yêu cầu nghiên cứu cơ chế khuyến khích điện mặt trời mái nhà tự sản, tự tiêu. Các nội dung được nêu là chỉ đạo và đề xuất tại thời điểm đó.",
+      "proposed_meta_description": "Tin Chính phủ ngày 10/6/2023 về các đề xuất thúc đẩy điện mặt trời mái nhà tự sản, tự tiêu; không thay thế việc đối chiếu quy định hiện hành.",
+      "stage": "editor_draft",
+      "qa_requirements": [
+        "Xác nhận title hiển thị có ghi rõ mốc năm 2023; không trình bày chỉ đạo thành quy định đang có hiệu lực.",
+        "Giữ nguyên lưu ý cuối bài: thông tin phản ánh thời điểm 10/6/2023; quy định hiện hành cần đối chiếu tại cơ quan chức năng.",
+        "Kiểm tra ảnh stock cũ và giấy phép/credit trước khi quyết định sử dụng; bản reader-v2 hiện không nhúng ảnh.",
+        "Nguồn tin Chính phủ theo URL được owner cung cấp; link mở trang chưa được công cụ đọc kiểm tra trong lượt này."
+      ],
+      "links_used": [
+        "https://cms.baochinhphu.vn/khan-truong-hoan-thien-co-che-khuyen-khich-lap-dat-dien-mat-troi-mai-nha-102230610205935993.htm",
+        "/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại không có năm 2023; title được đề xuất thêm ngày/năm để thể hiện rõ đây là tin lịch sử. Owner/SEO cần duyệt title và cách giữ URL."
+    },
+    {
+      "id": 106,
+      "proposed_title": "Blue Carbon: hồ sơ kỹ thuật và nghiệm thu dự án đèn năng lượng mặt trời",
+      "proposed_summary": "Từ yêu cầu chiếu sáng đến thông số model, bản vẽ và nghiệm thu: hồ sơ nào cần khớp trước khi triển khai dự án đèn năng lượng mặt trời Blue Carbon.",
+      "proposed_meta_description": "Hồ sơ dự án đèn Blue Carbon: bảng thông số đúng model, dữ liệu phân bố sáng, bản vẽ, điều khoản bảo hành và cách nghiệm thu theo thiết kế.",
+      "stage": "editor_draft",
+      "qa_requirements": [
+        "Kỹ thuật duyệt phạm vi các yêu cầu chiếu sáng, hồ sơ nghiệm thu và nội dung an toàn thi công.",
+        "Không thêm thời lượng sáng, tuổi thọ, bảo hành, chứng nhận hay thông số Blue Carbon nếu chưa có tài liệu đúng model.",
+        "Lưu ý rõ phạm vi áp dụng của tài liệu FEMP Hoa Kỳ và Lighting Global; không gán chúng thành chứng nhận Blue Carbon hoặc quy định Việt Nam.",
+        "Xác minh quyền sử dụng và model thể hiện trong ảnh Blue Carbon cũ trước khi dùng lại."
+      ],
+      "links_used": [
+        "https://www.lightingglobal.org/how-we-work/quality-assurance/",
+        "https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting",
+        "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại là brand + sản phẩm trung tính. Đề xuất title làm rõ search intent kỹ thuật; owner/SEO cần duyệt title mới và kiểm tra quan hệ URL với bài 109."
+    },
+    {
+      "id": 108,
+      "proposed_title": "Các bước để một đại lý xem hợp tác với nhà phân phối vật tư điện mặt trời có hợp nhu cầu không",
+      "proposed_summary": "Trước đơn hàng đầu, đại lý nên chốt danh mục, báo giá có hiệu lực, giao nhận, bảo hành và phạm vi hỗ trợ kỹ thuật bằng văn bản.",
+      "proposed_meta_description": "Checklist thực tế để đại lý đánh giá nhà phân phối vật tư điện mặt trời: model, giá và chiết khấu, giao hàng, bảo hành cùng hỗ trợ kỹ thuật.",
+      "stage": "editor_draft",
+      "qa_requirements": [
+        "Sales/owner xác nhận kênh liên hệ và quy trình nhận yêu cầu hợp tác hiện hành nếu muốn thêm CTA cụ thể.",
+        "Không ghi mức chiết khấu, quyền lợi, tồn kho, giao hàng, nguồn gốc, bảo hành hoặc hỗ trợ như chính sách của Phúc Thịnh nếu chưa có văn bản hiệu lực.",
+        "Kiểm tra link danh mục sản phẩm còn phù hợp trước khi publish.",
+        "Ảnh cũ không sử dụng cho tới khi xem nội dung và xác minh quyền."
+      ],
+      "links_used": [
+        "/san-pham/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại là duoc-gi-khi-hop-tac-cung-phuc-thinh-solar; title đề xuất chuyển sang hướng đánh giá hợp tác. Owner/SEO cần duyệt thay đổi title và metadata."
+    },
+    {
+      "id": 109,
+      "proposed_title": "Đèn năng lượng mặt trời Blue Carbon cho công trình: chọn theo hồ sơ và điều kiện sử dụng",
+      "proposed_summary": "Chọn đèn Blue Carbon cho công trình theo vị trí có nắng, lịch chiếu sáng, mức sáng cần thiết và phương án bảo trì; xác nhận model và hồ sơ trước khi đặt.",
+      "proposed_meta_description": "Cách chọn đèn năng lượng mặt trời Blue Carbon cho công trình theo điều kiện nắng, giờ vận hành, vị trí lắp và khả năng bảo trì.",
+      "stage": "hold",
+      "reason_for_hold": "Tiêu đề và slug đang công khai khẳng định Phúc Thịnh Solar là đối tác phân phối độc quyền Blue Carbon tại Việt Nam, nhưng chưa có tài liệu hợp tác còn hiệu lực được xác nhận. Không publish cho tới khi owner đồng ý đổi title và xử lý canonical/redirect, hoặc cung cấp chứng từ hợp tác hợp lệ. Đây là guide chọn và vận hành đèn tại công trình, khác intent bài 106 (hồ sơ kỹ thuật và nghiệm thu); nếu owner/SEO thấy cannibalization, quyết định gộp trước khi publish.",
+      "qa_requirements": [
+        "Owner/SEO duyệt title mới và cách xử lý canonical/redirect của URL đang có claim độc quyền.",
+        "Kỹ thuật kiểm tra nội dung lắp đặt, chiếu sáng và vận hành tại công trình.",
+        "Không nêu thời lượng sáng, mức IP, bảo hành hoặc hiệu năng của model Blue Carbon nếu chưa có tài liệu đúng model.",
+        "Xác nhận danh mục Blue Carbon và quyền sử dụng ảnh/catalog cũ trước khi liên kết hoặc nhúng media."
+      ],
+      "links_used": [
+        "/blue-carbon-den-nang-luong-mat-troi-cho-du-an/",
+        "/danh-muc-san-pham/den-nlmt/blue-carbon/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại khẳng định quan hệ phân phối độc quyền tại Việt Nam. Cần owner đồng ý title mới cùng canonical/redirect hoặc cung cấp chứng từ hợp tác còn hiệu lực; không publish khi chưa giải quyết."
+    },
+    {
+      "id": 110,
+      "proposed_title": "Chip LED Cree nói gì về chất lượng một bộ đèn?",
+      "proposed_summary": "Tên chip Cree chưa đủ để đánh giá cả bộ đèn. Hãy so quang thông, độ rọi, công suất thực, phân bố ánh sáng, pin và điều kiện sử dụng của đúng model.",
+      "proposed_meta_description": "Chip LED Cree là một linh kiện; cách đánh giá cả bộ đèn qua lumen, lux, phối quang, công suất thực, pin và dữ liệu đúng model.",
+      "stage": "hold",
+      "reason_for_hold": "Title live tuyên bố “TOP 1” nhưng không có căn cứ xếp hạng trong hồ sơ. Cần owner/SEO duyệt title đề xuất và quyết định canonical/redirect do slug hiện tại chứa claim “top-1” trước khi publish.",
+      "qa_requirements": [
+        "Đối chiếu mô tả thương hiệu và dòng sản phẩm chip với tài liệu Cree LED; không suy rộng thông số từ chip sang bộ đèn.",
+        "Kỹ thuật duyệt giải nghĩa lumen, lux, quang học và công suất tiêu thụ.",
+        "Không giữ claim TOP 1, hiệu suất, tuổi thọ hay bảo hành nếu không có nguồn và điều kiện áp dụng.",
+        "Xác minh quyền và nội dung chứng nhận/ảnh cũ trước khi sử dụng lại."
+      ],
+      "links_used": [
+        "https://www.cree-led.com/products/leds/xlamp/",
+        "https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting",
+        "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug chip-led-cree-thuong-hieu-top-1 chứa claim xếp hạng không được chứng minh. Không publish title mới trước khi owner/SEO quyết định canonical hoặc redirect."
+    },
+    {
+      "id": 111,
+      "proposed_title": "8 lý do nên cân nhắc đèn năng lượng mặt trời",
+      "proposed_summary": "Tám lợi ích thực tế của đèn năng lượng mặt trời, từ lắp ở nơi khó kéo dây đến vận hành khi mất điện. Ví dụ 30 W dùng 10 giờ tương đương khoảng 110 kWh/năm.",
+      "proposed_meta_description": "Tám lý do cân nhắc đèn năng lượng mặt trời và ví dụ tính 30 W × 10 giờ ≈ 110 kWh/năm; so chi phí mua, lắp, điện và bảo trì theo vị trí.",
+      "stage": "editor_draft",
+      "qa_requirements": [
+        "Giữ cấu trúc tám lý do khớp với title/slug hiện hữu; không chuyển bài thành bài riêng chỉ về TCO.",
+        "Kiểm tra phép tính minh họa: 30 W × 10 giờ/ngày × 365 ngày = 109,5 kWh/năm, xấp xỉ 110 kWh.",
+        "Giữ rõ giả định về công suất và thời gian dùng; không kết luận đèn mặt trời luôn rẻ hơn, an toàn tuyệt đối hoặc sáng bất kể thời tiết.",
+        "Kỹ thuật rà soát các diễn đạt về pin, thời lượng hoạt động và vận hành khi mất điện."
+      ],
+      "links_used": [
+        "https://www.energy.gov/cmei/femp/purchasing-energy-efficient-exterior-lighting",
+        "/mua-den-nang-luong-mat-troi-dung-chi-nhin-con-so-w-quang-cao/"
+      ],
+      "images_used": [],
+      "original_slug_warning": "Slug hiện tại giữ intent “8 lý do dùng đèn năng lượng mặt trời”; đề xuất title vẫn giữ cấu trúc tám lý do, không chuyển sang intent TCO."
+    }
+  ]
+}

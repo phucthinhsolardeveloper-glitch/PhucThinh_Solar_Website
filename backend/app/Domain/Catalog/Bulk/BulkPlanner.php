@@ -395,6 +395,14 @@ final class BulkPlanner
                     $set($brandId);
                 }
                 break;
+            case 'warehouse':
+                $id = $value === null ? null : array_search(mb_strtolower(trim($value), 'UTF-8'), array_map(fn (string $name) => mb_strtolower($name, 'UTF-8'), $this->catalog->warehouses), true);
+                if ($value !== null && $id === false) {
+                    $item['errors'][] = $label.' "'.$value.'" không có trong danh sách kho (Admin → Cửa hàng & chi nhánh, mục Kho gửi hàng).';
+                } else {
+                    $set($id === null ? null : (int) $id);
+                }
+                break;
             case 'profile':
                 if ($value !== null && ! array_key_exists($value, Options::pdpProfiles())) {
                     $item['errors'][] = $label.' không hợp lệ.';

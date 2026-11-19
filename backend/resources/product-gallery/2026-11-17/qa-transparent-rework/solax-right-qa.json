@@ -1,0 +1,10 @@
+{
+  "name": "solax-right",
+  "source": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/batch-p0-solax-official/source/44ff1369f2.png",
+  "method": "original_manufacturer_alpha_preserved",
+  "output": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/qa-transparent-rework/solax-right-1600-transparent.png",
+  "source_sha256": "d3e5efcd95bfe341c557ceafc79f20904c65ade3d9cb2dab693b2b88a5d52782",
+  "output_sha256": "5499b677a575573c1844556520b35492ee8a948fa5c5094a66565f054f461bfb",
+  "output_bytes": 341688,
+  "status": "DRAFT_QA_REQUIRED"
+}

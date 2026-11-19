@@ -10,6 +10,7 @@ use App\Domain\Shipping\NhatTin\NtlException;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Domain\Shipping\ShipmentAutomation;
 use App\Domain\Shipping\Shipments;
+use App\Domain\Shipping\Warehouses;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
 use App\Models\Order;
@@ -109,6 +110,9 @@ class OrderResource extends Resource
             Section::make('Xử lý')->columnSpan(1)->schema([
                 Select::make('status')->label('Trạng thái')->required()
                     ->options(fn (?Order $record) => $record ? OrderLifecycle::statusChoices((string) $record->status, self::STATUSES) : self::STATUSES),
+                Select::make('warehouse_id')->label('Kho xuất hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa chọn kho')
+                    ->disabled(fn (?Order $record) => $record?->shipments()->exists() ?? false)
+                    ->helperText(fn (?Order $record) => $record ? self::warehouseHint($record) : null),
                 Textarea::make('notes')->label('Ghi chú nội bộ')->rows(4),
             ]),
             // Read-only facts as text, not greyed-out inputs: what was ordered stays as placed.
@@ -167,6 +171,24 @@ class OrderResource extends Resource
         ]);
     }
 
+    /** What the order's products say about where it ships from, for the "Kho xuất hàng" field. */
+    public static function warehouseHint(Order $order): string
+    {
+        $warehouses = app(Warehouses::class);
+        $held = $warehouses->holdingForOrder($order);
+        $names = $warehouses->options();
+        $where = implode(', ', array_map(fn (int $id) => $names[$id] ?? '#'.$id, $held['ids']));
+        $unassigned = $held['unassigned'] > 0 ? $held['unassigned'].' sản phẩm chưa gán kho' : '';
+        if (count($held['ids']) > 1) {
+            return 'Đơn có hàng ở nhiều kho ('.$where.'). Chọn kho sẽ xuất hàng trước khi tạo vận đơn.'.($unassigned !== '' ? ' '.$unassigned.'.' : '');
+        }
+        if (count($held['ids']) === 1) {
+            return 'Hàng trong đơn đang ở '.$where.'.'.($unassigned !== '' ? ' '.$unassigned.'.' : '');
+        }
+
+        return $unassigned !== '' ? $unassigned.'. Chọn kho xuất hàng, hoặc để trống để dùng người gửi mặc định.' : 'Để trống để dùng người gửi mặc định.';
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -196,6 +218,7 @@ class OrderResource extends Resource
                     ->icon(fn (Order $record) => $record->latestShipment ? 'heroicon-m-truck' : 'heroicon-m-plus')
                     ->tooltip('Bấm để tạo vận đơn hoặc xem hành trình')
                     ->action(self::shippingAction()),
+                TextColumn::make('warehouse_id')->label('Kho')->visibleFrom('lg')->formatStateUsing(fn ($state) => $state ? (app(Warehouses::class)->options()[(int) $state] ?? '—') : '—')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('payment_status')->label('Thanh toán')->visibleFrom('lg')->badge()->formatStateUsing(fn ($state) => self::PAYMENT[$state] ?? $state)
                     ->color(fn ($state) => $state === 'paid' ? 'success' : 'gray'),
             ])

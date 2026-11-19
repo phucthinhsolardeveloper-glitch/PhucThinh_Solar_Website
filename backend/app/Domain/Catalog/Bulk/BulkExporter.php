@@ -111,10 +111,10 @@ final class BulkExporter
     private function reference(Spreadsheet $book, BulkCatalog $catalog): array
     {
         $sheet = $book->createSheet()->setTitle('DanhMuc');
-        foreach (['A1' => 'ID danh mục', 'B1' => 'Danh mục', 'D1' => 'ID thương hiệu', 'E1' => 'Thương hiệu', 'G1' => 'Kiểu trang', 'H1' => 'Mô tả'] as $cell => $title) {
+        foreach (['A1' => 'ID danh mục', 'B1' => 'Danh mục', 'D1' => 'ID thương hiệu', 'E1' => 'Thương hiệu', 'G1' => 'Kiểu trang', 'H1' => 'Mô tả', 'J1' => 'ID kho', 'K1' => 'Kho giữ hàng'] as $cell => $title) {
             $sheet->setCellValue($cell, $title);
         }
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
         $fill = function (array $items, string $idColumn, string $nameColumn, bool $idIsText = false) use ($sheet): int {
             $row = 2;
             foreach ($items as $id => $name) {
@@ -128,11 +128,12 @@ final class BulkExporter
         $lastCategory = $fill($catalog->categoryPaths, 'A', 'B');
         $lastBrand = $fill($catalog->brands, 'D', 'E');
         $lastProfile = $fill(Options::pdpProfiles(), 'G', 'H', true);
-        foreach (['B' => 60, 'E' => 30, 'G' => 22, 'H' => 40] as $column => $width) {
+        $lastWarehouse = $fill($catalog->warehouses, 'J', 'K');
+        foreach (['B' => 60, 'E' => 30, 'G' => 22, 'H' => 40, 'K' => 30] as $column => $width) {
             $sheet->getColumnDimension($column)->setWidth($width);
         }
 
-        return ['category' => 'DanhMuc!$B$2:$B$'.$lastCategory, 'brand' => 'DanhMuc!$E$2:$E$'.$lastBrand, 'pdp_profile' => 'DanhMuc!$G$2:$G$'.$lastProfile];
+        return ['category' => 'DanhMuc!$B$2:$B$'.$lastCategory, 'brand' => 'DanhMuc!$E$2:$E$'.$lastBrand, 'pdp_profile' => 'DanhMuc!$G$2:$G$'.$lastProfile, 'warehouse' => 'DanhMuc!$K$2:$K$'.$lastWarehouse];
     }
 
     private function pickLists(Worksheet $sheet, array $letters, array $ranges): void

@@ -1,0 +1,138 @@
+{
+  "batch_name": "photo_quality_rework_2026_11_17",
+  "status": "STAGED_QA_VALIDATED_ALPHAS",
+  "source_files": [
+    {
+      "key": "solax-front",
+      "file": "pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png",
+      "sha256": "7b3faae557669f97551dbb6a469c73316bd3b335e9e7ba5b2e04a1ba88e341c1",
+      "bytes": 296083,
+      "alpha": true,
+      "source_native_px": "516x516"
+    },
+    {
+      "key": "solax-left",
+      "file": "pts-solax-x1-lite-lv-2-alpha-qav2-20261117.png",
+      "sha256": "56782c7a593fc9a0268b22b1d2b99e74eb9e537042e02a0e086d4523ddf7f0c5",
+      "bytes": 328442,
+      "alpha": true,
+      "source_native_px": "516x516"
+    },
+    {
+      "key": "solax-right",
+      "file": "pts-solax-x1-lite-lv-3-alpha-qav2-20261117.png",
+      "sha256": "5499b677a575573c1844556520b35492ee8a948fa5c5094a66565f054f461bfb",
+      "bytes": 341688,
+      "alpha": true,
+      "source_native_px": "516x516"
+    },
+    {
+      "key": "oriana-db03-2-all3views",
+      "file": "pts-oriana-db03-2-alpha-qav2-20261117.png",
+      "sha256": "eabc42c4859fbe65fdef0c56dc2515e8b0797822706358ac38cdafe37b0b8fa6",
+      "bytes": 314127,
+      "alpha": true,
+      "source_native_px": "970x669"
+    },
+    {
+      "key": "oriana-solar-light-bl120w",
+      "file": "pts-oriana-solar-light-bl120w-alpha-qav2-20261117.png",
+      "sha256": "3d8d96f4d0aef388b337d42759edeb7d67686c959e9cffe75d2244a0c7373d75",
+      "bytes": 719086,
+      "alpha": true,
+      "source_native_px": "889x772"
+    }
+  ],
+  "products": [
+    {
+      "id": 510,
+      "sku": "DB03-2",
+      "previous_image": "pts-oriana-db03-2-photo-20261117.jpg",
+      "new_image": "pts-oriana-db03-2-alpha-qav2-20261117.png",
+      "gallery_previous": [],
+      "gallery_new": []
+    },
+    {
+      "id": 513,
+      "sku": "SOLAR-LIGHT-BL120W",
+      "previous_image": "pts-oriana-solar-light-bl120w-photo-20261117.jpg",
+      "new_image": "pts-oriana-solar-light-bl120w-alpha-qav2-20261117.png",
+      "gallery_previous": [],
+      "gallery_new": []
+    },
+    {
+      "id": 808,
+      "sku": "X1-LITE-8-LV Hybrid 8kw",
+      "previous_image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+      "new_image": "pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png",
+      "gallery_previous": [
+        "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+        "pts-solax-x1-lite-lv-3-official-20261117.jpg"
+      ],
+      "gallery_new": [
+        "pts-solax-x1-lite-lv-2-alpha-qav2-20261117.png",
+        "pts-solax-x1-lite-lv-3-alpha-qav2-20261117.png"
+      ]
+    },
+    {
+      "id": 809,
+      "sku": "X1-LITE-10-LV Hybrid 10kw",
+      "previous_image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+      "new_image": "pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png",
+      "gallery_previous": [
+        "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+        "pts-solax-x1-lite-lv-3-official-20261117.jpg"
+      ],
+      "gallery_new": [
+        "pts-solax-x1-lite-lv-2-alpha-qav2-20261117.png",
+        "pts-solax-x1-lite-lv-3-alpha-qav2-20261117.png"
+      ]
+    },
+    {
+      "id": 810,
+      "sku": "X1-LITE-12-LV Hybrid 12kw",
+      "previous_image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+      "new_image": "pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png",
+      "gallery_previous": [
+        "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+        "pts-solax-x1-lite-lv-3-official-20261117.jpg"
+      ],
+      "gallery_new": [
+        "pts-solax-x1-lite-lv-2-alpha-qav2-20261117.png",
+        "pts-solax-x1-lite-lv-3-alpha-qav2-20261117.png"
+      ]
+    }
+  ],
+  "held_for_better_resolution": [
+    {
+      "id": 519,
+      "sku": "YS-80W",
+      "why": "native 600x438; slight shadow/edge artifacts after segmentation"
+    },
+    {
+      "id": 522,
+      "sku": "HB01-60W",
+      "why": "native 501x528; small manufacturer details still soft"
+    },
+    {
+      "id": 526,
+      "sku": "DB-16300W",
+      "why": "native 551x626; fine edges and LED details limited"
+    },
+    {
+      "id": 687,
+      "sku": "PL-0307 (300×300×H380)",
+      "why": "source catalog intrinsically blurry; requires higher-resolution true product photo"
+    }
+  ],
+  "no_fabricated_details": true,
+  "quality_statement": "Alpha cutouts QA pass; true source sharpness limited; not full source-resolution compliance",
+  "required_checks": [
+    "hashes match",
+    "no gallery collateral change",
+    "correct SKU",
+    "transparency retained in WebP thumb",
+    "no missing silhouette view",
+    "human review on mobile/desktop"
+  ]
+}
