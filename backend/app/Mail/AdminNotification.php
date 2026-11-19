@@ -17,7 +17,7 @@ class AdminNotification extends Mailable
      * @param  array{subject: string, heading: string, intro: string, closing: string}  $copy
      * @param  array<string, string>  $fields
      */
-    public function __construct(public array $copy, public array $fields, private readonly string $replyEmail = '', private readonly string $replyName = '') {}
+    public function __construct(public array $copy, public array $fields, private readonly string $replyEmail = '', private readonly string $replyName = '', public array $actions = []) {}
 
     public function envelope(): Envelope
     {

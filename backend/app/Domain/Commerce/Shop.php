@@ -9,6 +9,7 @@ use App\Domain\Forms\FormMetadata;
 use App\Domain\Leads\LeadSubmission;
 use App\Domain\Outbox\Outbox;
 use App\Filament\Resources\Orders\OrderResource;
+use App\Mail\MailActions;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
@@ -309,7 +310,7 @@ class Shop
                         'color' => $color ?: null, 'size' => $size ?: null, 'regular_price' => $product['regular_price'] ?: null, 'sale_price' => $product['sale_price'] ?: null, 'quantity' => $quantity,
                         'created_at' => now(), 'updated_at' => now()]);
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
-                    $items[] = ['name' => (string) $product['name'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity];
+                    $items[] = ['name' => (string) $product['name'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity, 'image' => $this->mailImage($this->urls->product($product['image']))];
                 }
                 if (($payment['kind'] ?? '') === 'bank_transfer') {
                     app(BankTransfer::class)->issue($orderId, $order['code'], (int) round($total));
@@ -606,9 +607,15 @@ class Shop
             $price = (float) ($item->sale_price ?: $item->regular_price);
 
             return ['name' => $item->name, 'option' => implode(' - ', array_filter([$item->color, $item->size])),
-                'quantity' => (int) $item->quantity, 'price' => $price, 'total' => $price * (int) $item->quantity];
+                'quantity' => (int) $item->quantity, 'price' => $price, 'total' => $price * (int) $item->quantity, 'image' => $this->mailImage($this->urls->product($item->image))];
         })->all();
         $this->queueOrderMails((array) $order, $items, 'Thanh toán online qua VNPay');
+    }
+
+    /** A product photo as an absolute address for mail, '' when there is none. */
+    private function mailImage(string $path): string
+    {
+        return $path !== '' ? rtrim((string) config('site.canonical_origin'), '/').$path : '';
     }
 
     /** Admin and customer confirmations, at most once per order (dedupe keys). */
@@ -623,11 +630,12 @@ class Shop
             OrderResource::getUrl('edit', ['record' => $order['id']], isAbsolute: false, panel: 'admin'), 'heroicon-o-shopping-bag', 'success');
         if (($admin = (string) config('mail.admin_to')) !== '') {
             Outbox::queue('order:'.$order['id'].':admin', 'order_admin', $admin,
-                new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name']));
+                new OrderNotification($this->templates->copy('order_admin', $values), $fields, $items, $totals, $email, $values['customer_name'],
+                    app(MailActions::class)->staff(OrderResource::getUrl('edit', ['record' => $order['id']], isAbsolute: false, panel: 'admin'), (string) $order['phone'])));
         }
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Outbox::queue('order:'.$order['id'].':customer', 'order_customer', $email,
-                new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals));
+                new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals, actions: app(MailActions::class)->customer()));
         }
     }
 }

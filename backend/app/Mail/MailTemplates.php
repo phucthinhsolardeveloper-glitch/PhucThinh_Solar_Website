@@ -21,6 +21,16 @@ class MailTemplates
 
     private const FIELDS = ['subject' => 180, 'heading' => 180, 'intro' => 700, 'closing' => 500];
 
+    /** Small status chip above the heading and who reads the mail; fixed by the kind of mail, not edited in Admin. */
+    private const FRAME = [
+        'consult_admin' => ['Yêu cầu tư vấn mới', 'staff'],
+        'dealer_admin' => ['Đăng ký đại lý mới', 'staff'],
+        'contact_admin' => ['Liên hệ mới', 'staff'],
+        'contact_customer' => ['Đã tiếp nhận yêu cầu', 'customer'],
+        'order_admin' => ['Đơn hàng mới', 'staff'],
+        'order_customer' => ['Đã tiếp nhận đơn hàng', 'customer'],
+    ];
+
     private const DEFAULTS = [
         'consult_admin' => [
             'subject' => '[Yêu cầu tư vấn mới] {customer_name} - {customer_phone}',
@@ -82,6 +92,7 @@ class MailTemplates
             $copy[$field] = strtr($override !== '' ? $override : self::DEFAULTS[$key][$field], $replace);
         }
         $copy['subject'] = trim((string) preg_replace('/[\r\n]+/', ' ', $copy['subject']));
+        [$copy['badge'], $copy['audience']] = self::FRAME[$key];
 
         return $copy;
     }

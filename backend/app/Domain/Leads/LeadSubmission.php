@@ -8,6 +8,7 @@ use App\Domain\Catalog\ProductDetail\ProductSpecs;
 use App\Domain\Outbox\Outbox;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Mail\AdminNotification;
+use App\Mail\MailActions;
 use App\Mail\MailTemplates;
 use App\Support\FormToken;
 use Illuminate\Support\Facades\DB;
@@ -230,7 +231,8 @@ class LeadSubmission
         }
         try {
             Outbox::queue('lead:'.$this->leadId.':'.$template, $template, $to,
-                new AdminNotification($this->templates->copy($template, $values), $fields, $replyEmail, $replyName));
+                new AdminNotification($this->templates->copy($template, $values), $fields, $replyEmail, $replyName,
+                    app(MailActions::class)->staff(LeadResource::getUrl('index', ['tableSearch' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), (string) ($values['customer_phone'] ?? ''))));
         } catch (Throwable $e) {
             // The lead row is saved and listed in Admin even if the alert cannot be queued.
             Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
@@ -245,7 +247,7 @@ class LeadSubmission
         }
         try {
             Outbox::queue('lead:'.$this->leadId.':'.$template, $template, $email,
-                new AdminNotification($this->templates->copy($template, $values), $fields));
+                new AdminNotification($this->templates->copy($template, $values), $fields, actions: app(MailActions::class)->customer()));
         } catch (Throwable $e) {
             // The lead is saved either way; a failed acknowledgement must not lose the enquiry.
             Log::warning('Customer acknowledgement could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);

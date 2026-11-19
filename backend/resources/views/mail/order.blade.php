@@ -1,89 +1,70 @@
 @php($money = fn ($v) => \App\Mail\OrderNotification::money((float) $v))
-{{-- Order mail, to the shop and to the buyer. Tables and inline styles only: Outlook ignores stylesheets. --}}
-<!doctype html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light">
-    <meta name="supported-color-schemes" content="light">
-    <title>{{ $copy['subject'] }}</title>
-</head>
-<body style="margin:0;padding:0;background:#eef2f7;font-family:-apple-system,'Segoe UI',Arial,Helvetica,sans-serif;color:#15284b;-webkit-font-smoothing:antialiased">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0">{{ \Illuminate\Support\Str::limit($copy['intro'], 120) }}</div>
-<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#eef2f7">
-    <tr><td style="height:24px;line-height:24px">&nbsp;</td></tr>
-    @include('mail.partials.head')
+{{-- Order mail, to the shop and to the buyer. --}}
+@extends('mail.layout')
+@section('content')
+    @include('mail.partials.hero')
+    {{-- Summary strip: what the order is and how much --}}
     <tr>
-        <td align="center" style="padding:0 12px" valign="top">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;background:#ffffff">
+        <td class="px" style="padding:20px 32px 4px">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;border-spacing:0;border:1px solid #c9d6ea;border-radius:12px;background:#f2f6fc">
                 <tr>
-                    <td style="padding:30px 28px 16px">
-                        <h1 style="margin:0 0 12px;color:#09285e;font-size:23px;line-height:31px;font-weight:bold">{{ $copy['heading'] }}</h1>
-                        <p style="margin:0;color:#405270;font-size:15px;line-height:25px">{!! nl2br(e($copy['intro'])) !!}</p>
+                    <td class="col" width="34%" valign="top" style="padding:14px 18px">
+                        <div style="color:#6a7a95;font-size:12px;line-height:17px;font-weight:bold">Mã đơn hàng</div>
+                        <div style="margin-top:3px;color:#09285e;font-size:17px;line-height:24px;font-weight:bold">{{ $fields['Mã đơn hàng'] ?? '—' }}</div>
+                    </td>
+                    <td class="col gap-m" width="33%" valign="top" style="padding:14px 18px">
+                        <div style="color:#6a7a95;font-size:12px;line-height:17px;font-weight:bold">Thanh toán</div>
+                        <div style="margin-top:3px;color:#15284b;font-size:14.5px;line-height:24px">{{ $fields['Thanh toán'] ?? '—' }}</div>
+                    </td>
+                    <td class="col gap-m" width="33%" valign="top" style="padding:14px 18px">
+                        <div style="color:#6a7a95;font-size:12px;line-height:17px;font-weight:bold">Tổng cộng</div>
+                        <div style="margin-top:3px;color:#09285e;font-size:20px;line-height:24px;font-weight:bold">{{ $money($totals['total']) }}</div>
                     </td>
                 </tr>
-                <tr>
-                    <td style="padding:8px 28px 20px">
-                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;border-spacing:0;background:#f7f9fc;border:1px solid #e5eaf2;border-radius:10px">
-                            @foreach ($fields as $label => $value)
-                                <tr>
-                                    <td style="width:36%;padding:12px 16px;{{ $loop->last ? '' : 'border-bottom:1px solid #e5eaf2;' }}color:#60708b;font-size:13px;font-weight:bold;vertical-align:top">{{ $label }}</td>
-                                    <td style="padding:12px 16px;{{ $loop->last ? '' : 'border-bottom:1px solid #e5eaf2;' }}font-size:14px;line-height:22px;vertical-align:top">{!! nl2br(e($value)) !!}</td>
-                                </tr>
-                            @endforeach
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:0 28px 8px">
-                        <h2 style="margin:0 0 10px;color:#09285e;font-size:15px;line-height:22px">Sản phẩm đã đặt</h2>
-                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;font-size:14px">
-                            <tr style="background:#09285e;color:#ffffff">
-                                <th align="left" style="padding:11px 12px;font-size:12px;letter-spacing:.3px;text-transform:uppercase;border-radius:8px 0 0 0">Sản phẩm</th>
-                                <th align="center" style="padding:11px 8px;font-size:12px;letter-spacing:.3px;text-transform:uppercase">SL</th>
-                                <th align="right" style="padding:11px 12px;font-size:12px;letter-spacing:.3px;text-transform:uppercase">Đơn giá</th>
-                                <th align="right" style="padding:11px 12px;font-size:12px;letter-spacing:.3px;text-transform:uppercase;border-radius:0 8px 0 0">Thành tiền</th>
-                            </tr>
-                            @foreach ($items as $item)
-                                <tr style="background:{{ $loop->index % 2 === 0 ? '#ffffff' : '#f9fbfd' }}">
-                                    <td style="padding:12px;border-bottom:1px solid #e5eaf2;line-height:21px">{{ $item['name'] }}@if ($item['option'] !== '')<br><span style="color:#60708b;font-size:12px">{{ $item['option'] }}</span>@endif</td>
-                                    <td align="center" style="padding:12px 8px;border-bottom:1px solid #e5eaf2;white-space:nowrap">{{ $item['quantity'] }}</td>
-                                    <td align="right" style="padding:12px;border-bottom:1px solid #e5eaf2;white-space:nowrap">{{ $money($item['price']) }}</td>
-                                    <td align="right" style="padding:12px;border-bottom:1px solid #e5eaf2;white-space:nowrap;font-weight:bold">{{ $money($item['total']) }}</td>
-                                </tr>
-                            @endforeach
-                            <tr>
-                                <td colspan="2" style="padding:10px 12px"></td>
-                                <td align="right" style="padding:10px 12px;color:#60708b">Tạm tính</td>
-                                <td align="right" style="padding:10px 12px;white-space:nowrap">{{ $money($totals['subtotal']) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="padding:0 12px 10px"></td>
-                                <td align="right" style="padding:0 12px 10px;color:#60708b">Phí vận chuyển</td>
-                                <td align="right" style="padding:0 12px 10px;white-space:nowrap">{{ $totals['shipping'] > 0 ? $money($totals['shipping']) : 'Chờ xác nhận' }}</td>
-                            </tr>
-                            <tr style="background:#f7f9fc">
-                                <td colspan="2" style="padding:13px 12px;border-top:2px solid #09285e"></td>
-                                <td align="right" style="padding:13px 12px;border-top:2px solid #09285e;font-weight:bold;color:#09285e">Tổng cộng</td>
-                                <td align="right" style="padding:13px 12px;border-top:2px solid #09285e;white-space:nowrap;font-weight:bold;font-size:17px;color:#09285e">{{ $money($totals['total']) }}</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                @if ($copy['closing'] !== '')
-                    <tr>
-                        <td style="padding:18px 28px 28px">
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr><td style="padding:14px 16px;background:#fdf7e8;border-left:3px solid #d9a326;border-radius:0 8px 8px 0;color:#5a4a1f;font-size:13px;line-height:21px">{!! nl2br(e($copy['closing'])) !!}</td></tr>
-                            </table>
-                        </td>
-                    </tr>
-                @endif
             </table>
         </td>
     </tr>
-    @include('mail.partials.foot')
-</table>
-</body>
-</html>
+    @include('mail.partials.fields', ['fields' => $fields, 'skip' => ['Mã đơn hàng', 'Thanh toán'], 'title' => 'Người nhận và giao hàng'])
+    {{-- Items --}}
+    <tr>
+        <td class="px" style="padding:22px 32px 4px">
+            <div style="margin:0 0 8px;color:#09285e;font-size:14px;line-height:20px;font-weight:bold">Sản phẩm đã đặt ({{ count($items) }})</div>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
+                @foreach ($items as $item)
+                    <tr>
+                        <td width="64" valign="top" style="padding:12px 12px 12px 0;border-top:1px solid #e2e8f2">
+                            @if (! empty($item['image']))
+                                <img src="{{ $item['image'] }}" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:contain;background:#f6f8fc;border:1px solid #e2e8f2;border-radius:8px">
+                            @else
+                                <div style="width:56px;height:56px;background:#f6f8fc;border:1px solid #e2e8f2;border-radius:8px">&nbsp;</div>
+                            @endif
+                        </td>
+                        <td valign="top" style="padding:12px 8px 12px 0;border-top:1px solid #e2e8f2;color:#15284b;font-size:14px;line-height:21px">
+                            <strong style="font-weight:600">{{ $item['name'] }}</strong>
+                            @if ($item['option'] !== '')<br><span style="color:#6a7a95;font-size:12.5px">{{ $item['option'] }}</span>@endif
+                            <br><span style="color:#6a7a95;font-size:12.5px">{{ $money($item['price']) }} × {{ $item['quantity'] }}</span>
+                        </td>
+                        <td align="right" valign="top" style="padding:12px 0;border-top:1px solid #e2e8f2;white-space:nowrap;color:#09285e;font-size:14.5px;line-height:21px;font-weight:bold">{{ $money($item['total']) }}</td>
+                    </tr>
+                @endforeach
+            </table>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="right" width="300" style="width:100%;max-width:300px;margin-top:4px;border-top:2px solid #09285e">
+                <tr>
+                    <td style="padding:10px 0 4px;color:#6a7a95;font-size:13.5px">Tạm tính</td>
+                    <td align="right" style="padding:10px 0 4px;color:#15284b;font-size:13.5px;white-space:nowrap">{{ $money($totals['subtotal']) }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:2px 0 10px;color:#6a7a95;font-size:13.5px">Phí vận chuyển</td>
+                    <td align="right" style="padding:2px 0 10px;color:#15284b;font-size:13.5px;white-space:nowrap">{{ $totals['shipping'] > 0 ? $money($totals['shipping']) : 'Chờ xác nhận' }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0 2px;border-top:1px solid #dde4ef;color:#09285e;font-size:15px;font-weight:bold">Tổng cộng</td>
+                    <td align="right" style="padding:10px 0 2px;border-top:1px solid #dde4ef;color:#09285e;font-size:20px;font-weight:bold;white-space:nowrap">{{ $money($totals['total']) }}</td>
+                </tr>
+            </table>
+            <div style="clear:both;height:1px;line-height:1px;font-size:0">&nbsp;</div>
+        </td>
+    </tr>
+    @include('mail.partials.actions')
+    @include('mail.partials.closing')
+@endsection

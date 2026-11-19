@@ -19,7 +19,7 @@ class OrderNotification extends Mailable
      * @param  list<array{name: string, option: string, quantity: int, price: float, total: float}>  $items
      * @param  array{subtotal: float, shipping: float, total: float}  $totals
      */
-    public function __construct(public array $copy, public array $fields, public array $items, public array $totals, private readonly string $replyEmail = '', private readonly string $replyName = '') {}
+    public function __construct(public array $copy, public array $fields, public array $items, public array $totals, private readonly string $replyEmail = '', private readonly string $replyName = '', public array $actions = []) {}
 
     public function envelope(): Envelope
     {
