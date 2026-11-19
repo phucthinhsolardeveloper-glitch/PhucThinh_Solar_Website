@@ -1,4 +1,4 @@
-Ban ngày, tấm pin nạp pin cho đèn. Khi trời tối, cảm biến giúp đèn tự bật mà không cần kéo dây điện lưới.
+Đèn năng lượng mặt trời nạp pin bằng tấm pin vào ban ngày. Khi trời tối, cảm biến giúp đèn tự bật mà không cần kéo dây điện lưới.
 
 ## Dùng được ở nơi chưa có điện lưới
 

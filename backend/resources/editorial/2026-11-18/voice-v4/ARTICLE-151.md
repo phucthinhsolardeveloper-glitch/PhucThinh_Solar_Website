@@ -1,4 +1,4 @@
-Hóa đơn cho biết lượng điện đã dùng. Lịch dùng điện, mái và thiết bị giúp xác định công suất hệ thống cần khảo sát.
+Trước khi tư vấn điện mặt trời, bạn cần gom hóa đơn tiền điện, vì hóa đơn cho biết lượng điện nhà đã dùng. Lịch dùng điện, mái và thiết bị giúp xác định công suất hệ thống cần khảo sát.
 
 ## Ghi kỳ điện, số ngày và kWh
 

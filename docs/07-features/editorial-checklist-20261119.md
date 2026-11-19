@@ -1,0 +1,119 @@
+# Checklist bài viết — cập nhật 19/11/2026
+
+Ký hiệu đọc: ✔ mình đã đọc cả bài bản cuối · ◐ đã đọc một phần · ✘ chưa đọc bản cuối
+
+- [x] **#100** Phúc Thịnh Solar phân phối tấm pin Sharp tại Việt Nam — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung (18/11)
+    - Đổi tiêu đề, bỏ mốc 2024
+- [x] **#101** Blue Carbon thông báo Phúc Thịnh Solar là nhà phân phối độc quyền đèn năng lượng mặt trời thương hiệu Blue Carbon tại Việt Nam — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Đổi tiêu đề chữ thường
+    - Ảnh/liên kết dùng https
+- [x] **#102** Đèn năng lượng mặt trời hoạt động thế nào và cần xem gì? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Đổi tiêu đề
+    - Đổi ảnh bìa: tranh hoạt hình → ảnh đèn đường thật
+- [x] **#103** Phó Thủ tướng: Cần giải pháp thúc đẩy điện mặt trời mái nhà — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Vòng 4: bỏ lặp ngày tháng
+- [x] **#104** Đèn năng lượng mặt trời nạp pin ban ngày, tự bật khi trời tối — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung (quá mỏng, 166 từ)
+    - Đổi tiêu đề (bỏ "TOP 4")
+    - Đổi ảnh bìa
+    - 19/11: sửa câu mở đầu
+- [x] **#105** Lắp đặt và sử dụng đèn năng lượng mặt trời: 4 lưu ý — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Đổi tiêu đề
+- [x] **#106** Đèn năng lượng mặt trời Blue Carbon cho dự án — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung (bỏ giọng "công ty tự công bố")
+    - Đổi tiêu đề
+- [ ] **#107** ĐÈN NĂNG LƯỢNG MẶT TRỜI - NHỮNG LÝ DO BẠN NÊN CHỌN! — ẨN · đọc kỹ: -
+    - Ẩn (trùng nội dung bài 102)
+    - Chuyển hướng 301 về bài 102
+    - Không còn trong sitemap
+- [x] **#108** Được gì khi hợp tác cùng Phúc Thịnh Solar — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung (bỏ giọng người ngoài soi xét)
+    - Đổi tiêu đề
+- [x] **#109** Phúc Thịnh Solar chính thức là đối tác phân phối độc quyền đèn năng lượng mặt trời Blue Carbon tại Việt Nam — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Đổi tiêu đề chữ thường
+- [x] **#110** Chip LED CREE trong đèn năng lượng mặt trời: cần xem thông số nào? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Đổi tiêu đề, bỏ "TOP 1"
+    - Đổi ảnh bìa (bỏ poster "TOP 1")
+- [x] **#111** Đèn năng lượng mặt trời có ích ở đâu và cần lưu ý gì? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung (bỏ câu "không có đủ dữ liệu trong bài")
+    - Đổi tiêu đề
+    - Đổi ảnh bìa: tranh hoạt hình → ảnh đèn thật
+- [x] **#136** Điện mặt trời hoạt động như thế nào? Từ ánh nắng đến điện sử dụng trong nhà — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+- [x] **#137** Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Vòng 4: bỏ câu "ảnh bìa không phải nhân sự công ty", bỏ câu lặp
+- [x] **#138** Điện mặt trời toàn cầu đạt 2,96 TW: Xu hướng nổi bật từ IEA PVPS 2026 — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung thành bản tin ngắn
+- [x] **#139** kW, kWp và kWh khác nhau thế nào? 7 ví dụ tránh nhầm — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Khôi phục liên kết nguồn bị mất
+    - Vòng 4: bỏ câu thanh minh, bỏ ví dụ "vòi nước"
+- [x] **#140** Inverter điện mặt trời là gì? Nó thực hiện những chức năng nào? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Khôi phục liên kết nguồn bị mất
+    - Thêm bảng ký hiệu thay đoạn dồn Voc/Vmp
+- [x] **#141** Có nên lắp điện mặt trời khi nhà chỉ dùng điện nhiều vào buổi tối? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Vòng 4: bỏ câu dạy dỗ
+- [x] **#142** Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+- [x] **#143** Mua đèn năng lượng mặt trời: đừng chỉ nhìn con số W quảng cáo — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+- [ ] **#144** Trời nhiều mây, ánh sáng yếu: pin còn tạo điện thế nào? — ẨN · đọc kỹ: ✔
+    - Viết lại nội dung, đăng 18/11
+    - GỠ khỏi web 18/11 (đoạn lủng củng, địa danh không nguồn)
+    - Viết lại hẳn lần 2 (bản mới 19/11, CHỜ BẠN ĐỌC, chưa đăng)
+    - Sửa câu mở đầu bỏ chữ "Có."
+- [x] **#145** Vì sao có tấm pin nhưng mất điện lưới vẫn có thể bị cúp? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung, đăng 18/11
+    - Gỡ hình minh hoạ rỗng
+- [x] **#146** Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn? — ĐANG HIỆN · đọc kỹ: ◐
+    - Viết lại nội dung, đăng 18/11
+    - Gỡ hình biểu đồ cột sai tỷ lệ
+    - Vòng 4: bỏ câu phủ định
+- [x] **#147** IEA công bố Renewables 2026: triển vọng điện mặt trời đến 2031 — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Viết lại hẳn thành bản tin 260 từ (từ 691)
+    - Gỡ hình hai cột + ô "cách đọc"
+- [x] **#148** Nhà dùng bao nhiêu điện mỗi tháng thì phù hợp lắp năng lượng mặt trời? — ĐANG HIỆN · đọc kỹ: ◐
+    - Viết lại nội dung
+    - Gỡ hình minh hoạ rỗng
+    - Vòng 4
+- [x] **#149** Inverter hòa lưới và hybrid khác nhau thế nào? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Gỡ hình bảng so sánh lệch cột
+    - Đổi ảnh bìa: bảng minh hoạ → ảnh thật
+- [x] **#150** Tấm pin màu đen có luôn tốt hơn tấm pin màu xanh? — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Gỡ hình hai ô vuông giả tấm pin
+    - Vòng 4: bỏ câu rỗng
+- [x] **#151** Cách đọc hóa đơn tiền điện trước khi thiết kế hệ thống — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung, đăng 18/11
+    - Gỡ khỏi web vì dài, lặp ý (875 từ)
+    - Vòng 4: cắt còn 576 từ, đăng lại
+    - 19/11: sửa câu mở đầu
+- [x] **#152** Lumen, lux và watt khác nhau thế nào khi chọn đèn? — ĐANG HIỆN · đọc kỹ: ◐
+    - Viết lại nội dung
+    - Vòng 4: cắt từ 792 xuống 620 từ
+- [ ] **#153** Lắp tấm pin càng nhiều có luôn rút ngắn hoàn vốn? — ẨN · đọc kỹ: ✔
+    - Viết lại nội dung, đăng theo lịch
+    - GỠ khỏi web (dài 1.307 từ, dồn thuật ngữ, rào đón)
+    - Viết lại hẳn lần 2 (658 từ, CHỜ BẠN ĐỌC, chưa đăng)
+    - Sửa câu mở đầu bỏ "Không phải lúc nào."
+- [x] **#154** Mái tôn, mái ngói, mái bằng: lưu ý khi khảo sát điện mặt trời — ĐANG HIỆN · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Vòng 4: cắt 868 → 514 từ; đã hẹn giờ lên 08:00 19/11
+- [x] **#155** TOPCon, HJT, BC (Back Contact) khác nhau ra sao? — HẸN GIỜ · đọc kỹ: ✔
+    - Viết lại nội dung
+    - Vòng 4 + gộp Voc/Vmp/Isc/Imp thành bảng
+- [x] **#156** Điện mặt trời có làm mái nhà nóng hơn hay mát hơn? — HẸN GIỜ · đọc kỹ: ◐
+    - Viết lại nội dung
+    - Vòng 4: cắt 838 → 570 từ
