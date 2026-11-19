@@ -752,6 +752,12 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Tên sản phẩm dài không còn lòi ra ở 320 px.
 - Khổ máy thật: OPPO Find X9 hiển thị ~360 px CSS (không phải 390–393). `audit/site-audit.cjs` mặc định chạy 360/375/393/412/430/768/820/1440; quét 20 trang × 8 khổ trước sửa: 0 tràn ngang, 11 phát hiện nhỏ (hero tablet, tên dài ở 320, 2 lần 502 tệp JS ở 430 không tái hiện).
 
+## 2026-11-19 (đêm) — bật reCAPTCHA v3 (chỉ cấu hình, không đổi image)
+
+- Khóa do chủ website tạo ở google.com/recaptcha/admin (loại Score based v3, tên miền phucthinhsolar.com). Ghi vào `deploy/laravel13/runtime/backend.env` trên VPS: `RECAPTCHA_ACTIVE=1`, `RECAPTCHA_SITE_KEY`, `RECAPTCHA_SECRET` (secret không ghi vào tài liệu). Bản cũ: `releases/backend.env.before-recaptcha-20261119`. Recreate backend/worker/scheduler (`up -d --no-deps --force-recreate`, đủ cờ `-p pts-laravel13`).
+- Kiểm: mã lấy bằng trình duyệt trên phucthinhsolar.com, siteverify trả success, score 0.9, hostname đúng; gửi biểu mẫu liên hệ với dữ liệu trống: mã đúng hành động -> 422 thiếu họ tên (qua captcha, không tạo lead); sai hành động hoặc không mã -> 422 CAPTCHA_FAILED. 0 lead mới.
+- Lưu ý: đọc khóa từ ảnh dễ nhầm I/l/1; Google trả cùng lỗi `invalid-input-response` cho secret sai với mã giả nên phải thử bằng mã thật. Nếu trình duyệt khách chặn script Google (một số chế độ chặn quảng cáo), biểu mẫu báo lỗi; khách vẫn có hotline và Zalo.
+
 ## Mẫu ghi cho lần tiếp theo
 
 ```text
