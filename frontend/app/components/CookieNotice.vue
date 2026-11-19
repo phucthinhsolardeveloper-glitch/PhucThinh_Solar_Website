@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// One short notice about measurement cookies. Measurement stays on until the visitor refuses. The choice is kept in
+// One short notice about measurement cookies. Measurement starts denied until the visitor accepts. The choice is kept in
 // localStorage AND a first-party cookie (some browsers wipe one but not the other) and passed to Google (consent mode)
 // so GTM tags for GA4 and ads can honour it.
 const STORAGE_KEY = 'pts-consent'
@@ -10,10 +10,10 @@ const links = usePublicLinks()
 function readChoice(): string {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) return stored
+    if (stored === 'granted' || stored === 'denied') return stored
   } catch { /* Storage blocked: try the cookie. */ }
   const match = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_KEY}=([^;]*)`))
-  return match?.[1] ?? ''
+  return match?.[1] === 'granted' || match?.[1] === 'denied' ? match[1] : ''
 }
 
 onMounted(() => {

@@ -15,35 +15,28 @@ const liveHost = (() => { try { return new URL(useRuntimeConfig().public.canonic
 const requestHost = useRequestURL().hostname
 const onLiveSite = !!liveHost && (requestHost === liveHost || requestHost === `www.${liveHost}`)
 const gtmId = computed(() => onLiveSite && /^GTM-[A-Z0-9]{4,12}$/.test(site.value?.gtmId ?? '') ? site.value!.gtmId! : '')
-useHead(() => gtmId.value ? {
-  // gtag() bridge: the shop sends its events with gtag('event', ...) as well as dataLayer objects. With GTM alone there is no
-  // window.gtag, so those calls were dropped. This queues them on dataLayer, where the Google tag inside the container sends them.
+// GTM is the event destination when configured; loading standalone gtag.js as well can send the same event twice.
+const ga4Id = computed(() => onLiveSite && !gtmId.value && /^G-[A-Z0-9]{6,12}$/.test(site.value?.ga4Id ?? '') ? site.value!.ga4Id! : '')
+const hasTracking = computed(() => Boolean(gtmId.value || ga4Id.value))
+useHead(() => hasTracking.value ? {
+  // The shared gtag queue preserves events when the only Google tag is inside GTM.
   script: [{
     key: 'pts-gtag-bridge',
     tagPriority: 'critical',
-    // Consent mode: measurement is on unless this visitor refused in the cookie notice (kept in localStorage 'pts-consent').
+    // Unknown visitors start denied; a stored explicit choice is restored before any Google tag loads.
     innerHTML: 'window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};'
-      + '(function(){var v="";try{v=localStorage.getItem("pts-consent")||""}catch(e){}if(!v){var m=document.cookie.match(/(?:^|; )pts_consent=([^;]*)/);v=m?m[1]:""}var c=v==="denied"?"denied":"granted";gtag("consent","default",{analytics_storage:c,ad_storage:c,ad_user_data:c,ad_personalization:c})})();',
-  }],
-  noscript: [{
-    key: 'pts-gtm-noscript',
-    tagPosition: 'bodyOpen',
-    innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId.value}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+      + '(function(){var v="";try{v=localStorage.getItem("pts-consent")||""}catch(e){}if(v!=="granted"&&v!=="denied"){var m=document.cookie.match(/(?:^|; )pts_consent=([^;]*)/);v=m?m[1]:""}var c=v==="granted"?"granted":"denied";gtag("consent","default",{analytics_storage:c,ad_storage:c,ad_user_data:c,ad_personalization:c});function s(x){if(!x)return "";try{var u=new URL(x,location.href);if(u.protocol!=="http:"&&u.protocol!=="https:")return "";var p=new URLSearchParams();if(!/^\\/cam-on(?:\\/|$)/.test(u.pathname))u.searchParams.forEach(function(v,k){if(v&&/^(?:utm_[a-z_]{1,40}|gclid|gbraid|wbraid|fbclid)$/.test(k))p.append(k,v.slice(0,200))});var t=p.toString();return u.origin+u.pathname+(t?"?"+t:"")}catch(e){return ""}}gtag("set",{page_location:s(location.href),page_referrer:s(document.referrer)})})();',
   }],
 } : {})
 
-// Google Analytics 4 straight from gtag.js when Admin has a measurement id (same live-domain rule as GTM).
-// Enhanced measurement counts each in-app page change; shop events reach it through pushDataLayer.
-const ga4Id = computed(() => onLiveSite && /^G-[A-Z0-9]{6,12}$/.test(site.value?.ga4Id ?? '') ? site.value!.ga4Id! : '')
+// Use standalone gtag.js only when no GTM container is configured.
 useHead(() => ga4Id.value ? {
   script: [
-    { key: 'pts-ga4', innerHTML: `window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${ga4Id.value}');` },
+    { key: 'pts-ga4', innerHTML: `window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${ga4Id.value}');` },
   ],
 } : {})
 
-// Tracking scripts (GTM and gtag.js, about 470 KB together) wait until the page has loaded and is idle, or until the visitor
-// first interacts, so they do not compete with the hero picture and fonts. Events pushed before they arrive queue in dataLayer,
-// and the gtag('config') call above still runs at once, so nothing is lost.
+// Google scripts wait until the page has loaded and is idle, or until the visitor first interacts.
 function loadTrackingScripts() {
   const w = window as unknown as { __ptsTrackingLoaded?: boolean; dataLayer?: unknown[] }
   if (w.__ptsTrackingLoaded) return

@@ -64,7 +64,7 @@ test('Google Tag Manager comes from the site settings and only as GTM-XXXX', asy
   const { isPublicSitePayload } = await import('../shared/contracts/public-site.ts').catch(() => ({}))
   const app = read('app/app.vue')
   assert.match(app, /\/\^GTM-\[A-Z0-9\]\{4,12\}\$\/\.test\(site\.value\?\.gtmId/)
-  assert.match(app, /tagPosition: 'bodyOpen'/)
+  assert.doesNotMatch(app, /googletagmanager\.com\/ns\.html/)
   assert.match(app, /onLiveSite && \/\^GTM-/)
   assert.match(read('shared/contracts/public-site.ts'), /value\.gtmId === '' \|\| typeof value\.gtmId === 'string' && \/\^GTM-\[A-Z0-9\]\{4,12\}\$\//)
   if (isPublicSitePayload) assert.ok(true)

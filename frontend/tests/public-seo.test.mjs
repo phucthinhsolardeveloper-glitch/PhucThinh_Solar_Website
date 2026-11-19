@@ -290,11 +290,12 @@ test('product page and catalog feed one consistent description to meta, og and t
   assert.doesNotMatch(read('app/components/catalog/CatalogPage.vue'), /Khám phá thiết bị chiếu sáng/)
 })
 
-test('GA4 measurement id from Admin loads gtag.js on the live domain only, and shop events reach it', () => {
+test('GTM takes priority over standalone GA4, and shop events use the shared gtag queue', () => {
   const app = read('app/app.vue')
-  assert.match(app, /const ga4Id = computed\(\(\) => onLiveSite && \/\^G-\[A-Z0-9\]\{6,12\}\$\//)
+  assert.match(app, /const ga4Id = computed\(\(\) => onLiveSite && !gtmId\.value && \/\^G-\[A-Z0-9\]\{6,12\}\$\//)
   assert.match(app, /googletagmanager\.com\/gtag\/js\?id=\$\{ga4Id\.value\}/)
-  assert.match(read('app/composables/useDataLayer.ts'), /gtag\('event', event, \{ \.\.\.rest, \.\.\.\(ecommerce \?\? \{\}\) \}\)/)
+  assert.match(read('app/composables/useDataLayer.ts'), /dispatchGa4Event\(target/)
+  assert.match(read('app/utils/ga4Event.ts'), /dataLayer\.push\(\{ event, \.\.\.params \}\)/)
   assert.match(read('shared/contracts/public-site.ts'), /value\.ga4Id !== undefined/)
 })
 

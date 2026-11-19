@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isPublicSeoIndexable, productSeoDescription } from '#shared/public-seo'
+import { buildAnalyticsPageContext } from '~/utils/analyticsPageContext'
 import ProductDetailPage from '~/components/product-detail/ProductDetailPage.vue'
 definePageMeta({
   layout: false,
@@ -28,15 +29,44 @@ const breadcrumbItems = computed(() => [
   ...(product.value ? [{ label: product.value.name }] : []),
 ])
 
-// GA4 view_item once per product shown (also after an in-app move to another product).
+// Wait until Nuxt has rendered the route so the event uses the new page's title and route context.
 if (import.meta.client) {
-  watch(() => product.value?.id, (id) => {
+  const nuxtApp = useNuxtApp()
+  let lastViewedProductId: number | string | null = null
+  const waitForPageRender = async () => {
+    const context = window.__ptsAnalyticsRouteContext
+    if (!context?.rendered || context.path !== route.path) {
+      await new Promise<void>((resolve) => {
+        let offFinish = () => {}
+        let offLoadingEnd = () => {}
+        let offMounted = () => {}
+        const finish = () => {
+          offFinish()
+          offLoadingEnd()
+          offMounted()
+          resolve()
+        }
+        offFinish = nuxtApp.hook('page:finish', finish)
+        offLoadingEnd = nuxtApp.hook('page:loading:end', finish)
+        offMounted = nuxtApp.hook('app:mounted', finish)
+      })
+    }
+    await nextTick()
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+  }
+
+  watch(() => product.value?.id, async (id) => {
+    if (!id || !product.value || id === lastViewedProductId) return
+    await waitForPageRender()
     const p = product.value
-    if (!id || !p) return
+    const context = window.__ptsAnalyticsRouteContext
+    if (!p || p.id !== id || !context?.rendered || context.path !== route.path) return
+    lastViewedProductId = id
     const pricing = payload.value?.pricing
     const price = pricing?.mode === 'price' ? (pricing.salePrice ?? pricing.regularPrice ?? undefined) : undefined
     const category = payload.value?.breadcrumbs?.at(-1)?.label
-    pushEcommerce('view_item', [{ item_id: String(p.id), item_name: p.name, price, quantity: 1, ...(p.brand ? { item_brand: p.brand } : {}), ...(category ? { item_category: category } : {}) }])
+    const pageContext = buildAnalyticsPageContext(window.location.href, document.title, context.referrer)
+    pushEcommerce('view_item', [{ item_id: String(p.id), item_name: p.name, price, quantity: 1, ...(p.brand ? { item_brand: p.brand } : {}), ...(category ? { item_category: category } : {}) }], pageContext)
   }, { immediate: true })
 }
 
