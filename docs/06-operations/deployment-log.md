@@ -49,6 +49,15 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-19 — cải thiện lần cuối theo kỹ năng nội dung, đăng 144/153/155/156
+
+- Dùng kỹ năng `content-density-ux` (đo trước: số từ/màn hình, đoạn ≥35 từ trên 390 px) và `searchfit-seo:on-page-seo` (liên kết nội bộ 3–5/bài, độ dài tiêu đề và mô tả). Đo trên web thật: đoạn dài từ 35 từ trở lên **132 → 33** trên 28 bài; từ/màn hình ~111 → 108 (tách đoạn không giảm số từ).
+- Viết lại tay 141 và 143 (trước yếu), gọn 104. Tách đoạn >35 từ ở mọi bài (không đổi chữ). Thêm mục "Đọc thêm" 2–4 liên kết nội bộ cho mỗi bài (bài liên quan + danh mục/thương hiệu), đã kiểm: 27 liên kết duy nhất, 0 liên kết chết; sửa liên kết chết cũ `/tags-san-pham/blue-carbon/` ở 106.
+- Mô tả SEO các bài 146/148/150/156 kéo lên ~140 ký tự. Tiêu đề 101/109 rút gọn (hoàn tác: `titles2-rollback.json`).
+- Áp `voice-v6/` (32 bài, backup DB `20261119T011931Z-db`). Câu mở đầu 144/153/104/151 sửa cho tự đủ nghĩa (không còn "Có." / "Không phải lúc nào.").
+- Đăng 144 và 153 (đã qua `PublishChecks`). 155 và 156 đăng ngay thay vì chờ 12:00 / 19:30 để các bài khác không trỏ tới trang 404. Hiện 32 bài, ẩn 1 (107, đã 301).
+- Checklist cho chủ website: `output/xem-truoc/checklist.html` (có liên kết, đánh giá, ô Giữ/Cần sửa/Ẩn), script `tools/editorial-voice/build-checklist.py`.
+
 ## 2026-11-18 (tối, muộn) — rà soát chất lượng bài, gỡ bài kém, sửa 147, gỡ hình minh hoạ vô ích, đổi ảnh bìa
 
 - Chủ website: bài IEA 147 "giống viết cho bọn ngu đọc", "không muốn content chất lượng kém lên web". Nguyên nhân thật: quá nhiều câu "đây không phải… / không thay… / không cho biết…", câu thanh minh vô ích ("ảnh bìa không phải nhân sự công ty"), giải thích điều hiển nhiên, lặp ngày/số, bài dài lặp ý; công cụ chấm không đo được các lỗi này (đã bổ sung luật, sổ tay mục 12). Người duyệt (Claude) chưa đọc 147 trước khi đăng: đã nhận lỗi.
