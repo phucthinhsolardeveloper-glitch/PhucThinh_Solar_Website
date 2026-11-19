@@ -732,6 +732,17 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Rollback point: image trước đó được lưu qua `state/previous-image`; không tự
   rollback DB.
 
+## 2026-11-19 (tối) — vuốt mở menu, thẻ kính chú thích hero, nút lên đầu trang, sửa thanh mua (release 8c85a6e4, Nuxt only)
+
+- Mode: Nuxt only (backend giữ `65b334b6`). Backup DB `20261119T043006Z-db`. Rollback: `releases/rollback-8c85a6e4/stack.env.before` (Nuxt `5887a972`). Gói `releases/8c85a6e4/nuxt-8c85a6e4.tar.gz` 172 MB, sha256 khớp.
+- Lệnh `up` phải có `-p pts-laravel13` (tên project thật của container; `docker-compose.yml` khai `pts_laravel13_candidate` nên thiếu cờ sẽ báo trùng tên container).
+- Vuốt phải mở menu, vuốt trái đóng (điện thoại và máy tính bảng, <= 1320 px, cảm ứng; loại trừ ô nhập, dải cuộn ngang, ảnh/carousel, hộp thoại). Nút lên đầu trang hiện trên điện thoại, dạng kính `.m-lg`. Vùng chạm 44 px cho nút so sánh/chia sẻ/"Xem thêm", hai dòng 13 px lên 14 px.
+- Thẻ chú thích hero là một thẻ cho mọi màn hình, có thanh tiến trình bấm chuyển ảnh; bỏ cặp nút `<` `01/04` `>`. Điện thoại giữ kính sáng, máy tính bảng dùng bố cục điện thoại với nền navy, PC navy 72% không blur (ảnh nền chuyển động liên tục, blur sống làm vẽ lại mỗi khung hình).
+- Sửa lỗi có sẵn: `.pdp-sheet { z-index: 1 }` nhốt thanh mua cố định trong lớp xếp chồng thấp nên thanh mục (z 20) và nút so sánh vẽ đè lên thanh mua trên điện thoại; bỏ z-index đó.
+- Không đổi màu hay độ đục kính của header, thanh dưới, hộp tìm kiếm (đã thử navy đậm, navy nhạt, kính trắng và bị chủ website bác; bản thử ở nhánh `backup/glass-experiment-20261119`).
+- Kiểm trên web thật: `/`, `/san-pham/`, `/gioi-thieu/`, `/lien-he/`, `/gio-hang/`, `/dai-ly/`, trang sản phẩm, `/robots.txt` đều 200; cảm ứng thật: vuốt phải mở menu, vuốt trái đóng (5/6 vị trí, trừ vùng ô tìm kiếm); thanh mua nằm trên thanh mục; 0 lỗi JS. Test frontend 518/518, typecheck 0.
+- Chưa kiểm trên thiết bị thật (iPhone Safari): trình duyệt giả lập không thay được.
+
 ## Mẫu ghi cho lần tiếp theo
 
 ```text
