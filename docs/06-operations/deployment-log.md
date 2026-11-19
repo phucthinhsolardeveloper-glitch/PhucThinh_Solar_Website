@@ -772,3 +772,16 @@ Log scan:
 Rollback point:
 Rủi ro còn lại:
 ```
+
+## 2026-11-19 — production release 4e309a9a (GA4, Merchant, kho, Admin, estimator)
+
+- Source revision: 4e309a9ac13a15ba00bf943bc4fcdb8b130b914e; fast-forward push lên origin/master. Toàn bộ 19 commit kể từ 201e82cd đã được phát hành (bao gồm kho, email, thông báo Admin, GA4/Consent Mode, Merchant, giao diện); cherry-pick riêng f45d460b thành 4e309a9a để sửa estimator mobile mà không kéo theo GA4 cũ.
+- Build: backend incremental từ image PHP đã kiểm pts-laravel13-backend:e94a3f71-candidate do tải apt của full Dockerfile rất chậm. Composer manifests không đổi, không có file backend bị xóa từ e94, đã copy source mới và dựng lại Composer autoload, package discovery, Filament assets, Apache prefork. Nuxt build chuẩn từ Dockerfile. Cả hai image đều mang đúng nhãn source SHA; đây là ngoại lệ build, không coi build-candidate.sh đã chạy xong.
+- Image backend ID: sha256:9abcc3ddf51e309ba3cdbf41fde5c7885922dd2cae3686f151da8e3168637c80. Nuxt ID: sha256:183fe3f0641f8e785e08bb93f70e6f26ef753f6919557b212134665ebb595dcb. Bundle 492305015 byte, sha256 55a7e6803fe5af27b751c1ad69410519dba27e6a7e029d0cc7babc5d0fd963bc; manifest, tar, deploy script/log tại /srv/pts-laravel13/releases/4e309a9a/.
+- QA: frontend 530/530 tests PASS, typecheck PASS, build PASS. Pest Merchant/Warehouses 33/33 PASS, Pint 17 file PASS, PHPStan mới PASS (baseline cảnh báo cũ). Backend full suite lần đầu 440 pass, 2 skipped, 13 lỗi mount media; các nhóm lỗi đã chạy lại riêng với assets/upload phù hợp. Không tuyên bố full suite đạt xanh trong một lần.
+- Production DB clone: lấy dump chỉ đọc, 399 sản phẩm và 39 migration cũ. Ba migration 2026_11_19_000100, 000200, 000300 áp thành công trên clone; 399 sản phẩm giữ nguyên, Merchant availability mới NULL. Full backup production trước cutover /srv/pts-laravel13/backups/20261119T101234Z-full, checksum đã xác minh.
+- Smoke image local với DB clone: backend/Admin/API/feed/robots/sitemap HTTP 200, Nuxt trang chính HTTP 200. Backend cũ/mới trên cùng DB và bộ ảnh local trả cùng 170 item, ID/giá/availability/brand khớp. Bộ ảnh production đầy đủ khác nên feed production tiếp tục 315 item.
+- VPS: deploy qua khóa state/operation.lock, chạy ba migration production, thay image backend/Nuxt/worker/scheduler sang 4e309a9a, tất cả dịch vụ khởi động tốt. Không đổi Caddy, DB/upload volume hoặc ZCRM. 11 tuyến smoke HTTP 200, /health báo DB OK, 399 sản phẩm; Merchant 315 ID duy nhất, Verified vẫn OFF (MERCHANT_FEED_VERIFIED_ENABLED=0).
+- QA Chromium production: 360px và 1440px, 8/8 page checks PASS, 0 page errors, 0 HTTP 5xx, không tràn ngang; GTM có mặt, view_item một custom event + một gtag command. Consent mặc định denied cho bốn quyền, chọn Từ chối được lưu qua reload. Chưa đối soát GA4 DebugView/GTM Preview và chưa gửi đơn/lead thật.
+- Rollback: image cũ backend 65b334b6, Nuxt 7cdf1af1 còn trên VPS; bản sao stack.env/backend.env cũ và image IDs lưu tại /srv/pts-laravel13/releases/4e309a9a/. Không tự restore DB khi đã có đơn/lead phát sinh sau backup. Production ổn định nên không rollback.
+- Vận hành sau deploy: theo dõi GA4 DebugView, Search Console/Merchant Center, checkout/lead thực, log 5xx và dung lượng VPS. Consent mặc định denied có thể làm số liệu analytics thấp hơn trước.
