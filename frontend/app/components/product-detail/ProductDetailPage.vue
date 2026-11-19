@@ -187,7 +187,7 @@ function toggleDescription() {
 
     <!-- Phone: long description stays one tap away instead of pushing specs and reviews down. -->
     <div ref="descriptionRef" class="pdp-description" :class="{ 'is-open': descriptionOpen }">
-      <ProductDetailContent v-model:open="descriptionOpen" :content="content" />
+      <ProductDetailContent v-model:open="descriptionOpen" :content="content" :product-name="product.name" />
     </div>
     <button type="button" class="m-more-button mb-1 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription"><span>{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</span></button>
     <ProductVideoBlock :extras="extras" />

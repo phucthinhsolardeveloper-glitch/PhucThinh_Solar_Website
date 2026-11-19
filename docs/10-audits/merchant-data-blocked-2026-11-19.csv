@@ -1,0 +1,24 @@
+﻿group,code,slug,needs,status,note
+brand_missing,BCT-OLK2.0P,den-duong-nang-luong-mat-troi-56w-blue-carbon-bct-olk20p,brand,NEEDS APPROVAL,Tên ghi Blue Carbon: kiểm tra Admin có thương hiệu này và nhãn hàng trước khi gán
+brand_missing,JD-L400,den-op-tran-jd-l400,brand,DATA BLOCKED,Đối chiếu nhãn sản phẩm/tài liệu nhà cung cấp
+brand_missing,JD-L200NEW,den-duong-jindian-jd-l200new,brand,NEEDS APPROVAL,Tên ghi JINDIAN và thương hiệu JINDIAN đã có trong Admin (JD-18300): gán sau khi người quản trị xác nhận
+brand_missing,JD-550L,tam-pin-nang-luong-mat-troi-sharp-550w-mono-nu-jd-550-l,brand,DATA BLOCKED,"Tên ghi Sharp nhưng mã JD: không suy hãng từ tên, cần nhãn/tài liệu"
+brand_missing,LONGI450,pv-module-longi450,brand,DATA BLOCKED,Đối chiếu nhãn sản phẩm/tài liệu nhà cung cấp
+brand_missing,JD-198L,quat-nang-luong-mat-troi-jd-198l-15w,brand,DATA BLOCKED,Đối chiếu nhãn sản phẩm/tài liệu nhà cung cấp
+brand_missing,JD-128L,quat-nang-luong-mat-troi-jd-128l-12w,brand,DATA BLOCKED,Đối chiếu nhãn sản phẩm/tài liệu nhà cung cấp
+brand_missing,JD-188L,quat-nang-luong-mat-troi-jd-188l-15w,brand,DATA BLOCKED,Đối chiếu nhãn sản phẩm/tài liệu nhà cung cấp
+not_in_feed,,bang-keo-dien-nano,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 5000
+not_in_feed,,cap-thipha-cxv-1x4mm2-day-den,code_missing|quote_only_or_price_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá báo giá
+not_in_feed,,cap-thipha-cxv-1x4mm2-day-do,code_missing|quote_only_or_price_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá báo giá
+not_in_feed,,cap-thipha-cxv-3x4-1x25mm2,code_missing|quote_only_or_price_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá báo giá
+not_in_feed,,coc-tiep-dia-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 316000
+not_in_feed,,den-pha-cam-co-san-vuon-15w,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 270000
+not_in_feed,JD-18300,den-pha-nang-luong-mat-troi-jindian-jd-18300-300w,quote_only_or_price_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá báo giá
+not_in_feed,,keo-foarm-apolo,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 58000
+not_in_feed,,kep-bien-tam-pin-35,code_missing|quote_only_or_price_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá báo giá
+not_in_feed,,khop-noi-ruot-ga-voi-ruot-ga-phi-25-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 34000
+not_in_feed,,ong-ruot-ga-loi-thep-phi-16-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 35000
+not_in_feed,,ong-ruot-ga-loi-thep-phi-25-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 63000
+not_in_feed,T-BAT-SYS-LV D150 Pro,pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro,unknown_public: chạy pts:merchant-readiness trên DB (nghi feed_image hỏng/nhỏ),DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 56538000
+not_in_feed,,pv-module-sharp-mono-half-cut-cell-395-wp,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 4900000
+not_in_feed,,quat-nang-luong-mat-troi-blue-fan-20w,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 1860000

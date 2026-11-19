@@ -208,3 +208,10 @@ test('accepts only verified Merchant facts on the product', () => {
   assert.equal(isPublicProductDetailPayload(withMerchant({ stock: 3 })), false)
   assert.equal(isPublicProductDetailPayload(withMerchant('in_stock')), false)
 })
+
+test('product content pictures without a caption are described by the product name, not left alt=""', () => {
+  const content = readFileSync(new URL('../app/components/product-detail/ProductDetailContent.vue', import.meta.url), 'utf8')
+  assert.match(content, /:alt="block\.caption \|\| productName \|\| ''"/)
+  assert.match(content, /:alt="block\.title \|\| productName \|\| ''"/)
+  assert.match(readFileSync(new URL('../app/components/product-detail/ProductDetailPage.vue', import.meta.url), 'utf8'), /<ProductDetailContent [^>]*:product-name="product\.name"/)
+})
