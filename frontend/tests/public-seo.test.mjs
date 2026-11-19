@@ -186,11 +186,13 @@ test('each renderable public content route wires the canonical and social metada
   for (const path of owners) assert.match(read(path), /usePublicSocialMeta\(/, `${path} needs public metadata`)
 })
 
-test('product detail is an Open Graph product with a buyable, in-stock Offer and the category breadcrumb', () => {
+test('product detail is an Open Graph product with a priced Offer from the shared builder and the category breadcrumb', () => {
   assert.match(read('app/pages/san-pham/[slug].vue'), /usePublicSocialMeta\([\s\S]*type: 'product'/)
   const schema = read('app/composables/useProductDetailData.ts')
-  assert.match(schema, /availability: 'https:\/\/schema\.org\/InStock'/)
-  assert.match(schema, /seller: \{ '@id': `\$\{siteOrigin\}\/#organization` \}/)
+  assert.match(schema, /productOfferNode\(pricing, p\.merchant, canonicalUrl, siteOrigin\)/)
+  assert.match(schema, /productIdentifierFields\(p\.merchant\)/)
+  // Stock is never asserted from a price alone.
+  assert.doesNotMatch(schema, /InStock/)
   assert.match(schema, /payload\.value\?\.breadcrumbs/)
 })
 

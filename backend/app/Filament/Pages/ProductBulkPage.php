@@ -10,6 +10,7 @@ use App\Domain\Catalog\Bulk\BulkPlanner;
 use App\Domain\Catalog\Bulk\BulkReader;
 use App\Domain\Catalog\Bulk\BulkSession;
 use App\Domain\Catalog\MerchantFeed;
+use App\Domain\Catalog\MerchantReadinessReport;
 use App\Domain\Catalog\ProductSalesReadiness;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\Fields;
@@ -152,6 +153,8 @@ class ProductBulkPage extends Page
                 ->action(fn () => $this->downloadFeed()),
             Action::make('verifiedFeedPreview')->label('Xem trước feed Merchant mới')->icon(Heroicon::OutlinedEye)->color('gray')
                 ->action(fn () => $this->downloadVerifiedFeedPreview()),
+            Action::make('merchantReadiness')->label('Báo cáo dữ liệu Merchant')->icon(Heroicon::OutlinedClipboardDocumentCheck)->color('gray')
+                ->action(fn () => $this->downloadMerchantReadiness()),
             Action::make('previewFile')->label('Nhập tệp')->icon(Heroicon::OutlinedArrowUpTray)
                 ->modalHeading('Chọn tệp để xem trước')->modalDescription('Chưa có gì được ghi cho tới khi bạn bấm Áp dụng.')->modalSubmitActionLabel('Xem trước')
                 ->schema([self::upload('file', 'Tệp Excel hoặc CSV (tối đa 10 MB)', [
@@ -212,6 +215,17 @@ class ProductBulkPage extends Page
         Notification::make()->success()->title('Feed gồm '.count($result['rows']).' sản phẩm')->body('Bỏ qua '.$result['skipped'].' sản phẩm chưa đủ điều kiện.')->send();
 
         return $feed->download($result['rows']);
+    }
+
+    /** Read-only: every blocker per product, so staff fill real brand/code/price/availability/GTIN data; nothing is changed. */
+    private function downloadMerchantReadiness()
+    {
+        $rows = app(MerchantFeed::class)->readiness((string) config('site.canonical_origin'));
+        $blocked = array_values(array_filter($rows, fn (array $r) => $r['needs'] !== []));
+        Notification::make()->success()->title(count($blocked).'/'.count($rows).' sản phẩm cần bổ sung dữ liệu Merchant')
+            ->body('Cột can_bo_sung ghi việc cần làm. Chỉ nhập mã, thương hiệu và tình trạng có nguồn từ hãng hoặc kho; sửa ở sản phẩm hoặc nhập lại workbook.')->send();
+
+        return MerchantReadinessReport::download($blocked);
     }
 
     private function downloadVerifiedFeedPreview()

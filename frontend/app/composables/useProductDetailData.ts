@@ -5,6 +5,7 @@ import { isPublicProductExtrasPayload } from '#shared/contracts/public-product-e
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
+import { productIdentifierFields, productOfferNode } from '#shared/product-structured-data'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 
@@ -75,19 +76,9 @@ export function useProductDetailData(slug: Ref<string>) {
       const images = p.media.map((path) => canonicalPublicUrl(siteOrigin, path)).filter((url): url is string => Boolean(url))
       if (images.length) productNode.image = images
     }
-    if (pricing?.mode === 'price' && (pricing.salePrice ?? pricing.regularPrice)) {
-      productNode.offers = {
-        '@type': 'Offer',
-        url: canonicalUrl,
-        priceCurrency: pricing.currency,
-        price: pricing.salePrice ?? pricing.regularPrice,
-        // The shop sells new equipment only. A listed product with a price is on sale, the same as the Merchant
-        // feed (/google-shopping.xml) says; Merchant Center rejects offers without availability.
-        itemCondition: 'https://schema.org/NewCondition',
-        availability: 'https://schema.org/InStock',
-        seller: { '@id': `${siteOrigin}/#organization` },
-      }
-    }
+    const offer = productOfferNode(pricing, p.merchant, canonicalUrl, siteOrigin)
+    if (offer) productNode.offers = offer
+    Object.assign(productNode, productIdentifierFields(p.merchant))
     if (extras.value && extras.value.reviews.total > 0) {
       productNode.aggregateRating = {
         '@type': 'AggregateRating',

@@ -197,3 +197,14 @@ test('related PDP products use Nuxt UI arrow controls and hide the horizontal sc
   assert.match(grid, /tabindex="0"[\s\S]*Danh sách sản phẩm liên quan, có thể cuộn ngang/)
   assert.match(page, /class="sticky[^"]*overflow-x-auto[^"]*\[scrollbar-width:none\] \[\&::\-webkit-scrollbar\]:hidden/)
 })
+
+test('accepts only verified Merchant facts on the product', () => {
+  const withMerchant = (merchant) => ({ ...good, product: { ...good.product, merchant } })
+  assert.equal(isPublicProductDetailPayload(withMerchant({ availability: 'in_stock', gtin: '042100005264', mpn: 'MPN-22' })), true)
+  assert.equal(isPublicProductDetailPayload(withMerchant({})), true)
+  assert.equal(isPublicProductDetailPayload(withMerchant({ availability: 'out_of_stock' })), false)
+  assert.equal(isPublicProductDetailPayload(withMerchant({ gtin: '12345' })), false)
+  assert.equal(isPublicProductDetailPayload(withMerchant({ mpn: 'x'.repeat(71) })), false)
+  assert.equal(isPublicProductDetailPayload(withMerchant({ stock: 3 })), false)
+  assert.equal(isPublicProductDetailPayload(withMerchant('in_stock')), false)
+})

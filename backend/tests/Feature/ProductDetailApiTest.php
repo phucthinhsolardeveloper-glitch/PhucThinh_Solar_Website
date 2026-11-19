@@ -23,3 +23,17 @@ it('returns the v1 shape for a visible product', function () {
         ->assertJsonPath('canonical.url', '/san-pham/'.$slug)
         ->assertJsonStructure(['product' => ['id', 'name', 'media'], 'breadcrumbs', 'pricing' => ['mode', 'currency'], 'content' => ['blocks', 'faqs'], 'seo' => ['title']]);
 });
+
+it('sends only Admin-verified Merchant facts, so the page never claims stock it has not confirmed', function () {
+    $slug = DB::table('products')->where('is_visible', true)->value('slug');
+    DB::table('products')->where('slug', $slug)->update(['merchant_availability' => null, 'merchant_gtin' => null, 'merchant_mpn' => null]);
+    $this->getJson('/api/v1/product-detail?slug='.$slug)->assertOk()->assertJsonMissingPath('product.merchant');
+
+    // An invalid GTIN is never passed on; an unknown availability value is not "in stock".
+    DB::table('products')->where('slug', $slug)->update(['merchant_availability' => 'maybe', 'merchant_gtin' => '1234567890123']);
+    $this->getJson('/api/v1/product-detail?slug='.$slug)->assertOk()->assertJsonMissingPath('product.merchant');
+
+    DB::table('products')->where('slug', $slug)->update(['merchant_availability' => 'in_stock', 'merchant_gtin' => '042100005264', 'merchant_mpn' => 'MPN-22']);
+    $this->getJson('/api/v1/product-detail?slug='.$slug)->assertOk()
+        ->assertJsonPath('product.merchant', ['availability' => 'in_stock', 'gtin' => '042100005264', 'mpn' => 'MPN-22']);
+});

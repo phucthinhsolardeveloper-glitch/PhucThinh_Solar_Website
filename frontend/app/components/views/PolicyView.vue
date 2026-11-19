@@ -111,12 +111,15 @@ const policyJsonLd = computed(() => {
   const url = canonicalPublicUrl(siteOrigin, policy.canonical)
   if (!siteOrigin || !url || !policy.title.trim() || !policy.author.name.trim()) return null
 
+  // A policy is a standing page of the site, not news: plain WebPage. Return-policy terms are not emitted as
+  // structured data until the text has been verified against the shop's actual terms.
   const node: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-    headline: policy.title,
+    '@type': 'WebPage',
+    '@id': url,
+    name: policy.title,
     url,
+    inLanguage: 'vi-VN',
     author: { '@type': 'Person', name: policy.author.name },
     publisher: { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: 'Phúc Thịnh Solar' },
   }

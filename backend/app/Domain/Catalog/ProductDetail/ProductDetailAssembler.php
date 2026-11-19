@@ -3,6 +3,7 @@
 namespace App\Domain\Catalog\ProductDetail;
 
 use App\Domain\Catalog\CategoryTree;
+use App\Domain\Catalog\MerchantIdentifier;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Routing\PublicUrls;
 use App\Models\Product;
@@ -69,7 +70,7 @@ class ProductDetailAssembler
         $content = $this->contentPresenter->present($sections, ! empty($applications));
         $content['highlights'] = $this->specs->highlights($row, $profile);
 
-        return [
+        $payload = [
             'schemaVersion' => 1,
             'locale' => 'vi',
             'product' => [
@@ -97,6 +98,29 @@ class ProductDetailAssembler
             'canonical' => ['url' => '/san-pham/'.$slug],
             'seo' => $this->seo($name, $seo),
         ];
+        $merchant = self::merchant($product);
+        if ($merchant !== []) {
+            $payload['product']['merchant'] = $merchant;
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Only Admin-verified Merchant facts reach the page's structured data: availability is sent when staff confirmed
+     * it (never assumed from a price), identifiers only when they pass the same checks as the feed. Empty means unknown.
+     *
+     * @return array{availability?: string, gtin?: string, mpn?: string}
+     */
+    private static function merchant(object $product): array
+    {
+        $availability = trim((string) ($product->merchant_availability ?? ''));
+
+        return array_filter([
+            'availability' => $availability === 'in_stock' ? 'in_stock' : '',
+            'gtin' => MerchantIdentifier::gtin((string) ($product->merchant_gtin ?? '')),
+            'mpn' => MerchantIdentifier::mpn((string) ($product->merchant_mpn ?? '')),
+        ], fn (string $value) => $value !== '');
     }
 
     /** @return list<string> main photo, second photo, then gallery (numb, newest first), files that exist */

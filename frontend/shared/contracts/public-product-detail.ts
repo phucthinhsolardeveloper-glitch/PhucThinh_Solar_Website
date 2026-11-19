@@ -18,7 +18,10 @@ export interface PublicProductDetail {
   packageContents?: string
   decisionMetrics?: PublicProductDecisionMetric[]
   brand?: string
+  /** Admin-verified Merchant facts only; a missing key means unknown, never "in stock". */
+  merchant?: PublicProductMerchant
 }
+export interface PublicProductMerchant { availability?: 'in_stock'; gtin?: string; mpn?: string }
 export interface PublicProductBreadcrumb { label: string; url: string }
 export type PublicProductContentSource = '' | 'product' | 'brand' | 'cat' | 'list' | 'both' | 'stack' | 'hide' | 'own'
 export type PublicProductContentBlock =
@@ -152,5 +155,13 @@ export function isPublicProductDetailPayload(value: unknown): value is PublicPro
   if (!Array.isArray(product.media) || !product.media.every(image) || !Array.isArray(product.specifications) || !product.specifications.every(spec)) return false
   if ('packageContents' in product && !text(product.packageContents, true)) return false
   if ('decisionMetrics' in product && (!Array.isArray(product.decisionMetrics) || product.decisionMetrics.length > 4 || !product.decisionMetrics.every(decisionMetric))) return false
+  if ('merchant' in product && !merchant(product.merchant)) return false
   return !('brand' in product) || text(product.brand, true)
+}
+
+function merchant(value: unknown): value is PublicProductMerchant {
+  if (!record(value) || Object.keys(value).some((key) => !['availability', 'gtin', 'mpn'].includes(key))) return false
+  if ('availability' in value && value.availability !== 'in_stock') return false
+  if ('gtin' in value && (typeof value.gtin !== 'string' || !/^(?:\d{8}|\d{12,14})$/.test(value.gtin))) return false
+  return !('mpn' in value) || (text(value.mpn) && value.mpn.length <= 70)
 }

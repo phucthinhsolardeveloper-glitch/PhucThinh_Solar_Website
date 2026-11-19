@@ -110,8 +110,75 @@ final class MerchantFeed
         return $out.'</channel></rss>'."\n";
     }
 
+    /**
+     * Read-only readiness report: for every visible product, why it is left out of the legacy and verified feeds
+     * (null when it is in) and which Merchant facts staff still have to supply. Nothing is guessed or written.
+     *
+     * @return list<array{id: int, code: string, name: string, slug: string, legacy: ?string, verified: ?string, brand: string, availability: string, gtin: string, mpn: string, identifier_exists: string, needs: list<string>}>
+     */
+    public function readiness(string $origin): array
+    {
+        $paths = Options::categoryPaths();
+        $brands = DB::table('brands')->pluck('name', 'id');
+        $report = [];
+        foreach (DB::table('products')->where('is_visible', true)->orderBy('id')->cursor() as $product) {
+            $legacy = $this->evaluate($product, $origin, $paths, $brands, false)['reason'];
+            $verified = $this->evaluate($product, $origin, $paths, $brands, true)['reason'];
+            $blockers = $this->listing($product, self::plain((string) $product->name, 150))['blockers'];
+            $brand = self::plain((string) ($brands[$product->brand_id] ?? ''));
+            $rawGtin = trim((string) ($product->merchant_gtin ?? ''));
+            $rawMpn = trim((string) ($product->merchant_mpn ?? ''));
+            $gtin = MerchantIdentifier::gtin($rawGtin);
+            $mpn = MerchantIdentifier::mpn($rawMpn);
+            $absent = (bool) ($product->merchant_identifiers_absent ?? false);
+            $availability = trim((string) ($product->merchant_availability ?? ''));
+            $needs = $blockers;
+            if ($brand === '') {
+                $needs[] = 'brand';
+            }
+            if ($availability !== 'in_stock') {
+                $needs[] = 'availability';
+            }
+            if ($rawGtin !== '' && $gtin === '') {
+                $needs[] = 'gtin_invalid';
+            }
+            if ($rawMpn !== '' && $mpn === '') {
+                $needs[] = 'mpn_invalid';
+            }
+            if ($gtin === '' && $mpn === '' && ! $absent) {
+                $needs[] = 'identifiers';
+            }
+            $report[] = [
+                'id' => (int) $product->id,
+                'code' => trim((string) $product->code),
+                'name' => self::plain((string) $product->name),
+                'slug' => (string) $product->slug,
+                'legacy' => $legacy,
+                'verified' => $verified,
+                'brand' => $brand,
+                'availability' => $availability,
+                'gtin' => $gtin,
+                'mpn' => $mpn,
+                'identifier_exists' => MerchantIdentifier::exists($gtin, $mpn, $brand !== '', $absent, $rawGtin !== '' || $rawMpn !== ''),
+                'needs' => array_values(array_unique($needs)),
+            ];
+        }
+
+        return $report;
+    }
+
     /** @return list<string>|null */
     private function row(object $product, string $origin, array $paths, $brands, bool $verified): ?array
+    {
+        return $this->evaluate($product, $origin, $paths, $brands, $verified)['row'];
+    }
+
+    /**
+     * One product's feed row, or the first reason it is left out.
+     *
+     * @return array{row: list<string>|null, reason: string|null}
+     */
+    private function evaluate(object $product, string $origin, array $paths, $brands, bool $verified): array
     {
         $code = trim((string) $product->code);
         $title = self::plain((string) $product->name, 150);
@@ -129,46 +196,93 @@ final class MerchantFeed
             (bool) ($product->merchant_identifiers_absent ?? false),
             $rawGtin !== '' || $rawMpn !== '',
         );
-        // The clean Shopping picture when there is one; otherwise the main product picture (owner decision 2026-11-13).
-        // Google may still reject an individual product whose picture carries text or a logo; the others are unaffected.
-        $image = trim((string) $product->feed_image) !== '' ? trim((string) $product->feed_image) : trim((string) $product->image);
-        // The ID must not change between syncs, so an over-long code is left out instead of being cut.
-        if (($verified && $availability !== 'in_stock') || $code === '' || mb_strlen($code, 'UTF-8') > 50 || $title === '' || (string) $product->slug === '' || $product->quote_only) {
-            return null;
+        if ($verified && $availability !== 'in_stock') {
+            return ['row' => null, 'reason' => 'availability'];
         }
-        if ($image === '' || basename($image) !== $image || ! preg_match('/\.(?:jpe?g|png|webp|gif)$/i', $image)) {
-            return null;
-        }
-        $size = @getimagesize(Storage::disk('upload_product')->path($image));
-        if (! $size || $size[0] < 500 || $size[1] < 500) {
-            return null;
-        }
-        $price = (float) $product->regular_price;
-        $sale = (float) $product->sale_price;
-        if ($price <= 0 && $sale > 0) {
-            [$price, $sale] = [$sale, 0.0];
-        }
-        if ($price <= 0 || ($sale > 0 && $sale >= $price)) {
-            return null;
+        ['blockers' => $blockers, 'image' => $image, 'price' => $price, 'sale' => $sale] = $this->listing($product, $title);
+        if ($blockers !== []) {
+            return ['row' => null, 'reason' => $blockers[0]];
         }
         $description = self::plain((string) $product->summary) ?: $title;
         if ((float) $product->power_watts > 0) {
             $description .= ' Công suất: '.rtrim(rtrim(number_format((float) $product->power_watts, 2, '.', ''), '0'), '.').' W.';
         }
 
-        $row = [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
-            rtrim($origin, '/').'/upload/product/'.rawurlencode($image), 'in_stock', number_format($price, 0, '.', '').' VND',
-            $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', $brand, 'new', 'no',
-            str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? '')), $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin)];
+        $productType = str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? ''));
+        $extra = $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin);
+        $common = [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
+            rtrim($origin, '/').'/upload/product/'.rawurlencode($image)];
+        $prices = [number_format($price, 0, '.', '').' VND', $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', $brand, 'new'];
 
+        // Legacy mode (release gate off) is kept column for column as published: HEADERS, in_stock, identifier_exists=no.
         if (! $verified) {
-            return $row;
+            return ['row' => [...$common, 'in_stock', ...$prices, 'no', $productType, $extra], 'reason' => null];
         }
 
-        return [$code, $title, self::plain($description, 5000), rtrim($origin, '/').'/san-pham/'.rawurlencode((string) $product->slug),
-            rtrim($origin, '/').'/upload/product/'.rawurlencode($image), $availability, number_format($price, 0, '.', '').' VND',
-            $sale > 0 ? number_format($sale, 0, '.', '').' VND' : '', $brand, 'new', $identifierExists, $gtin, $mpn,
-            str_replace(' › ', ' > ', (string) ($paths[$product->category_id] ?? '')), $this->extraImages((int) $product->id, $image, trim((string) $product->image_secondary), $origin)];
+        return ['row' => [...$common, $availability, ...$prices, $identifierExists, $gtin, $mpn, $productType, $extra], 'reason' => null];
+    }
+
+    /**
+     * Every independent reason a product cannot be listed (in the order the feed reports the first one), plus the
+     * picture and prices it would be sent with. The clean Shopping picture when there is one, otherwise the main
+     * picture (owner decision 2026-11-13); a broken Shopping picture is reported, not silently swapped for the main one,
+     * which may carry text or a logo.
+     *
+     * @return array{blockers: list<string>, image: string, price: float, sale: float}
+     */
+    private function listing(object $product, string $title): array
+    {
+        $blockers = [];
+        $code = trim((string) $product->code);
+        // The ID must not change between syncs, so an over-long code is left out instead of being cut.
+        if ($code === '') {
+            $blockers[] = 'code_missing';
+        } elseif (mb_strlen($code, 'UTF-8') > 50) {
+            $blockers[] = 'code_too_long';
+        }
+        if ($title === '') {
+            $blockers[] = 'title';
+        }
+        if ((string) $product->slug === '') {
+            $blockers[] = 'slug';
+        }
+        if ($product->quote_only) {
+            $blockers[] = 'quote_only';
+        }
+        $image = trim((string) $product->feed_image) !== '' ? trim((string) $product->feed_image) : trim((string) $product->image);
+        $imageProblem = self::imageProblem($image);
+        if ($imageProblem !== null) {
+            $blockers[] = $imageProblem;
+        }
+        $price = (float) $product->regular_price;
+        $sale = (float) $product->sale_price;
+        if ($price <= 0 && $sale > 0) {
+            [$price, $sale] = [$sale, 0.0];
+        }
+        if ($price <= 0) {
+            $blockers[] = 'price_missing';
+        } elseif ($sale > 0 && $sale >= $price) {
+            $blockers[] = 'sale_not_below_price';
+        }
+
+        return ['blockers' => $blockers, 'image' => $image, 'price' => $price, 'sale' => $sale];
+    }
+
+    /** Why a picture cannot be offered to Merchant Center (a plain file name, a picture format, at least 500 px), or null. */
+    private static function imageProblem(string $file): ?string
+    {
+        if ($file === '') {
+            return 'image_missing';
+        }
+        if (basename($file) !== $file || ! preg_match('/\.(?:jpe?g|png|webp|gif)$/i', $file)) {
+            return 'image_name';
+        }
+        $size = @getimagesize(Storage::disk('upload_product')->path($file));
+        if (! $size) {
+            return 'image_file';
+        }
+
+        return $size[0] < 500 || $size[1] < 500 ? 'image_too_small' : null;
     }
 
     /**

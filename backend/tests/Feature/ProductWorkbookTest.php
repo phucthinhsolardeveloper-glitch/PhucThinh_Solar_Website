@@ -9,7 +9,10 @@ use App\Domain\Catalog\Bulk\BulkPlanner;
 use App\Domain\Catalog\Bulk\BulkReader;
 use App\Domain\Catalog\Bulk\BulkText;
 use App\Domain\Catalog\MerchantFeed;
+use App\Domain\Catalog\MerchantIdentifier;
+use App\Domain\Catalog\MerchantReadinessReport;
 use App\Filament\Pages\ProductBulkPage;
+use App\Filament\Support\Options;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
@@ -472,4 +475,114 @@ it('offers only real photos as additional images in the Merchant feed, never the
     $feed = simplexml_load_string($this->get('/google-shopping.xml')->assertOk()->getContent());
     $extra = collect($feed->channel->item[0]->children('g', true)->additional_image_link)->map(fn ($u) => basename((string) $u))->values()->all();
     expect($extra)->toBe(['that-1.jpg']);
+});
+
+it('keeps the legacy feed column for column while the release gate is off, even for products with verified codes', function () {
+    config(['services.merchant_feed.verified_enabled' => false]);
+    Storage::fake('upload_product');
+    foreach (['legacy-main.jpg', 'legacy-extra.jpg'] as $file) {
+        Storage::disk('upload_product')->put($file, UploadedFile::fake()->image($file, 800, 800)->get());
+    }
+    DB::table('products')->update(['feed_image' => null]);
+    $product = sampleProduct();
+    $product->update(['code' => 'LEG-13', 'feed_image' => 'legacy-main.jpg', 'image_secondary' => 'legacy-extra.jpg', 'regular_price' => 100000, 'sale_price' => null, 'quote_only' => false,
+        'merchant_availability' => 'in_stock', 'merchant_gtin' => '042100005264', 'merchant_mpn' => 'MPN-LEG']);
+    DB::table('products')->where('id', '<>', $product->id)->update(['is_visible' => false]);
+    $productType = str_replace(' › ', ' > ', (string) (Options::categoryPaths()[$product->category_id] ?? ''));
+    expect($productType)->not->toBe('');
+    $feed = app(MerchantFeed::class);
+
+    $row = $feed->build('https://phucthinhsolar.com')['rows'][0];
+    expect(MerchantFeed::HEADERS)->toHaveCount(13)
+        ->and($row)->toHaveCount(13)
+        ->and(array_combine(MerchantFeed::HEADERS, $row))->toMatchArray([
+            'id' => 'LEG-13', 'availability' => 'in_stock', 'condition' => 'new', 'identifier_exists' => 'no',
+            'product_type' => $productType, 'additional_image_link' => 'https://phucthinhsolar.com/upload/product/legacy-extra.jpg',
+        ]);
+
+    DB::table('settings')->updateOrInsert(['key' => 'public_product_prices'], ['value' => json_encode('1')]);
+    app(SiteSettings::class)->clear();
+    Cache::forget('merchant-feed-xml');
+    $item = simplexml_load_string($this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy')->getContent())->channel->item[0]->children('g', true);
+    expect((string) $item->product_type)->toBe($productType)
+        ->and((string) $item->additional_image_link)->toBe('https://phucthinhsolar.com/upload/product/legacy-extra.jpg')
+        ->and((string) $item->identifier_exists)->toBe('no')
+        ->and(isset($item->gtin))->toBeFalse()
+        ->and(isset($item->mpn))->toBeFalse();
+
+    $verifiedRow = array_combine(MerchantFeed::VERIFIED_HEADERS, $feed->build('https://phucthinhsolar.com', true)['rows'][0]);
+    expect($verifiedRow)->toMatchArray(['identifier_exists' => 'yes', 'gtin' => '042100005264', 'mpn' => 'MPN-LEG', 'product_type' => $productType,
+        'additional_image_link' => 'https://phucthinhsolar.com/upload/product/legacy-extra.jpg']);
+});
+
+it('reports a broken Shopping picture instead of swapping in the main picture', function () {
+    Storage::fake('upload_product');
+    Storage::disk('upload_product')->put('main-big.jpg', UploadedFile::fake()->image('main-big.jpg', 900, 900)->get());
+    Storage::disk('upload_product')->put('shop-small.jpg', UploadedFile::fake()->image('shop-small.jpg', 300, 300)->get());
+    DB::table('products')->update(['feed_image' => null]);
+    $product = sampleProduct();
+    $product->update(['code' => 'FEED-SHOP-PIC', 'image' => 'main-big.jpg', 'feed_image' => 'shop-small.jpg', 'regular_price' => 100000, 'sale_price' => null, 'quote_only' => false]);
+    DB::table('products')->where('id', '<>', $product->id)->update(['is_visible' => false]);
+    $feed = app(MerchantFeed::class);
+
+    expect($feed->build('https://phucthinhsolar.com')['rows'])->toBe([])
+        ->and($feed->readiness('https://phucthinhsolar.com')[0]['legacy'])->toBe('image_too_small');
+    $product->update(['feed_image' => 'khong-co-tep.jpg']);
+    expect($feed->readiness('https://phucthinhsolar.com')[0]['legacy'])->toBe('image_file');
+    $product->update(['feed_image' => null]);
+    expect($feed->build('https://phucthinhsolar.com')['rows'][0][4])->toBe('https://phucthinhsolar.com/upload/product/main-big.jpg');
+});
+
+it('reports every Merchant blocker per product without writing anything', function () {
+    Storage::fake('upload_product');
+    Storage::disk('upload_product')->put('ready.jpg', UploadedFile::fake()->image('ready.jpg', 800, 800)->get());
+    DB::table('products')->update(['feed_image' => null, 'merchant_availability' => null, 'merchant_gtin' => null, 'merchant_mpn' => null, 'merchant_identifiers_absent' => false]);
+    $products = Product::query()->where('is_visible', true)->orderBy('id')->limit(3)->get();
+    $brandId = DB::table('brands')->insertGetId(['name' => 'Ready brand', 'slug' => 'ready-brand', 'is_visible' => true, 'created_at' => now(), 'updated_at' => now()]);
+    $products[0]->update(['code' => '', 'brand_id' => null, 'quote_only' => true, 'feed_image' => 'ready.jpg', 'regular_price' => 0, 'sale_price' => null]);
+    $products[1]->update(['code' => 'READY-OK', 'brand_id' => $brandId, 'quote_only' => false, 'feed_image' => 'ready.jpg', 'regular_price' => 100000, 'sale_price' => null,
+        'merchant_availability' => 'in_stock', 'merchant_gtin' => '042100005264']);
+    $products[2]->update(['code' => 'READY-MPN', 'brand_id' => null, 'quote_only' => false, 'feed_image' => 'ready.jpg', 'regular_price' => 100000, 'sale_price' => null, 'merchant_mpn' => 'X-1']);
+    DB::table('products')->whereNotIn('id', $products->pluck('id'))->update(['is_visible' => false]);
+    $before = DB::table('products')->orderBy('id')->get()->toJson();
+
+    $report = collect(app(MerchantFeed::class)->readiness('https://phucthinhsolar.com'))->keyBy('id');
+    // All independent blockers, so fixing the code alone is not mistaken for enough.
+    expect($report[$products[0]->id]['needs'])->toBe(['code_missing', 'quote_only', 'price_missing', 'brand', 'availability', 'identifiers'])
+        ->and($report[$products[0]->id]['legacy'])->toBe('code_missing')
+        ->and($report[$products[1]->id]['needs'])->toBe([])
+        ->and($report[$products[1]->id]['legacy'])->toBeNull()
+        ->and($report[$products[1]->id]['verified'])->toBeNull()
+        ->and($report[$products[1]->id]['identifier_exists'])->toBe('yes')
+        // An MPN without a brand does not prove identifiers exist.
+        ->and($report[$products[2]->id]['needs'])->toBe(['brand', 'availability'])
+        ->and($report[$products[2]->id]['identifier_exists'])->toBe('')
+        ->and($report[$products[2]->id]['verified'])->toBe('availability');
+
+    $csv = tempnam(sys_get_temp_dir(), 'ready');
+    $this->artisan('pts:merchant-readiness', ['--csv' => $csv, '--only-blocked' => true])->assertSuccessful();
+    $lines = array_values(array_filter(explode("\n", (string) file_get_contents($csv))));
+    expect($lines)->toHaveCount(3)->and($lines[0])->toStartWith("\xEF\xBB\xBFid,code,name");
+    @unlink($csv);
+    expect(DB::table('products')->orderBy('id')->get()->toJson())->toBe($before);
+});
+
+it('writes the readiness CSV without formulas and keeps GTIN leading zeros', function () {
+    $out = fopen('php://memory', 'w+b');
+    MerchantReadinessReport::write($out, [[
+        'id' => 7, 'code' => '=HYPERLINK("http://x","y")', 'name' => '+cmd', 'slug' => 'den-a', 'legacy' => null, 'verified' => 'availability',
+        'brand' => '@SUM(1)', 'availability' => '', 'gtin' => '042100005264', 'mpn' => "-\tX", 'identifier_exists' => 'yes', 'needs' => ['availability'],
+    ]]);
+    rewind($out);
+    $lines = array_map(fn (string $line) => str_getcsv($line, ',', '"', ''), array_values(array_filter(explode("\n", (string) stream_get_contents($out)))));
+    fclose($out);
+    $row = array_combine(MerchantReadinessReport::COLUMNS, $lines[1]);
+    expect($row['code'])->toBe('\'=HYPERLINK("http://x","y")')
+        ->and($row['name'])->toBe("'+cmd")
+        ->and($row['brand'])->toBe("'@SUM(1)")
+        ->and($row['mpn'])->toBe("'-\tX")
+        ->and($row['gtin'])->toBe("'042100005264")
+        ->and(MerchantIdentifier::gtin($row['gtin']))->toBe('042100005264')
+        ->and($row['slug'])->toBe('den-a')
+        ->and($row['legacy_feed'])->toBe('in');
 });

@@ -47,14 +47,14 @@ test('public policy JSON-LD uses only validated DTO fields and a canonical publi
   assert.match(page, /canonicalPublicOrigin, canonicalPublicUrl/)
   assert.match(page, /const policyJsonLd = computed\(\(\) => \{[\s\S]*?if \(!policy \|\| error\.value\) return null/)
   assert.match(page, /const url = canonicalPublicUrl\(siteOrigin, policy\.canonical\)/)
-  assert.match(page, /'@type': 'NewsArticle'/)
-  assert.match(page, /mainEntityOfPage: \{ '@type': 'WebPage', '@id': url \}/)
+  assert.match(page, /'@type': 'WebPage',\s*'@id': url,\s*name: policy\.title/)
+  assert.doesNotMatch(page, /NewsArticle|MerchantReturnPolicy|headline:/)
   assert.match(page, /author: \{ '@type': 'Person', name: policy\.author\.name \}/)
   assert.match(page, /node\.datePublished = policy\.date/)
   assert.match(page, /if \(image\) node\.image = \[image\]/)
   assert.match(page, /JSON\.stringify\(policyJsonLd\.value\)\.replace\(/)
   assert.doesNotMatch(page, /node\.dateModified\s*=|policy\.dateModified|new Date\(\).*dateModified/)
-  assert.doesNotMatch(page, /'@type': 'NewsArticle'[\s\S]{0,100}description: ['"]/)
+  assert.doesNotMatch(page, /'@type': 'WebPage'[\s\S]{0,100}description: ['"]/)
 })
 
 // Owner decision 2026-11-03: the related-news carousel is replaced by a policy rail in the hero
