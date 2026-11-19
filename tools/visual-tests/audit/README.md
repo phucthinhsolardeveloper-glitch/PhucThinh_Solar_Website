@@ -44,6 +44,7 @@ Chạy từ `tools/visual-tests` với `PLAYWRIGHT_BROWSERS_PATH=$PWD/.browsers`
 | `stage-story.cjs [thư mục]` | Mô hình 3D trang chủ: từng cảnh, tự xoay, quay lại, trên máy tính và điện thoại (`AUDIT_ONLY=phone`). Chậm vì dùng đồ họa giả lập |
 | `sort-toolbar.cjs [route]` | Thanh Bộ lọc/Sắp xếp từ 412 đến 1280px: ô bị cắt, tràn ngang |
 | `form-fit.cjs [thư mục]` | Form tư vấn và đại lý có vừa một màn không, còn chữ "không bắt buộc" không. Không gửi form |
+| `estimator-overflow.cjs [thư mục]` | Trang ước tính điện mặt trời 320–1440px: trang có rộng hơn màn không, thẻ form/kết quả có lòi ra không. Kết quả mẫu do trình duyệt trả, không gọi Laravel, không gửi form. `ESTIMATOR_FIXTURE=big` để thử số lớn |
 | `gold-selected.cjs [thư mục]` | Bấm một lựa chọn trong từng form, báo màu ô đang chọn. Không gửi form |
 | `section-rail-clicks.cjs` | Bấm chuột thật từng mục và nhảy cóc trên thanh mục: có tới nơi, ô sáng có đúng không. Khoảng 5 phút |
 | `chip-rails.cjs [thư mục]` | Màu viên trượt và chữ ô đang chọn trên 6 loại trang |

@@ -55,3 +55,17 @@ test('project pages accept system figures, refuse broken ones and show only fill
   assert.match(view, /\.filter\(\(fact\) => fact !== null\)/)
   assert.match(read('app/components/project-detail/ProjectDetailPage.vue'), /<ProjectDetailSystem v-if="project\.system"/)
 })
+
+test('estimator cards stay inside 320-430px phones (QA 19/11: 360px page scrolled to 374px)', () => {
+  const page = read('app/components/estimator/SolarEstimatorPage.vue')
+  const css = page.slice(page.indexOf('<style scoped>'))
+  // A bare grid track grows to its widest min-content child; every track that holds
+  // the two cards, the type buttons or the result chips must be allowed to shrink.
+  assert.match(css, /\.est-grid \{[^}]*grid-template-columns: minmax\(0, 1fr\)/)
+  assert.match(css, /\.est-segment \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/)
+  assert.match(css, /\.est-chip \{[^}]*min-width: 0/)
+  assert.match(css, /\.est-hero ul \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/)
+  assert.match(css, /@media \(max-width: 400px\) \{ \.est-hero li \{ white-space: normal; \} \}/)
+  // Desktop two-column layout is unchanged.
+  assert.match(css, /@media \(min-width: 1024px\) \{ \.est-grid \{ grid-template-columns: minmax\(0, 5fr\) minmax\(0, 6fr\)/)
+})

@@ -281,16 +281,17 @@ async function sendLead() {
 .est-head { max-width: 760px; margin-bottom: 24px; }
 .est-head h1 { margin: 0 0 8px; color: var(--color-navy-950); font-size: clamp(26px, 3.2vw, 40px); font-weight: 900; line-height: 1.15; letter-spacing: -0.02em; }
 .est-head p { margin: 0; color: var(--color-slate-600, #475569); font-size: 16px; line-height: 1.6; }
-.est-grid { display: grid; gap: 20px; align-items: start; }
+/* minmax(0, 1fr): a bare grid track grows to its widest min-content child and pushed both cards past 320-374px phones. */
+.est-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (min-width: 1024px) { .est-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; } .est-result { position: sticky; top: 96px; } }
 .est-card { border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-lg, 14px); background: #fff; box-shadow: 0 18px 40px -34px rgb(10 34 81 / 55%); }
 .est-form { display: grid; gap: 20px; padding: 20px; }
 @media (min-width: 640px) { .est-form { padding: 26px; } }
 .est-group { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
 .est-group legend, .est-field > span { margin-bottom: 2px; color: var(--color-navy-900); font-size: 14px; font-weight: 800; }
-.est-segment { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.est-segment { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .est-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.est-chip { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-md, 10px); background: #fff; color: var(--color-navy-900); font-size: 15px; font-weight: 700; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+.est-chip { display: inline-flex; min-width: 0; min-height: 46px; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-md, 10px); background: #fff; color: var(--color-navy-900); font-size: 15px; font-weight: 700; line-height: 1.25; text-align: center; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
 .est-chip:hover { border-color: var(--color-gold-500); }
 .est-chip:has(input:checked) { border-color: transparent; background: var(--pts-gold-gradient); color: var(--color-navy-950); box-shadow: 0 10px 22px -16px rgb(201 150 46 / 90%); }
 .est-chip:has(input:focus-visible), .est-switch:has(input:focus-visible) { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
@@ -318,8 +319,9 @@ async function sendLead() {
 .est-hero span { display: block; color: rgb(255 255 255 / 72%); font-size: 14px; font-weight: 600; }
 .est-hero strong { display: block; color: var(--color-gold-300); font-size: clamp(40px, 6vw, 56px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .est-hero strong small { font-size: 0.42em; font-weight: 800; }
-.est-hero ul { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin: 0; padding: 0; list-style: none; font-size: 14.5px; font-weight: 600; }
-.est-hero li { display: flex; align-items: center; gap: 7px; }
+.est-hero ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin: 0; padding: 0; list-style: none; font-size: 14.5px; font-weight: 600; }
+.est-hero li { display: flex; min-width: 0; align-items: center; gap: 7px; }
+.est-hero li > :first-child { flex: none; }
 .est-note { margin: 0; padding: 10px 22px; background: #fffbeb; color: #92400e; font-size: 14px; }
 .est-bills { display: grid; gap: 12px; padding: 20px 22px 6px; }
 .est-bill { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 12px; font-size: 14px; }
@@ -345,4 +347,5 @@ async function sendLead() {
 .est-sent { display: flex; align-items: center; gap: 8px; margin: 0; color: #047857; font-weight: 700; }
 .est-empty { display: grid; min-height: 280px; place-items: center; align-content: center; gap: 10px; color: #64748b; }
 @media (max-width: 480px) { .est-hero ul { font-size: 13.5px; gap: 8px 10px; } .est-hero li { white-space: nowrap; } .est-bill { grid-template-columns: 92px 1fr auto; } .est-facts { grid-template-columns: 1fr; } }
+@media (max-width: 400px) { .est-hero li { white-space: normal; } }
 </style>
