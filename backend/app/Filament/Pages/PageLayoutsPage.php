@@ -69,7 +69,7 @@ class PageLayoutsPage extends Page
         $live = DB::table('page_layouts')->where('page', $this->page)->where('state', 'published')->orderByDesc('version')->first();
 
         return PageLayouts::PAGES[$this->page]['label'].': '.($live ? 'đang dùng bản '.$live->version : 'đang dùng bố cục gốc')
-            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Dấu bật cho phép hiện khối khi trang có dữ liệu tương ứng; chữ và ảnh sửa ở "Nội dung các trang".';
+            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Trang này quyết định khối nào hiện trên Trang chủ/Giới thiệu và thứ tự của chúng: kéo để đổi chỗ, bật/tắt từng khối, chọn kiểu hiển thị. Sửa xong lưu thành BẢN NHÁP; chỉ khi bấm "Xuất bản" thì website mới đổi (có "Xem trước" và có thể quay về bản cũ). Chữ và ảnh bên trong từng khối sửa ở mục "Nội dung các trang".';
     }
 
     public function form(Schema $schema): Schema

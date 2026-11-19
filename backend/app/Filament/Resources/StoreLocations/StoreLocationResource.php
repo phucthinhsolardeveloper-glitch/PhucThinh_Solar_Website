@@ -16,6 +16,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -51,11 +53,13 @@ class StoreLocationResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table
             ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
-                TextColumn::make('name')->label('Chi nhánh'),
-                TextColumn::make('address')->label('Địa chỉ')->limit(60),
+                $edit ? TextInputColumn::make('name')->label('Chi nhánh')->rules(['required','string','max:255']) : TextColumn::make('name')->label('Chi nhánh'),
+                $edit ? TextInputColumn::make('address')->label('Địa chỉ')->rules(['required','string','max:500']) : TextColumn::make('address')->label('Địa chỉ')->limit(60),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
             ])
             ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);

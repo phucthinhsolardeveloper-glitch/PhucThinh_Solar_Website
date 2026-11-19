@@ -74,7 +74,7 @@
             saving: false,
             collapsed: (() => { try { return JSON.parse(localStorage.getItem('pts-category-collapsed') || '[]') } catch { return [] } })(),
             init() {
-                this.$nextTick(() => this.$el.querySelectorAll('.pts-tree-list').forEach((list) => this.sortable(list)))
+                this.$nextTick(() => this.$root.querySelectorAll('.pts-tree-list').forEach((list) => this.sortable(list)))
             },
             startEditing() { this.editing = true; this.sorters.forEach((x) => x.option('disabled', false)) },
             stopEditing() {
@@ -89,9 +89,10 @@
                 try { localStorage.setItem('pts-category-collapsed', JSON.stringify(this.collapsed)) } catch {}
             },
             setAll(open) {
-                this.$el.querySelectorAll('.pts-tree-item').forEach((item) => {
+                this.$root.querySelectorAll('.pts-tree-item').forEach((item) => {
                     const id = Number(item.dataset.id)
-                    Alpine.$data(item).open = open
+                    // Alpine.$data does not exist in the Alpine bundled with Livewire: set the item's own state through evaluate.
+                    Alpine.evaluate(item, open ? 'open = true' : 'open = false')
                     this.remember(id, open)
                 })
             },
@@ -101,14 +102,14 @@
                 this.sorters.push(new window.Sortable(list, {
                     disabled: true, group: 'pts-categories', handle: '.pts-tree-handle', animation: 150, fallbackOnBody: true,
                     swapThreshold: 0.6, emptyInsertThreshold: 12, ghostClass: 'pts-tree-ghost',
-                    onStart: () => this.$el.classList.add('is-dragging'),
-                    onEnd: () => { this.$el.classList.remove('is-dragging'); this.relabel(); this.dirty = true },
+                    onStart: () => this.$root.classList.add('is-dragging'),
+                    onEnd: () => { this.$root.classList.remove('is-dragging'); this.relabel(); this.dirty = true },
                     // Up to four levels: the dragged branch must fit below the list it lands in.
                     onMove: (event) => this.editing && this.depthOf(event.to) + this.height(event.dragged) - 1 <= 4,
                 }))
             },
             relabel() {
-                this.$el.querySelectorAll('.pts-tree-item').forEach((item) => {
+                this.$root.querySelectorAll('.pts-tree-item').forEach((item) => {
                     const level = this.depthOf(item.parentElement)
                     item.querySelector(':scope > .pts-tree-card [data-level]').textContent = 'Cấp ' + level
                     item.querySelector(':scope > .pts-tree-card').classList.toggle('is-top', level === 1)

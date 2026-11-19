@@ -21,6 +21,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
@@ -114,16 +116,18 @@ class PageItemResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table
             ->defaultSort('section')
             ->defaultGroup('section')
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(36),
-                TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(60)->placeholder('—'),
+                $edit ? TextInputColumn::make('title')->label('Tiêu đề')->placeholder('—')->rules(['nullable','string','max:255']) : TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(60)->placeholder('—'),
                 TextColumn::make('section')->label('Phần')->formatStateUsing(fn ($state) => self::sectionOptions()[$state] ?? $state)->toggleable(),
                 IconColumn::make('is_visible')->label('Bật dữ liệu')->boolean()
                     ->tooltip('Chỉ cho biết dòng dữ liệu được bật. Nội dung lên trang còn phụ thuộc bố cục và cách trang sử dụng dữ liệu.'),
-                TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
+                $edit ? TextInputColumn::make('sort_order')->label('Thứ tự')->type('number')->sortable()->rules(['required','integer','min:0']) : TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->groups([Group::make('section')->label('Phần')->getTitleFromRecordUsing(fn (PageItem $record) => self::sectionOptions()[$record->section] ?? $record->section)])
             ->filters([

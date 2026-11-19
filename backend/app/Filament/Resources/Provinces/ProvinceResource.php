@@ -13,6 +13,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
@@ -57,14 +60,16 @@ class ProvinceResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table->defaultSort('sort_order')->columns([
-            TextColumn::make('name')->label('Tỉnh/TP')->searchable()->sortable(),
+            $edit ? TextInputColumn::make('name')->label('Tỉnh/TP')->searchable()->sortable()->rules(['required','string','max:255']) : TextColumn::make('name')->label('Tỉnh/TP')->searchable()->sortable(),
             TextColumn::make('code')->label('Mã tỉnh')->searchable(),
             TextColumn::make('tax_code')->label('Mã thuế')->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('code')->label('Mã')->searchable(),
             TextColumn::make('wards_count')->label('Phường/Xã')->counts('wards')->sortable(),
-            IconColumn::make('is_visible')->label('Cho chọn')->boolean(),
-            TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
+            $edit ? ToggleColumn::make('is_visible')->label('Cho chọn') : IconColumn::make('is_visible')->label('Cho chọn')->boolean(),
+            $edit ? TextInputColumn::make('sort_order')->label('Thứ tự')->type('number')->sortable()->rules(['required','integer','min:0']) : TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
         ])->recordActions([EditAction::make()]);
     }
 

@@ -17,6 +17,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -55,10 +57,12 @@ class RedirectResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table->defaultSort('updated_at', 'desc')
             ->columns([
                 TextColumn::make('from_path')->label('Link cũ')->searchable(),
-                TextColumn::make('to_path')->label('Chuyển tới')->searchable(),
+                $edit ? TextInputColumn::make('to_path')->label('Chuyển tới')->searchable()->rules(['required','string','max:500','starts_with:/','regex:/^\\/[^\\s?#]*$/']) : TextColumn::make('to_path')->label('Chuyển tới')->searchable(),
                 TextColumn::make('source')->label('Tạo bởi')->badge()->color('gray')
                     ->formatStateUsing(fn ($state) => $state === 'auto' ? 'Tự động khi đổi đường dẫn' : 'Thêm tay'),
                 TextColumn::make('hits')->label('Lượt chuyển')->sortable()

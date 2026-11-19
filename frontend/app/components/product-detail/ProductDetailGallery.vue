@@ -11,6 +11,20 @@ const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
 const displayedImage = ref<HTMLImageElement | null>(null)
 const setDocumentScrollLock = useDocumentScrollLock()
+const thumbStrip = ref<HTMLElement | null>(null)
+
+// The small strip scrolls sideways: bring the chosen thumbnail fully into view, so the last ones are never left half hidden.
+watch(selectedIndex, async (index) => {
+  await nextTick()
+  const strip = thumbStrip.value
+  const thumb = strip?.querySelector<HTMLElement>(`[data-thumb="${index}"]`)
+  if (!strip || !thumb) return
+  const edge = 8
+  const left = thumb.offsetLeft
+  const right = left + thumb.offsetWidth
+  if (left < strip.scrollLeft + edge) strip.scrollTo({ left: Math.max(0, left - edge), behavior: 'smooth' })
+  else if (right > strip.scrollLeft + strip.clientWidth - edge) strip.scrollTo({ left: right - strip.clientWidth + edge, behavior: 'smooth' })
+})
 
 watch(() => props.media, () => {
   selectedIndex.value = props.media.findIndex((image) => Boolean(image.trim()))
@@ -275,11 +289,12 @@ function onStageClick(event: MouseEvent) {
     </div>
 
     <!-- Dải thumbnail nhỏ có chuyển ảnh mượt -->
-    <div v-if="media.length > 1" class="flex gap-2 overflow-x-auto pt-3 max-tb:hidden scroll-smooth [scrollbar-width:none]" aria-label="Thư viện ảnh sản phẩm">
+    <div v-if="media.length > 1" ref="thumbStrip" class="flex gap-2 overflow-x-auto pt-3 pr-2 max-tb:hidden scroll-smooth [scrollbar-width:none]" aria-label="Thư viện ảnh sản phẩm">
       <button
         v-for="(image, index) in media"
         v-show="!failedMedia.has(image)"
         :key="`${image}-${retryVersion}`"
+        :data-thumb="index"
         type="button"
         class="aspect-square flex-none basis-[72px] overflow-hidden rounded-btn border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
         :class="selectedIndex === index ? 'border-navy-800 ring-2 ring-gold-500/50 shadow-xs scale-[1.02]' : 'border-gray-200 hover:border-slate-300 opacity-70'"

@@ -58,7 +58,8 @@ class ContentSectionResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->defaultSort('updated_at', 'desc')
+        return $table
+            ->description('Phần mô tả dài của sản phẩm, thương hiệu và danh mục. Muốn SỬA nội dung: bấm tên ở cột “Tên” để mở trang sửa, rồi vào thẻ “Mô tả”. Ở đây chỉ để xem tổng quát, bật/tắt hiển thị và khôi phục phiên bản cũ (nút “Lịch sử”). Cột “Cách hiển thị”: Khối riêng = dùng khối của chính mục này; Kế thừa = lấy từ danh mục/thương hiệu cha; Riêng + kế thừa = cả hai; Ẩn = không hiện mô tả.')->defaultSort('updated_at', 'desc')
             ->columns([
                 TextColumn::make('owner_type')->label('Thuộc')->badge()->color('gray')->formatStateUsing(fn ($state) => self::OWNERS[$state] ?? $state),
                 TextColumn::make('owner_name')->label('Tên')->state(fn (ContentSection $record) => self::ownerName($record))

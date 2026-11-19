@@ -23,6 +23,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
@@ -81,15 +83,17 @@ class BannerResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table
             ->defaultSort('sort_order')->reorderable('sort_order')
             ->defaultGroup('placement')
             ->groups([Group::make('placement')->label('Vị trí')->getTitleFromRecordUsing(fn (Banner $record) => self::PLACEMENTS[$record->placement] ?? $record->placement)])
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_photo')->height(48),
-                TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(50)->placeholder('—'),
+                $edit ? TextInputColumn::make('title')->label('Tiêu đề')->placeholder('—')->rules(['nullable','string','max:255']) : TextColumn::make('title')->label('Tiêu đề')->searchable()->limit(50)->placeholder('—'),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
-                TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
+                $edit ? TextInputColumn::make('sort_order')->label('Thứ tự')->type('number')->sortable()->rules(['required','integer','min:0']) : TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->filters([SelectFilter::make('placement')->label('Vị trí')->options(self::PLACEMENTS)])
             ->recordActions([PublicLink::row(), EditAction::make(), DeleteAction::make()]);

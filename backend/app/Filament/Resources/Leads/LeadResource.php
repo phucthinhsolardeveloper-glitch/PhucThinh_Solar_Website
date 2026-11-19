@@ -22,7 +22,10 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use App\Filament\Support\InlineEdit;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -114,6 +117,8 @@ class LeadResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $edit = InlineEdit::on($table, static::class);
+
         return $table
             ->defaultSort('id', 'desc')
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['assignee', 'product']))
@@ -127,13 +132,21 @@ class LeadResource extends Resource
                     ->url(fn (Lead $record) => ($source = LeadSource::normalize($record->source_url)) ? url($source) : null, true),
                 TextColumn::make('message')->label('Nội dung')->visibleFrom('md')->limit(90)->placeholder('—')->toggleable()->grow()
                     ->description(fn (Lead $record) => data_get($record, 'product.name') ? 'Sản phẩm: '.data_get($record, 'product.name') : null),
-                TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
+                ...($edit ? [] : [TextColumn::make('status')->label('Tình trạng')->badge()->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
                     ->color(fn ($state) => $state === 'new' ? 'warning' : ($state === 'done' ? 'success' : 'gray'))
                     ->description(fn (Lead $record) => (data_get($record, 'assignee.name') ?? 'Chưa phân công')
                         .($record->follow_up_at ? ' · hẹn '.Carbon::parse($record->follow_up_at)->format('d/m H:i') : ''))
                     ->icon('heroicon-m-pencil-square')->iconPosition('after')->tooltip('Bấm để đổi tình trạng')
-                    ->action(self::quickStatusAction()),
-                TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('d/m/Y H:i')->sortable()->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
+                    ->action(self::quickStatusAction())]),
+                ...($edit ? [
+                    SelectColumn::make('status')->label('Tình trạng')->options(self::STATUSES)->selectablePlaceholder(false)
+                        ->updateStateUsing(fn (Lead $record, $state) => self::inlineTriage($record, ['status' => (string) $state])),
+                    TextInputColumn::make('follow_up_at')->label('Hẹn theo dõi (ngày/tháng/năm giờ:phút)')->placeholder('20/11/2026 09:00')
+                        ->getStateUsing(fn (Lead $record) => $record->follow_up_at ? Carbon::parse($record->follow_up_at)->format('d/m/Y H:i') : '')
+                        ->rules(['nullable', 'date_format:d/m/Y H:i'])
+                        ->updateStateUsing(fn (Lead $record, $state) => self::inlineTriage($record, ['follow_up_at' => filled($state) ? Carbon::createFromFormat('d/m/Y H:i', (string) $state) : null])),
+                ] : []),
+                ...($edit ? [] : [TextColumn::make('follow_up_at')->label('Hẹn theo dõi')->dateTime('d/m/Y H:i')->sortable()->placeholder('—')->toggleable(isToggledHiddenByDefault: true)]),
             ])
             ->filters([
                 SelectFilter::make('kind')->label('Loại')->options(self::KINDS),
@@ -166,6 +179,17 @@ class LeadResource extends Resource
     }
 
     /** Status, follow-up and notes from the list; assignment and everything else stay in "Xem / xử lý". */
+    /** One change from the list goes through the same service as the "Đổi tình trạng" form: audited, with the same rules. */
+    private static function inlineTriage(Lead $record, array $changes): mixed
+    {
+        $fresh = Lead::query()->findOrFail($record->id);
+        app(LeadTriage::class)->update($fresh, $changes + [
+            'status' => $fresh->status, 'notes' => $fresh->notes, 'assigned_to' => $fresh->assigned_to, 'follow_up_at' => $fresh->follow_up_at,
+        ], AdminActor::current());
+
+        return $changes['status'] ?? (isset($changes['follow_up_at']) ? $changes['follow_up_at']->format('d/m/Y H:i') : '');
+    }
+
     public static function quickStatusAction(): Action
     {
         return Action::make('quickStatus')->label('Đổi tình trạng')
