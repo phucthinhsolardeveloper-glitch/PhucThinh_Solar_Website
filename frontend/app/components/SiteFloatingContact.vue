@@ -46,7 +46,7 @@ onUnmounted(() => {
     aria-label="Liên hệ nhanh"
   >
     <!-- Nút 3: Lên đầu trang (cuộn > 300px) -->
-    <div v-if="showBackToTop" class="group relative flex items-center max-tb:hidden">
+    <div v-if="showBackToTop" class="group relative flex items-center">
       <span
         class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"

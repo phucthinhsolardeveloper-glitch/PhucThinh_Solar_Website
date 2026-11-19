@@ -548,6 +548,12 @@ function telHrefFor(value: string): string {
 const { isHeaderHidden, isScrolled } = useSiteHeader()
 // Only one overlay at a time: the header's panels give way to the dock's support sheet, and the other way round.
 const activeOverlay = useState<string | null>('active-overlay', () => null)
+useSwipeMenu({
+  isOpen: () => mobileOpen.value,
+  canStart: () => activeOverlay.value === null || (mobileOpen.value && activeOverlay.value === 'header'),
+  open: openMobileMenu,
+  close: () => closeMobileMenu(),
+})
 watch(activeOverlay, (overlay) => {
   if (overlay !== 'support') return
   if (searchOpen.value) closeSearch(false)
@@ -556,6 +562,7 @@ watch(activeOverlay, (overlay) => {
 })
 watch([searchOpen, mobileOpen, catalogOpen], (open) => {
   if (open.some(Boolean)) activeOverlay.value = 'header'
+  else if (activeOverlay.value === 'header') activeOverlay.value = null
 })
 // Full-bleed hero crosses the header on the homepage only; everywhere else the
 // header stays solid. See docs/15-design-delivery/06-LAYOUT-LAB.md #principles.

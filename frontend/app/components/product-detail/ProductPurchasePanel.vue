@@ -122,7 +122,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
     <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs">
       <button
         type="button"
-        class="inline-flex items-center gap-1.5 font-bold text-navy-800 transition-colors hover:text-gold-700 cursor-pointer"
+        class="inline-flex min-h-11 items-center gap-1.5 font-bold text-navy-800 transition-colors hover:text-gold-700 cursor-pointer"
         @click="openDealer()"
       >
         <span>Bạn là đại lý? Đăng ký hợp tác</span>
@@ -280,7 +280,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
   .purchase-status-enter-active, .purchase-status-leave-active { transition: none; }
 }
 
-.compare-toggle { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-btn, 10px); background: #fff; color: var(--color-navy-800); font-size: 13px; font-weight: 800; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+.compare-toggle { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-btn, 10px); background: #fff; color: var(--color-navy-800); font-size: 13px; font-weight: 800; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
 .compare-toggle:hover { border-color: var(--color-gold-500); }
 .compare-note { flex-basis: 100%; margin: 2px 0 0; color: #475569; font-size: 13.5px; line-height: 1.5; }
 .compare-toggle.is-on { border-color: transparent; background: var(--pts-gold-gradient, var(--color-gold-500)); color: var(--color-navy-950); }

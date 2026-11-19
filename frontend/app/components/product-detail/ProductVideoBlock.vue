@@ -27,7 +27,7 @@ const { openConsultation } = useStorefrontModal()
         <span class="inline-grid size-10 shrink-0 place-items-center rounded-full bg-slate-50 text-sm text-gold-700" aria-hidden="true">▶</span>
         <div class="min-w-0">
           <strong class="block text-[15px] font-bold text-navy-900">Video sản phẩm &amp; lắp đặt</strong>
-          <p class="m-0 text-[13px] leading-snug text-slate-500">Video đang được cập nhật · Hỗ trợ gửi video thực tế và sơ đồ đấu nối qua Zalo</p>
+          <p class="m-0 text-sm leading-snug text-slate-500">Video đang được cập nhật · Hỗ trợ gửi video thực tế và sơ đồ đấu nối qua Zalo</p>
         </div>
       </div>
       <button

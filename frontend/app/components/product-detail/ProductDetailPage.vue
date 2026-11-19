@@ -123,7 +123,7 @@ function toggleDescription() {
 
         <div v-if="product.summary" class="max-tb:order-4">
           <p class="mb-0 text-[16px] leading-[1.7] text-slate-600 max-tb:text-[15px] max-tb:leading-[1.6]" :class="summaryOpen ? '' : 'max-tb:line-clamp-3'">{{ summaryText }}</p>
-          <button v-if="summaryText.length > 110" type="button" class="min-h-9 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen">{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</button>
+          <button v-if="summaryText.length > 110" type="button" class="min-h-11 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen">{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</button>
         </div>
 
         <div class="max-tb:order-5">
@@ -149,7 +149,7 @@ function toggleDescription() {
               <span class="text-sm text-slate-400 line-through tabular-nums">{{ formatMoney(pricing.regularPrice) }}</span>
               <span v-if="discountPercent > 0" class="rounded-chip bg-red-600 px-2 py-0.5 text-xs font-bold text-white">-{{ discountPercent }}%</span>
             </template>
-            <p class="mt-1.5 basis-full text-[13px] leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
+            <p class="mt-1.5 basis-full text-sm leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
           </div>
         </div>
 

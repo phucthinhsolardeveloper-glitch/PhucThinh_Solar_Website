@@ -83,7 +83,7 @@ const shareLinks = computed(() => {
       <a
         v-for="item in shareLinks"
         :key="item.label"
-        class="inline-flex size-10 items-center justify-center rounded-full shadow-xs transition-all duration-200 hover:scale-106 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
+        class="inline-flex size-11 items-center justify-center rounded-full shadow-xs transition-all duration-200 hover:scale-106 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
         :class="item.className"
         :href="item.href"
         :aria-label="`Chia sẻ lên ${item.label}`"
@@ -127,7 +127,7 @@ const shareLinks = computed(() => {
       <div class="relative inline-flex items-center">
         <button
           type="button"
-        class="public-neutral-button inline-flex size-10 items-center justify-center rounded-full text-navy-800 transition-all duration-200 hover:scale-106 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
+        class="public-neutral-button inline-flex size-11 items-center justify-center rounded-full text-navy-800 transition-all duration-200 hover:scale-106 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
           :aria-label="copied ? 'Đã sao chép liên kết' : 'Sao chép liên kết'"
           :title="copied ? 'Đã sao chép liên kết' : 'Sao chép liên kết'"
           @click="handleCopy"
