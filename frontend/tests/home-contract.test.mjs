@@ -55,7 +55,8 @@ test('homepage carousel keeps timed motion out of keyboard, pointer, touch, and 
   assert.match(homeHero, /@focusout="onFocusOut"/)
   assert.match(homeHero, /:inert="index !== active"/)
   assert.match(homeHero, /:tabindex="index === active \? 0 : -1"/)
-  assert.match(homeHero, /aria-label="Banner trước"[\s\S]*<svg[\s\S]*aria-label="Banner tiếp theo"[\s\S]*<svg/)
+  assert.match(homeHero, /:aria-label="`Xem ảnh/)
+  assert.doesNotMatch(homeHero, /hero-nav/)
   assert.match(homeHero, /max-\[640px\]:text-\[15\.5px\]/)
 })
 test('accepts CMS-backed homepage about points while preserving compatibility with older DTOs', () => {

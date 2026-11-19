@@ -57,7 +57,7 @@ onUnmounted(() => {
         type="button"
         title="Lên đầu trang"
         aria-label="Lên đầu trang"
-        class="public-neutral-button flex h-11 w-11 items-center justify-center rounded-full text-navy-950 backdrop-blur-sm transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 active:scale-95"
+        class="public-neutral-button m-lg flex h-11 w-11 items-center justify-center rounded-full text-navy-950 backdrop-blur-sm transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 active:scale-95"
         @click="scrollToTop"
       >
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

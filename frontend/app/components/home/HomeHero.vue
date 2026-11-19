@@ -100,11 +100,6 @@ function onMotionPreferenceChange(event: MediaQueryListEvent) {
   startAutoplay()
 }
 
-function move(step: number) {
-  showSlide(active.value + step)
-  startAutoplay()
-}
-
 function onTouchStart(event: TouchEvent) {
   touchStartX = event.touches[0]?.clientX ?? null
   stopAutoplay()
@@ -238,8 +233,8 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="hero-caption absolute bottom-[clamp(112px,14vh,132px)] right-[clamp(24px,4vw,96px)] z-[2] flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 text-right text-navy-950 [text-shadow:0_1px_6px_rgba(255,255,255,.98),0_2px_16px_rgba(255,255,255,.86)] max-[640px]:bottom-[92px] max-[640px]:right-4 max-[640px]:max-w-[calc(100vw-32px)]">
-      <!-- Phones: one bar per photo, filling for as long as it shows. Tap a bar to jump to it. -->
+    <div class="hero-caption">
+      <!-- One bar per photo, filling for as long as it shows. Click a bar to jump to it. -->
       <div v-if="hero.length > 1" class="hero-steps">
         <button
           v-for="(slide, index) in hero"
@@ -250,28 +245,25 @@ onBeforeUnmount(() => {
           @click="showSlide(index); startAutoplay()"
         ><span :key="index === active ? `on-${active}` : 'off'" :class="{ 'is-on': index === active, 'is-done': index < active }" /></button>
       </div>
-      <strong class="text-[clamp(19px,1.7vw,26px)] font-extrabold leading-[1.2] max-[640px]:text-[16px]">{{ current.name }}</strong>
-      <span class="text-[clamp(13px,1vw,15px)] font-semibold leading-[1.5] max-[640px]:text-[12px]">{{ current.description }}</span>
-    </div>
-
-    <!-- Solar Cinema Controller (Bottom-Left, clear of fixed contact actions) -->
-    <div v-if="hero.length > 1" class="hero-nav m-lg-dark absolute bottom-[30px] left-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[2px] rounded-full bg-navy-950/55 p-[3px] text-white max-[640px]:bottom-[16px] max-[640px]:left-4">
-      <button class="flex size-10 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
-        <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
-      </button>
-      <span class="flex h-10 min-w-[64px] items-center justify-center px-2 text-xs">
-        <b class="mr-[4px] text-[15px] font-black text-gold-400">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}
-      </span>
-      <button class="flex size-10 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">
-        <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
-      </button>
+      <strong>{{ current.name }}</strong>
+      <span>{{ current.description }}</span>
     </div>
 
   </section>
 </template>
 
 <style scoped>
-.hero-cta-arrow, .hero-steps { display: none; }
+.hero-cta-arrow { display: none; }
+/* The slide's story sits on one glass card with its progress bars, on every screen. */
+.hero-caption { position: absolute; z-index: 5; right: clamp(24px, 4vw, 96px); bottom: clamp(112px, 14vh, 132px); display: flex; width: min(460px, calc(100vw - 48px)); flex-direction: column; gap: 4px; padding: 2px 16px 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-md); background: rgb(6 21 55 / 55%); color: #fff; text-align: left; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.hero-caption > strong { font-size: clamp(17px, 1.35vw, 21px); font-weight: 800; line-height: 1.25; }
+.hero-caption > span { color: #dbe4f0; font-size: clamp(13px, 1vw, 14.5px); font-weight: 600; line-height: 1.45; text-wrap: pretty; }
+.hero-steps { display: flex; gap: 6px; }
+.hero-steps button { display: flex; min-height: 28px; flex: 1; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
+.hero-steps span { position: relative; display: block; width: 100%; height: 3px; overflow: hidden; border-radius: 3px; background: rgb(255 255 255 / 28%); }
+.hero-steps span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--color-gold-400); transform: scaleX(0); transform-origin: left; }
+.hero-steps span.is-done::after { transform: scaleX(1); }
+.hero-steps span.is-on::after { animation: hero-step 4.2s linear forwards; }
 @keyframes hero-rise { from { opacity: 0; transform: translateY(12px); } }
 /* The title is the page's largest text (LCP): it slides in but is visible from the first frame, since an element at
    opacity 0 only counts as painted once the fade ends (measured 3.7 s LCP on a 4x-throttled phone). */
@@ -310,17 +302,6 @@ onBeforeUnmount(() => {
   }
 }
 
-/* Phones: the fixed dock covers the bottom band, so slide controls and caption sit above it,
-   clear of the copy. Controls are 44px glass over the navy foot of the photo. */
-@media (max-width: 820px) {
-  .hero-nav { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
-  .hero-nav button { width: 44px; height: 44px; }
-  .hero-nav > span { min-width: 56px; height: 44px; }
-}
-/* 641-820px keeps the desktop light wash on the left, where white-on-glass would wash out. */
-@media (min-width: 641px) and (max-width: 820px) {
-  .hero-nav { background: rgb(6 21 55 / 62%) !important; }
-}
 @media (max-width: 640px) {
   /* The photo keeps its colour at the top and melts into navy only behind the copy. */
   .hero-wash { background: linear-gradient(180deg, rgb(6 21 55 / 6%) 0%, rgb(6 21 55 / 0%) 34%, rgb(6 21 55 / 46%) 50%, var(--color-navy-950) 76%) !important; }
@@ -336,16 +317,9 @@ onBeforeUnmount(() => {
   .hero-cta-arrow { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); }
   .hero-cta-second { justify-content: center; border-color: rgb(255 255 255 / 38%) !important; background: rgb(255 255 255 / 12%) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%) !important; color: #fff !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
   .hero-cta-second__arrow { display: none; }
-  /* The slide's story sits on one glass card with its progress bars, clear of the dock. */
-  .hero-nav { display: none !important; }
-  .hero-caption { z-index: 5; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; max-width: none; padding: 2px 14px 12px; border: 1px solid rgb(255 255 255 / 16%); border-radius: var(--radius-md); background: rgb(255 255 255 / 9%); color: #fff; text-align: left; text-shadow: none; -webkit-backdrop-filter: blur(14px) saturate(130%); backdrop-filter: blur(14px) saturate(130%); }
-  .hero-caption > strong { font-size: 14.5px; line-height: 1.25; }
-  .hero-caption > span { color: #dbe4f0; font-size: 12.5px; line-height: 1.4; text-wrap: pretty; }
-  .hero-steps { display: flex; gap: 6px; }
-  .hero-steps button { display: flex; min-height: 28px; flex: 1; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
-  .hero-steps span { position: relative; display: block; width: 100%; height: 3px; overflow: hidden; border-radius: 3px; background: rgb(255 255 255 / 28%); }
-  .hero-steps span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--color-gold-400); transform: scaleX(0); transform-origin: left; }
-  .hero-steps span.is-done::after { transform: scaleX(1); }
-  .hero-steps span.is-on::after { animation: hero-step 4.2s linear forwards; }
+  /* Phones: the card spans the width, clear of the dock, on the same light glass as before. */
+  .hero-caption { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; padding: 2px 14px 12px; border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 9%); -webkit-backdrop-filter: blur(14px) saturate(130%); backdrop-filter: blur(14px) saturate(130%); }
+  .hero-caption > strong { font-size: 14.5px; }
+  .hero-caption > span { font-size: 12.5px; line-height: 1.4; }
 }
 </style>
