@@ -49,6 +49,14 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Backup DB `20261117T171254Z-db`; thêm 64 dòng `product_images` (slot sort_order 5, file `p2-06-<hash>.jpg`), ảnh dựng bằng mã từ nền mẫu 6 + sản phẩm thật + 8 ô số liệu lấy nguyên văn từ dữ liệu từng mã. Rollback `state/noi-dung-20261117/phu-rollback-*.json`.
 - Chưa làm (không tách nền sạch): BCT-WW5.0-MONO, JD-T100, JD-6128, DB60100, DB3-PRO-200W/400W/800W/1000W.
 
+## 2026-11-19 (chiều) — sửa nút cây danh mục + dải ảnh sản phẩm, bật công cụ ước tính, cây bút cho 11 bảng CMS (release 65b334b6)
+
+- **Nút "Mở hết / Thu gọn hết" ở Danh mục không chạy**: trong hàm gắn vào nút, `this.$el` là chính cái nút (không phải cả cây) nên `querySelectorAll('.pts-tree-item')` rỗng; thêm nữa `Alpine.$data` không tồn tại trong Alpine đi kèm Livewire. Sửa: dùng `this.$root` và `Alpine.evaluate(item, 'open = …')`. Kiểm bằng trang thử Playwright (gập/mở đúng). File: `resources/views/filament/resources/categories/tree.blade.php`.
+- **Dải ảnh nhỏ trên trang sản phẩm bị che ảnh cuối, bấm không tự cuộn**: `ProductDetailGallery.vue` thêm `thumbStrip` + `data-thumb`, cuộn ngang tới ảnh được chọn (đo trên web thật: bấm ảnh cuối → scrollLeft 302/302, ảnh chọn hiện đủ).
+- **Công cụ ước tính điện mặt trời bật** (`settings.solar_estimator.enabled=true`, hoàn tác: `estimator-rollback.json`). Giá/bảng giá điện trong cấu hình vẫn là giá trị mặc định chờ chủ xác nhận (10,5 tr/kWp hộ, 9 tr/kWp doanh nghiệp, hybrid +3,5 tr/kWp, pin 6,5 tr/kWh, VAT 8%, biểu giá hộ 5 bậc 1.901…3.844 đ). Chỉ hiện ở trang chi tiết Giải pháp, chưa có ở menu/trang chủ.
+- **Cây bút (`?sua=1`) thêm cho**: Thương hiệu, Banner, Video, Album, Chi nhánh, Tỉnh/TP, Chuyển hướng, SEO các trang, Nội dung các trang, Liên hệ (tình trạng + hẹn gọi lại, qua `LeadTriage` có nhật ký). Helper chung `Support/InlineEdit`. Lưu ý lỗi đã gặp khi làm: hai cột cùng tên (`status`, `follow_up_at`) làm Filament tìm trúng cột cũ không sửa được → chỉ hiện cột cũ khi không ở chế độ sửa. Không thêm cho Danh mục (cột tên nhiều dòng, đã có cây sửa riêng), Đơn hàng, Người dùng, Phương thức thanh toán.
+- Trang "Khối mô tả" và "Bố cục trang" thêm dòng hướng dẫn đầu trang.
+
 ## 2026-11-19 — cải thiện lần cuối theo kỹ năng nội dung, đăng 144/153/155/156
 
 - Dùng kỹ năng `content-density-ux` (đo trước: số từ/màn hình, đoạn ≥35 từ trên 390 px) và `searchfit-seo:on-page-seo` (liên kết nội bộ 3–5/bài, độ dài tiêu đề và mô tả). Đo trên web thật: đoạn dài từ 35 từ trở lên **132 → 33** trên 28 bài; từ/màn hình ~111 → 108 (tách đoạn không giảm số từ).
