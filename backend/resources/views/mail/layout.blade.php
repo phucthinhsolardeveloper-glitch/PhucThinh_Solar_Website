@@ -12,12 +12,13 @@
         @media only screen and (max-width: 520px) {
             .px { padding-left: 18px !important; padding-right: 18px !important; }
             .col { display: block !important; width: 100% !important; box-sizing: border-box; }
-            .gap-m { padding-top: 12px !important; }
+            .gap-m { padding-top: 12px !important; border-top: 1px solid #e9eef6; }
+            .px-card { border-right: 0 !important; }
             .btn-cell { display: block !important; width: 100% !important; padding: 0 0 10px 0 !important; }
             .btn-table { width: 100% !important; }
             .btn-cell a { display: block !important; text-align: center; }
             .hide-m { display: none !important; }
-            .h1 { font-size: 21px !important; line-height: 28px !important; }
+            .h1 { font-size: 22px !important; line-height: 30px !important; }
         }
     </style>
 </head>
@@ -27,27 +28,39 @@
     <tr>
         <td align="center" style="padding:24px 12px 32px" valign="top">
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;background:#ffffff;border-radius:16px;border:1px solid #dde4ef;border-collapse:separate;overflow:hidden">
-                {{-- Header: logo on navy, gold rule --}}
+                {{-- Header and title in one navy block: logo, status chip, heading, opening paragraph --}}
                 <tr>
-                    <td class="px" style="padding:22px 32px;background:#09285e" valign="middle">
+                    <td class="px" style="padding:26px 32px 32px;background:#09285e;background-image:linear-gradient(135deg,#082457 0%,#0b3b86 100%)" valign="top">
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                                 <td valign="middle">
                                     <a href="{{ $brand['home'] }}" style="display:inline-block;text-decoration:none" target="_blank">
                                         @if ($brand['logo'] !== '')
-                                            <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" width="188" style="display:block;width:188px;max-width:100%;height:auto;border:0">
+                                            <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" width="176" style="display:block;width:176px;max-width:100%;height:auto;border:0">
                                         @else
                                             <span style="color:#ffffff;font-size:20px;font-weight:bold">{{ $brand['name'] }}</span>
                                         @endif
                                     </a>
                                 </td>
                                 @if ($brand['hotline'] !== '' && $tone === 'customer')
-                                    <td align="right" valign="middle" class="hide-m" style="color:#dbe7ff;font-size:12px;line-height:18px">
+                                    <td align="right" valign="middle" class="hide-m" style="color:#b9cbec;font-size:12px;line-height:18px">
                                         Hotline<br><a href="tel:{{ preg_replace('/[^+\d]/', '', $brand['hotline']) }}" style="color:#f1c75b;font-size:16px;font-weight:bold;text-decoration:none">{{ $brand['hotline'] }}</a>
                                     </td>
                                 @endif
                             </tr>
                         </table>
+                        <div style="height:26px;line-height:26px;font-size:0">&nbsp;</div>
+                        @if (($copy['badge'] ?? '') !== '')
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:0 0 14px">
+                                <tr>
+                                    <td style="background:#173f80;border:1px solid #2c5aa6;border-radius:999px;padding:5px 14px 5px 11px;color:#f1c75b;font-size:12px;line-height:16px;font-weight:bold">
+                                        <span style="font-size:10px">&#9679;</span>&nbsp;{{ $copy['badge'] }}
+                                    </td>
+                                </tr>
+                            </table>
+                        @endif
+                        <h1 class="h1" style="margin:0 0 10px;color:#ffffff;font-size:26px;line-height:34px;font-weight:bold;text-wrap:balance">{{ $copy['heading'] }}</h1>
+                        <p style="margin:0;color:#c7d6f2;font-size:15px;line-height:25px">{!! nl2br(e($copy['intro'])) !!}</p>
                     </td>
                 </tr>
                 <tr><td style="height:4px;line-height:4px;font-size:0;background:#e0a92e;background-image:linear-gradient(90deg,#f1c75b,#d9a326)">&nbsp;</td></tr>

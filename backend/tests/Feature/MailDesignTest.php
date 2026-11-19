@@ -22,7 +22,7 @@ it('shows the order summary, a status chip, product photos and buttons in the re
 
     expect($html)->toContain('Đã tiếp nhận đơn hàng')->toContain('Mã đơn hàng')->toContain('T-1')->toContain('200.000đ')
         ->toContain('src="https://example.test/upload/product/a.jpg"')->toContain('https://zalo.me/0912345678')->toContain('href="tel:')
-        ->toContain('Chờ xác nhận')->toContain('Người nhận và giao hàng');
+        ->toContain('Chờ xác nhận')->toContain('Người nhận')->toContain('Giao đến')->toContain('Xác nhận đơn');
 });
 
 it('gives staff a status chip and a button into Admin, without the customer call buttons', function () {
