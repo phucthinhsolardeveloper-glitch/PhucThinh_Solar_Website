@@ -743,6 +743,15 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Kiểm trên web thật: `/`, `/san-pham/`, `/gioi-thieu/`, `/lien-he/`, `/gio-hang/`, `/dai-ly/`, trang sản phẩm, `/robots.txt` đều 200; cảm ứng thật: vuốt phải mở menu, vuốt trái đóng (5/6 vị trí, trừ vùng ô tìm kiếm); thanh mua nằm trên thanh mục; 0 lỗi JS. Test frontend 518/518, typecheck 0.
 - Chưa kiểm trên thiết bị thật (iPhone Safari): trình duyệt giả lập không thay được.
 
+## 2026-11-19 (đêm) — sửa nút So sánh trên PC, hero tràn trên máy tính bảng, hộp tìm kiếm điện thoại (release 7cdf1af1, Nuxt only)
+
+- Backup DB `20261119T051131Z-db`. Rollback: `releases/rollback-7cdf1af1/stack.env.before` (Nuxt `8c85a6e4`). Gói 172 MB, sha256 khớp.
+- **Lỗi do release `8c85a6e4`**: nút "So sánh" trên thẻ sản phẩm bị đặt cứng `width: 44px` ở mọi màn hình nên trên PC thành vòng tròn, chữ "So sánh" bẻ hai dòng. Trả PC về dạng viên (cao 36 px, chữ hiện khi rê chuột); 44 px chỉ cho cảm ứng/<= 820 px. Nút So sánh ở trang sản phẩm cũng vậy.
+- Hero trang chủ ở 641–900 px: khối chữ `w-full` + lề trái 64 px rộng hơn màn 56–64 px nên đoạn mô tả bị cắt; đo trên production trước và sau; điện thoại và > 900 px giữ nguyên hộp (đo giống hệt ở 360/430/900/1100/1440).
+- Hộp tìm kiếm trên điện thoại: ô nhóm thiết bị tự về một cột theo rem khi khổ hẹp/chữ to (không còn bẻ chữ "l/ượng"), các ô cùng hàng cao bằng nhau, "Tra cứu nhanh" nằm riêng một dòng. Không đổi màu.
+- Tên sản phẩm dài không còn lòi ra ở 320 px.
+- Khổ máy thật: OPPO Find X9 hiển thị ~360 px CSS (không phải 390–393). `audit/site-audit.cjs` mặc định chạy 360/375/393/412/430/768/820/1440; quét 20 trang × 8 khổ trước sửa: 0 tràn ngang, 11 phát hiện nhỏ (hero tablet, tên dài ở 320, 2 lần 502 tệp JS ở 430 không tái hiện).
+
 ## Mẫu ghi cho lần tiếp theo
 
 ```text
