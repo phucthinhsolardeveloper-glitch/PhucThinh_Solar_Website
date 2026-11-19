@@ -9,7 +9,7 @@ defineProps<{ guides: PublicProductBuyingGuide[] }>()
     <h2 id="product-buying-guide-title" class="mb-7 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
       Thông tin cần biết trước khi lựa chọn
     </h2>
-    <dl class="m-0 grid gap-x-8 gap-y-6 min-[768px]:grid-cols-2 min-[1200px]:grid-cols-3">
+    <dl class="m-0 grid gap-x-8 gap-y-6 pts-cg [--pcg-gap:2rem] [--pcg-row:1.5rem]">
       <div
         v-for="guide in guides"
         :key="guide.key"

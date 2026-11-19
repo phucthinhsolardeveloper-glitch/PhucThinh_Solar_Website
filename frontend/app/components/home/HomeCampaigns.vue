@@ -33,7 +33,7 @@ const leadIntent = useState<string>('public-home-lead-intent', () => '')
         </a>
       </header>
 
-      <div class="m-rail grid grid-cols-3 gap-[clamp(20px,2.4vw,36px)] max-[860px]:grid-cols-1 max-[860px]:gap-9">
+      <div class="m-rail pts-cg-861 [--pcg-gap:clamp(20px,2.4vw,36px)] grid grid-cols-3 gap-[clamp(20px,2.4vw,36px)] max-[860px]:grid-cols-1 max-[860px]:gap-9">
         <a
           v-for="campaign in items"
           :key="campaign.href + campaign.name"

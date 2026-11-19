@@ -1245,3 +1245,22 @@ p, li, figcaption, dd, blockquote { text-wrap: pretty; }
   :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta) > :last-child[aria-hidden="true"] { transition: translate .15s ease; }
   :is(:is(a, button, [role="button"]):is(.bg-gold-400, .bg-gold-500, .bg-gold-600, .bg-hdr-gold, .bg-primary, .pts-gold-fill), .cta-band__primary, .solution-hero__primary, .project-story__primary, .dealer-hero__primary, .cart-summary__cta, .checkout-summary__cta, .media-empty__cta, .finder-cta, .article-products-cta):active:not(:disabled) > :last-child[aria-hidden="true"] { translate: 3px 0; }
 }
+
+/* Card blocks whose count varies (1, 2, 3 or more): wide screens centre the last row instead of leaving the cards on the left.
+   Phones keep their own layout (rail or single column). Set the gap with --pcg-gap (and --pcg-row for the row gap). */
+@media (min-width: 768px) {
+  .pts-cg { display: flex !important; flex-wrap: wrap; justify-content: center; gap: var(--pcg-row, var(--pcg-gap, 1.75rem)) var(--pcg-gap, 1.75rem) !important; }
+  .pts-cg > * { box-sizing: border-box; min-width: 0; flex: 0 0 calc((100% - var(--pcg-gap, 1.75rem)) / 2); }
+}
+@media (min-width: 1200px) {
+  .pts-cg > * { flex-basis: calc((100% - 2 * var(--pcg-gap, 1.75rem)) / 3); }
+}
+/* Three columns from the width where the block leaves its one-column layout. */
+@media (min-width: 801px) {
+  .pts-cg-801 { display: flex !important; flex-wrap: wrap; justify-content: center; gap: var(--pcg-row, var(--pcg-gap, 1.75rem)) var(--pcg-gap, 1.75rem) !important; }
+  .pts-cg-801 > * { box-sizing: border-box; min-width: 0; flex: 0 0 calc((100% - 2 * var(--pcg-gap, 1.75rem)) / 3); }
+}
+@media (min-width: 861px) {
+  .pts-cg-861 { display: flex !important; flex-wrap: wrap; justify-content: center; gap: var(--pcg-row, var(--pcg-gap, 1.75rem)) var(--pcg-gap, 1.75rem) !important; }
+  .pts-cg-861 > * { box-sizing: border-box; min-width: 0; flex: 0 0 calc((100% - 2 * var(--pcg-gap, 1.75rem)) / 3); }
+}

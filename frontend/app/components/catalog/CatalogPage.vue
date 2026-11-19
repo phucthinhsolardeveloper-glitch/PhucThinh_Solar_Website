@@ -502,7 +502,7 @@ function pageLink(nextPage: number) {
 
       <section v-if="catalogData?.categoryContent.applications.length" class="col-span-full mt-[18px]" aria-labelledby="catalog-applications-title">
         <h2 id="catalog-applications-title" class="mb-6 text-center text-[22px] font-black leading-[1.25] text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
-        <div class="grid auto-cols-[min(82vw,320px)] grid-flow-col gap-4 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[767px]:snap-x max-[767px]:snap-proximity min-[768px]:grid-flow-row min-[768px]:grid-cols-2 min-[768px]:gap-7 min-[768px]:overflow-visible min-[768px]:pr-0 min-[1200px]:grid-cols-3">
+        <div class="grid auto-cols-[min(82vw,320px)] grid-flow-col gap-4 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[767px]:snap-x max-[767px]:snap-proximity pts-cg [--pcg-gap:1.75rem] max-[767px]:[justify-content:safe_center] min-[768px]:overflow-visible min-[768px]:pr-0">
           <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline max-[767px]:snap-start">
             <img v-if="item.image" :src="optimizedImage(item.image, 1200, 750)" :alt="item.title" width="760" height="475" sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 82vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
             <h3 class="mb-0 mt-3 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>

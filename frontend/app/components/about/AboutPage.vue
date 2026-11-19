@@ -221,7 +221,7 @@ const showroomImage = computed(() => {
             </div>
 
             <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
-            <div v-if="about.people.principles.length" class="about-principles mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+            <div v-if="about.people.principles.length" class="about-principles pts-cg-801 [--pcg-gap:1.5rem] lg:[--pcg-gap:2rem] mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
               <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
                 <header class="mb-3.5 flex items-center justify-end">
                   <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
@@ -282,7 +282,7 @@ const showroomImage = computed(() => {
             <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
 
             <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
-            <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+            <div class="about-compass-rail m-rail pts-cg-801 [--pcg-gap:1.5rem] lg:[--pcg-gap:2rem] mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
               <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
                 <header class="mb-3.5 flex items-center justify-between gap-4">
                   <h3 v-if="item.title" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ item.title }}</h3>
@@ -314,7 +314,7 @@ const showroomImage = computed(() => {
             </header>
 
             <!-- Hợp nhất Card 4: Certificates (Đồng bộ ngôn ngữ Atelier Grid) -->
-            <div class="about-cert-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+            <div class="about-cert-rail m-rail pts-cg-801 [--pcg-gap:1.5rem] lg:[--pcg-gap:2rem] mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
               <article
                 v-for="item in visibleCertificates"
                 :key="item.id"

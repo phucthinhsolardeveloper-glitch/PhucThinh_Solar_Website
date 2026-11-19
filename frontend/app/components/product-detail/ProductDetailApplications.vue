@@ -77,7 +77,9 @@ const activeIndex = ref(0)
 
 @media (max-width: 991px) {
   .applications-rail {
-    grid-template-columns: repeat(3, minmax(250px, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px, 340px);
+    justify-content: safe center;
     gap: 22px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -106,8 +108,14 @@ const activeIndex = ref(0)
 
 @media (min-width: 992px) {
   .applications-rail {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 28px;
+  }
+
+  .applications-rail > article {
+    flex: 0 0 calc((100% - 56px) / 3);
   }
 }
 
