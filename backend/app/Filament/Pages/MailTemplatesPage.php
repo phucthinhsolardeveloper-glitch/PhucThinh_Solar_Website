@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\NewFeatures;
 use App\Mail\MailTemplates;
 use App\Mail\MailTemplateStudio;
 use App\Models\User;
@@ -32,6 +33,16 @@ use UnitEnum;
  */
 class MailTemplatesPage extends Page
 {
+    public static function getNavigationBadge(): ?string
+    {
+        return NewFeatures::badge('mau-email');
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
     protected static ?string $title = 'Mẫu email';
 
     protected static ?string $navigationLabel = 'Mẫu email';

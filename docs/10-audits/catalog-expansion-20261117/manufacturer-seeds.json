@@ -1,0 +1,985 @@
+{
+  "created_at": "2026-11-17",
+  "scope": "Sơ tuyển dòng sản phẩm từ trang hãng; KHÔNG phải SKU đã duyệt",
+  "sources": [
+    {
+      "brand": "Sungrow",
+      "source_url": "https://www.sungrowpower.com/vt/en/products",
+      "models": [
+        {
+          "family": "SG5.0/6.0RS",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SG8.0/9.0/10RS",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SG5/6/7/8/10/12RT-P2",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SG15/17/20RT-P2",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SG125CX-P2",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SG150CX",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SH5/6/8/10/12T",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SH15/20/25T",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SH3.0/3.6/4.0/5.0/6.0RS",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SH8.0/10RS",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SBH100",
+          "category": "battery"
+        },
+        {
+          "family": "SBR064",
+          "category": "battery"
+        },
+        {
+          "family": "ST255CS-2H",
+          "category": "ess"
+        },
+        {
+          "family": "ST510CS-4H",
+          "category": "ess"
+        }
+      ]
+    },
+    {
+      "brand": "Huawei",
+      "source_url": "https://solar.huawei.com/en/products/residential/",
+      "models": [
+        {
+          "family": "SUN2000-5/6/8/10/12K-MAP0",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SUN2000-12/15/17/20/25K-MB0",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SUN2000-3/3.68/4/4.6/5/6K-LB0",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SUN2000-8/10K-LC0",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SUN2000-2/3/3.68/4/4.6/5/6KTL-L1",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "LUNA2000-5/7/10/12/14/15/17/19/21-S1",
+          "category": "battery"
+        },
+        {
+          "family": "LUNA2000-5/10/15-S0",
+          "category": "battery"
+        },
+        {
+          "family": "SmartGuard-63A-T0/AUT0",
+          "category": "accessory"
+        },
+        {
+          "family": "SCharger-7KS-S0/SCharger-22KT-S0",
+          "category": "ev-charger"
+        },
+        {
+          "family": "Smart Dongle-4G",
+          "category": "accessory"
+        },
+        {
+          "family": "Smart Dongle-WLAN-FE",
+          "category": "accessory"
+        },
+        {
+          "family": "SUN2000-600W-PA0",
+          "category": "optimizer"
+        }
+      ]
+    },
+    {
+      "brand": "Growatt",
+      "source_url": "https://en.growatt.com/products/",
+      "models": [
+        {
+          "family": "MIN 2500-6000TL-XH2",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "MOD 3-15KTL3-HU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "MID 11-30KTL3-XH",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "MID 29.9-50K-HU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "MINA All-In-One ESS",
+          "category": "ess"
+        },
+        {
+          "family": "MODA All-In-One ESS",
+          "category": "ess"
+        },
+        {
+          "family": "SPH/SPA 3000-6000TL-HUB/AUB",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "RISE 261H-XH",
+          "category": "ess"
+        },
+        {
+          "family": "WIT+AXE System",
+          "category": "ess"
+        },
+        {
+          "family": "SPM 2500-6000TL-HU/HU2",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SPH 3000-6000TL BL-UP",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "APX HV Battery",
+          "category": "battery"
+        },
+        {
+          "family": "ARK XH Battery",
+          "category": "battery"
+        }
+      ]
+    },
+    {
+      "brand": "GoodWe",
+      "source_url": "https://vn.goodwe.com/products",
+      "models": [
+        {
+          "family": "DNS G4",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "MS G4",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SDT G3",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SMT",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "HT",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "GT",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "ES Uniq",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ET LV",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ET PLUS+",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ET 40/50 kW",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ETC 50/100kW",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "Lynx Home F G2",
+          "category": "battery"
+        },
+        {
+          "family": "Lynx A G3",
+          "category": "battery"
+        },
+        {
+          "family": "BAT-C",
+          "category": "battery"
+        },
+        {
+          "family": "ESA 125kw/261kWh",
+          "category": "ess"
+        },
+        {
+          "family": "HCA",
+          "category": "ev-charger"
+        },
+        {
+          "family": "GMK110",
+          "category": "accessory"
+        }
+      ]
+    },
+    {
+      "brand": "SOFAR",
+      "source_url": "https://www.sofarsolar.com/product/index.html",
+      "models": [
+        {
+          "family": "SOFAR 3.3-12KTLX-G3",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SOFAR 15-25KTLX-G3P",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SOFAR 25-50KTLX-G3",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "SOFAR 100-125KTLX-G4",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "ESI 3-6K-S1",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ESI-8-12K-S1",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "ESI-5-12K-T1",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "HYD-3-8K-LS1-PRO",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "HYD-5-20K-LT1",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "HYD-40-60K-T1",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "BTS E5-E20-DS5",
+          "category": "battery"
+        },
+        {
+          "family": "BTS 5K",
+          "category": "battery"
+        },
+        {
+          "family": "SF-16KWH-L1",
+          "category": "battery"
+        },
+        {
+          "family": "GTX5000S",
+          "category": "battery"
+        },
+        {
+          "family": "PowerMagic 2.0",
+          "category": "ess"
+        },
+        {
+          "family": "ESS-261KLC-SA1",
+          "category": "ess"
+        },
+        {
+          "family": "ESS-215-258KLA-SA1",
+          "category": "ess"
+        },
+        {
+          "family": "EV11K-AC-02",
+          "category": "ev-charger"
+        }
+      ]
+    },
+    {
+      "brand": "Deye",
+      "source_url": "https://vi.deyeinverter.com/product/",
+      "models": [
+        {
+          "family": "SG04LP1-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG05LP1-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG04LP3-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG05LP3-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG01HP3-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG02HP3-EU",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG02LP2",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SG01LP1-EU",
+          "category": "inverter-hybrid"
+        }
+      ]
+    },
+    {
+      "brand": "SolaX",
+      "source_url": "https://vn.solaxpower.com/products.html",
+      "models": [
+        {
+          "family": "X1-RENO-LV",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X1-Lite-LV",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X1-VAST",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X1-FIT G4",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X1-HYB LV",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X1-Hybrid G4",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3-ULTRA",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3 FIT G4",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3-NEO-LV",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3-HYB-G4 PRO",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3-HYBRID G4",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "X3-AELIO",
+          "category": "inverter-hybrid"
+        }
+      ]
+    },
+    {
+      "brand": "Sigenergy",
+      "source_url": "https://www.sigenergy.com/en/products",
+      "models": [
+        {
+          "family": "SigenStor Neo",
+          "category": "ess"
+        },
+        {
+          "family": "SigenStor",
+          "category": "ess"
+        },
+        {
+          "family": "SigenStack",
+          "category": "ess"
+        },
+        {
+          "family": "SigenCube",
+          "category": "ess"
+        },
+        {
+          "family": "SigenTerra",
+          "category": "ess"
+        },
+        {
+          "family": "SigenMate",
+          "category": "ess"
+        },
+        {
+          "family": "Sigen C&I Inverter",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "Sigen Utility Inverter",
+          "category": "inverter-grid"
+        },
+        {
+          "family": "Sigen Hybrid Inverter",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "SigenMicro Inverter",
+          "category": "microinverter"
+        },
+        {
+          "family": "Sigen EV AC Charger",
+          "category": "ev-charger"
+        },
+        {
+          "family": "SigenStor EV DC",
+          "category": "ev-charger"
+        },
+        {
+          "family": "Home Energy Gateway",
+          "category": "accessory"
+        },
+        {
+          "family": "Business Energy Gateway",
+          "category": "accessory"
+        },
+        {
+          "family": "Sigen CommMod",
+          "category": "accessory"
+        },
+        {
+          "family": "Sigen Power Sensor",
+          "category": "accessory"
+        },
+        {
+          "family": "Sigen CommBridge",
+          "category": "accessory"
+        }
+      ]
+    },
+    {
+      "brand": "Canadian Solar",
+      "source_url": "https://www.csisolar.com/module/",
+      "models": [
+        {
+          "family": "CS7N-TB-AG",
+          "category": "module"
+        },
+        {
+          "family": "CS7L-TB-AG",
+          "category": "module"
+        },
+        {
+          "family": "CS6.2-66TB",
+          "category": "module"
+        },
+        {
+          "family": "CS6.2-66TM",
+          "category": "module"
+        },
+        {
+          "family": "CS6.2-54TM",
+          "category": "module"
+        },
+        {
+          "family": "CS6.2-48TD",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "LONGi",
+      "source_url": "https://www.longi.com/en/mobile-download/",
+      "models": [
+        {
+          "family": "LR7-72HJD",
+          "category": "module"
+        },
+        {
+          "family": "LR7-54HVBB",
+          "category": "module"
+        },
+        {
+          "family": "LR7-72HVDA",
+          "category": "module"
+        },
+        {
+          "family": "LR7-54HVD",
+          "category": "module"
+        },
+        {
+          "family": "LR8-66HVDF",
+          "category": "module"
+        },
+        {
+          "family": "LR7-72HVH",
+          "category": "module"
+        },
+        {
+          "family": "LR7-60HVD",
+          "category": "module"
+        },
+        {
+          "family": "LR7-60HVH",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "Astronergy",
+      "source_url": "https://www.astronergy.com/product-series/",
+      "models": [
+        {
+          "family": "ASTRO N8",
+          "category": "module"
+        },
+        {
+          "family": "ASTRO N7 Pro",
+          "category": "module"
+        },
+        {
+          "family": "ASTRO N7 3.0",
+          "category": "module"
+        },
+        {
+          "family": "ASTRO N7s 3.0",
+          "category": "module"
+        },
+        {
+          "family": "ASTRO N7",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "AESOLAR",
+      "source_url": "https://ae-solar.com/catalogue",
+      "models": [
+        {
+          "family": "AE×××CME-132BDS",
+          "category": "module"
+        },
+        {
+          "family": "AE×××CME-132",
+          "category": "module"
+        },
+        {
+          "family": "Meteor",
+          "category": "module"
+        },
+        {
+          "family": "Comet",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "EPSIVO",
+      "source_url": "https://www.epsivodrive.com/products.html",
+      "models": [
+        {
+          "family": "IP65 Series Solar Pump Inverter",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "All-in-one Inverter Storage System",
+          "category": "ess"
+        },
+        {
+          "family": "Solar Inverter",
+          "category": "inverter-offgrid"
+        }
+      ]
+    },
+    {
+      "brand": "Anker SOLIX",
+      "source_url": "https://support.ankersolix.com/s/filter-by-type",
+      "models": [
+        {
+          "family": "Solarbank 3 E2700 Pro",
+          "category": "battery"
+        },
+        {
+          "family": "Solarbank 4 E5000 Pro",
+          "category": "battery"
+        },
+        {
+          "family": "Solarbank Max AC",
+          "category": "battery"
+        },
+        {
+          "family": "X1 Hybrid Energy Storage System",
+          "category": "ess"
+        },
+        {
+          "family": "RS40P Solar Panel",
+          "category": "module"
+        },
+        {
+          "family": "RS50S Solar Panel",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "Hober",
+      "source_url": "https://hobersolarpump.com/products/solar-pumping-inverter/",
+      "models": [
+        {
+          "family": "HSPH750LB",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH1500L",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH1500LB",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH1500HB",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH2200L",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH2200HB",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH3700L",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH3700H",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH4000H",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH5500L",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH5500H",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH7500L",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH7500H",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH9200H",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH11KL",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH11KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH13KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH15KL",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH15KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH18.5KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH22KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH26KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH30KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH37KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH45KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH55KH",
+          "category": "solar-pump-inverter"
+        },
+        {
+          "family": "HSPH75KH",
+          "category": "solar-pump-inverter"
+        }
+      ]
+    },
+    {
+      "brand": "Sharp",
+      "source_url": "https://www.sharp.co.jp/sunvista/",
+      "models": [
+        {
+          "family": "NU-230AU",
+          "category": "module"
+        },
+        {
+          "family": "NU-153AU",
+          "category": "module"
+        },
+        {
+          "family": "NU-132LU",
+          "category": "module"
+        },
+        {
+          "family": "NU-132RU",
+          "category": "module"
+        },
+        {
+          "family": "NU-225MU",
+          "category": "module"
+        },
+        {
+          "family": "NU-458PU",
+          "category": "module"
+        },
+        {
+          "family": "NU-305PU",
+          "category": "module"
+        },
+        {
+          "family": "NU-458SU",
+          "category": "module"
+        },
+        {
+          "family": "NU-300MU",
+          "category": "module"
+        },
+        {
+          "family": "JH-WB2621",
+          "category": "battery"
+        },
+        {
+          "family": "JH-WB2521",
+          "category": "battery"
+        },
+        {
+          "family": "JH-59TF4",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "JH-40TF2",
+          "category": "inverter-hybrid"
+        },
+        {
+          "family": "JH-WDT11",
+          "category": "accessory"
+        }
+      ]
+    },
+    {
+      "brand": "JINDIAN",
+      "source_url": "https://www.zsjdtyn.com/products.html",
+      "models": [
+        {
+          "family": "JD-88L",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-T",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-M",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-H S",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-FX",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-A500",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-W",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-Max",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-51000 52000",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-3618 4624 5648",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-9300",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-368",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-UFO",
+          "category": "solar-light"
+        },
+        {
+          "family": "JD-LS",
+          "category": "solar-light"
+        }
+      ]
+    },
+    {
+      "brand": "TCL Solar",
+      "source_url": "https://www.tclsolar.com/products",
+      "models": [
+        {
+          "family": "Solar Panels Back-Contact",
+          "category": "module"
+        },
+        {
+          "family": "Solar Panels TOPCon Shingled",
+          "category": "module"
+        },
+        {
+          "family": "Solar Panels TOPCon Half-Cut T-Class",
+          "category": "module"
+        },
+        {
+          "family": "TCL X1",
+          "category": "ess"
+        },
+        {
+          "family": "TCL X5",
+          "category": "ess"
+        },
+        {
+          "family": "TCL Energy Manager",
+          "category": "module"
+        },
+        {
+          "family": "TCL W10",
+          "category": "ess"
+        },
+        {
+          "family": "T5 Pro S",
+          "category": "module"
+        },
+        {
+          "family": "T5 Pro M",
+          "category": "module"
+        },
+        {
+          "family": "T5 Pro L",
+          "category": "module"
+        },
+        {
+          "family": "T Class 54",
+          "category": "module"
+        },
+        {
+          "family": "T Class 66",
+          "category": "module"
+        },
+        {
+          "family": "E Class 54",
+          "category": "module"
+        }
+      ]
+    },
+    {
+      "brand": "BLUE CARBON",
+      "source_url": "https://bluecarbontech.com/products/",
+      "models": [
+        {
+          "family": "Engineering Lighting",
+          "category": "solar-light"
+        },
+        {
+          "family": "Commercial Lighting",
+          "category": "solar-light"
+        },
+        {
+          "family": "PV-Storage Unit",
+          "category": "ess"
+        },
+        {
+          "family": "PV-Storage System",
+          "category": "ess"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Brand ORIANA: no manufacturer-operated official catalog reliably verified for fresh models; retain existing catalog, seek supplier datasheet, do not scrape competitors as authority",
+    "Sharp 2026 official Japan domestic models: regional applicability Vietnam NOT established",
+    "All rows are families or model names, not approved commercial SKU; model-level verification required"
+  ]
+}

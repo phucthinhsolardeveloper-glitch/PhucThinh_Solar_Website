@@ -1,0 +1,69 @@
+{
+  "family_candidates": 215,
+  "source_pages": 19,
+  "fetched_ok": 15,
+  "source_matches": {
+    "NEEDS_SOURCE_RECHECK": 80,
+    "INDEX_TEXT_MATCH": 135
+  },
+  "site_exact_family_name_matches": 5,
+  "per_brand": {
+    "AESOLAR": 4,
+    "Anker SOLIX": 6,
+    "Astronergy": 5,
+    "BLUE CARBON": 4,
+    "Canadian Solar": 6,
+    "Deye": 8,
+    "EPSIVO": 3,
+    "GoodWe": 17,
+    "Growatt": 13,
+    "Hober": 27,
+    "Huawei": 12,
+    "JINDIAN": 14,
+    "LONGi": 8,
+    "Sharp": 14,
+    "Sigenergy": 17,
+    "SOFAR": 18,
+    "SolaX": 12,
+    "Sungrow": 14,
+    "TCL Solar": 13
+  },
+  "sources_failed": [
+    {
+      "brand": "Astronergy",
+      "source_url": "https://www.astronergy.com/product-series/",
+      "fetch_state": "HTTP_403",
+      "http_status": 403,
+      "indexed_families": 5,
+      "text_length": 0
+    },
+    {
+      "brand": "Sharp",
+      "source_url": "https://www.sharp.co.jp/sunvista/",
+      "fetch_state": "SSLError",
+      "http_status": null,
+      "indexed_families": 14,
+      "text_length": 0
+    },
+    {
+      "brand": "Sigenergy",
+      "source_url": "https://www.sigenergy.com/en/products",
+      "fetch_state": "HTTP_403",
+      "http_status": 403,
+      "indexed_families": 17,
+      "text_length": 0
+    },
+    {
+      "brand": "Sungrow",
+      "source_url": "https://www.sungrowpower.com/vt/en/products",
+      "fetch_state": "HTTP_404",
+      "http_status": 404,
+      "indexed_families": 14,
+      "text_length": 0
+    }
+  ],
+  "outputs": [
+    "official-family-candidates.csv",
+    "official-page-fetch-evidence.json"
+  ]
+}

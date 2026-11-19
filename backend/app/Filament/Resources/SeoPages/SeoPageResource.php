@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SeoPages;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\InlineEdit;
 use App\Filament\Support\PublicLink;
 use App\Models\SeoMeta;
 use BackedEnum;
@@ -14,7 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Support\InlineEdit;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -69,8 +69,8 @@ class SeoPageResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('page')->label('Trang')->formatStateUsing(fn ($state) => self::PAGES[$state] ?? $state),
-                $edit ? TextInputColumn::make('title')->label('Tiêu đề SEO')->rules(['nullable','string','max:255']) : TextColumn::make('title')->label('Tiêu đề SEO')->limit(60),
-                $edit ? TextInputColumn::make('description')->label('Mô tả')->rules(['nullable','string','max:500']) : TextColumn::make('description')->label('Mô tả')->limit(60)->toggleable(),
+                $edit ? TextInputColumn::make('title')->label('Tiêu đề SEO')->rules(['nullable', 'string', 'max:255']) : TextColumn::make('title')->label('Tiêu đề SEO')->limit(60),
+                $edit ? TextInputColumn::make('description')->label('Mô tả')->rules(['nullable', 'string', 'max:500']) : TextColumn::make('description')->label('Mô tả')->limit(60)->toggleable(),
             ])
             ->recordActions([PublicLink::row(), EditAction::make()]);
     }

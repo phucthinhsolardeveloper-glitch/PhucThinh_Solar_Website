@@ -1,0 +1,205 @@
+{
+  "candidates": 215,
+  "with_detail_links": 99,
+  "sample_detail_pages": 22,
+  "sample_ok": 22,
+  "index_fetch": {
+    "Huawei": "HTTP_200",
+    "Growatt": "HTTP_200",
+    "SOFAR": "HTTP_200",
+    "Deye": "HTTP_200",
+    "Sigenergy": "HTTP_403",
+    "Canadian Solar": "HTTP_200",
+    "GoodWe": "HTTP_200",
+    "LONGi": "HTTP_200",
+    "Astronergy": "HTTP_403",
+    "SolaX": "HTTP_200",
+    "Anker SOLIX": "HTTP_200",
+    "AESOLAR": "HTTP_200",
+    "Sharp": "SSLError",
+    "Hober": "HTTP_200",
+    "EPSIVO": "HTTP_200",
+    "BLUE CARBON": "HTTP_200",
+    "TCL Solar": "HTTP_200",
+    "JINDIAN": "HTTP_200",
+    "Sungrow": "ReadTimeout"
+  },
+  "top_samples": [
+    {
+      "brand": "AESOLAR",
+      "family": "Comet",
+      "url": "https://ae-solar.com/en//products/Comet",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "AESOLAR",
+      "family": "Meteor",
+      "url": "https://ae-solar.com/en//products/Meteor",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": true
+    },
+    {
+      "brand": "Deye",
+      "family": "SG01HP3-EU",
+      "url": "https://vi.deyeinverter.com/product/three-phase-high-voltage-hybrid-inverter/sun5-6-8-10-12-15-20ksg01hp3euam2-520kw-three-phase-2-mppt-hybrid-inverter-high-voltage-battery.html",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": true
+    },
+    {
+      "brand": "Deye",
+      "family": "SG01LP1-EU",
+      "url": "https://vi.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun12-14-16-18ksg01lp1euam3p.html",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": true
+    },
+    {
+      "brand": "EPSIVO",
+      "family": "All-in-one Inverter Storage System",
+      "url": "https://www.epsivodrive.com/All-in-one-Inverter-Storage-System-pl05316776.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "EPSIVO",
+      "family": "IP65 Series Solar Pump Inverter",
+      "url": "https://www.epsivodrive.com/IP65-Series-Solar-Pump-Inverter-pl01998276.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "GoodWe",
+      "family": "ES Uniq",
+      "url": "https://vn.goodwe.com/es-uniq",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "GoodWe",
+      "family": "ESA 125kw/261kWh",
+      "url": "https://vn.goodwe.com/esa-125kw-261kwh",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "Growatt",
+      "family": "APX HV Battery",
+      "url": "https://en.growatt.com/products/apx-hv-battery",
+      "state": "HTTP_200",
+      "pdfs": 2,
+      "has_image": true
+    },
+    {
+      "brand": "Growatt",
+      "family": "MID 11-30KTL3-XH",
+      "url": "https://en.growatt.com/products/mid-11-30ktl3-xh",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": true
+    },
+    {
+      "brand": "Hober",
+      "family": "HSPH11KH",
+      "url": "https://hobersolarpump.com/products/solar-pumping-inverter/hsph11kh/",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "Hober",
+      "family": "HSPH11KL",
+      "url": "https://hobersolarpump.com/products/solar-pumping-inverter/hsph11kl/",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "Huawei",
+      "family": "SUN2000-12/15/17/20/25K-MB0",
+      "url": "https://solar.huawei.com/en/products/sun2000-12-15-17-20-25k-mb0/",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "Huawei",
+      "family": "Smart Dongle-4G",
+      "url": "https://solar.huawei.com/en/products/ci-smartdongle-4g/",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "JINDIAN",
+      "family": "JD-3618 4624 5648",
+      "url": "https://www.zsjdtyn.com/jd-3618-4624-5648.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "JINDIAN",
+      "family": "JD-368",
+      "url": "https://www.zsjdtyn.com/jd-368-1.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": false
+    },
+    {
+      "brand": "SOFAR",
+      "family": "BTS 5K",
+      "url": "https://www.sofarsolar.com/product/residentialstorage/battery/BTS 5K.html",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": false
+    },
+    {
+      "brand": "SOFAR",
+      "family": "BTS E5-E20-DS5",
+      "url": "https://www.sofarsolar.com/product/residentialstorage/battery/BTS E5-E20-DS5.html",
+      "state": "HTTP_200",
+      "pdfs": 1,
+      "has_image": false
+    },
+    {
+      "brand": "SolaX",
+      "family": "X1-HYB LV",
+      "url": "https://vn.solaxpower.com/products/x1-hyb-lv.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "SolaX",
+      "family": "X1-Hybrid G4",
+      "url": "https://vn.solaxpower.com/products/x1-hybrid-g4.html",
+      "state": "HTTP_200",
+      "pdfs": 0,
+      "has_image": true
+    },
+    {
+      "brand": "TCL Solar",
+      "family": "TCL Energy Manager",
+      "url": "https://www.tclsolar.com/products/tcl-energy-manager",
+      "state": "HTTP_200",
+      "pdfs": 2,
+      "has_image": false
+    },
+    {
+      "brand": "TCL Solar",
+      "family": "TCL W10",
+      "url": "https://www.tclsolar.com/products/tcl-w10",
+      "state": "HTTP_200",
+      "pdfs": 2,
+      "has_image": false
+    }
+  ]
+}

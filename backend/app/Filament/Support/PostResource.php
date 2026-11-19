@@ -2,8 +2,10 @@
 
 namespace App\Filament\Support;
 
+use App\Domain\Content\PublishChecks;
 use App\Domain\News\RelatedProductSuggestions;
 use App\Domain\Projects\ProjectSystem;
+use App\Filament\Concerns\HasInlineEditMode;
 use App\Filament\Concerns\RequiresPermission;
 use App\Models\Post;
 use App\Models\PostCategory;
@@ -37,6 +39,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
 
 /**
@@ -123,14 +126,14 @@ abstract class PostResource extends Resource
             ]) : null,
             Section::make()->columns(3)->schema(array_values(array_filter([
                 Fields::visible()->default($kind !== 'article')->live()
-                    ->helperText(fn (Get $get) => ! $get('is_visible') && $get('published_at') && \Illuminate\Support\Carbon::parse($get('published_at'))->isFuture()
+                    ->helperText(fn (Get $get) => ! $get('is_visible') && $get('published_at') && Carbon::parse($get('published_at'))->isFuture()
                         ? 'Công tắc đang TẮT nên bài sẽ KHÔNG tự đăng dù đã chọn ngày. Bật lên để bài tự lên đúng giờ hẹn.' : null),
                 $kind !== 'policy' ? Toggle::make('is_featured')->label('Nổi bật') : null,
                 in_array($kind, ['article', 'solution'], true) ? Toggle::make('in_hub')->label($kind === 'solution' ? 'Hiện ở trang Giải pháp' : 'Đưa lên đầu trang Tin tức') : null,
                 DateTimePicker::make('published_at')->label('Ngày đăng')->default(now())->live(onBlur: true)
                     ->afterStateUpdated(function ($state, Get $get, Set $set) {
                         // Picking a future time means "publish then": switch the post on, so the date alone is enough.
-                        if ($state && \Illuminate\Support\Carbon::parse($state)->isFuture() && ! $get('is_visible') && AdminActor::current()->canPerform('content_publish')) {
+                        if ($state && Carbon::parse($state)->isFuture() && ! $get('is_visible') && AdminActor::current()->canPerform('content_publish')) {
                             $set('is_visible', true);
                             Notification::make()->title('Đã bật Hiển thị để bài tự lên đúng giờ hẹn')->body('Tắt lại nếu chưa muốn đăng.')->info()->send();
                         }
@@ -223,7 +226,7 @@ abstract class PostResource extends Resource
     {
         $page = $table->getLivewire();
 
-        return in_array(\App\Filament\Concerns\HasInlineEditMode::class, class_uses_recursive($page), true) && $page->inlineEdit
+        return in_array(HasInlineEditMode::class, class_uses_recursive($page), true) && $page->inlineEdit
             && AdminActor::current()->canPerform('content_publish');
     }
 
@@ -245,7 +248,7 @@ abstract class PostResource extends Resource
                     ToggleColumn::make('is_visible')->label('Hiển thị')
                         ->updateStateUsing(function (Post $record, bool $state): bool {
                             if ($state) {
-                                $errors = app(\App\Domain\Content\PublishChecks::class)->post(\App\Domain\Content\PublishChecks::postData($record), (int) $record->id)['errors'] ?? [];
+                                $errors = app(PublishChecks::class)->post(PublishChecks::postData($record), (int) $record->id)['errors'] ?? [];
                                 if ($errors !== []) {
                                     Notification::make()->danger()->title('Chưa bật được')->body(implode("\n", $errors))->send();
 
@@ -257,10 +260,10 @@ abstract class PostResource extends Resource
                             return $state;
                         }),
                     TextInputColumn::make('published_at')->label('Ngày đăng (ngày/tháng/năm giờ:phút)')->placeholder('15/11/2026 19:30')
-                        ->getStateUsing(fn (Post $record) => $record->published_at ? \Illuminate\Support\Carbon::parse($record->published_at)->format('d/m/Y H:i') : '')
+                        ->getStateUsing(fn (Post $record) => $record->published_at ? Carbon::parse($record->published_at)->format('d/m/Y H:i') : '')
                         ->rules(['required', 'date_format:d/m/Y H:i'])
                         ->updateStateUsing(function (Post $record, $state) {
-                            $record->update(['published_at' => \Illuminate\Support\Carbon::createFromFormat('d/m/Y H:i', (string) $state)]);
+                            $record->update(['published_at' => Carbon::createFromFormat('d/m/Y H:i', (string) $state)]);
 
                             return $state;
                         }),

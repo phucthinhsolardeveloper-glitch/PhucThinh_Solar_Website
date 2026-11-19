@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Articles\Pages;
 
-use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Concerns\HasInlineEditMode;
+use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Support\AdminActor;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;

@@ -1,0 +1,261 @@
+﻿brand,family_or_model,category_research,detail_url,index_url,fetch_status,subject_match,page_title,html_spec_cells,tables_found,pdf_candidates,image_candidates,existing_match_weak,qa_status,cms_action,public_status
+AESOLAR,AE×××CME-132,module,,https://ae-solar.com/catalogue,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+AESOLAR,AE×××CME-132BDS,module,,https://ae-solar.com/catalogue,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+AESOLAR,Comet,module,https://ae-solar.com/products/Comet,https://ae-solar.com/catalogue,HTTP_200,TEXT_MATCH_WEAK,"HJT Solar Panels: 95% bifacial yield, low temp coefficient. Tier1 Manufacturer.",0,1,2,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+AESOLAR,Meteor,module,https://ae-solar.com/products/Meteor,https://ae-solar.com/catalogue,HTTP_200,TEXT_MATCH_WEAK,"Unlock peak efficiency with AESOLAR's high-quality TOPCon PV modules - delivering high performance and minimal degradation, even in low light conditions.",2,2,8,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,RS40P Solar Panel,module,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,RS50S Solar Panel,module,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,Solarbank 3 E2700 Pro,battery,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,Solarbank 4 E5000 Pro,battery,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,Solarbank Max AC,battery,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Anker SOLIX,X1 Hybrid Energy Storage System,ess,,https://support.ankersolix.com/s/filter-by-type,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Astronergy,ASTRO N7,module,,https://www.astronergy.com/product-series/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Astronergy,ASTRO N7 3.0,module,,https://www.astronergy.com/product-series/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Astronergy,ASTRO N7 Pro,module,,https://www.astronergy.com/product-series/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Astronergy,ASTRO N7s 3.0,module,,https://www.astronergy.com/product-series/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Astronergy,ASTRO N8,module,,https://www.astronergy.com/product-series/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+BLUE CARBON,Commercial Lighting,solar-light,,https://bluecarbontech.com/products/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+BLUE CARBON,Engineering Lighting,solar-light,,https://bluecarbontech.com/products/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+BLUE CARBON,PV-Storage System,ess,,https://bluecarbontech.com/products/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+BLUE CARBON,PV-Storage Unit,ess,,https://bluecarbontech.com/products/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS6.2-48TD,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS6.2-54TM,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS6.2-66TB,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS6.2-66TM,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS7L-TB-AG,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Canadian Solar,CS7N-TB-AG,module,,https://www.csisolar.com/module/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG01HP3-EU,inverter-hybrid,https://vi.deyeinverter.com/product/three-phase-high-voltage-hybrid-inverter/sun5-6-8-10-12-15-20ksg01hp3euam2-520kw-three-phase-2-mppt-hybrid-inverter-high-voltage-battery.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-5/6/8/10/12/15/20/25K-SG01HP3-EU-AM2 Inverter Company, Supplier | Deye Inverter Technology",105,1,8,4,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG01LP1-EU,inverter-hybrid,https://vi.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun12-14-16-18ksg01lp1euam3p.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-12/14/16/18K-SG01LP1-EU-AM3-P Inverter Company, Supplier | Deye Inverter Technology",73,1,5,6,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG02HP3-EU,inverter-hybrid,https://vi.deyeinverter.com/product/three-phase-high-voltage-hybrid-inverter/sun25-29-9-30ksg02hp3euam3.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời 25/29,9/30K-SG02HP3-EU-AM3 Inverter Company, Supplier | Deye Inverter Technology",59,1,8,6,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG02LP2,inverter-hybrid,https://vi.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun5-6-7-6-8-10-12ksg02lp2usam2-am3-512kw-2-mppt-hybrid-inverter-lv-battery-supported.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-5/6/7.6/8/10/12K-SG02LP2-US-AM2/AM3 Inverter Company, Supplier | Deye Inverter Technology",88,1,2,4,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG04LP1-EU,inverter-hybrid,https://vi.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/SUN3-3-6-5-6KSG04LP1EU-36kW-Single-Phase-2-MPPT-Hybrid-Inverter-LV-Battery-Supported-2346.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-3/3.6/5/6K-SG04LP1-EU-SM1/SM2 Inverter Company, Supplier | Deye Inverter Technology",81,1,2,4,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG04LP3-EU,inverter-hybrid,https://vi.deyeinverter.com/product/three-phase-hybrid-inverter-1/sun5-6-8-10-12ksg04lp3euam2p-512kw-three-phase-2-mppt-hybrid-inverter-lv-battery-supported.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-5/6/8/10/12K-SG04LP3-EU-AM2-P Inverter Company, Supplier | Deye Inverter Technology",82,1,1,4,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG05LP1-EU,inverter-hybrid,https://vi.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun7-7-6-8ksg05lp1eusm2.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời 7/7.6/8/10K-SG05LP1-EU-SM2 Inverter Company, Supplier | Deye Inverter Technology",71,1,5,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Deye,SG05LP3-EU,inverter-hybrid,https://vi.deyeinverter.com/product/three-phase-hybrid-inverter-1/sun14-15-16-18-20ksg05lp3eusm2-1420kw-three-phase-2-mppt-hybrid-inverter-lv-battery-supported.html,https://vi.deyeinverter.com/product/,HTTP_200,TEXT_MATCH_WEAK,"Mặt trời-14/15/16/18/20K-SG05LP3-EU-SM2 Inverter Company, Supplier | Deye Inverter Technology",79,1,8,6,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+EPSIVO,All-in-one Inverter Storage System,ess,https://www.epsivodrive.com/All-in-one-Inverter-Storage-System-pl05316776.html,https://www.epsivodrive.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"All-in-one Inverter Storage System, All-in-one Inverter Storage System Products, All-in-one Inverter Storage System Manufacturers, All-in-one Inverter Storage System Suppliers and Exporters - Shenzhen Epsivo Technology C",0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+EPSIVO,IP65 Series Solar Pump Inverter,solar-pump-inverter,https://www.epsivodrive.com/IP65-Series-Solar-Pump-Inverter-pl01998276.html,https://www.epsivodrive.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"Series Solar Pump Inverter, Series Solar Pump Inverter Products, Series Solar Pump Inverter Manufacturers, Series Solar Pump Inverter Suppliers and Exporters - Shenzhen Epsivo Technology Co., Ltd.",0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+EPSIVO,Solar Inverter,inverter-offgrid,https://www.epsivodrive.com/Solar-Inverter-pl03316776.html,https://www.epsivodrive.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"Solar Inverter, Solar Inverter Products, Solar Inverter Manufacturers, Solar Inverter Suppliers and Exporters - Shenzhen Epsivo Technology Co., Ltd.",0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,BAT-C,battery,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,DNS G4,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ES Uniq,inverter-hybrid,https://vn.goodwe.com/es-uniq,https://vn.goodwe.com/products,HTTP_200,TEXT_MATCH_WEAK,Series ES Uniq-GoodWe,0,0,1,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ESA 125kw/261kWh,ess,https://vn.goodwe.com/esa-125kw-261kwh,https://vn.goodwe.com/products,HTTP_200,TEXT_MATCH_WEAK,Series ESA-GoodWe,0,0,1,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ET 40/50 kW,inverter-hybrid,https://vn.goodwe.com/et-40-50kw,https://vn.goodwe.com/products,HTTP_200,TEXT_MATCH_WEAK,Series ET -Series ET -GoodWe,0,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ET LV,inverter-hybrid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ET PLUS+,inverter-hybrid,https://vn.goodwe.com/et-plus-series-three-phase-hybrid-solar-inverter,https://vn.goodwe.com/products,HTTP_200,TEXT_MATCH_WEAK,Series ET PLUS+-GoodWe ET PLUS+ Series 5-10 kW Three Phase 2 MPPTs Hybrid Inverter for Sale-GoodWe,0,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,ETC 50/100kW,inverter-hybrid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,GMK110,accessory,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,GT,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,HCA,ev-charger,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,HT,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,Lynx A G3,battery,https://vn.goodwe.com/lynxa-g3-series,https://vn.goodwe.com/products,HTTP_200,TEXT_MATCH_WEAK,Series Lynx A G3-GoodWe,0,0,1,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,Lynx Home F G2,battery,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,MS G4,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,SDT G3,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+GoodWe,SMT,inverter-grid,,https://vn.goodwe.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,APX HV Battery,battery,https://en.growatt.com/products/apx-hv-battery,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,APX HV Battery | Residential HV Battery | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,ARK XH Battery,battery,,https://en.growatt.com/products/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MID 11-30KTL3-XH,inverter-hybrid,https://en.growatt.com/products/mid-11-30ktl3-xh,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MID 11-30KTL3-XH | Battery Ready Inverter | Growatt,0,0,8,2,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MID 29.9-50K-HU,inverter-hybrid,https://en.growatt.com/products/mid-29.9-50k-hu,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MID 29.9-50K-HU | Battery Ready Inverter | Growatt,0,0,7,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MIN 2500-6000TL-XH2,inverter-hybrid,https://en.growatt.com/products/min-2500-6000tl-xh2,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MIN 2500-6000TL-XH2 | Battery Ready Inverter | Growatt,0,0,8,2,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MINA All-In-One ESS,ess,https://en.growatt.com/products/mina-all-in-one-ess,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MINA All-In-One ESS | All-in-one Energy Storage | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MOD 3-15KTL3-HU,inverter-hybrid,https://en.growatt.com/products/mod-3-15ktl3-hu,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MOD 3-15KTL3-HU | Battery Ready Inverter | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MODA All-In-One ESS,ess,https://en.growatt.com/products/moda-all-in-one-ess,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,MODA All-In-One ESS | All-in-one Energy Storage | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,RISE 261H-XH,ess,https://en.growatt.com/products/rise-261h-xh,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,RISE 261H-XH | All-in-one Energy Storage | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPH 3000-6000TL BL-UP,inverter-hybrid,https://en.growatt.com/products/sph-3000-6000tl-bl-up,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,SPH 3000-6000TL BL-UP | Single Phase Hybrid | Growatt,0,0,8,2,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPH/SPA 3000-6000TL-HUB/AUB,inverter-hybrid,https://en.growatt.com/products/sph-spa-3000-6000tl-hub-aub,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,SPH/SPA 3000-6000TL-HUB/AUB | All-in-one Energy Storage | Growatt,0,0,4,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPM 2500-6000TL-HU/HU2,inverter-hybrid,https://en.growatt.com/products/spm-2500-6000tl-hu-hu2,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,SPM 2500-6000TL-HU/HU2 | Single Phase Hybrid | Growatt,0,0,8,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,WIT+AXE System,ess,https://en.growatt.com/products/wit+axe-system,https://en.growatt.com/products/,HTTP_200,TEXT_MATCH_WEAK,WIT+AXE System | All-in-one Energy Storage | Growatt,0,0,5,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH11KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph11kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH11KH · 11 kW · solar pump inverter | HOBER,31,6,0,1,1,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH11KL,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph11kl/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH11KL · 11 kW · solar pump inverter | HOBER,30,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH13KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph13kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH13KH · 13 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH1500HB,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph1500hb/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH1500HB · 1.5 kW · solar pump inverter | HOBER,32,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH1500L,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph1500l/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH1500L · 1.5 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH1500LB,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph1500lb/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH1500LB · 1.5 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH15KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph15kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH15KH · 15 kW · solar pump inverter | HOBER,31,6,0,1,1,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH15KL,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph15kl/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH15KL · 15 kW · solar pump inverter | HOBER,30,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH18.5KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph18-5kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH18.5KH · 18.5 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH2200HB,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph2200hb/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH2200HB · 2.2 kW · solar pump inverter | HOBER,32,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH2200L,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph2200l/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH2200L · 2.2 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH22KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph22kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH22KH · 22 kW · solar pump inverter | HOBER,31,6,0,1,1,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH26KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph26kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH26KH · 26 kW · solar pump inverter | HOBER,31,6,0,1,1,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH30KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph30kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH30KH · 30 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH3700H,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph3700h/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH3700H · 3.7 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH3700L,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph3700l/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH3700L · 3.7 kW · solar pump inverter | HOBER,30,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH37KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph37kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH37KH · 37 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH4000H,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph4000h/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH4000H · 4 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH45KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph45kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH45KH · 45 kW · solar pump inverter | HOBER,32,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH5500H,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph5500h/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH5500H · 5.5 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH5500L,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph5500l/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH5500L · 5.5 kW · solar pump inverter | HOBER,30,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH55KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph55kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH55KH · 55 kW · solar pump inverter | HOBER,32,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH7500H,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph7500h/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH7500H · 7.5 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH7500L,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph7500l/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH7500L · 7.5 kW · solar pump inverter | HOBER,30,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH750LB,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph750lb/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH750LB · 0.75 kW · solar pump inverter | HOBER,31,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH75KH,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph75kh/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH75KH · 75 kW · solar pump inverter | HOBER,32,6,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Hober,HSPH9200H,solar-pump-inverter,https://hobersolarpump.com/products/solar-pumping-inverter/hsph9200h/,https://hobersolarpump.com/products/solar-pumping-inverter/,HTTP_200,TEXT_MATCH_WEAK,HSPH9200H · 9.2 kW · solar pump inverter | HOBER,31,6,0,1,1,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,LUNA2000-5/10/15-S0,battery,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,LUNA2000-5/7/10/12/14/15/17/19/21-S1,battery,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SCharger-7KS-S0/SCharger-22KT-S0,ev-charger,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,Smart Dongle-4G,accessory,https://solar.huawei.com/en/products/ci-smartdongle-4g/,https://solar.huawei.com/en/products/residential/,HTTP_200,TEXT_MATCH_WEAK,CI-Smart Dongle-4G | HUAWEI Smart PV Global,0,0,4,5,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,Smart Dongle-WLAN-FE,accessory,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SmartGuard-63A-T0/AUT0,accessory,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-12/15/17/20/25K-MB0,inverter-hybrid,https://solar.huawei.com/en/products/sun2000-12-15-17-20-25k-mb0/,https://solar.huawei.com/en/products/residential/,HTTP_200,TEXT_MATCH_WEAK,SUN2000-12-15-17-20-25K-MB0 | Solar Inverter Three-phase | HUAWEI Smart PV Global,0,0,3,7,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-2/3/3.68/4/4.6/5/6KTL-L1,inverter-grid,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-3/3.68/4/4.6/5/6K-LB0,inverter-grid,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-5/6/8/10/12K-MAP0,inverter-hybrid,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-600W-PA0,optimizer,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-8/10K-LC0,inverter-grid,,https://solar.huawei.com/en/products/residential/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-3618 4624 5648,solar-light,https://www.zsjdtyn.com/jd-3618-4624-5648.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-3618 4624 5648 from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",0,1,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-368,solar-light,https://www.zsjdtyn.com/jd-368-1.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-368 from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",15,2,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-51000 52000,solar-light,https://www.zsjdtyn.com/jd-51000-52000.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-51000 52000 from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",0,1,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-88L,solar-light,https://www.zsjdtyn.com/jd-88l.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-88L from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",13,2,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-9300,solar-light,https://www.zsjdtyn.com/jd-9300.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-9300 from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",22,2,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-A500,solar-light,https://www.zsjdtyn.com/jd-a500.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-A500 from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",0,1,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-FX,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-H S,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-LS,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-M,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-Max,solar-light,https://www.zsjdtyn.com/jd-max.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-Max from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",11,2,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-T,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-UFO,solar-light,https://www.zsjdtyn.com/jd-ufo.html,https://www.zsjdtyn.com/products.html,HTTP_200,TEXT_MATCH_WEAK,"JD-UFO from China manufacturer - Zhongshan Jindian Lighting Technology Co., Ltd.",15,2,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+JINDIAN,JD-W,solar-light,,https://www.zsjdtyn.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-54HVBB,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-54HVD,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-60HVD,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-60HVH,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-72HJD,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-72HVDA,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR7-72HVH,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+LONGi,LR8-66HVDF,module,,https://www.longi.com/en/mobile-download/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,JH-40TF2,inverter-hybrid,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,JH-59TF4,inverter-hybrid,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,JH-WB2521,battery,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,JH-WB2621,battery,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,JH-WDT11,accessory,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-132LU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-132RU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-153AU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-225MU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-230AU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-300MU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-305PU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-458PU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sharp,NU-458SU,module,,https://www.sharp.co.jp/sunvista/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Business Energy Gateway,accessory,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Home Energy Gateway,accessory,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen C&I Inverter,inverter-grid,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen CommBridge,accessory,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen CommMod,accessory,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen EV AC Charger,ev-charger,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen Hybrid Inverter,inverter-hybrid,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen Power Sensor,accessory,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,Sigen Utility Inverter,inverter-grid,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenCube,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenMate,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenMicro Inverter,microinverter,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenStack,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenStor,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenStor EV DC,ev-charger,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenStor Neo,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sigenergy,SigenTerra,ess,,https://www.sigenergy.com/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,BTS 5K,battery,https://www.sofarsolar.com/product/residentialstorage/battery/BTS%205K.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,BTS 5K_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,BTS E5-E20-DS5,battery,https://www.sofarsolar.com/product/residentialstorage/battery/BTS%20E5-E20-DS5.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,BTS E5-E20-DS5_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,ESI 3-6K-S1,inverter-hybrid,https://www.sofarsolar.com/product/residentialstorage/storageinverter/ESI%203-6K-S1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,ESI 3-6K-S1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,ESI-5-12K-T1,inverter-hybrid,https://www.sofarsolar.com/product/residentialstorage/storageinverter/ESI-5-12K-T1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,ESI-5-12K-T1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,ESI-8-12K-S1,inverter-hybrid,https://www.sofarsolar.com/product/residentialstorage/storageinverter/ESI-8-12K-S1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,ESI-8-12K-S1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,ESS-215-258KLA-SA1,ess,https://www.sofarsolar.com/product/C&Istorage/Storagecabinet/ESS-215-258KLA-SA1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,ESS-215-258KLA-SA1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,ESS-261KLC-SA1,ess,https://www.sofarsolar.com/product/C&Istorage/Storagecabinet/ESS-261KLC-SA1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,ESS-261KLC-SA1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,EV11K-AC-02,ev-charger,https://www.sofarsolar.com/product/EVCharger/ACEVCharger/EV11K-AC-02.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,EV11K-AC-02_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,GTX5000S,battery,https://www.sofarsolar.com/product/residentialstorage/battery/GTX5000S.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,GTX5000S_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,HYD-3-8K-LS1-PRO,inverter-hybrid,https://www.sofarsolar.com/product/residentialstorage/storageinverter/HYD-3-8K-LS1-PRO.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,HYD-3-8K-LS1-PRO_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,HYD-40-60K-T1,inverter-hybrid,https://www.sofarsolar.com/product/C&Istorage/C&I%20ESS/HYD-40-60K-T1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,HYD-40-60K-T1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,HYD-5-20K-LT1,inverter-hybrid,https://www.sofarsolar.com/product/residentialstorage/storageinverter/HYD-5-20K-LT1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,HYD-5-20K-LT1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,PowerMagic 2.0,ess,https://www.sofarsolar.com/product/C&Istorage/C&I%20ESS/PowerMagic%202.0.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,PowerMagic 2.0_SOFAR,1,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,SF-16KWH-L1,battery,https://www.sofarsolar.com/product/residentialstorage/battery/SF-16KWH-L1.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,SF-16KWH-L1_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,SOFAR 100-125KTLX-G4,inverter-grid,https://www.sofarsolar.com/product/C&IPV/pvinverter/SOFAR%20100-125KTLX-G4.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,SOFAR 100-125KTLX-G4_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,SOFAR 15-25KTLX-G3P,inverter-grid,https://www.sofarsolar.com/product/residentialPV/pvinverter/SOFAR%2015-25KTLX-G3P.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,SOFAR 15-25KTLX-G3P_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,SOFAR 25-50KTLX-G3,inverter-grid,https://www.sofarsolar.com/product/C&IPV/pvinverter/SOFAR%2025-50KTLX-G3.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,SOFAR 25-50KTLX-G3_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SOFAR,SOFAR 3.3-12KTLX-G3,inverter-grid,https://www.sofarsolar.com/product/residentialPV/pvinverter/SOFAR%C2%A03.3-12KTLX-G3.html,https://www.sofarsolar.com/product/index.html,HTTP_200,TEXT_MATCH_WEAK,SOFAR 3.3-12KTLX-G3_SOFAR,1,0,1,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-FIT G4,inverter-hybrid,,https://vn.solaxpower.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-HYB LV,inverter-hybrid,https://vn.solaxpower.com/products/x1-hyb-lv.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,Biến tần lai SolaX X1 HYBRID LV | 3kW/4kW/5kW/6kW,20,20,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-Hybrid G4,inverter-hybrid,https://vn.solaxpower.com/products/x1-hybrid-g4.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X1 HYBRID G4 | 3kW/5kW/6kW/7.5kW Single Phase Hybrid Storage Inverter,30,20,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-Lite-LV,inverter-hybrid,https://vn.solaxpower.com/products/x1-lite-lv.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X1-LITE LV | Biến tần lai điện áp thấp một pha,17,12,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-RENO-LV,inverter-hybrid,https://vn.solaxpower.com/products/x1-reno-lv.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,X1-RENO-LV,11,4,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X1-VAST,inverter-hybrid,https://vn.solaxpower.com/products/x1-vast.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X1-VAST | 5kW 6kW 8kW10kW Single Phase Hybrid Inverter,17,16,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3 FIT G4,inverter-hybrid,,https://vn.solaxpower.com/products.html,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3-AELIO,inverter-hybrid,https://vn.solaxpower.com/products/x3-aelio-hybrid-inverter.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X3-AELIO | 49.9K 50K 60K 61K Hybrid Inverter,18,20,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3-HYB-G4 PRO,inverter-hybrid,https://vn.solaxpower.com/products/x3-hyb-g4-pro.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X3-HYB-G4 PRO | 4-15kW Inverter With Ultra-Wide MPPT Range of 110-950V,26,28,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3-HYBRID G4,inverter-hybrid,https://vn.solaxpower.com/products/x3-hybrid-g4.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X3 HYBRID G4 | 3 phase MPPT hybrid solar inverter,26,24,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3-NEO-LV,inverter-hybrid,https://vn.solaxpower.com/products/x3-neo-lv.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X3-NEO-LV | Biến tần lai điện áp thấp ba pha,31,24,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+SolaX,X3-ULTRA,inverter-hybrid,https://vn.solaxpower.com/products/x3-ultra.html,https://vn.solaxpower.com/products.html,HTTP_200,TEXT_MATCH_WEAK,SolaX X3 ULTRA | 20kw 25kW 3 phase solar hybrid inverter,20,28,0,1,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SBH100,battery,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SBR064,battery,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG125CX-P2,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG15/17/20RT-P2,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG150CX,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG5.0/6.0RS,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG5/6/7/8/10/12RT-P2,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SG8.0/9.0/10RS,inverter-grid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SH15/20/25T,inverter-hybrid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SH3.0/3.6/4.0/5.0/6.0RS,inverter-hybrid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SH5/6/8/10/12T,inverter-hybrid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,SH8.0/10RS,inverter-hybrid,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,ST255CS-2H,ess,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Sungrow,ST510CS-4H,ess,,https://www.sungrowpower.com/vt/en/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,E Class 54,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,Solar Panels Back-Contact,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,Solar Panels TOPCon Half-Cut T-Class,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,Solar Panels TOPCon Shingled,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,T Class 54,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,T Class 66,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,T5 Pro L,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,T5 Pro M,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,T5 Pro S,module,,https://www.tclsolar.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,TCL Energy Manager,module,https://www.tclsolar.com/products/tcl-energy-manager,https://www.tclsolar.com/products,HTTP_200,TEXT_MATCH_WEAK,TCL Energy Manager | AI-Powered Home Energy Management | TCL,0,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,TCL W10,ess,https://www.tclsolar.com/products/tcl-w10,https://www.tclsolar.com/products,HTTP_200,TEXT_MATCH_WEAK,TCL W10 | C&I Energy Storage System | TCL Solar,8,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,TCL X1,ess,https://www.tclsolar.com/products/tcl-x1,https://www.tclsolar.com/products,HTTP_200,TEXT_MATCH_WEAK,TCL X1 All-in-One Energy Storage System | TCL,1,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+TCL Solar,TCL X5,ess,https://www.tclsolar.com/products/tcl-x5,https://www.tclsolar.com/products,HTTP_200,TEXT_MATCH_WEAK,TCL X5 C&I Storage | Compact Battery System | TCL,2,0,0,0,0,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,NEO 600-1000M-X,microinverter,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,NEO 1600-2500M-X2,microinverter,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,NEO 2000M-X,microinverter,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MIC 750-3300TL X2(Pro),inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MIN 2500-6000TL X2(Pro),inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MIN 7000-10000TL-X/X2,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MOD 3-15KTL3 X2(Pro),inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MOD 3-33KTL3-X3,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MID 15-30KTL3 X2,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MID 36-60KTL3-X3,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MID 30-50KTL3-X2,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MAC 50-70KTL3-X LV/MV,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MAX 50-80KTL3 LV,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MAX 100-150KTL3-X2 LV/MV,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MAX 185-253KTL3-X HV,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,MAX 320-350K-X,inverter-grid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,Future-V Series,ess,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,Future-H Series,ess,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPH/SPM 8000-10000TL-HU/HU2,inverter-hybrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPE 3.5-7KTL HVM-G2,inverter-offgrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPE 8000-12000 ES,inverter-offgrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,WIT 4-15K-HU,inverter-hybrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,WIT 50-100K-HU/AU,inverter-hybrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Growatt,SPH 4000-10000TL3 BH-UP,inverter-hybrid,,https://en.growatt.com/products,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-5K-MAP0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-6K-MAP0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-8K-MAP0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-10K-MAP0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-12K-MAP0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-12K-MB0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-15K-MB0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-17K-MB0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-20K-MB0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-25K-MB0,inverter-hybrid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-2K-LB0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-3K-LB0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-4K-LB0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-5K-LB0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-6K-LB0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-8K-LC0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,SUN2000-10K-LC0,inverter-grid,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,LUNA2000-7-S1,battery,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,LUNA2000-14-S1,battery,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,LUNA2000-21-S1,battery,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN
+Huawei,MERC-600W-PA0,optimizer,,https://solar.huawei.com/vn/faqs/,NOT_INDEXED,NOT_CHECKED,,0,0,0,0,,RESEARCH_NOT_APPROVED,NONE,HIDDEN

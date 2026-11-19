@@ -1,0 +1,19 @@
+{
+  "model_keys": 217,
+  "model_spec_evidence_rows": 3780,
+  "by_brand": {
+    "Deye": 200,
+    "Huawei": 10,
+    "JINDIAN": 7
+  },
+  "models_with_conflicts": 3,
+  "models_with_public_name_overlaps": 0,
+  "cms_imported": 0,
+  "source_status": "NOT_APPROVED",
+  "notes": [
+    "Only explicit variant headings from source tables; models lacking tabular headings remain in family-level evidence CSVs",
+    "Different values for same label are retained and flagged, not silently reconciled",
+    "Overlap is against 353 public product names only; must also compare 46 hidden products before import",
+    "Brand and model heading may be mistranslated by manufacturer page; product identity must be human-reviewed"
+  ]
+}

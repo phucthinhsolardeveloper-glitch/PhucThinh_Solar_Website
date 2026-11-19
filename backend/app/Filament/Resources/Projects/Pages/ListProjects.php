@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Projects\Pages;
 
-use App\Filament\Resources\Projects\ProjectResource;
 use App\Filament\Concerns\HasInlineEditMode;
+use App\Filament\Resources\Projects\ProjectResource;
 use App\Filament\Support\AdminActor;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;

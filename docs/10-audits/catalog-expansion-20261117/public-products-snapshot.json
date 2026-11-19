@@ -1,0 +1,6881 @@
+{
+  "observed_at": "2026-11-17",
+  "public_total": 353,
+  "categories": [
+    {
+      "id": 20,
+      "name": "Đèn năng lượng mặt trời",
+      "slug": "den-nlmt",
+      "url": "/danh-muc-san-pham/den-nlmt/"
+    },
+    {
+      "id": 23,
+      "name": "Quạt năng lượng mặt trời",
+      "slug": "quat-nang-luong-mat-troi",
+      "url": "/danh-muc-san-pham/quat-nang-luong-mat-troi/"
+    },
+    {
+      "id": 21,
+      "name": "Tấm pin năng lượng mặt trời",
+      "slug": "tam-pin-nang-luong-mat-troi",
+      "url": "/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/"
+    },
+    {
+      "id": 19,
+      "name": "Biến tần (Inverter)",
+      "slug": "bien-tan-inverter",
+      "url": "/danh-muc-san-pham/bien-tan-inverter/"
+    },
+    {
+      "id": 22,
+      "name": "Pin lưu trữ",
+      "slug": "pin-luu-tru",
+      "url": "/danh-muc-san-pham/pin-luu-tru/"
+    },
+    {
+      "id": 24,
+      "name": "Bơm nước năng lượng mặt trời",
+      "slug": "bien-tan-bom",
+      "url": "/danh-muc-san-pham/bien-tan-bom/"
+    },
+    {
+      "id": 25,
+      "name": "Thiết bị & phụ kiện điện mặt trời",
+      "slug": "thiet-bi-dien-nang-luong-mat-troi",
+      "url": "/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/"
+    }
+  ],
+  "brand_counts": {
+    "Hober": 8,
+    "EPSIVO": 16,
+    "SolaX": 40,
+    "Astronergy": 5,
+    "AESOLAR": 1,
+    "Canadian Solar": 3,
+    "LONGi": 7,
+    "ORIANA": 138,
+    "BLUE CARBON": 79,
+    "JINDIAN": 31
+  },
+  "products": [
+    {
+      "id": 2199,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-18500 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-18500-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18500-500w",
+      "media": [
+        "/upload/product/jd-18500-6625-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1758000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 2196,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-8500L-NEW (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-8500l-new-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-8500l-new-500w",
+      "media": [
+        "/upload/product/jd-8500l-01-8224.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "10–12 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2298000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 884,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-18300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-18300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18300-300w",
+      "media": [
+        "/upload/product/jd-18300-8218-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 883,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-18200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-18200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18200-200w",
+      "media": [
+        "/upload/product/jd-18200-4425-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 690000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 628,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-6128 (80W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-6128-80w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-6128-80w",
+      "media": [
+        "/upload/product/jd-6128-8657.png"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "12–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 650000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 622,
+      "name": "Đèn pha năng lượng mặt trời 300W JINDIAN JD-8300L - Ánh sáng vàng",
+      "slug": "den-pha-nang-luong-mat-troi-300w-jindian-jd-8300l-anh-sang-vang",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-300w-jindian-jd-8300l-anh-sang-vang",
+      "media": [
+        "/upload/product/jd-8300l-4812-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1768000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 621,
+      "name": "Đèn pha năng lượng mặt trời 200W JINDIAN JD-8200L - Ánh sáng vàng",
+      "slug": "den-pha-nang-luong-mat-troi-200w-jindian-jd-8200l-anh-sang-vang",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-200w-jindian-jd-8200l-anh-sang-vang",
+      "media": [
+        "/upload/product/jd-8200l-8977-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1498000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 620,
+      "name": "Đèn pha năng lượng mặt trời 100W JINDIAN JD-8800L - Ánh sáng vàng",
+      "slug": "den-pha-nang-luong-mat-troi-100w-jindian-jd-8800l-anh-sang-vang",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-100w-jindian-jd-8800l-anh-sang-vang",
+      "media": [
+        "/upload/product/jd-8800l-01-2621.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1334000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 619,
+      "name": "Đèn pha năng lượng mặt trời 60W JINDIAN JD-8860L - Ánh sáng vàng",
+      "slug": "den-pha-nang-luong-mat-troi-60w-jindian-jd-8860l-anh-sang-vang",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-60w-jindian-jd-8860l-anh-sang-vang",
+      "media": [
+        "/upload/product/jd-8860l-01-6079.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 983000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 618,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-V500 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-v500-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v500-500w",
+      "media": [
+        "/upload/product/jd-v500-7208.webp"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "10–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1041000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 617,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-V300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-v300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v300-300w",
+      "media": [
+        "/upload/product/jd-v300-01-2436.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "10–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 815000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 616,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-V200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-v200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v200-200w",
+      "media": [
+        "/upload/product/jd-v200-01-6601.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "10–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 543000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 615,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-V100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-v100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v100-100w",
+      "media": [
+        "/upload/product/jd-v100-05-4440.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "10–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 423000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 598,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW6.0 (500W) - Tấm pin MONO",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww60-500w-tam-pin-mono",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww60-500w-tam-pin-mono",
+      "media": [
+        "/upload/product/bct-ww60-mono-1084-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP66",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3250000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 597,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW6.0 (500W) - Cao cấp",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww60-500w-cao-cap",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww60-500w-cao-cap",
+      "media": [
+        "/upload/product/bct-ww60-8099-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3013000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 596,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW5.0 (400W) - Tấm pin MONO",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww50-400w-tam-pin-mono",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww50-400w-tam-pin-mono",
+      "media": [
+        "/upload/product/ww50-9377.png"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2743000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 595,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW5.0 (400W) - Cao cấp",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww50-400w-cao-cap",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww50-400w-cao-cap",
+      "media": [
+        "/upload/product/ww50-2213.png"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2597000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 593,
+      "name": "Đèn pha năng lượng mặt trời 300W - BLUE CARBON BCT-WW4.0",
+      "slug": "den-pha-nang-luong-mat-troi-300w-blue-carbon-bct-ww40",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-300w-blue-carbon-bct-ww40",
+      "media": [
+        "/upload/product/bct-ww40-5480.png"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1752000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 591,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW3.0 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww30-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww30-200w",
+      "media": [
+        "/upload/product/bct-ww30-4078.png"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1369000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 589,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW2.0 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww20-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww20-100w",
+      "media": [
+        "/upload/product/bct-ww20-9576-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1229000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 587,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WW1.0 (40W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-ww10-40w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-ww10-40w",
+      "media": [
+        "/upload/product/bct-ww10-8214.png"
+      ],
+      "powerWatts": 40,
+      "quickSpecs": [
+        "40W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 670000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 586,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR6.0 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr60-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr60-500w",
+      "media": [
+        "/upload/product/bct-wr60-5640-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2491000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 585,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR5.0 (400W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr50-400w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr50-400w",
+      "media": [
+        "/upload/product/ct-wr50-4492-chuan1600.jpg"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2421000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 584,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR4.0 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr40-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr40-300w",
+      "media": [
+        "/upload/product/bct-wr40-7438.png"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1541000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 583,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR3.0 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr30-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr30-200w",
+      "media": [
+        "/upload/product/bct-wr30-6203.png"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1472000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 582,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR2.0 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr20-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr20-100w",
+      "media": [
+        "/upload/product/bct-wr20-6961.png"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1187000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 581,
+      "name": "Đèn Pha Năng Lượng Mặt Trời BLUE CARBON BCT-WR1.0 (50W)",
+      "slug": "den-pha-nang-luong-mat-troi-blue-carbon-bct-wr10-50w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr10-50w",
+      "media": [
+        "/upload/product/bct-wr10-2878.png"
+      ],
+      "powerWatts": 50,
+      "quickSpecs": [
+        "50W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 793000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 399,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-T300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-t300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w",
+      "media": [
+        "/upload/product/jd-t300-05-5973.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 860000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 398,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-T200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-t200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t200-200w",
+      "media": [
+        "/upload/product/jd-t200-05-6091.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "10–12 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 772000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 397,
+      "name": "Đèn Pha Năng Lượng Mặt Trời JINDIAN JD-T100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-jindian-jd-t100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t100-100w",
+      "media": [
+        "/upload/product/jd-t100-05-3525.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "08–10 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 460000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 358,
+      "name": "Đèn pha năng lượng mặt trời 500W JINDIAN JD-8500L",
+      "slug": "den-pha-nang-luong-mat-troi-500w-jindian-jd-8500l",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-500w-jindian-jd-8500l",
+      "media": [
+        "/upload/product/jd-8500l-clean-v1.png"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "6–8 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1950000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 357,
+      "name": "Đèn pha năng lượng mặt trời 300W JINDIAN JD-8300L",
+      "slug": "den-pha-nang-luong-mat-troi-300w-jindian-jd-8300l",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-300w-jindian-jd-8300l",
+      "media": [
+        "/upload/product/jd-8300l-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1550000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 356,
+      "name": "Đèn pha năng lượng mặt trời 200W JINDIAN JD-8200L",
+      "slug": "den-pha-nang-luong-mat-troi-200w-jindian-jd-8200l",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-200w-jindian-jd-8200l",
+      "media": [
+        "/upload/product/jd-8200l-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1357000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 355,
+      "name": "Đèn pha năng lượng mặt trời 100W JINDIAN JD-8800L",
+      "slug": "den-pha-nang-luong-mat-troi-100w-jindian-jd-8800l",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-100w-jindian-jd-8800l",
+      "media": [
+        "/upload/product/jd-8800l-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1290000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 329,
+      "name": "Đèn pha năng lượng mặt trời 60W JINDIAN JD-8860L",
+      "slug": "den-pha-nang-luong-mat-troi-60w-jindian-jd-8860l",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-60w-jindian-jd-8860l",
+      "media": [
+        "/upload/product/jd-8860l-clean-v1-9914-chuan1600.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "10–15 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 890000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 325,
+      "name": "Đèn pha năng lượng mặt trời 200W BLUE CARBON BCT-FLRP2.0",
+      "slug": "den-pha-nang-luong-mat-troi-200w-blue-carbon-bct-flrp20",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-200w-blue-carbon-bct-flrp20",
+      "media": [
+        "/upload/product/bct-flrp2-0-clean-v1.png"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1450000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 502,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB88-1000PRO (1000W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db88-1000pro-1000w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db88-1000pro-1000w",
+      "media": [
+        "/upload/product/db88-1000pro-6124-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2699000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 501,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB88-600PRO (600W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db88-600pro-600w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db88-600pro-600w",
+      "media": [
+        "/upload/product/db88-600pro-6075-chuan1600.jpg"
+      ],
+      "powerWatts": 600,
+      "quickSpecs": [
+        "600W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1986000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 500,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB88-400PRO (400W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db88-400pro-400w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db88-400pro-400w",
+      "media": [
+        "/upload/product/db88-400pro-4083-chuan1600.jpg"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1515000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 499,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB88-200PRO (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db88-200pro-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db88-200pro-200w",
+      "media": [
+        "/upload/product/db88-200pro-2651-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1167000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 498,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB3-PRO-1000W (1000W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db3-pro-1000w-1000w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db3-pro-1000w-1000w",
+      "media": [
+        "/upload/product/db3-pro-1000w-7248-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2527000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 497,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB3-PRO-800W (800W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db3-pro-800w-800w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db3-pro-800w-800w",
+      "media": [
+        "/upload/product/db3-pro-800w-8231-chuan1600.jpg"
+      ],
+      "powerWatts": 800,
+      "quickSpecs": [
+        "800W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2137000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 496,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB3-PRO-400W (400W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db3-pro-400w-400w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db3-pro-400w-400w",
+      "media": [
+        "/upload/product/db3-pro-400w-8186-chuan1600.jpg"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1603000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 495,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB3-PRO-200W (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db3-pro-200w-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db3-pro-200w-200w",
+      "media": [
+        "/upload/product/db3-pro-200w-9820-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1188000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 494,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8500-S (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8500-s-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8500-s-500w",
+      "media": [
+        "/upload/product/db-8500-s-4261-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2730000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 493,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8500 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8500-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8500-500w",
+      "media": [
+        "/upload/product/db-8500-3374-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2484000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 492,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8300-S (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8300-s-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8300-s-300w",
+      "media": [
+        "/upload/product/db-8300-s-2696-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1937000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 491,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8300-300w",
+      "media": [
+        "/upload/product/db-8300-7828-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1784000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 490,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8200-200w",
+      "media": [
+        "/upload/product/db-8200-3488-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1438000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 489,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8150 (150W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8150-150w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8150-150w",
+      "media": [
+        "/upload/product/db-8150-3507-chuan1600.jpg"
+      ],
+      "powerWatts": 150,
+      "quickSpecs": [
+        "150W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1117000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 488,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8100-100w",
+      "media": [
+        "/upload/product/db-8100-5176-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 880000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 487,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-8100P (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-8100p-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-8100p-100w",
+      "media": [
+        "/upload/product/db-8100p-3726-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 686000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 486,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-A500 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-a500-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a500-500w",
+      "media": [
+        "/upload/product/db-a500-8144-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1461000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 485,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-A300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-a300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a300-300w",
+      "media": [
+        "/upload/product/db-a300-8112-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1066000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 484,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-A200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-a200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a200-200w",
+      "media": [
+        "/upload/product/db-a200-4771-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 775000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 483,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-A100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-a100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a100-100w",
+      "media": [
+        "/upload/product/db-a100-1484-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "8–10 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 608000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 482,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-91000 (1000W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-91000-1000w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-91000-1000w",
+      "media": [
+        "/upload/product/db-91000-3841-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2488000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 481,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-9800 (800W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-9800-800w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9800-800w",
+      "media": [
+        "/upload/product/db-9800-8190-chuan1600.jpg"
+      ],
+      "powerWatts": 800,
+      "quickSpecs": [
+        "800W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2123000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 480,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-9600 (600W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-9600-600w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9600-600w",
+      "media": [
+        "/upload/product/db-9600-8064-chuan1600.jpg"
+      ],
+      "powerWatts": 600,
+      "quickSpecs": [
+        "600W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1615000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 479,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-9300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-9300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9300-300w",
+      "media": [
+        "/upload/product/db-9300-9496-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1218000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 478,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-9200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-9200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9200-200w",
+      "media": [
+        "/upload/product/db-9200-1808-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 950000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 477,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-9100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-9100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9100-100w",
+      "media": [
+        "/upload/product/db-9100-5765-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 694000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 476,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-71000 (1000W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-71000-1000w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-71000-1000w",
+      "media": [
+        "/upload/product/db-71000-9633-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2214000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 475,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-7500 (500W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-7500-500w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7500-500w",
+      "media": [
+        "/upload/product/db-7500-2048-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1803000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 474,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-7300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-7300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7300-300w",
+      "media": [
+        "/upload/product/db-7300-2634-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1346000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 473,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-7200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-7200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7200-200w",
+      "media": [
+        "/upload/product/db-7200-7520-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 980000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 472,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-7100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-7100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7100-100w",
+      "media": [
+        "/upload/product/db-7100-5628-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 755000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 471,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB-760 (60W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db-760-60w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db-760-60w",
+      "media": [
+        "/upload/product/db-760-9593-chuan1600.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 573000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 470,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB60400 (400W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db60400-400w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db60400-400w",
+      "media": [
+        "/upload/product/db60400-2251-chuan1600.jpg"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1769000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 469,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB60300 (300W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db60300-300w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db60300-300w",
+      "media": [
+        "/upload/product/db60300-5451-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1309000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 468,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB60200 (200W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db60200-200w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db60200-200w",
+      "media": [
+        "/upload/product/db60200-2310-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 979000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 467,
+      "name": "Đèn Pha Năng Lượng Mặt Trời ORIANA DB60100 (100W)",
+      "slug": "den-pha-nang-luong-mat-troi-oriana-db60100-100w",
+      "url": "/san-pham/den-pha-nang-luong-mat-troi-oriana-db60100-100w",
+      "media": [
+        "/upload/product/db60100-2128.png"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 744000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 2201,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-19600L (600W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-19600l-600w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-19600l-600w",
+      "media": [
+        "/upload/product/jd-19600l-8490-chuan1600.jpg"
+      ],
+      "powerWatts": 600,
+      "quickSpecs": [
+        "600W",
+        "8–10 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1964000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 2200,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-L2000-NEW (2000W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-l2000-new-2000w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-l2000-new-2000w",
+      "media": [
+        "/upload/product/jd-l2000-new-02-5179.jpg"
+      ],
+      "powerWatts": 2000,
+      "quickSpecs": [
+        "2000W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2373000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 636,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-L1000 (1000W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-l1000-1000w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-l1000-1000w",
+      "media": [
+        "/upload/product/jd-l1000-9107.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "IP65",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2181000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 635,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-L500 (500W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-l500-500w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-l500-500w",
+      "media": [
+        "/upload/product/jd-l500-9925-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP65",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1895000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 634,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-L2000 (2000W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-l2000-2000w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-l2000-2000w",
+      "media": [
+        "/upload/product/jd-l2000-02-5837.jpg"
+      ],
+      "powerWatts": 2000,
+      "quickSpecs": [
+        "2000W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2373000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 633,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JD-L1000 NEW (1000W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jd-l1000-new-1000w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jd-l1000-new-1000w",
+      "media": [
+        "/upload/product/jd-l1000-3608-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1925000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 632,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JDE-6500 (500W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jde-6500-500w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jde-6500-500w",
+      "media": [
+        "/upload/product/jde-6500-01-9634.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1334000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 631,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JDE-6300 NEW (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jde-6300-new-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jde-6300-new-300w",
+      "media": [
+        "/upload/product/jde-6300-new-01-3293.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1503000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 630,
+      "name": "Đèn Đường Năng Lượng Mặt Trời JINDIAN JDE-6300 (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-jindian-jde-6300-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-jindian-jde-6300-300w",
+      "media": [
+        "/upload/product/jde-6300-new-01-8591.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "14–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1300000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 629,
+      "name": "Đèn đường năng lượng mặt trời 300W JINDIAN JD-369",
+      "slug": "den-duong-nang-luong-mat-troi-300w-jindian-jd-369",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-300w-jindian-jd-369",
+      "media": [
+        "/upload/product/jd-369-300w-01-4788.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "15–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1052000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 612,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLF-140W",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-140w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-140w",
+      "media": [
+        "/upload/product/bct-olf-140w-2347-chuan1600.jpg"
+      ],
+      "powerWatts": 140,
+      "quickSpecs": [
+        "140W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 6617000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 611,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLF-120W-NEW",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-120w-new",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-120w-new",
+      "media": [
+        "/upload/product/bct-olf-120w-new-6017-chuan1600.jpg"
+      ],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 6572000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 610,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLF-100W",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-100w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olf-100w",
+      "media": [
+        "/upload/product/bct-olf-100w-6317-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5422000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 608,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK3.0P NEW (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk30p-new-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk30p-new-120w",
+      "media": [
+        "/upload/product/bct-olk30p-new-5997-chuan1600.jpg"
+      ],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 7636000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 607,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK3.0P (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk30p-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk30p-120w",
+      "media": [
+        "/upload/product/bct-olk30p-9685-chuan1600.jpg"
+      ],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 7251000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 606,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK2.0P NEW (56W) - Tấm pin 120W MONO",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-new-56w-tam-pin-120w-mono",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-new-56w-tam-pin-120w-mono",
+      "media": [
+        "/upload/product/bct-olk20p-new-2967-chuan1600.jpg"
+      ],
+      "powerWatts": 56,
+      "quickSpecs": [
+        "56W",
+        "IP66",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4372000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 605,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK2.0P (56W) - Tấm pin 135W MONO",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-135w-mono",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-135w-mono",
+      "media": [
+        "/upload/product/bct-olk20p-m135-9181-chuan1600.jpg"
+      ],
+      "powerWatts": 56,
+      "quickSpecs": [
+        "56W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3597000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 604,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK2.0P (56W) - Tấm pin 120W POLY",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-120w-poly",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-120w-poly",
+      "media": [
+        "/upload/product/bct-olk20p-p120-8423-chuan1600.jpg"
+      ],
+      "powerWatts": 56,
+      "quickSpecs": [
+        "56W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3370000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 603,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK2.0P (56W) - Tấm pin 105W MONO",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-105w-mono",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20p-56w-tam-pin-105w-mono",
+      "media": [
+        "/upload/product/bct-olk20p-m105-6017-chuan1600.jpg"
+      ],
+      "powerWatts": 56,
+      "quickSpecs": [
+        "56W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3276000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 602,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLK2.0 (36W)",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20-36w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olk20-36w",
+      "media": [
+        "/upload/product/bct-olk20-7824-chuan1600.jpg"
+      ],
+      "powerWatts": 36,
+      "quickSpecs": [
+        "36W",
+        "IP66",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2597000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 600,
+      "name": "Đèn Đường Năng Lượng Mặt Trời BLUE CARBON BCT-OLMJ1.0 (20W)",
+      "slug": "den-duong-nang-luong-mat-troi-blue-carbon-bct-olmj10-20w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-blue-carbon-bct-olmj10-20w",
+      "media": [
+        "/upload/product/bct-olmj10-1148.png"
+      ],
+      "powerWatts": 20,
+      "quickSpecs": [
+        "20W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1153000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 347,
+      "name": "Đèn đường JINDIAN-JD-L200NEW",
+      "slug": "den-duong-jindian-jd-l200new",
+      "url": "/san-pham/den-duong-jindian-jd-l200new",
+      "media": [
+        "/upload/product/jd-l200new-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "> 12 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2480000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 337,
+      "name": "Đèn Năng Lượng Mặt Trời BLUE CARBON 30W BCT - OLJ2.0",
+      "slug": "den-nang-luong-mat-troi-blue-carbon-30w-bct-olj20",
+      "url": "/san-pham/den-nang-luong-mat-troi-blue-carbon-30w-bct-olj20",
+      "media": [
+        "/upload/product/bct-olj2-0-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": 30,
+      "quickSpecs": [
+        "30W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2018000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 335,
+      "name": "Đèn đường năng lượng mặt trời 56W Blue Carbon BCT-OLK2.0P",
+      "slug": "den-duong-nang-luong-mat-troi-56w-blue-carbon-bct-olk20p",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-56w-blue-carbon-bct-olk20p",
+      "media": [
+        "/upload/product/bct-olk2-0p-clean-v1.png"
+      ],
+      "powerWatts": 56,
+      "quickSpecs": [
+        "56W",
+        "IP66",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4170000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 328,
+      "name": "Đèn đường năng lượng mặt trời 80W BLUE CARBON BCT-OLK3.0",
+      "slug": "den-duong-nang-luong-mat-troi-80w-blue-carbon-bct-olk30",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-80w-blue-carbon-bct-olk30",
+      "media": [
+        "/upload/product/bct-olk3-0-clean-v1.png"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5997000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 327,
+      "name": "Đèn đường năng lượng mặt trời 80W BLUE CARBON BCT-OLF-80W",
+      "slug": "den-duong-nang-luong-mat-troi-80w-blue-carbon-bct-olf-80w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-80w-blue-carbon-bct-olf-80w",
+      "media": [
+        "/upload/product/bct-olf-80w-clean-v1.png"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3805000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 326,
+      "name": "Đèn Năng Lượng Mặt Trời BLUE CARBON 20W BCT - OLJ1.0",
+      "slug": "den-nang-luong-mat-troi-blue-carbon-20w-bct-olj10",
+      "url": "/san-pham/den-nang-luong-mat-troi-blue-carbon-20w-bct-olj10",
+      "media": [
+        "/upload/product/bct-olj1-0-clean-v1.png"
+      ],
+      "powerWatts": 20,
+      "quickSpecs": [
+        "20W",
+        "IP66 - IK08",
+        "12–18 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1817000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 321,
+      "name": "Đèn Năng Lượng Mặt Trời ORIANA 40W | DB01-1",
+      "slug": "den-nang-luong-mat-troi-oriana-40w-db01-1",
+      "url": "/san-pham/den-nang-luong-mat-troi-oriana-40w-db01-1",
+      "media": [
+        "/upload/product/db01-1-5907-chuan1600.jpg"
+      ],
+      "powerWatts": 40,
+      "quickSpecs": [
+        "40W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2093000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 311,
+      "name": "Đèn Năng Lượng Mặt Trời ORIANA 50W – 80 AH | DB02-1",
+      "slug": "den-nang-luong-mat-troi-oriana-50w-80-ah-db02-1",
+      "url": "/san-pham/den-nang-luong-mat-troi-oriana-50w-80-ah-db02-1",
+      "media": [
+        "/upload/product/db02-1-clean-v1-chuan1600.jpg"
+      ],
+      "powerWatts": 50,
+      "quickSpecs": [
+        "50W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3117000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 530,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-19600W (600W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db-19600w-600w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db-19600w-600w",
+      "media": [
+        "/upload/product/db-19600w-1674-chuan1600.jpg"
+      ],
+      "powerWatts": 600,
+      "quickSpecs": [
+        "600W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1301000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 529,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-17400W (400W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db-17400w-400w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db-17400w-400w",
+      "media": [
+        "/upload/product/db-17400w-1303-chuan1600.jpg"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1074000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 528,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-17300W (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db-17300w-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db-17300w-300w",
+      "media": [
+        "/upload/product/db-17300w-9228-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 923000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 527,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-16400W (400W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db-16400w-400w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db-16400w-400w",
+      "media": [
+        "/upload/product/db-16400w-9113.png"
+      ],
+      "powerWatts": 400,
+      "quickSpecs": [
+        "400W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1140000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 526,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-16300W (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db-16300w-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db-16300w-300w",
+      "media": [
+        "/upload/product/pts-oriana-db-16300w-photo-20261117.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 970000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 522,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA HB01-60W (60W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-hb01-60w-60w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-hb01-60w-60w",
+      "media": [
+        "/upload/product/pts-oriana-hb01-60w-photo-20261117.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 8675000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 519,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YS-80W (80W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-ys-80w-80w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-ys-80w-80w",
+      "media": [
+        "/upload/product/pts-oriana-ys-80w-photo-20261117.jpg"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 8424000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 518,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YF-SLX-150W (150W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-yf-slx-150w-150w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-yf-slx-150w-150w",
+      "media": [
+        "/upload/product/yf-slx-150w-9464-chuan1600.jpg"
+      ],
+      "powerWatts": 150,
+      "quickSpecs": [
+        "150W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 22879000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 517,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YF-SLX-120W (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-yf-slx-120w-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-yf-slx-120w-120w",
+      "media": [
+        "/upload/product/yf-slx-120w-8317-chuan1600.jpg"
+      ],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 19859000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 516,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YF-SLX-100W (100W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-yf-slx-100w-100w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-yf-slx-100w-100w",
+      "media": [
+        "/upload/product/yf-slx-100w-3191-chuan1600.jpg"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 16258000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 515,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YF-SLX-80W (80W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-yf-slx-80w-80w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-yf-slx-80w-80w",
+      "media": [
+        "/upload/product/yf-slx-80w-8238-chuan1600.jpg"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 14845000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 514,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YF-SLX-60W (60W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-yf-slx-60w-60w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-yf-slx-60w-60w",
+      "media": [
+        "/upload/product/yf-slx-60w-01-5852-chuan1600.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 11954000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 513,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA SOLAR-LIGHT-BL120W (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-solar-light-bl120w-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-solar-light-bl120w-120w",
+      "media": [
+        "/upload/product/pts-oriana-solar-light-bl120w-alpha-qav2-20261117.png"
+      ],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 10924000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 510,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-2 (100W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db03-2-100w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db03-2-100w",
+      "media": [
+        "/upload/product/pts-oriana-db03-2-alpha-qav2-20261117.png"
+      ],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 8476000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 509,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-1 (80W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db03-1-80w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db03-1-80w",
+      "media": [
+        "/upload/product/db03-1-01-2023-chuan1600.jpg"
+      ],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4884000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 508,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB02-3 (60W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db02-3-60w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db02-3-60w",
+      "media": [
+        "/upload/product/db02-3-3975-chuan1600.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "IP66",
+        "10–14 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3663000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 507,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB02-2 (60W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db02-2-60w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db02-2-60w",
+      "media": [
+        "/upload/product/db02-8027-chuan1600.jpg"
+      ],
+      "powerWatts": 60,
+      "quickSpecs": [
+        "60W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3470000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 506,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB01-ECO (30W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db01-eco-30w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db01-eco-30w",
+      "media": [
+        "/upload/product/db01-eco-8235-chuan1600.jpg"
+      ],
+      "powerWatts": 30,
+      "quickSpecs": [
+        "30W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1715000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 505,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB6300S (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db6300s-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db6300s-300w",
+      "media": [
+        "/upload/product/db6300s-4577-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1433000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 504,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB6300 (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db6300-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db6300-300w",
+      "media": [
+        "/upload/product/db6300-5026-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1230000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 503,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB369 (300W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db369-300w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db369-300w",
+      "media": [
+        "/upload/product/db369-3185-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1023000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 525,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA HB02-120W (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-hb02-120w-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-hb02-120w-120w",
+      "media": [],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 15196000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 524,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA HB02-100W (100W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-hb02-100w-100w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-hb02-100w-100w",
+      "media": [],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 12500000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 523,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA HB02-80W (80W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-hb02-80w-80w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-hb02-80w-80w",
+      "media": [],
+      "powerWatts": 80,
+      "quickSpecs": [
+        "80W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 10587000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 521,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YS-120W (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-ys-120w-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-ys-120w-120w",
+      "media": [],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 19429000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 520,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YS-100W (100W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-ys-100w-100w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-ys-100w-100w",
+      "media": [],
+      "powerWatts": 100,
+      "quickSpecs": [
+        "100W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 18255000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 512,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-4 (150W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db03-4-150w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db03-4-150w",
+      "media": [],
+      "powerWatts": 150,
+      "quickSpecs": [
+        "150W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 12518000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 511,
+      "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-3 (120W)",
+      "slug": "den-duong-nang-luong-mat-troi-oriana-db03-3-120w",
+      "url": "/san-pham/den-duong-nang-luong-mat-troi-oriana-db03-3-120w",
+      "media": [],
+      "powerWatts": 120,
+      "quickSpecs": [
+        "120W",
+        "IP66",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 9040000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 732,
+      "name": "Đèn sân vườn V600 ORIANA",
+      "slug": "den-san-vuon-v600-oriana",
+      "url": "/san-pham/den-san-vuon-v600-oriana",
+      "media": [
+        "/upload/product/v600-oriana-9592.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP65"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1356000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 730,
+      "name": "Đèn sân vườn T600 ORIANA",
+      "slug": "den-san-vuon-t600-oriana",
+      "url": "/san-pham/den-san-vuon-t600-oriana",
+      "media": [
+        "/upload/product/t600-2918-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP65"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1283000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 729,
+      "name": "Đèn Treo Tường Cổ Điển ORIANA WL-0412 (230x300HxH530)",
+      "slug": "den-treo-tuong-co-dien-oriana-wl-0412-230x300hxh530",
+      "url": "/san-pham/den-treo-tuong-co-dien-oriana-wl-0412-230x300hxh530",
+      "media": [
+        "/upload/product/wl-0412-9201-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1101000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 728,
+      "name": "Đèn Treo Tường Cổ Điển ORIANA WL-0411 (230x310xH500)",
+      "slug": "den-treo-tuong-co-dien-oriana-wl-0411-230x310xh500",
+      "url": "/san-pham/den-treo-tuong-co-dien-oriana-wl-0411-230x310xh500",
+      "media": [
+        "/upload/product/wl-0411-5084-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1173000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 727,
+      "name": "Đèn Treo Tường Cổ Điển ORIANA WL-0410 (230x300HxH520)",
+      "slug": "den-treo-tuong-co-dien-oriana-wl-0410-230x300hxh520",
+      "url": "/san-pham/den-treo-tuong-co-dien-oriana-wl-0410-230x300hxh520",
+      "media": [
+        "/upload/product/wl-0410-2054-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1439000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 726,
+      "name": "Đèn Treo Tường Mái Chùa ORIANA WL-0402 (200x240xH800)",
+      "slug": "den-treo-tuong-mai-chua-oriana-wl-0402-200x240xh800",
+      "url": "/san-pham/den-treo-tuong-mai-chua-oriana-wl-0402-200x240xh800",
+      "media": [
+        "/upload/product/wl-0402-200x240xh800-2854-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1485000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 725,
+      "name": "Đèn Treo Tường Mái Chùa ORIANA WL-0402 (200x240xH600)",
+      "slug": "den-treo-tuong-mai-chua-oriana-wl-0402-200x240xh600",
+      "url": "/san-pham/den-treo-tuong-mai-chua-oriana-wl-0402-200x240xh600",
+      "media": [
+        "/upload/product/wl-0402-200x240xh600-8449-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1230000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 724,
+      "name": "Đèn Treo Tường Mái Chùa ORIANA WL-0401 (200x240xH800)",
+      "slug": "den-treo-tuong-mai-chua-oriana-wl-0401-200x240xh800",
+      "url": "/san-pham/den-treo-tuong-mai-chua-oriana-wl-0401-200x240xh800",
+      "media": [
+        "/upload/product/wl-0401-8826-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1485000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 723,
+      "name": "Đèn Treo Tường Mái Chùa ORIANA WL-0401 (200x240xH600)",
+      "slug": "den-treo-tuong-mai-chua-oriana-wl-0401-200x240xh600",
+      "url": "/san-pham/den-treo-tuong-mai-chua-oriana-wl-0401-200x240xh600",
+      "media": [
+        "/upload/product/wl-0401-8798-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1230000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 722,
+      "name": "Đèn Treo Tường Tháp Vuông ORIANA WL-0407 (205x205xH580)",
+      "slug": "den-treo-tuong-thap-vuong-oriana-wl-0407-205x205xh580",
+      "url": "/san-pham/den-treo-tuong-thap-vuong-oriana-wl-0407-205x205xh580",
+      "media": [
+        "/upload/product/wl-0407-4564-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1164000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 721,
+      "name": "Đèn Treo Tường Tháp Vuông ORIANA WL-0407 (205x205xH360)",
+      "slug": "den-treo-tuong-thap-vuong-oriana-wl-0407-205x205xh360",
+      "url": "/san-pham/den-treo-tuong-thap-vuong-oriana-wl-0407-205x205xh360",
+      "media": [
+        "/upload/product/wl-0407-7696-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 965000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 720,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0213 (230x230xH420)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0213-230x230xh420",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0213-230x230xh420",
+      "media": [
+        "/upload/product/pl-0213-4073-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 841000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 719,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0211 (340x340xH550)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0211-340x340xh550",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0211-340x340xh550",
+      "media": [
+        "/upload/product/pl-0211-3809-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1716000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 718,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0211 (250x250xH470)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0211-250x250xh470",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0211-250x250xh470",
+      "media": [
+        "/upload/product/pl-0211-9282-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 897000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 717,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0210 (340x340xH550)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0210-340x340xh550",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0210-340x340xh550",
+      "media": [
+        "/upload/product/pl-0210-5879-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1723000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 716,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0210 (250x250xH470)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0210-250x250xh470",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0210-250x250xh470",
+      "media": [
+        "/upload/product/pl-0210-1065-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 924000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 715,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0209 (340x340xH550)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0209-340x340xh550",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0209-340x340xh550",
+      "media": [
+        "/upload/product/pl-0209-1467-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1716000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 714,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0209 (250x250xH470)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0209-250x250xh470",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0209-250x250xh470",
+      "media": [
+        "/upload/product/pl-0209-3784-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 897000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 713,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0209 (200x200xH380)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0209-200x200xh380",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0209-200x200xh380",
+      "media": [
+        "/upload/product/pl-0209-5993-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 582000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 712,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0304 (320x320xH640)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0304-320x320xh640",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0304-320x320xh640",
+      "media": [
+        "/upload/product/pl-0304-6734-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2492000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 711,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0304 (240x240xH480)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0304-240x240xh480",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0304-240x240xh480",
+      "media": [
+        "/upload/product/pl-0304-8869-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1199000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 710,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0304 (180x180xH400)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0304-180x180xh400",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0304-180x180xh400",
+      "media": [
+        "/upload/product/pl-0304-3936-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 989000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 709,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0301 (240x240xH480)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0301-240x240xh480",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0301-240x240xh480",
+      "media": [
+        "/upload/product/pl-0301-6881-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1297000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 708,
+      "name": "Đèn Trụ Cổng Tháp Mái Chùa ORIANA PL-0301 (180x180xH400)",
+      "slug": "den-tru-cong-thap-mai-chua-oriana-pl-0301-180x180xh400",
+      "url": "/san-pham/den-tru-cong-thap-mai-chua-oriana-pl-0301-180x180xh400",
+      "media": [
+        "/upload/product/pl-0301-8365-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 941000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 707,
+      "name": "Đèn Trụ Cổng Tháp Vuông ORIANA SL-0507 (W250×H600)",
+      "slug": "den-tru-cong-thap-vuong-oriana-sl-0507-w250h600",
+      "url": "/san-pham/den-tru-cong-thap-vuong-oriana-sl-0507-w250h600",
+      "media": [
+        "/upload/product/pl-0507-9767-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1223000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 706,
+      "name": "Đèn Trụ Cổng Tháp Vuông ORIANA SL-0507 (W200×H400)",
+      "slug": "den-tru-cong-thap-vuong-oriana-sl-0507-w200h400",
+      "url": "/san-pham/den-tru-cong-thap-vuong-oriana-sl-0507-w200h400",
+      "media": [
+        "/upload/product/pl-0507-6255-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 967000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 705,
+      "name": "Đèn Trụ Cổng Tháp Vuông ORIANA SL-0506 (W250×H600)",
+      "slug": "den-tru-cong-thap-vuong-oriana-sl-0506-w250h600",
+      "url": "/san-pham/den-tru-cong-thap-vuong-oriana-sl-0506-w250h600",
+      "media": [
+        "/upload/product/pl-0506-8158-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1223000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 704,
+      "name": "Đèn Trụ Cổng Tháp Vuông ORIANA SL-0506 (W200×H400)",
+      "slug": "den-tru-cong-thap-vuong-oriana-sl-0506-w200h400",
+      "url": "/san-pham/den-tru-cong-thap-vuong-oriana-sl-0506-w200h400",
+      "media": [
+        "/upload/product/pl-0506-5545-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 967000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 702,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0313 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0313-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0313-300300h380",
+      "media": [
+        "/upload/product/pl-0313-6934.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1128000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 701,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0313 (250×250×H300)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0313-250250h300",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0313-250250h300",
+      "media": [
+        "/upload/product/pl-0313-2063.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 936000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 700,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0312 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0312-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0312-300300h380",
+      "media": [
+        "/upload/product/pl-0312-7428-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1313000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 699,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0312 (250×250×H300)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0312-250250h300",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0312-250250h300",
+      "media": [
+        "/upload/product/pl-0312-4311-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1010000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 698,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0312 (200×200×H240)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0312-200200h240",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0312-200200h240",
+      "media": [
+        "/upload/product/pl-0312-4181-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 909000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 697,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0311 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0311-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0311-300300h380",
+      "media": [
+        "/upload/product/pl-0311-6761.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1245000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 696,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0311 (250×250×H300)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0311-250250h300",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0311-250250h300",
+      "media": [
+        "/upload/product/pl-0311-8173.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1010000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 695,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0310 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0310-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0310-300300h380",
+      "media": [
+        "/upload/product/pl-0310-6134-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1217000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 694,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0310 (W250×E250×H300)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0310-w250e250h300",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0310-w250e250h300",
+      "media": [
+        "/upload/product/pl-0310-7531-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 965000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 693,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0309 (400×400×H450)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0309-400400h450",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0309-400400h450",
+      "media": [
+        "/upload/product/pl-0309-3367-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1773000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 692,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0309 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0309-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0309-300300h380",
+      "media": [
+        "/upload/product/pl-0309-9341-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1197000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 691,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0309 (250×250×H300)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0309-250250h300",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0309-250250h300",
+      "media": [
+        "/upload/product/pl-0309-7975-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 888000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 690,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0308 (400×400×H450)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0308-400400h450",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0308-400400h450",
+      "media": [
+        "/upload/product/pl-0308-4230-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1773000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 689,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0308 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0308-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0308-300300h380",
+      "media": [
+        "/upload/product/pl-0308-6634-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1217000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 688,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0308 (250×250×H350)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0308-250250h350",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0308-250250h350",
+      "media": [
+        "/upload/product/pl-0308-2946-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 965000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 687,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0307 (300×300×H380)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0307-300300h380",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0307-300300h380",
+      "media": [
+        "/upload/product/pts-oriana-pl-0307-300x300-h380-photo-20261117.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 931000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 685,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0306 (300x300xH430)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0306-300x300xh430",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0306-300x300xh430",
+      "media": [
+        "/upload/product/pl-0306-7756-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1317000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 684,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0306 (250x250xH350)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0306-250x250xh350",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0306-250x250xh350",
+      "media": [
+        "/upload/product/pl-0306-3205-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1013000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 683,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0305 (300x300xH430)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0305-300x300xh430",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0305-300x300xh430",
+      "media": [
+        "/upload/product/pl-0305-5248-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1287000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 682,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0305 (250x250xH350)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0305-250x250xh350",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0305-250x250xh350",
+      "media": [
+        "/upload/product/pl-0305-3946-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 965000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 681,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0205 (300x300xH300)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0205-300x300xh300",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0205-300x300xh300",
+      "media": [
+        "/upload/product/pl-0205-2022.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1391000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 680,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0205 (250x250xH250)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0205-250x250xh250",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0205-250x250xh250",
+      "media": [
+        "/upload/product/pl-0205-7013.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 983000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 679,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0113 (380x380xH300)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0113-380x380xh300",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0113-380x380xh300",
+      "media": [
+        "/upload/product/pl-0113-7993-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1557000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 678,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0113 (300x300xH240)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0113-300x300xh240",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0113-300x300xh240",
+      "media": [
+        "/upload/product/pl-0113-9842-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1039000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 677,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0113 (220x220xH190)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0113-220x220xh190",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0113-220x220xh190",
+      "media": [
+        "/upload/product/pl-0113-5812-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 835000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 676,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0112 (380x380xH300)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0112-380x380xh300",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0112-380x380xh300",
+      "media": [
+        "/upload/product/pl-0112-5375-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1547000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 675,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0112 (300x300xH240)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0112-300x300xh240",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0112-300x300xh240",
+      "media": [
+        "/upload/product/pl-0112-3435-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1039000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 674,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0111 (300x300xH240)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0111-300x300xh240",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0111-300x300xh240",
+      "media": [
+        "/upload/product/pl-0111-4255-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1039000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 673,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0111 (220x220xH190)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0111-220x220xh190",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0111-220x220xh190",
+      "media": [
+        "/upload/product/pl-0111-5534-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 835000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 672,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0110 (380x380xH300)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0110-380x380xh300",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0110-380x380xh300",
+      "media": [
+        "/upload/product/pl-0110-4215-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1557000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 671,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0110 (300x300xH240)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0110-300x300xh240",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0110-300x300xh240",
+      "media": [
+        "/upload/product/pl-0110-4481-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1039000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 670,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0109 (380x380xH300)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0109-380x380xh300",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0109-380x380xh300",
+      "media": [
+        "/upload/product/pl-0109-7064-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1557000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 669,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0109 (300x300xH240)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0109-300x300xh240",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0109-300x300xh240",
+      "media": [
+        "/upload/product/pl-0109-1497-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1039000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 668,
+      "name": "Đèn Trụ Cổng Vuông ORIANA PL-0109 (220x220xH190)",
+      "slug": "den-tru-cong-vuong-oriana-pl-0109-220x220xh190",
+      "url": "/san-pham/den-tru-cong-vuong-oriana-pl-0109-220x220xh190",
+      "media": [
+        "/upload/product/pl-0109-7307-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 835000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 354,
+      "name": "Đèn pha cắm cỏ sân vườn (15W)",
+      "slug": "den-pha-cam-co-san-vuon-15w",
+      "url": "/san-pham/den-pha-cam-co-san-vuon-15w",
+      "media": [
+        "/upload/product/product-354-clean-v1.png"
+      ],
+      "powerWatts": 15,
+      "quickSpecs": [
+        "15W",
+        "IP65",
+        "5–7 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 270000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 336,
+      "name": "Đèn sân vườn năng lượng mặt trời 10W BLUE CARBON BCT-OLG1.0",
+      "slug": "den-san-vuon-nang-luong-mat-troi-10w-blue-carbon-bct-olg10",
+      "url": "/san-pham/den-san-vuon-nang-luong-mat-troi-10w-blue-carbon-bct-olg10",
+      "media": [
+        "/upload/product/bct-olg1-0-clean-v1.png"
+      ],
+      "powerWatts": 10,
+      "quickSpecs": [
+        "10W",
+        "IP66 - IK08",
+        "Chiếu sáng cả đêm / kiểm soát năng lượng"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1183000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 324,
+      "name": "Đèn sân vườn năng lượng mặt trời 15W BLUE CARBON BCT-OLP1.0",
+      "slug": "den-san-vuon-nang-luong-mat-troi-15w-blue-carbon-bct-olp10",
+      "url": "/san-pham/den-san-vuon-nang-luong-mat-troi-15w-blue-carbon-bct-olp10",
+      "media": [
+        "/upload/product/bct-olp1-0-clean-v1.png"
+      ],
+      "powerWatts": 15,
+      "quickSpecs": [
+        "15W",
+        "IP66 - IK08",
+        "Chiếu sáng cả đêm / kiểm soát năng lượng thông minh"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1355000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 731,
+      "name": "Đèn sân vườn T800 ORIANA",
+      "slug": "den-san-vuon-t800-oriana",
+      "url": "/san-pham/den-san-vuon-t800-oriana",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP65"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1474000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 703,
+      "name": "Đèn Trụ Cổng M25 ORIANA",
+      "slug": "den-tru-cong-m25-oriana",
+      "url": "/san-pham/den-tru-cong-m25-oriana",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [
+        "6–8 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 959000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 686,
+      "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0307 (250×250×H350)",
+      "slug": "den-tru-cong-mai-chua-oriana-pl-0307-250250h350",
+      "url": "/san-pham/den-tru-cong-mai-chua-oriana-pl-0307-250250h350",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [
+        "24 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 725000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 3794,
+      "name": "Đèn UFO Năng Lượng Mặt Trời ORIANA UFO-1000 (1000W)",
+      "slug": "den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w",
+      "url": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w",
+      "media": [
+        "/upload/product/ufo-1000-7494-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "IP65",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1235000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 3793,
+      "name": "Đèn UFO Năng Lượng Mặt Trời ORIANA UFO500 (500W)",
+      "slug": "den-ufo-nang-luong-mat-troi-oriana-ufo500-500w",
+      "url": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo500-500w",
+      "media": [
+        "/upload/product/ufo-500-9154-chuan1600.jpg"
+      ],
+      "powerWatts": 500,
+      "quickSpecs": [
+        "500W",
+        "IP67",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1144000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 533,
+      "name": "Đèn UFO Năng Lượng Mặt Trời ORIANA DB-UFO1000 (1000W)",
+      "slug": "den-ufo-nang-luong-mat-troi-oriana-db-ufo1000-1000w",
+      "url": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-db-ufo1000-1000w",
+      "media": [
+        "/upload/product/db-ufo1000-7247-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1439000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 881,
+      "name": "Đèn ốp trần năng lượng mặt trời ORIANA JDL-OT400",
+      "slug": "den-op-tran-nang-luong-mat-troi-oriana-jdl-ot400",
+      "url": "/san-pham/den-op-tran-nang-luong-mat-troi-oriana-jdl-ot400",
+      "media": [
+        "/upload/product/jdl-ot400-9457-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1174000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 343,
+      "name": "Đèn ốp trần JD-L400",
+      "slug": "den-op-tran-jd-l400",
+      "url": "/san-pham/den-op-tran-jd-l400",
+      "media": [
+        "/upload/product/jd-l400-clean-v1.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 970000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 535,
+      "name": "Đèn Ốp Trần Năng Lượng Mặt Trời ORIANA DB-OT1000 (1000W)",
+      "slug": "den-op-tran-nang-luong-mat-troi-oriana-db-ot1000-1000w",
+      "url": "/san-pham/den-op-tran-nang-luong-mat-troi-oriana-db-ot1000-1000w",
+      "media": [
+        "/upload/product/db-ot1000-8861-chuan1600.jpg"
+      ],
+      "powerWatts": 1000,
+      "quickSpecs": [
+        "1000W",
+        "12–16 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1411000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 874,
+      "name": "Biến tần bơm NLMT Hober HSPH26KH",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph26kh",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph26kh",
+      "media": [
+        "/upload/product/hoberhshp5500h-2108.png"
+      ],
+      "powerWatts": 26000,
+      "quickSpecs": [
+        "26000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 43256000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 873,
+      "name": "Biến tần bơm NLMT Hober HSPH22KH",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph22kh",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph22kh",
+      "media": [
+        "/upload/product/hoberhshp5500h-7214.png"
+      ],
+      "powerWatts": 22000,
+      "quickSpecs": [
+        "22000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 32585000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 872,
+      "name": "Biến tần bơm NLMT Hober HSPH18KH",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph18kh",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph18kh",
+      "media": [
+        "/upload/product/hoberhshp5500h-8605.png"
+      ],
+      "powerWatts": 18000,
+      "quickSpecs": [
+        "18000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 28198000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 871,
+      "name": "Biến tần bơm NLMT Hober HSPH15KH",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph15kh",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph15kh",
+      "media": [
+        "/upload/product/hoberhshp5500h-8580.png"
+      ],
+      "powerWatts": 15000,
+      "quickSpecs": [
+        "15000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 22451000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 870,
+      "name": "Biến tần bơm NLMT Hober HSPH11KH",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph11kh",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph11kh",
+      "media": [
+        "/upload/product/hoberhshp5500h-3254.png"
+      ],
+      "powerWatts": 11000,
+      "quickSpecs": [
+        "11000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 20806000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 869,
+      "name": "Biến tần bơm NLMT Hober HSPH9200H",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hsph9200h",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hsph9200h",
+      "media": [
+        "/upload/product/hoberhshp5500h-1045.png"
+      ],
+      "powerWatts": 9200,
+      "quickSpecs": [
+        "9200W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 21324000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 868,
+      "name": "Biến tần bơm NLMT Hober HSHP7500H",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hshp7500h",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hshp7500h",
+      "media": [
+        "/upload/product/hoberhshp5500h-3621.png"
+      ],
+      "powerWatts": 7500,
+      "quickSpecs": [
+        "7500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 19164000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 867,
+      "name": "Biến tần bơm NLMT Hober HSHP5500H",
+      "slug": "bien-tan-bom-nlmt-hober-hober-hshp5500h",
+      "url": "/san-pham/bien-tan-bom-nlmt-hober-hober-hshp5500h",
+      "media": [
+        "/upload/product/hoberhshp5500h-8159.png"
+      ],
+      "powerWatts": 5500,
+      "quickSpecs": [
+        "5500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 17248000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 865,
+      "name": "Máy bơm năng lượng mặt trời EPSIVO Máy bơm NLMT công suất 1,5kW- 4SSC9/130-AD192/1500",
+      "slug": "may-bom-nang-luong-mat-troi-epsivo-may-bom-nlmt-cong-suat-15kw-4ssc9130-ad1921500",
+      "url": "/san-pham/may-bom-nang-luong-mat-troi-epsivo-may-bom-nlmt-cong-suat-15kw-4ssc9130-ad1921500",
+      "media": [
+        "/upload/product/4ssc9-130-ad192-1500-9179.png"
+      ],
+      "powerWatts": 1500,
+      "quickSpecs": [
+        "1500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 12200000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 863,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T37G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t37g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t37g",
+      "media": [
+        "/upload/product/epv230-4tt-1440-chuan1600.jpg"
+      ],
+      "powerWatts": 37000,
+      "quickSpecs": [
+        "37000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 20243000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 862,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T30G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t30g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t30g",
+      "media": [
+        "/upload/product/epv300-4t22g-4823.png"
+      ],
+      "powerWatts": 30000,
+      "quickSpecs": [
+        "30000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 18710000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 861,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T22G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t22g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t22g",
+      "media": [
+        "/upload/product/epv300-4t22g-3203.png"
+      ],
+      "powerWatts": 22000,
+      "quickSpecs": [
+        "22000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 14114000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 860,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T18.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t185g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t185g",
+      "media": [
+        "/upload/product/epv300-4t22g-6108.png"
+      ],
+      "powerWatts": 18500,
+      "quickSpecs": [
+        "18500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 11762000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 859,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T15G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t15g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t15g",
+      "media": [
+        "/upload/product/epv300-4t22g-3659.png"
+      ],
+      "powerWatts": 15000,
+      "quickSpecs": [
+        "15000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 11051000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 858,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T11G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t11g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t11g",
+      "media": [
+        "/upload/product/epv230-4tt-7817-chuan1600.jpg"
+      ],
+      "powerWatts": 11000,
+      "quickSpecs": [
+        "11000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 8315000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 857,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T7.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t75g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t75g",
+      "media": [
+        "/upload/product/epv230-4tt-6169-chuan1600.jpg"
+      ],
+      "powerWatts": 7500,
+      "quickSpecs": [
+        "7500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 6730000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 856,
+      "name": "Biến tần bơm NLMT EPSIVO EPV300-4T5.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv300-4t55g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv300-4t55g",
+      "media": [
+        "/upload/product/epv230-4tt-8809-chuan1600.jpg"
+      ],
+      "powerWatts": 5500,
+      "quickSpecs": [
+        "5500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5746000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 855,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T18.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t185g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t185g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-7630.png"
+      ],
+      "powerWatts": 18500,
+      "quickSpecs": [
+        "18500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 10122000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 854,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T15G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t15g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t15g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-9988.png"
+      ],
+      "powerWatts": 15000,
+      "quickSpecs": [
+        "15000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 9026000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 853,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T11G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t11g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t11g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-9143.png"
+      ],
+      "powerWatts": 11000,
+      "quickSpecs": [
+        "11000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 6182000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 852,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T7.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t75g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t75g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-9494.png"
+      ],
+      "powerWatts": 7500,
+      "quickSpecs": [
+        "7500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5580000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 851,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T5.5G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t55g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t55g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-9485.png"
+      ],
+      "powerWatts": 5500,
+      "quickSpecs": [
+        "5500W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4273000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 850,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T4.0G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t40g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t40g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-1284.png"
+      ],
+      "powerWatts": 4000,
+      "quickSpecs": [
+        "4000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3942000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 849,
+      "name": "Biến tần bơm NLMT EPSIVO EPV230-4T2.2G",
+      "slug": "bien-tan-bom-nlmt-epsivo-epv230-4t22g",
+      "url": "/san-pham/bien-tan-bom-nlmt-epsivo-epv230-4t22g",
+      "media": [
+        "/upload/product/epv230-4t22g-2-1228.png"
+      ],
+      "powerWatts": 2200,
+      "quickSpecs": [
+        "2200W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3558000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 848,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX T-BAT TSYS-LD160",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-ld160",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-ld160",
+      "media": [
+        "/upload/product/t-battsys-ld160-2-7330.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP40"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 54061000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 847,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX T-BAT-SYS-LV D150 Pro",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro",
+      "media": [
+        "/upload/product/t-bat-sys-lvd150pro-3-6450.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP65"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 56538000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 846,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX T-BAT TSYS-D53 Áp thấp Triple LD 53",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-d53-ap-thap-triple-ld-53",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-t-bat-tsys-d53-ap-thap-triple-ld-53",
+      "media": [
+        "/upload/product/t-bat-tsys-d53-2-4295-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP65"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 31238000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 845,
+      "name": "Hệ thống lưu trữ SolaX AELIO P60B200 200KWH",
+      "slug": "he-thong-luu-tru-solax-aelio-p60b200-200kwh",
+      "url": "/san-pham/he-thong-luu-tru-solax-aelio-p60b200-200kwh",
+      "media": [
+        "/upload/product/aelio-p60b200-200-2-3739.png"
+      ],
+      "powerWatts": 60000,
+      "quickSpecs": [
+        "60000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1852573000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 844,
+      "name": "Hệ thống lưu trữ SolaX AELIO P60B200 100KWH",
+      "slug": "he-thong-luu-tru-solax-aelio-p60b200-100kwh",
+      "url": "/san-pham/he-thong-luu-tru-solax-aelio-p60b200-100kwh",
+      "media": [
+        "/upload/product/aelio-p60b200-100-3-9068.png"
+      ],
+      "powerWatts": 60000,
+      "quickSpecs": [
+        "60000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1038923000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 843,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX AELIO P60B100 50KW HYBRID INVERTER",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-aelio-p60b100-50kw-hybrid-inverter",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-aelio-p60b100-50kw-hybrid-inverter",
+      "media": [
+        "/upload/product/aeliop60b100-2-3935.png"
+      ],
+      "powerWatts": 50000,
+      "quickSpecs": [
+        "50000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1838215000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 842,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX AELIO P50B100 50KW HYBRID INVERTER",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-aelio-p50b100-50kw-hybrid-inverter",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-aelio-p50b100-50kw-hybrid-inverter",
+      "media": [
+        "/upload/product/aeliop50b100-2-8527.png"
+      ],
+      "powerWatts": 50000,
+      "quickSpecs": [
+        "50000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1024564000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 841,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX TRENE-P125B261L AC couple Cabinet Storage",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-trene-p125b261l-ac-couple-cabinet-storage",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-trene-p125b261l-ac-couple-cabinet-storage",
+      "media": [
+        "/upload/product/solax-ess-trene-125kw-261kwh-3-2336.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1692731000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 840,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX TRENE-P100B215-I AC couple Cabinet Storage",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-trene-p100b215-i-ac-couple-cabinet-storage",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-trene-p100b215-i-ac-couple-cabinet-storage",
+      "media": [
+        "/upload/product/trene-p100b215-2-7774.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1412621000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 839,
+      "name": "Pin lưu trữ/Hệ thống lưu trữ SolaX ESS-AC-TRENE 125KW/261KW",
+      "slug": "pin-luu-truhe-thong-luu-tru-solax-ess-ac-trene-125kw261kw",
+      "url": "/san-pham/pin-luu-truhe-thong-luu-tru-solax-ess-ac-trene-125kw261kw",
+      "media": [
+        "/upload/product/solax-ess-trene-125kw-261kwh-9271.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP66"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1285051000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 838,
+      "name": "Inverter SolaX Data HUB EMS 1000 Pro",
+      "slug": "inverter-solax-data-hub-ems-1000-pro",
+      "url": "/san-pham/inverter-solax-data-hub-ems-1000-pro",
+      "media": [
+        "/upload/product/76bd0ac16e-2085.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 26437000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 837,
+      "name": "Inverter SolaX Metter 3 phase + CT 200A (CHINT)",
+      "slug": "inverter-solax-metter-3-phase-ct-200a-chint",
+      "url": "/san-pham/inverter-solax-metter-3-phase-ct-200a-chint",
+      "media": [
+        "/upload/product/metter3phasect100a-2-9991.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5980000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 836,
+      "name": "Inverter SolaX Metter 3 phase + CT 100A",
+      "slug": "inverter-solax-metter-3-phase-ct-100a",
+      "url": "/san-pham/inverter-solax-metter-3-phase-ct-100a",
+      "media": [
+        "/upload/product/solax-metter-3-phase-2708.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3893000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 834,
+      "name": "Inverter SolaX X3-FORTH-150 plus",
+      "slug": "inverter-solax-x3-forth-150-plus",
+      "url": "/san-pham/inverter-solax-x3-forth-150-plus",
+      "media": [
+        "/upload/product/x3-forth-g2-80-1-7345.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP66"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 150456000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 833,
+      "name": "Inverter SolaX X3-FORTH-125 plus",
+      "slug": "inverter-solax-x3-forth-125-plus",
+      "url": "/san-pham/inverter-solax-x3-forth-125-plus",
+      "media": [
+        "/upload/product/x3-forth-g2-80-1-8920.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP66"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 123454000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 832,
+      "name": "Inverter SolaX X3-FORTH-99.9",
+      "slug": "inverter-solax-x3-forth-999",
+      "url": "/san-pham/inverter-solax-x3-forth-999",
+      "media": [
+        "/upload/product/x3-forth-g2-80-1-8300.png"
+      ],
+      "powerWatts": 99900,
+      "quickSpecs": [
+        "99900W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 105831000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 831,
+      "name": "Inverter SolaX X3-FORTH -G2-80",
+      "slug": "inverter-solax-x3-forth-g2-80",
+      "url": "/san-pham/inverter-solax-x3-forth-g2-80",
+      "media": [
+        "/upload/product/x3-forth-g2-80-1-7255.png"
+      ],
+      "powerWatts": 80000,
+      "quickSpecs": [
+        "80000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 101253000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 830,
+      "name": "Inverter SolaX X3-MEGA -G2-60",
+      "slug": "inverter-solax-x3-mega-g2-60",
+      "url": "/san-pham/inverter-solax-x3-mega-g2-60",
+      "media": [
+        "/upload/product/x3-mega-g2-60-1-6505.png"
+      ],
+      "powerWatts": 60000,
+      "quickSpecs": [
+        "60000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 66106000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 829,
+      "name": "Inverter SolaX X3- MEGA- 50",
+      "slug": "inverter-solax-x3-mega-50",
+      "url": "/san-pham/inverter-solax-x3-mega-50",
+      "media": [
+        "/upload/product/x3-mega-50-1-6539.png"
+      ],
+      "powerWatts": 50000,
+      "quickSpecs": [
+        "50000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 57498000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 828,
+      "name": "Inverter SolaX X3-PRO- 30",
+      "slug": "inverter-solax-x3-pro-30",
+      "url": "/san-pham/inverter-solax-x3-pro-30",
+      "media": [
+        "/upload/product/x3-pro-30-2-9905-chuan1600.jpg"
+      ],
+      "powerWatts": 30000,
+      "quickSpecs": [
+        "30000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 39088000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 827,
+      "name": "Inverter SolaX X3-PRO- 20",
+      "slug": "inverter-solax-x3-pro-20",
+      "url": "/san-pham/inverter-solax-x3-pro-20",
+      "media": [
+        "/upload/product/x3-pro-20-2-2061-chuan1600.jpg"
+      ],
+      "powerWatts": 20000,
+      "quickSpecs": [
+        "20000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 27957000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 826,
+      "name": "Inverter SolaX X3- MIC-15",
+      "slug": "inverter-solax-x3-mic-15",
+      "url": "/san-pham/inverter-solax-x3-mic-15",
+      "media": [
+        "/upload/product/x3-mic-15-3-4486.png"
+      ],
+      "powerWatts": 15000,
+      "quickSpecs": [
+        "15000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 25752000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 825,
+      "name": "Inverter SolaX X3-MIC-10",
+      "slug": "inverter-solax-x3-mic-10",
+      "url": "/san-pham/inverter-solax-x3-mic-10",
+      "media": [
+        "/upload/product/x3-mic-10-3-8321.png"
+      ],
+      "powerWatts": 10000,
+      "quickSpecs": [
+        "10000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 23780000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 824,
+      "name": "Inverter SolaX X3-MIC-8",
+      "slug": "inverter-solax-x3-mic-8",
+      "url": "/san-pham/inverter-solax-x3-mic-8",
+      "media": [
+        "/upload/product/x3-mic-8-3-2163.png"
+      ],
+      "powerWatts": 8000,
+      "quickSpecs": [
+        "8000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 21147000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 823,
+      "name": "Inverter SolaX X1-SMART-10-G2",
+      "slug": "inverter-solax-x1-smart-10-g2",
+      "url": "/san-pham/inverter-solax-x1-smart-10-g2",
+      "media": [
+        "/upload/product/x1-smart-10-g2-3-6785.png"
+      ],
+      "powerWatts": 10000,
+      "quickSpecs": [
+        "10000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 19720000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 822,
+      "name": "Inverter SolaX X1-SMART-8-G2",
+      "slug": "inverter-solax-x1-smart-8-g2",
+      "url": "/san-pham/inverter-solax-x1-smart-8-g2",
+      "media": [
+        "/upload/product/x1-smart-8-g2-3-9801.png"
+      ],
+      "powerWatts": 8000,
+      "quickSpecs": [
+        "8000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 17975000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 821,
+      "name": "Inverter SolaX X1-BOOST-6-G4",
+      "slug": "inverter-solax-x1-boost-6-g4",
+      "url": "/san-pham/inverter-solax-x1-boost-6-g4",
+      "media": [
+        "/upload/product/x1-boost-6-g4-2-9292.png"
+      ],
+      "powerWatts": 6000,
+      "quickSpecs": [
+        "6000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 13680000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 820,
+      "name": "Inverter SolaX X1-BOOST-5-G4",
+      "slug": "inverter-solax-x1-boost-5-g4",
+      "url": "/san-pham/inverter-solax-x1-boost-5-g4",
+      "media": [
+        "/upload/product/x1-boost-5-g4-1-5650.png"
+      ],
+      "powerWatts": 5000,
+      "quickSpecs": [
+        "5000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 13168000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 816,
+      "name": "Inverter SolaX 60Kw Aelio Hybrid inverter",
+      "slug": "inverter-solax-60kw-aelio-hybrid-inverter",
+      "url": "/san-pham/inverter-solax-60kw-aelio-hybrid-inverter",
+      "media": [
+        "/upload/product/60kwaeliohybridinverter-2-2323.png"
+      ],
+      "powerWatts": 60000,
+      "quickSpecs": [
+        "60000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 155427000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 815,
+      "name": "Inverter SolaX 49.9Kw Aelio Hybrid inverter",
+      "slug": "inverter-solax-499kw-aelio-hybrid-inverter",
+      "url": "/san-pham/inverter-solax-499kw-aelio-hybrid-inverter",
+      "media": [
+        "/upload/product/499kwaeliohybridinverter-2-5716.png"
+      ],
+      "powerWatts": 49900,
+      "quickSpecs": [
+        "49900W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 145048000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 814,
+      "name": "Inverter SolaX X3-NEO-20K-LV Hybrid 20kw",
+      "slug": "inverter-solax-x3-neo-20k-lv-hybrid-20kw",
+      "url": "/san-pham/inverter-solax-x3-neo-20k-lv-hybrid-20kw",
+      "media": [
+        "/upload/product/x3-neo-20k-lvhybrid20kw-2-7972.png"
+      ],
+      "powerWatts": 20000,
+      "quickSpecs": [
+        "20000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 77693000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 813,
+      "name": "Inverter SolaX X3-NEO-15K-LV Hybrid 15kw",
+      "slug": "inverter-solax-x3-neo-15k-lv-hybrid-15kw",
+      "url": "/san-pham/inverter-solax-x3-neo-15k-lv-hybrid-15kw",
+      "media": [
+        "/upload/product/x3-neo-15k-lvhybrid15kw-2-1156.png"
+      ],
+      "powerWatts": 15000,
+      "quickSpecs": [
+        "15000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 69947000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 812,
+      "name": "Inverter SolaX X3-NEO-12K-LV Hybrid 12kw",
+      "slug": "inverter-solax-x3-neo-12k-lv-hybrid-12kw",
+      "url": "/san-pham/inverter-solax-x3-neo-12k-lv-hybrid-12kw",
+      "media": [
+        "/upload/product/x3-neo-12k-lvhybrid12kw-2-1693.png"
+      ],
+      "powerWatts": 12000,
+      "quickSpecs": [
+        "12000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 64412000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 811,
+      "name": "Inverter SolaX X3-NEO-10K-LV Hybrid 10kw",
+      "slug": "inverter-solax-x3-neo-10k-lv-hybrid-10kw",
+      "url": "/san-pham/inverter-solax-x3-neo-10k-lv-hybrid-10kw",
+      "media": [
+        "/upload/product/x3-neo-10k-lvhybrid10kw-2-7396.png"
+      ],
+      "powerWatts": 10000,
+      "quickSpecs": [
+        "10000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 59572000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 810,
+      "name": "Inverter SolaX X1-LITE-12-LV Hybrid 12kw",
+      "slug": "inverter-solax-x1-lite-12-lv-hybrid-12kw",
+      "url": "/san-pham/inverter-solax-x1-lite-12-lv-hybrid-12kw",
+      "media": [
+        "/upload/product/pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png"
+      ],
+      "powerWatts": 12000,
+      "quickSpecs": [
+        "12000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 47147000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 809,
+      "name": "Inverter SolaX X1-LITE-10-LV Hybrid 10kw",
+      "slug": "inverter-solax-x1-lite-10-lv-hybrid-10kw",
+      "url": "/san-pham/inverter-solax-x1-lite-10-lv-hybrid-10kw",
+      "media": [
+        "/upload/product/pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png"
+      ],
+      "powerWatts": 10000,
+      "quickSpecs": [
+        "10000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 43987000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 808,
+      "name": "Inverter SolaX X1-LITE-8-LV Hybrid 8kw",
+      "slug": "inverter-solax-x1-lite-8-lv-hybrid-8kw",
+      "url": "/san-pham/inverter-solax-x1-lite-8-lv-hybrid-8kw",
+      "media": [
+        "/upload/product/pts-solax-x1-lite-lv-1-alpha-qav2-20261117.png"
+      ],
+      "powerWatts": 8000,
+      "quickSpecs": [
+        "8000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 41483000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 807,
+      "name": "Inverter SolaX X1-HYB-6.0-LV-EU Hybrid 6kw",
+      "slug": "inverter-solax-x1-hyb-60-lv-eu-hybrid-6kw",
+      "url": "/san-pham/inverter-solax-x1-hyb-60-lv-eu-hybrid-6kw",
+      "media": [
+        "/upload/product/x1-hyb-60-lv-euhybrid6kw-3-9775.png"
+      ],
+      "powerWatts": 6000,
+      "quickSpecs": [
+        "6000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 26653000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 806,
+      "name": "Inverter SolaX X1-HYB-6.0-LV Hybrid 6kw",
+      "slug": "inverter-solax-x1-hyb-60-lv-hybrid-6kw",
+      "url": "/san-pham/inverter-solax-x1-hyb-60-lv-hybrid-6kw",
+      "media": [
+        "/upload/product/x1-hyb-60-lvhybrid6kw-3-7596.png"
+      ],
+      "powerWatts": 6000,
+      "quickSpecs": [
+        "6000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 25885000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 805,
+      "name": "Inverter SolaX X1-HYB-5.0-LV Hybrid 5kw",
+      "slug": "inverter-solax-x1-hyb-50-lv-hybrid-5kw",
+      "url": "/san-pham/inverter-solax-x1-hyb-50-lv-hybrid-5kw",
+      "media": [
+        "/upload/product/x1-hyb-50-lvhybrid5kw-3-2734.png"
+      ],
+      "powerWatts": 5000,
+      "quickSpecs": [
+        "5000W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 24379000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 804,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD4820-PRO",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td4820-pro",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td4820-pro",
+      "media": [
+        "/upload/product/mppt-td4820-pro-8319-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 9208000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 802,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD4515TU",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td4515tu",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td4515tu",
+      "media": [
+        "/upload/product/mppt-td4515tu-9930.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 6139000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 801,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-iTD2612",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-itd2612",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-itd2612",
+      "media": [
+        "/upload/product/mppt-itd2612-2741.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5088000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 800,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-iTD4315",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-itd4315",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-itd4315",
+      "media": [
+        "/upload/product/mppt-itd2612-4256.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4562000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 799,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2410TU-WIFI",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2410tu-wifi",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2410tu-wifi",
+      "media": [
+        "/upload/product/mppt-td2310tu-group-9777.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3947000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 798,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2410TU-BT",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2410tu-bt",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2410tu-bt",
+      "media": [
+        "/upload/product/mppt-td2310tu-group-3303.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3861000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 797,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2310TU-WIFI",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2310tu-wifi",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2310tu-wifi",
+      "media": [
+        "/upload/product/mppt-td2310tu-group-8689.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3068000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 796,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2310TU-BT",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2310tu-bt",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2310tu-bt",
+      "media": [
+        "/upload/product/mppt-td2310tu-group-8825.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2984000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 793,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2307-WIFI",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2307-wifi",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2307-wifi",
+      "media": [
+        "/upload/product/mppt-td2407-5358.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2497000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 792,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2307-BT",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2307-bt",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2307-bt",
+      "media": [
+        "/upload/product/mppt-td2407-1200x1200-4059.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2066000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 791,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2207-WIFI",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2207-wifi",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2207-wifi",
+      "media": [
+        "/upload/product/mppt-td2207-bt-5911.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2019000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 790,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2207-BT",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2207-bt",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2207-bt",
+      "media": [
+        "/upload/product/mppt-td2207-bt-4982.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1590000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 789,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2107-WIFI",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2107-wifi",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2107-wifi",
+      "media": [
+        "/upload/product/mppt-td2107-wifi-1-1228.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1577000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 788,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời MPPT-TD2107-BT",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2107-bt",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-mppt-td2107-bt",
+      "media": [
+        "/upload/product/mppt-td2107-bt-9018.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1232000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 787,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD4860S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4860s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4860s",
+      "media": [
+        "/upload/product/pwm-sd2450s-3524.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1713000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 786,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2460S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2460s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2460s",
+      "media": [
+        "/upload/product/pwm-sd2450s-2985.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1365000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 785,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD4850S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4850s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4850s",
+      "media": [
+        "/upload/product/pwm-sd2450s-5359.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1621000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 784,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2450S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2450s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2450s",
+      "media": [
+        "/upload/product/pwm-sd2450s-1824.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1278000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 783,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD4840S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4840s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4840s",
+      "media": [
+        "/upload/product/pwm-sd2450s-3741.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1313000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 782,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2440S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2440s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2440s",
+      "media": [
+        "/upload/product/pwm-sd2450s-4998.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 970000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 781,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD4830S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4830s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd4830s",
+      "media": [
+        "/upload/product/pwm-sd2450s-3467.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 879000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 780,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2430S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2430s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2430s",
+      "media": [
+        "/upload/product/pwm-sd2450s-4284.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 601000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 779,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2430C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2430c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2430c",
+      "media": [
+        "/upload/product/pwm-sd2450s-8143.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 476000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 778,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2420C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2420c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2420c",
+      "media": [
+        "/upload/product/pwm-sd2450s-8778.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 407000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 777,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-SD2410C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2410c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-sd2410c",
+      "media": [
+        "/upload/product/pwm-sd2450s-5416.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 369000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 776,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD4860S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4860s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4860s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-5319.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1755000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 775,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2460S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2460s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2460s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-5048.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1577000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 774,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD4850S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4850s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4850s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-8611.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1621000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 773,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2450S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2450s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2450s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-1914.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1491000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 772,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD4840S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4840s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4840s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-2561.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1313000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 771,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2440S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2440s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2440s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-1627.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 970000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 770,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD4830S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4830s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od4830s",
+      "media": [
+        "/upload/product/pwm-od4840s-1-4579.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 796000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 769,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2430S",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2430s",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2430s",
+      "media": [
+        "/upload/product/pwm-od2430c-1-9808.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 664000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 768,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2430C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2430c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2430c",
+      "media": [
+        "/upload/product/pwm-od2430c-1-2002.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 530000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 767,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2420C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2420c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2420c",
+      "media": [
+        "/upload/product/pwm-od2430c-1-5550.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 451000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 766,
+      "name": "Bộ điều khiển sạc năng lượng mặt trời PWM-OD2410C",
+      "slug": "bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2410c",
+      "url": "/san-pham/bo-dieu-khien-sac-nang-luong-mat-troi-pwm-od2410c",
+      "media": [
+        "/upload/product/pwm-od2410c-1-8015.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "IP32"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 407000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 765,
+      "name": "Tấm pin năng lượng mặt trời BCT-300M-24",
+      "slug": "tam-pin-nang-luong-mat-troi-bct-300m-24",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-bct-300m-24",
+      "media": [
+        "/upload/product/bct-300m-24-8117-chuan1600.jpg"
+      ],
+      "powerWatts": 300,
+      "quickSpecs": [
+        "300W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1906000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 764,
+      "name": "Tấm pin năng lượng mặt trời BCT-200M-24",
+      "slug": "tam-pin-nang-luong-mat-troi-bct-200m-24",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-bct-200m-24",
+      "media": [
+        "/upload/product/bct-200m-24-2360-chuan1600.jpg"
+      ],
+      "powerWatts": 200,
+      "quickSpecs": [
+        "200W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1540000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 763,
+      "name": "Tấm pin năng lượng mặt trời BCT-150M-12",
+      "slug": "tam-pin-nang-luong-mat-troi-bct-150m-12",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-bct-150m-12",
+      "media": [
+        "/upload/product/bct-150m-12-4115-chuan1600.jpg"
+      ],
+      "powerWatts": 150,
+      "quickSpecs": [
+        "150W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1376000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 760,
+      "name": "Tấm pin năng lượng mặt trời BCT-50M-12",
+      "slug": "tam-pin-nang-luong-mat-troi-bct-50m-12",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-bct-50m-12",
+      "media": [
+        "/upload/product/bct-50m-12-6719-chuan1600.jpg"
+      ],
+      "powerWatts": 50,
+      "quickSpecs": [
+        "50W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 528000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 756,
+      "name": "Tấm pin năng lượng mặt trời Astronergy 630Wp",
+      "slug": "tam-pin-nang-luong-mat-troi-astronergy-630wp",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-astronergy-630wp",
+      "media": [
+        "/upload/product/astro-n7-630w-7642.png"
+      ],
+      "powerWatts": 630,
+      "quickSpecs": [
+        "630W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2319030,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 755,
+      "name": "Tấm pin năng lượng mặt trời Astronergy 625Wp",
+      "slug": "tam-pin-nang-luong-mat-troi-astronergy-625wp",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-astronergy-625wp",
+      "media": [
+        "/upload/product/astro-n7-630w-7642.png"
+      ],
+      "powerWatts": 625,
+      "quickSpecs": [
+        "625W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2300625,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 754,
+      "name": "Tấm pin năng lượng mặt trời Astronergy 615WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-astronergy-615wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-astronergy-615wp-2-mat-kinh",
+      "media": [
+        "/upload/product/astro-n7-630w-7642.png"
+      ],
+      "powerWatts": 615,
+      "quickSpecs": [
+        "615W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2234295,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 753,
+      "name": "Tấm pin năng lượng mặt trời Astronergy 610WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-astronergy-610wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-astronergy-610wp-2-mat-kinh",
+      "media": [
+        "/upload/product/astro-n7-630w-7642.png"
+      ],
+      "powerWatts": 610,
+      "quickSpecs": [
+        "610W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2216130,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 752,
+      "name": "Tấm pin năng lượng mặt trời Astronergy 595Wp - 1 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-astronergy-595wp-1-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-astronergy-595wp-1-mat-kinh",
+      "media": [
+        "/upload/product/astro-n7-630w-7642.png"
+      ],
+      "powerWatts": 595,
+      "quickSpecs": [
+        "595W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2124150,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 746,
+      "name": "Tấm pin năng lượng mặt trời LONGi 650WP -2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-650wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-650wp-2-mat-kinh",
+      "media": [
+        "/upload/product/longi-650w-2k-6519-chuan1600.jpg"
+      ],
+      "powerWatts": 650,
+      "quickSpecs": [
+        "650W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2648100,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 745,
+      "name": "Tấm pin năng lượng mặt trời LONGi 650WP - TRÀN VIỀN",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-650wp-tran-vien",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-650wp-tran-vien",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 650,
+      "quickSpecs": [
+        "650W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2600000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 744,
+      "name": "Tấm pin năng lượng mặt trời LONGi 650WP - 1 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-650wp-1-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-650wp-1-mat-kinh",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 650,
+      "quickSpecs": [
+        "650W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2606500,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 743,
+      "name": "Tấm pin năng lượng mặt trời LONGi 645WP - TRÀN VIỀN",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-645wp-tran-vien",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-645wp-tran-vien",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 645,
+      "quickSpecs": [
+        "645W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2601930,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 742,
+      "name": "Tấm pin năng lượng mặt trời LONGi 645WP - 1 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-645wp-1-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-645wp-1-mat-kinh",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 645,
+      "quickSpecs": [
+        "645W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2586450,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 741,
+      "name": "Tấm pin năng lượng mặt trời LONGi 620WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-620wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-620wp-2-mat-kinh",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 620,
+      "quickSpecs": [
+        "620W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2480000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 740,
+      "name": "Tấm pin năng lượng mặt trời LONGi 540WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-longi-540wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-longi-540wp-2-mat-kinh",
+      "media": [
+        "/upload/product/lr8-66hgd-620m-6450-chuan1600.jpg"
+      ],
+      "powerWatts": 540,
+      "quickSpecs": [
+        "540W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2178360,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 647,
+      "name": "QUẠT QUỲ SOLAR ORIANA - PRO",
+      "slug": "quat-quy-solar-oriana-pro",
+      "url": "/san-pham/quat-quy-solar-oriana-pro",
+      "media": [
+        "/upload/product/oriana-fan-118ws-pro-9468.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "12–20 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1911000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 646,
+      "name": "QUẠT QUỲ SOLAR ORIANA",
+      "slug": "quat-quy-solar-oriana",
+      "url": "/san-pham/quat-quy-solar-oriana",
+      "media": [
+        "/upload/product/oriana-fan-118ws-1343.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [
+        "5–10 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1529000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 588,
+      "name": "Dây nối BLUE CARBON BCT-WW1.0 5m",
+      "slug": "day-noi-blue-carbon-bct-ww10-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-ww10-5m",
+      "media": [
+        "/upload/product/daynoibctww1-8517-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 147000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 396,
+      "name": "Cọc tiếp địa Cát Vạn Lợi",
+      "slug": "coc-tiep-dia-cat-van-loi",
+      "url": "/san-pham/coc-tiep-dia-cat-van-loi",
+      "media": [
+        "/upload/product/coctiepdiavanloi-4941.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 316000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 395,
+      "name": "Ống ruột gà lõi thép phi 25 Cát Vạn Lợi",
+      "slug": "ong-ruot-ga-loi-thep-phi-25-cat-van-loi",
+      "url": "/san-pham/ong-ruot-ga-loi-thep-phi-25-cat-van-loi",
+      "media": [
+        "/upload/product/ng-ruot-ga-loi-thep-phi-25-cat-van-loi-1157.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 63000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 394,
+      "name": "Ống ruột gà lõi thép phi 16 Cát Vạn Lợi",
+      "slug": "ong-ruot-ga-loi-thep-phi-16-cat-van-loi",
+      "url": "/san-pham/ong-ruot-ga-loi-thep-phi-16-cat-van-loi",
+      "media": [
+        "/upload/product/ng-ruot-ga-loi-thep-phi-16-cat-van-loi-8221.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 35000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 393,
+      "name": "Khớp nối ruột gà với ruột gà phi 25 Cát Vạn Lợi",
+      "slug": "khop-noi-ruot-ga-voi-ruot-ga-phi-25-cat-van-loi",
+      "url": "/san-pham/khop-noi-ruot-ga-voi-ruot-ga-phi-25-cat-van-loi",
+      "media": [
+        "/upload/product/khop-noi-ruot-ga-voi-ruot-ga-phi-25-cat-van-loi-8298.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 34000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 392,
+      "name": "Keo foarm Apolo",
+      "slug": "keo-foarm-apolo",
+      "url": "/san-pham/keo-foarm-apolo",
+      "media": [
+        "/upload/product/keo-foram-apolo-5716-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 58000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 391,
+      "name": "Băng keo điện Nano",
+      "slug": "bang-keo-dien-nano",
+      "url": "/san-pham/bang-keo-dien-nano",
+      "media": [
+        "/upload/product/bang-keo-dien-nano-7990.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 5000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 384,
+      "name": "Quạt năng lượng mặt trời JD-188L (15W)",
+      "slug": "quat-nang-luong-mat-troi-jd-188l-15w",
+      "url": "/san-pham/quat-nang-luong-mat-troi-jd-188l-15w",
+      "media": [
+        "/upload/product/jd-198l-3448-chuan1600.jpg"
+      ],
+      "powerWatts": 15,
+      "quickSpecs": [
+        "15W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1240000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 383,
+      "name": "Quạt năng lượng mặt trời JD-128L (12W)",
+      "slug": "quat-nang-luong-mat-troi-jd-128l-12w",
+      "url": "/san-pham/quat-nang-luong-mat-troi-jd-128l-12w",
+      "media": [
+        "/upload/product/quatjd128l-6731-chuan1600.jpg"
+      ],
+      "powerWatts": 12,
+      "quickSpecs": [
+        "12W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1050000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 382,
+      "name": "Quạt năng lượng mặt trời JD-198L (15W)",
+      "slug": "quat-nang-luong-mat-troi-jd-198l-15w",
+      "url": "/san-pham/quat-nang-luong-mat-troi-jd-198l-15w",
+      "media": [
+        "/upload/product/quatjd198l-2404-chuan1600.jpg"
+      ],
+      "powerWatts": 15,
+      "quickSpecs": [
+        "15W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1360000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 381,
+      "name": "Quạt Năng Lượng Mặt Trời Blue Fan (20W)",
+      "slug": "quat-nang-luong-mat-troi-blue-fan-20w",
+      "url": "/san-pham/quat-nang-luong-mat-troi-blue-fan-20w",
+      "media": [
+        "/upload/product/blue-fan20w-9997-chuan1600.jpg"
+      ],
+      "powerWatts": 20,
+      "quickSpecs": [
+        "20W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1860000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 375,
+      "name": "Kẹp biên tấm pin 35",
+      "slug": "kep-bien-tam-pin-35",
+      "url": "/san-pham/kep-bien-tam-pin-35",
+      "media": [
+        "/upload/product/product-375-clean-v1-9777.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 374,
+      "name": "Cáp THIPHA CXV 1x4mm2 (dây đỏ)",
+      "slug": "cap-thipha-cxv-1x4mm2-day-do",
+      "url": "/san-pham/cap-thipha-cxv-1x4mm2-day-do",
+      "media": [
+        "/upload/product/product-374-clean-v1-5594.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 373,
+      "name": "Cáp THIPHA CXV 1x4mm2 (dây đen)",
+      "slug": "cap-thipha-cxv-1x4mm2-day-den",
+      "url": "/san-pham/cap-thipha-cxv-1x4mm2-day-den",
+      "media": [
+        "/upload/product/product-373-clean-v1-1449.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 372,
+      "name": "Cáp THIPHA CXV 3x4 +1x2.5mm2",
+      "slug": "cap-thipha-cxv-3x4-1x25mm2",
+      "url": "/san-pham/cap-thipha-cxv-3x4-1x25mm2",
+      "media": [
+        "/upload/product/product-372-clean-v1-1319.png"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 361,
+      "name": "PV Module SHARP Mono Half cut cell 395 Wp",
+      "slug": "pv-module-sharp-mono-half-cut-cell-395-wp",
+      "url": "/san-pham/pv-module-sharp-mono-half-cut-cell-395-wp",
+      "media": [
+        "/upload/product/pv-module-sharp-mono-half-cut-1286-chuan1600.jpg"
+      ],
+      "powerWatts": 395,
+      "quickSpecs": [
+        "395W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 4900000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 360,
+      "name": "PV Module LONGI450",
+      "slug": "pv-module-longi450",
+      "url": "/san-pham/pv-module-longi450",
+      "media": [
+        "/upload/product/pv-module-longi450-1092-chuan1600.jpg"
+      ],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 3800000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 359,
+      "name": "Tấm Pin Năng Lượng Mặt Trời Sharp 550W Mono | NU - JD 550 L",
+      "slug": "tam-pin-nang-luong-mat-troi-sharp-550w-mono-nu-jd-550-l",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-sharp-550w-mono-nu-jd-550-l",
+      "media": [
+        "/upload/product/sharp-550w-mono-nu-jd-550-l-8519.png"
+      ],
+      "powerWatts": 550,
+      "quickSpecs": [
+        "550W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2255000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 536,
+      "name": "Quạt Đứng Năng Lượng Mặt Trời BLUE CARBON (20W)",
+      "slug": "quat-dung-blue-carbon-20w",
+      "url": "/san-pham/quat-dung-blue-carbon-20w",
+      "media": [
+        "/upload/product/blue-fan20w-9997png-1686.webp"
+      ],
+      "powerWatts": 20,
+      "quickSpecs": [
+        "20W",
+        "4–6 giờ"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 1855000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 750,
+      "name": "Tấm pin năng lượng mặt trời AESOLAR 630WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-aesolar-630wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-aesolar-630wp-2-mat-kinh",
+      "media": [],
+      "powerWatts": 630,
+      "quickSpecs": [
+        "630W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2348010,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 749,
+      "name": "Tấm pin năng lượng mặt trời CANADIAN 720WP",
+      "slug": "tam-pin-nang-luong-mat-troi-canadian-720wp",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-canadian-720wp",
+      "media": [],
+      "powerWatts": 720,
+      "quickSpecs": [
+        "720W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2736000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 748,
+      "name": "Tấm pin năng lượng mặt trời CANADIAN 715WP - 2 MẶT KÍNH",
+      "slug": "tam-pin-nang-luong-mat-troi-canadian-715wp-2-mat-kinh",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-canadian-715wp-2-mat-kinh",
+      "media": [],
+      "powerWatts": 715,
+      "quickSpecs": [
+        "715W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2754895,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 747,
+      "name": "Tấm pin năng lượng mặt trời CANADIAN 620WP",
+      "slug": "tam-pin-nang-luong-mat-troi-canadian-620wp",
+      "url": "/san-pham/tam-pin-nang-luong-mat-troi-canadian-620wp",
+      "media": [],
+      "powerWatts": 620,
+      "quickSpecs": [
+        "620W"
+      ],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 2388860,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 667,
+      "name": "BĂNG KEO HÀNG DỄ VỠ",
+      "slug": "bang-keo-hang-de-vo",
+      "url": "/san-pham/bang-keo-hang-de-vo",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 666,
+      "name": "BĂNG KEO TRONG",
+      "slug": "bang-keo-trong",
+      "url": "/san-pham/bang-keo-trong",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "quote",
+        "currency": "VND",
+        "regularPrice": null,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 614,
+      "name": "DÂY NỐI 10M",
+      "slug": "day-noi-10m",
+      "url": "/san-pham/day-noi-10m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 137000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 613,
+      "name": "DÂY NỐI 5M",
+      "slug": "day-noi-5m",
+      "url": "/san-pham/day-noi-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 69000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 609,
+      "name": "Dây nối BLUE CARBON BCT-OLK3.0 & BCT-OLK3.0P 5m",
+      "slug": "day-noi-blue-carbon-bct-olk30-bct-olk30p-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-olk30-bct-olk30p-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 316000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 599,
+      "name": "Dây nối BLUE CARBON BCT-WW5.0 & BCT-WW6.0 5m",
+      "slug": "day-noi-blue-carbon-bct-ww50-bct-ww60-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-ww50-bct-ww60-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 316000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 594,
+      "name": "Dây nối BLUE CARBON BCT-WW4.0 5m",
+      "slug": "day-noi-blue-carbon-bct-ww40-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-ww40-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 265000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 592,
+      "name": "Dây nối BLUE CARBON BCT-WW3.0 5m",
+      "slug": "day-noi-blue-carbon-bct-ww30-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-ww30-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 212000,
+        "salePrice": null
+      }
+    },
+    {
+      "id": 590,
+      "name": "Dây nối BLUE CARBON BCT-WW2.0 5m",
+      "slug": "day-noi-blue-carbon-bct-ww20-5m",
+      "url": "/san-pham/day-noi-blue-carbon-bct-ww20-5m",
+      "media": [],
+      "powerWatts": null,
+      "quickSpecs": [],
+      "pricing": {
+        "mode": "price",
+        "currency": "VND",
+        "regularPrice": 194000,
+        "salePrice": null
+      }
+    }
+  ]
+}

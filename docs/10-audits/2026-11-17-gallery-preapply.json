@@ -1,0 +1,42 @@
+{
+    "at": "2026-11-17T08:26:48+07:00",
+    "products": [
+        {
+            "id": 811,
+            "code": "X3-NEO-10K-LV Hybrid 10kw",
+            "name": "Inverter SolaX X3-NEO-10K-LV Hybrid 10kw",
+            "slug": "inverter-solax-x3-neo-10k-lv-hybrid-10kw",
+            "image": "x3-neo-10k-lvhybrid10kw-2-7396.png",
+            "image_secondary": null,
+            "is_visible": 1
+        },
+        {
+            "id": 812,
+            "code": "X3-NEO-12K-LV Hybrid 12kw",
+            "name": "Inverter SolaX X3-NEO-12K-LV Hybrid 12kw",
+            "slug": "inverter-solax-x3-neo-12k-lv-hybrid-12kw",
+            "image": "x3-neo-12k-lvhybrid12kw-2-1693.png",
+            "image_secondary": null,
+            "is_visible": 1
+        },
+        {
+            "id": 813,
+            "code": "X3-NEO-15K-LV Hybrid 15kw",
+            "name": "Inverter SolaX X3-NEO-15K-LV Hybrid 15kw",
+            "slug": "inverter-solax-x3-neo-15k-lv-hybrid-15kw",
+            "image": "x3-neo-15k-lvhybrid15kw-2-1156.png",
+            "image_secondary": null,
+            "is_visible": 1
+        },
+        {
+            "id": 814,
+            "code": "X3-NEO-20K-LV Hybrid 20kw",
+            "name": "Inverter SolaX X3-NEO-20K-LV Hybrid 20kw",
+            "slug": "inverter-solax-x3-neo-20k-lv-hybrid-20kw",
+            "image": "x3-neo-20k-lvhybrid20kw-2-7972.png",
+            "image_secondary": null,
+            "is_visible": 1
+        }
+    ],
+    "gallery": []
+}

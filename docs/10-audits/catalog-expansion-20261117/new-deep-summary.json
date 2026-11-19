@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-11-17T06:11:18.487383+00:00",
+  "links_attempted": 249,
+  "pages_ok": 245,
+  "html_spec_rows": 3919,
+  "tables": 86,
+  "pdf_candidate_links": 785,
+  "image_candidate_links": 444,
+  "status": "UNVERIFIED_NO_CMS_IMPORT",
+  "note": "New URLs may refer to already listed families; do not sum URLs as unique SKUs"
+}

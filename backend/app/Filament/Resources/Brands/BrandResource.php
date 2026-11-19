@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Brands;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\InlineEdit;
 use App\Filament\Support\PublicStatusColumn;
 use App\Models\Brand;
 use BackedEnum;
@@ -15,9 +16,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
-use App\Filament\Support\InlineEdit;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -66,11 +66,11 @@ class BrandResource extends Resource
             ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 ImageColumn::make('image')->label('Logo')->disk('upload_product')->height(36),
-                $edit ? TextInputColumn::make('name')->label('Thương hiệu')->searchable()->sortable()->rules(['required','string','max:255']) : TextColumn::make('name')->label('Thương hiệu')->searchable()->sortable(),
+                $edit ? TextInputColumn::make('name')->label('Thương hiệu')->searchable()->sortable()->rules(['required', 'string', 'max:255']) : TextColumn::make('name')->label('Thương hiệu')->searchable()->sortable(),
                 TextColumn::make('products_count')->label('Sản phẩm')->counts('products')->sortable(),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
                 PublicStatusColumn::make(besideSwitch: true),
-                $edit ? TextInputColumn::make('sort_order')->label('Thứ tự')->type('number')->sortable()->rules(['required','integer','min:0']) : TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
+                $edit ? TextInputColumn::make('sort_order')->label('Thứ tự')->type('number')->sortable()->rules(['required', 'integer', 'min:0']) : TextColumn::make('sort_order')->label('Thứ tự')->sortable(),
             ])
             ->recordActions([EditAction::make()]);
     }

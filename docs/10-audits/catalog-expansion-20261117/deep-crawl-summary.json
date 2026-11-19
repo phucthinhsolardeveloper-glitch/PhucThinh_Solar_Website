@@ -1,0 +1,20 @@
+{
+  "collected_at": "2026-11-17T06:07:10.262224+00:00",
+  "catalog_candidates": 260,
+  "unique_brands": 19,
+  "detail_urls": 99,
+  "html_pages_ok": 99,
+  "html_pages_failed": [],
+  "html_tables": 382,
+  "html_structured_spec_rows": 1798,
+  "pdf_urls_discovered": 159,
+  "pdfs_download_attempted": 70,
+  "pdfs_parsed": 55,
+  "pdf_text_evidence_lines": 1235,
+  "total_evidence_spec_rows": 3033,
+  "image_url_candidates": 128,
+  "image_model_and_rights_QA_pass": 0,
+  "sku_verified": 0,
+  "cms_products_imported": 0,
+  "notes": "All rows are extract candidates, model/variant/pdf/rights must be verified; no production mutation."
+}

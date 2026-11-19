@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Policies\Pages;
 
-use App\Filament\Resources\Policies\PolicyResource;
 use App\Filament\Concerns\HasInlineEditMode;
+use App\Filament\Resources\Policies\PolicyResource;
 use App\Filament\Support\AdminActor;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;

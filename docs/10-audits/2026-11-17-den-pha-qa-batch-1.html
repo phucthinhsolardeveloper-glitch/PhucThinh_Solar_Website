@@ -1,0 +1,96 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PTS · QA bộ ảnh đèn pha 26 SKU · 17/11/2026</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#eef2f7;color:#0a2251;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:1450px;padding:28px;margin:auto}h1{font-size:29px;line-height:1.3;margin:0 0 8px}h2{margin:30px 0 12px}.muted{color:#536277;font-size:14px}.caps{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}.caps div{padding:14px 20px;background:white;border-radius:10px;border:1px solid #dae2eb}.caps b{display:block;font-size:28px}a{color:#0b5d9b}.sheet{display:flex;align-items:flex-start;gap:15px;flex-wrap:wrap}.product{background:white;padding:18px;border:1px solid #d7e2ed;border-radius:12px;margin:18px 0}.product h3{margin:0 0 12px}.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.photo{border:1px solid #d5dde6;border-radius:8px;overflow:hidden}.photo .thumb{height:235px;display:flex;align-items:center;justify-content:center;background:white}.thumb.checker{background-color:white;background-image:linear-gradient(45deg,#dce2e9 25%,transparent 25%,transparent 75%,#dce2e9 75%,#dce2e9),linear-gradient(45deg,#dce2e9 25%,transparent 25%,transparent 75%,#dce2e9 75%,#dce2e9);background-size:32px 32px;background-position:0 0,16px 16px}.thumb img{max-width:100%;max-height:100%;object-fit:contain}.photo p{font-size:12px;color:#42516a;margin:9px 10px;overflow-wrap:anywhere}.tag{display:inline-block;padding:4px 9px;border:1px solid #cfd9e4;border-radius:99px;font-size:12px;font-weight:650}.warn{color:#985800}.safegreen{color:#107253}.t{width:100%;border-collapse:collapse;background:white}td,th{padding:8px 12px;text-align:left;border:1px solid #d5dfe9;font-size:14px}th{background:#0a2251;color:white}input{border:1px solid #b8c5d6;padding:10px 14px;min-width:300px;border-radius:7px;font:inherit}footer{font-size:12px;color:#586b82;padding:28px 0}@media(max-width:680px){.wrap{padding:12px}.photos{grid-template-columns:repeat(2,minmax(0,1fr))}.photo .thumb{height:165px}table{display:block;overflow:auto}h1{font-size:22px}}</style>
+<div class="wrap"><h1>Audit & QA ảnh đèn pha · 26 SKU</h1><p class="muted">Lô thử nghiệm 17/11/2026 · Dữ liệu sản phẩm production chỉ đọc · Ảnh xuất trong kho local máy công ty, CHƯA đăng website. Nguồn bên thứ ba cần được cho phép sử dụng trước khi nhập sản phẩm.</p>
+<div class="caps"><div><b>26</b>Mã 1 ảnh</div><div><b>5</b>Mã có nguồn nội bộ đã cắt nền</div><div><b>2</b>Mã Blue Carbon có tham chiếu hãng</div><div><b>1</b>Trường hợp sai model bị chặn</div></div>
+<p><strong>Nguyên tắc:</strong> QA tách nền khác QA độ nét gốc; ảnh xuất 1400px không chứng minh file gốc có 1400px chi tiết. Không dùng ảnh AI dựng phần cứng. Giữ nguyên ảnh avatar và thông số đang live.</p>
+<h2>1. Bản xem trước sản phẩm & ảnh ứng viên</h2>
+<section class="product"><h3>ORIANA · DB-760 <small class="tag">QA_INTERNAL_PREVIEW</small></h3>
+<p class="muted">Có bản tách nền từ EMF và ảnh cận cảnh LED đúng nhãn SKU; cần duyệt chất lượng và độ khác biệt so với avatar</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/db-760-9593-chuan1600.jpg"></div><p>Ảnh production hiện tại · 1600x1600</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-760-01-qa-20261117.png"></div><p>candidate_primary_alpha_upgrade</p></div>
+<div class="photo"><div class="thumb"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/detail-candidates/pts-db-760-original-led-detail-qareview.jpg"></div><p>Đèn LED cận cảnh từ ảnh gốc</p></div>
+</div></section>
+<section class="product"><h3>ORIANA · DB-7300 <small class="tag">QA_INTERNAL_PREVIEW</small></h3>
+<p class="muted">Có bản tách nền từ EMF và ảnh cận cảnh LED đúng nhãn SKU; cần duyệt chất lượng và độ khác biệt so với avatar</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/db-7300-2634-chuan1600.jpg"></div><p>Ảnh production hiện tại · 1600x1600</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7300-02-qa-20261117.png"></div><p>candidate_primary_alpha_upgrade</p></div>
+<div class="photo"><div class="thumb"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/detail-candidates/pts-db-7300-original-led-detail-qareview.jpg"></div><p>Đèn LED cận cảnh từ ảnh gốc</p></div>
+</div></section>
+<section class="product"><h3>ORIANA · DB-7500 <small class="tag">QA_INTERNAL_PREVIEW</small></h3>
+<p class="muted">Có bản tách nền từ EMF và ảnh cận cảnh LED đúng nhãn SKU; cần duyệt chất lượng và độ khác biệt so với avatar</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/db-7500-2048-chuan1600.jpg"></div><p>Ảnh production hiện tại · 1600x1600</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-7500-03-qa-20261117.png"></div><p>candidate_primary_alpha_upgrade</p></div>
+<div class="photo"><div class="thumb"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/detail-candidates/pts-db-7500-original-led-detail-qareview.jpg"></div><p>Đèn LED cận cảnh từ ảnh gốc</p></div>
+</div></section>
+<section class="product"><h3>ORIANA · DB-71000 <small class="tag">QA_INTERNAL_PREVIEW</small></h3>
+<p class="muted">Có bản tách nền từ EMF và ảnh cận cảnh LED đúng nhãn SKU; cần duyệt chất lượng và độ khác biệt so với avatar</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/db-71000-9633-chuan1600.jpg"></div><p>Ảnh production hiện tại · 1600x1600</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-db-71000-04-qa-20261117.png"></div><p>candidate_primary_alpha_upgrade</p></div>
+<div class="photo"><div class="thumb"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/detail-candidates/pts-db-71000-original-led-detail-qareview.jpg"></div><p>Đèn LED cận cảnh từ ảnh gốc</p></div>
+</div></section>
+<section class="product"><h3>BLUE CARBON · BCT-WR1.0 <small class="tag">QA_NEEDS_IMAGE_RIGHTS</small></h3>
+<p class="muted">Có nhiều góc chụp nguồn hãng; ảnh gốc chỉ 720px, cần xin nguồn nét/ủy quyền sử dụng, xác minh SKU - thông số</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/bct-wr10-2878.png"></div><p>Ảnh production hiện tại · 1254x1254</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr1-0-05-qa-20261117.png"></div><p>candidate_gallery_front_side<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr1-0-06-qa-20261117.png"></div><p>candidate_gallery_dimensions_reference<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+</div></section>
+<section class="product"><h3>BLUE CARBON · BCT-WR4.0 <small class="tag">QA_NEEDS_IMAGE_RIGHTS</small></h3>
+<p class="muted">Có nhiều góc chụp nguồn hãng; ảnh gốc chỉ 720px, cần xin nguồn nét/ủy quyền sử dụng, xác minh SKU - thông số</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/bct-wr40-7438.png"></div><p>Ảnh production hiện tại · 1254x1254</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-07-qa-20261117.png"></div><p>candidate_gallery_lamp_front<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-08-qa-20261117.png"></div><p>candidate_gallery_lamp_angle<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-bct-wr4-0-09-qa-20261117.png"></div><p>candidate_gallery_back_bracket<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+</div></section>
+<section class="product"><h3>JINDIAN · JD-6128 <small class="tag">QA_INTERNAL_PREVIEW</small></h3>
+<p class="muted">Đã tách nền ảnh thật 1620x1080 của chóa đèn; cần QA chi tiết mép và đúng bộ bán thực tế</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/jd-6128-8657.png"></div><p>Ảnh production hiện tại · 1254x1254</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-6128-10-qa-20261117.png"></div><p>candidate_gallery_real_lamp_closeup</p></div>
+</div></section>
+<section class="product"><h3>JINDIAN · JD-V200 <small class="tag">REFERENCE_ONLY</small></h3>
+<p class="muted">Đã tải ảnh đối chiếu 1080px từ reseller, góc nhìn gần giống avatar hiện tại, có logo bên thứ ba; không đăng</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/jd-v200-01-6601.jpg"></div><p>Ảnh production hiện tại · 800x800</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-v200-11-qa-20261117.png"></div><p>reference_only_not_new_gallery_same_view_as_current<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+</div></section>
+<section class="product"><h3>JINDIAN · JD-V300 <small class="tag">REFERENCE_ONLY</small></h3>
+<p class="muted">Đã tải ảnh đối chiếu 1080px từ reseller, góc nhìn gần giống avatar hiện tại, có logo bên thứ ba; không đăng</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/jd-v300-01-2436.jpg"></div><p>Ảnh production hiện tại · 800x800</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-v300-12-qa-20261117.png"></div><p>reference_only_not_new_gallery_same_view_as_current<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+</div></section>
+<section class="product"><h3>JINDIAN · JD-18300 <small class="tag">QA_EXTERNAL_RIGHTS_PENDING</small></h3>
+<p class="muted">Nguồn nội bộ nhầm JD-18200/JDE-8300 đã loại; tìm được ảnh thật JD-18300 300W từ đại lý khác và đã tách nền; nguồn 750px, cần xác nhận quyền sử dụng</p><div class="photos">
+<div class="photo"><div class="thumb"><img loading="lazy" src="https://phucthinhsolar.com/upload/product/jd-18300-8218-chuan1600.jpg"></div><p>Ảnh production hiện tại · 1600x1600</p></div>
+<div class="photo"><div class="thumb checker"><img loading="lazy" src="../../backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/candidate-alpha/pts-denpha-jd-18300-13-external-qareview-20261117.png"></div><p>candidate_gallery_real_lamp_angle_300W<span class="warn"> · Chưa xác nhận quyền sử dụng</span></p></div>
+</div></section>
+<h2>2. Danh sách xử lý đủ 26 mã</h2>
+<input id="find" placeholder="Lọc theo mã, hãng, trạng thái" oninput="document.querySelectorAll('tbody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(this.value.toLowerCase())?'':'none')">
+<table class="t"><thead><tr><th>ID</th><th>Mã sản phẩm</th><th>Hãng</th><th>Ảnh hiện tại</th><th>Ảnh ứng viên</th><th>Trạng thái</th></tr></thead><tbody>
+<tr><td>471</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-760-60w">DB-760</a></td><td>ORIANA</td><td>1</td><td>2</td><td>QA_INTERNAL_PREVIEW</td></tr>
+<tr><td>474</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7300-300w">DB-7300</a></td><td>ORIANA</td><td>1</td><td>2</td><td>QA_INTERNAL_PREVIEW</td></tr>
+<tr><td>475</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-7500-500w">DB-7500</a></td><td>ORIANA</td><td>1</td><td>2</td><td>QA_INTERNAL_PREVIEW</td></tr>
+<tr><td>476</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-71000-1000w">DB-71000</a></td><td>ORIANA</td><td>1</td><td>2</td><td>QA_INTERNAL_PREVIEW</td></tr>
+<tr><td>477</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9100-100w">DB-9100</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>478</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9200-200w">DB-9200</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>479</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9300-300w">DB-9300</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>480</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9600-600w">DB-9600</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>481</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-9800-800w">DB-9800</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>482</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-91000-1000w">DB-91000</a></td><td>ORIANA</td><td>1</td><td>0</td><td>BLOCKED_REUSED_SERIES_IMAGE</td></tr>
+<tr><td>483</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a100-100w">DB-A100</a></td><td>ORIANA</td><td>1</td><td>0</td><td>NEEDS_DIFFERENT_ANGLE</td></tr>
+<tr><td>484</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a200-200w">DB-A200</a></td><td>ORIANA</td><td>1</td><td>0</td><td>NEEDS_DIFFERENT_ANGLE</td></tr>
+<tr><td>485</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a300-300w">DB-A300</a></td><td>ORIANA</td><td>1</td><td>0</td><td>NEEDS_DIFFERENT_ANGLE</td></tr>
+<tr><td>486</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-oriana-db-a500-500w">DB-A500</a></td><td>ORIANA</td><td>1</td><td>0</td><td>NEEDS_DIFFERENT_ANGLE</td></tr>
+<tr><td>581</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr10-50w">BCT-WR1.0</a></td><td>BLUE CARBON</td><td>1</td><td>2</td><td>QA_NEEDS_IMAGE_RIGHTS</td></tr>
+<tr><td>584</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-blue-carbon-bct-wr40-300w">BCT-WR4.0</a></td><td>BLUE CARBON</td><td>1</td><td>3</td><td>QA_NEEDS_IMAGE_RIGHTS</td></tr>
+<tr><td>616</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v200-200w">JD-V200</a></td><td>JINDIAN</td><td>1</td><td>1</td><td>REFERENCE_ONLY</td></tr>
+<tr><td>617</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-v300-300w">JD-V300</a></td><td>JINDIAN</td><td>1</td><td>1</td><td>REFERENCE_ONLY</td></tr>
+<tr><td>619</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-60w-jindian-jd-8860l-anh-sang-vang">JD-8860L-VANG</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>NEEDS_YELLOW_LIGHT_PROOF</td></tr>
+<tr><td>620</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-100w-jindian-jd-8800l-anh-sang-vang">JD-8800L-VANG</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>NEEDS_YELLOW_LIGHT_PROOF</td></tr>
+<tr><td>621</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-200w-jindian-jd-8200l-anh-sang-vang">JD-8200L-VANG</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>NEEDS_YELLOW_LIGHT_PROOF</td></tr>
+<tr><td>622</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-300w-jindian-jd-8300l-anh-sang-vang">JD-8300L-VANG</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>NEEDS_YELLOW_LIGHT_PROOF</td></tr>
+<tr><td>628</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-6128-80w">JD-6128</a></td><td>JINDIAN</td><td>1</td><td>1</td><td>QA_INTERNAL_PREVIEW</td></tr>
+<tr><td>883</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18200-200w">JD-18200</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>SOURCE_RESEARCH</td></tr>
+<tr><td>884</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18300-300w">JD-18300</a></td><td>JINDIAN</td><td>1</td><td>1</td><td>QA_EXTERNAL_RIGHTS_PENDING</td></tr>
+<tr><td>2199</td><td><a href="https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18500-500w">JD-18500</a></td><td>JINDIAN</td><td>1</td><td>0</td><td>SOURCE_RESEARCH</td></tr>
+</tbody></table><h2>3. Điều kiện trước khi nhập website</h2>
+<p>Ảnh đúng model và nhãn; không nhầm ánh sáng vàng/trắng, không trùng với avatar; kiểm tra đường cắt nền trên sáng và tối, bóng mờ, viền, thiết bị lắp đặt; đủ chi tiết ở màn hình 960px; quyền sử dụng ảnh nhà sản xuất/đại lý được xác nhận; mọi ảnh phải có SHA256, manifest và bản backup.</p>
+<footer>QA source folder: <code>backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1</code> · Đã ghi nhận các trường hợp nhầm JD-18300/JD-18200, JDE-8300, và Blue Carbon LED mismatch. Chỉ kiểm thử trong staging.</footer></div></html>

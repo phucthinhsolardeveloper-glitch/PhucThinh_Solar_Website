@@ -7,6 +7,7 @@ use App\Domain\Catalog\SpecFormat;
 use App\Domain\Shipping\Warehouses;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\NewFeatures;
 use App\Filament\Support\Options;
 use App\Filament\Support\PublicStatusColumn;
 use App\Filament\Support\PublishGate;
@@ -109,7 +110,7 @@ class ProductResource extends Resource
                         ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
                     TextInput::make('weight_kg')->label('Cân nặng khi đóng gói (kg)')->numeric()->minValue(0.01)->maxValue(5000)
                         ->helperText('Dùng để tính phí Nhất Tín lúc khách đặt hàng. Để trống thì nhân viên báo phí giao hàng sau.'),
-                    Select::make('warehouse_id')->label('Kho giữ hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa gán kho')
+                    Select::make('warehouse_id')->label(NewFeatures::label('Kho giữ hàng', 'kho-san-pham'))->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa gán kho')
                         ->helperText('Kho nào đang giữ sản phẩm này. Đơn có sản phẩm này sẽ xuất từ kho đó; phí giao hàng cũng tính từ kho đó.'),
                 ]),
                 Tab::make('Ảnh & video')->schema([

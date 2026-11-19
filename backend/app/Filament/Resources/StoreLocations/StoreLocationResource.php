@@ -5,6 +5,7 @@ namespace App\Filament\Resources\StoreLocations;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
 use App\Filament\Support\InlineEdit;
+use App\Filament\Support\NewFeatures;
 use App\Filament\Support\PublicLink;
 use App\Models\Province;
 use App\Models\StoreLocation;
@@ -44,6 +45,16 @@ class StoreLocationResource extends Resource
     protected static ?int $navigationSort = 2;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return NewFeatures::badge('kho-chi-nhanh');
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
 
     public static function form(Schema $schema): Schema
     {

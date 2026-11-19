@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-17T06:12:05.226198+00:00",
+  "pages": [
+    {
+      "url": "https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/",
+      "status": "HTTP_200",
+      "models": [
+        "SUN2000-12K-MB0",
+        "SUN2000-15K-MB0",
+        "SUN2000-17K-MB0",
+        "SUN2000-20K-MB0",
+        "SUN2000-25K-MB0"
+      ],
+      "spec_rows": 250,
+      "ambiguous_sections": 0
+    },
+    {
+      "url": "https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/",
+      "status": "HTTP_200",
+      "models": [
+        "SUN5000-17K-MB0",
+        "SUN5000-25K-MB0"
+      ],
+      "spec_rows": 108,
+      "ambiguous_sections": 0
+    },
+    {
+      "url": "https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/",
+      "status": "HTTP_200",
+      "models": [
+        "SUN5000-8K-MAP0",
+        "SUN5000-12K-MAP0"
+      ],
+      "spec_rows": 132,
+      "ambiguous_sections": 0
+    },
+    {
+      "url": "https://solar.huawei.com/en/products/sun2000-5-6-8-10-12k-map0/specs/",
+      "status": "HTTP_404"
+    },
+    {
+      "url": "https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/",
+      "status": "HTTP_200",
+      "models": [
+        "SDongleA-05 (AP+STA)"
+      ],
+      "spec_rows": 19,
+      "ambiguous_sections": 0
+    }
+  ],
+  "spec_rows": 509
+}

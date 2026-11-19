@@ -1,0 +1,36 @@
+{
+    "at": "2026-11-17T10:38:26+07:00",
+    "products": [
+        {
+            "id": 808,
+            "code": "X1-LITE-8-LV Hybrid 8kw",
+            "name": "Inverter SolaX X1-LITE-8-LV Hybrid 8kw",
+            "slug": "inverter-solax-x1-lite-8-lv-hybrid-8kw",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 809,
+            "code": "X1-LITE-10-LV Hybrid 10kw",
+            "name": "Inverter SolaX X1-LITE-10-LV Hybrid 10kw",
+            "slug": "inverter-solax-x1-lite-10-lv-hybrid-10kw",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 810,
+            "code": "X1-LITE-12-LV Hybrid 12kw",
+            "name": "Inverter SolaX X1-LITE-12-LV Hybrid 12kw",
+            "slug": "inverter-solax-x1-lite-12-lv-hybrid-12kw",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        }
+    ],
+    "gallery": []
+}

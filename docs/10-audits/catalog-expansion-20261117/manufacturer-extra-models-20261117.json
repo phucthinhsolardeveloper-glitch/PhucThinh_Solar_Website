@@ -1,0 +1,245 @@
+{
+  "created_at": "2026-11-17",
+  "notes": "Added 45 research entries from manufacturer public sources; not approved SKUs; merge with existing 215 seed research entries; do not publish or import without QA.",
+  "sources": [
+    {
+      "brand": "Growatt",
+      "source_url": "https://en.growatt.com/products",
+      "evidence_type": "OFFICIAL_INDEX_WEB",
+      "models": [
+        {
+          "family": "NEO 600-1000M-X",
+          "category": "microinverter",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "NEO 1600-2500M-X2",
+          "category": "microinverter",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "NEO 2000M-X",
+          "category": "microinverter",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MIC 750-3300TL X2(Pro)",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MIN 2500-6000TL X2(Pro)",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MIN 7000-10000TL-X/X2",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MOD 3-15KTL3 X2(Pro)",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MOD 3-33KTL3-X3",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MID 15-30KTL3 X2",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MID 36-60KTL3-X3",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MID 30-50KTL3-X2",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MAC 50-70KTL3-X LV/MV",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MAX 50-80KTL3 LV",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MAX 100-150KTL3-X2 LV/MV",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MAX 185-253KTL3-X HV",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "MAX 320-350K-X",
+          "category": "inverter-grid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "Future-V Series",
+          "category": "ess",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "Future-H Series",
+          "category": "ess",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "SPH/SPM 8000-10000TL-HU/HU2",
+          "category": "inverter-hybrid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "SPE 3.5-7KTL HVM-G2",
+          "category": "inverter-offgrid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "SPE 8000-12000 ES",
+          "category": "inverter-offgrid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "WIT 4-15K-HU",
+          "category": "inverter-hybrid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "WIT 50-100K-HU/AU",
+          "category": "inverter-hybrid",
+          "granularity": "family_or_range"
+        },
+        {
+          "family": "SPH 4000-10000TL3 BH-UP",
+          "category": "inverter-hybrid",
+          "granularity": "family_or_range"
+        }
+      ]
+    },
+    {
+      "brand": "Huawei",
+      "source_url": "https://solar.huawei.com/vn/faqs/",
+      "evidence_type": "OFFICIAL_MODEL_LIST_WEB",
+      "models": [
+        {
+          "family": "SUN2000-5K-MAP0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-6K-MAP0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-8K-MAP0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-10K-MAP0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-12K-MAP0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-12K-MB0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-15K-MB0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-17K-MB0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-20K-MB0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-25K-MB0",
+          "category": "inverter-hybrid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-2K-LB0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-3K-LB0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-4K-LB0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-5K-LB0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-6K-LB0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-8K-LC0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "SUN2000-10K-LC0",
+          "category": "inverter-grid",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "LUNA2000-7-S1",
+          "category": "battery",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "LUNA2000-14-S1",
+          "category": "battery",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "LUNA2000-21-S1",
+          "category": "battery",
+          "granularity": "model_variant"
+        },
+        {
+          "family": "MERC-600W-PA0",
+          "category": "optimizer",
+          "granularity": "model_variant"
+        }
+      ]
+    }
+  ]
+}

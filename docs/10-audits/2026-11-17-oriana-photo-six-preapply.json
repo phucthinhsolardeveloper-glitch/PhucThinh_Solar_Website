@@ -1,0 +1,66 @@
+{
+    "at": "2026-11-17T10:31:27+07:00",
+    "products": [
+        {
+            "id": 510,
+            "code": "DB03-2",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-2 (100W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-db03-2-100w",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 513,
+            "code": "SOLAR-LIGHT-BL120W",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA SOLAR-LIGHT-BL120W (120W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-solar-light-bl120w-120w",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 519,
+            "code": "YS-80W",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA YS-80W (80W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-ys-80w-80w",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 522,
+            "code": "HB01-60W",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA HB01-60W (60W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-hb01-60w-60w",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 526,
+            "code": "DB-16300W",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB-16300W (300W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-db-16300w-300w",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        },
+        {
+            "id": 687,
+            "code": "PL-0307 (300×300×H380)",
+            "name": "Đèn Trụ Cổng Mái Chùa ORIANA PL-0307 (300×300×H380)",
+            "slug": "den-tru-cong-mai-chua-oriana-pl-0307-300300h380",
+            "image": null,
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:23:02"
+        }
+    ],
+    "gallery": []
+}

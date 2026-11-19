@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Redirects;
 
 use App\Domain\Routing\Redirects;
 use App\Filament\Concerns\RequiresPermission;
+use App\Filament\Support\InlineEdit;
 use App\Filament\Support\PublicLink;
 use App\Models\Redirect;
 use BackedEnum;
@@ -16,9 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use App\Filament\Support\InlineEdit;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -62,7 +62,7 @@ class RedirectResource extends Resource
         return $table->defaultSort('updated_at', 'desc')
             ->columns([
                 TextColumn::make('from_path')->label('Link cũ')->searchable(),
-                $edit ? TextInputColumn::make('to_path')->label('Chuyển tới')->searchable()->rules(['required','string','max:500','starts_with:/','regex:/^\\/[^\\s?#]*$/']) : TextColumn::make('to_path')->label('Chuyển tới')->searchable(),
+                $edit ? TextInputColumn::make('to_path')->label('Chuyển tới')->searchable()->rules(['required', 'string', 'max:500', 'starts_with:/', 'regex:/^\\/[^\\s?#]*$/']) : TextColumn::make('to_path')->label('Chuyển tới')->searchable(),
                 TextColumn::make('source')->label('Tạo bởi')->badge()->color('gray')
                     ->formatStateUsing(fn ($state) => $state === 'auto' ? 'Tự động khi đổi đường dẫn' : 'Thêm tay'),
                 TextColumn::make('hits')->label('Lượt chuyển')->sortable()

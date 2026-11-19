@@ -1,0 +1,158 @@
+{
+  "crawled_at_utc": "2026-11-17T04:43:21.035527+00:00",
+  "scope": "manufacturer index snapshots, NOT model-level datasheets",
+  "sources": [
+    {
+      "brand": "AESOLAR",
+      "source_url": "https://ae-solar.com/catalogue",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 4,
+      "text_length": 2955
+    },
+    {
+      "brand": "Anker SOLIX",
+      "source_url": "https://support.ankersolix.com/s/filter-by-type",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 6,
+      "text_length": 74
+    },
+    {
+      "brand": "Astronergy",
+      "source_url": "https://www.astronergy.com/product-series/",
+      "fetch_state": "HTTP_403",
+      "http_status": 403,
+      "indexed_families": 5,
+      "text_length": 0
+    },
+    {
+      "brand": "BLUE CARBON",
+      "source_url": "https://bluecarbontech.com/products/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 4,
+      "text_length": 8140
+    },
+    {
+      "brand": "Canadian Solar",
+      "source_url": "https://www.csisolar.com/module/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 6,
+      "text_length": 10820
+    },
+    {
+      "brand": "Deye",
+      "source_url": "https://vi.deyeinverter.com/product/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 8,
+      "text_length": 16748
+    },
+    {
+      "brand": "EPSIVO",
+      "source_url": "https://www.epsivodrive.com/products.html",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 3,
+      "text_length": 10581
+    },
+    {
+      "brand": "GoodWe",
+      "source_url": "https://vn.goodwe.com/products",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 17,
+      "text_length": 162018
+    },
+    {
+      "brand": "Growatt",
+      "source_url": "https://en.growatt.com/products/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 13,
+      "text_length": 69321
+    },
+    {
+      "brand": "Hober",
+      "source_url": "https://hobersolarpump.com/products/solar-pumping-inverter/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 27,
+      "text_length": 107711
+    },
+    {
+      "brand": "Huawei",
+      "source_url": "https://solar.huawei.com/en/products/residential/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 12,
+      "text_length": 35688
+    },
+    {
+      "brand": "JINDIAN",
+      "source_url": "https://www.zsjdtyn.com/products.html",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 14,
+      "text_length": 5266
+    },
+    {
+      "brand": "LONGi",
+      "source_url": "https://www.longi.com/en/mobile-download/",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 8,
+      "text_length": 714
+    },
+    {
+      "brand": "Sharp",
+      "source_url": "https://www.sharp.co.jp/sunvista/",
+      "fetch_state": "SSLError",
+      "http_status": null,
+      "indexed_families": 14,
+      "text_length": 0
+    },
+    {
+      "brand": "Sigenergy",
+      "source_url": "https://www.sigenergy.com/en/products",
+      "fetch_state": "HTTP_403",
+      "http_status": 403,
+      "indexed_families": 17,
+      "text_length": 0
+    },
+    {
+      "brand": "SOFAR",
+      "source_url": "https://www.sofarsolar.com/product/index.html",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 18,
+      "text_length": 22702
+    },
+    {
+      "brand": "SolaX",
+      "source_url": "https://vn.solaxpower.com/products.html",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 12,
+      "text_length": 212137
+    },
+    {
+      "brand": "Sungrow",
+      "source_url": "https://www.sungrowpower.com/vt/en/products",
+      "fetch_state": "HTTP_404",
+      "http_status": 404,
+      "indexed_families": 14,
+      "text_length": 0
+    },
+    {
+      "brand": "TCL Solar",
+      "source_url": "https://www.tclsolar.com/products",
+      "fetch_state": "HTTP_200",
+      "http_status": 200,
+      "indexed_families": 13,
+      "text_length": 1624
+    }
+  ]
+}

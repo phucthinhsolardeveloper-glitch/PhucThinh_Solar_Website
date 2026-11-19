@@ -13,6 +13,7 @@ use App\Domain\Shipping\Shipments;
 use App\Domain\Shipping\Warehouses;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\NewFeatures;
 use App\Models\Order;
 use App\Models\Shipment;
 use BackedEnum;
@@ -110,7 +111,7 @@ class OrderResource extends Resource
             Section::make('Xử lý')->columnSpan(1)->schema([
                 Select::make('status')->label('Trạng thái')->required()
                     ->options(fn (?Order $record) => $record ? OrderLifecycle::statusChoices((string) $record->status, self::STATUSES) : self::STATUSES),
-                Select::make('warehouse_id')->label('Kho xuất hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa chọn kho')
+                Select::make('warehouse_id')->label(NewFeatures::label('Kho xuất hàng', 'kho-don-hang'))->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa chọn kho')
                     ->disabled(fn (?Order $record) => $record?->shipments()->exists() ?? false)
                     ->helperText(fn (?Order $record) => $record ? self::warehouseHint($record) : null),
                 Textarea::make('notes')->label('Ghi chú nội bộ')->rows(4),

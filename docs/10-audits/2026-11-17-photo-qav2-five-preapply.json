@@ -1,0 +1,117 @@
+{
+    "at": "2026-11-17T10:47:02+07:00",
+    "products": [
+        {
+            "id": 510,
+            "code": "DB03-2",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA DB03-2 (100W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-db03-2-100w",
+            "image": "pts-oriana-db03-2-photo-20261117.jpg",
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:32:30"
+        },
+        {
+            "id": 513,
+            "code": "SOLAR-LIGHT-BL120W",
+            "name": "Đèn Đường Năng Lượng Mặt Trời ORIANA SOLAR-LIGHT-BL120W (120W)",
+            "slug": "den-duong-nang-luong-mat-troi-oriana-solar-light-bl120w-120w",
+            "image": "pts-oriana-solar-light-bl120w-photo-20261117.jpg",
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:32:30"
+        },
+        {
+            "id": 808,
+            "code": "X1-LITE-8-LV Hybrid 8kw",
+            "name": "Inverter SolaX X1-LITE-8-LV Hybrid 8kw",
+            "slug": "inverter-solax-x1-lite-8-lv-hybrid-8kw",
+            "image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 809,
+            "code": "X1-LITE-10-LV Hybrid 10kw",
+            "name": "Inverter SolaX X1-LITE-10-LV Hybrid 10kw",
+            "slug": "inverter-solax-x1-lite-10-lv-hybrid-10kw",
+            "image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 810,
+            "code": "X1-LITE-12-LV Hybrid 12kw",
+            "name": "Inverter SolaX X1-LITE-12-LV Hybrid 12kw",
+            "slug": "inverter-solax-x1-lite-12-lv-hybrid-12kw",
+            "image": "pts-solax-x1-lite-lv-1-official-20261117.jpg",
+            "image_secondary": null,
+            "is_visible": 1,
+            "updated_at": "2026-11-17 10:39:01"
+        }
+    ],
+    "gallery": [
+        {
+            "id": 2399,
+            "product_id": 808,
+            "path": "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 10,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 2400,
+            "product_id": 808,
+            "path": "pts-solax-x1-lite-lv-3-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 20,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 2401,
+            "product_id": 809,
+            "path": "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 10,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 2402,
+            "product_id": 809,
+            "path": "pts-solax-x1-lite-lv-3-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 20,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 2403,
+            "product_id": 810,
+            "path": "pts-solax-x1-lite-lv-2-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 10,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        },
+        {
+            "id": 2404,
+            "product_id": 810,
+            "path": "pts-solax-x1-lite-lv-3-official-20261117.jpg",
+            "caption": "Ảnh thiết bị góc nghiêng SolaX X1-Lite-LV — nguồn: SolaX Power",
+            "is_visible": 1,
+            "sort_order": 20,
+            "created_at": "2026-11-17 10:39:01",
+            "updated_at": "2026-11-17 10:39:01"
+        }
+    ]
+}

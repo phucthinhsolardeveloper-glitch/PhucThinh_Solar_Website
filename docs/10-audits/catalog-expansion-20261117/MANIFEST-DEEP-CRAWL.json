@@ -1,0 +1,171 @@
+{
+  "audit_date": "2026-11-17",
+  "production_mutated": false,
+  "files": [
+    {
+      "name": "README-DEEP-CRAWL.md",
+      "bytes": 8348,
+      "sha256": "0ca204d09ad132b03d8ea24067a608b100af0570f9211a30b8961d375f6b9a46"
+    },
+    {
+      "name": "README.md",
+      "bytes": 13550,
+      "sha256": "29e02c20ad5611b340dc440f843abab4e320aa242663c9f3941a2928c8906d75"
+    },
+    {
+      "name": "crawl-run-log.json",
+      "bytes": 1561,
+      "sha256": "f5dd93a7ffb0e71380dc346499d304dca1295747bf64d9303c2f0a578c2a6e4b"
+    },
+    {
+      "name": "deep-candidates-260.csv",
+      "bytes": 50360,
+      "sha256": "ed8313b07bcee5f2d03709a894264fe88cab2c95339f806517bce6d93bf7e8f2"
+    },
+    {
+      "name": "deep-crawl-summary.json",
+      "bytes": 629,
+      "sha256": "0f37746d6b52dedbfe0f6205946ba1232957cbb3242ba081d6cb8819a4ff37e4"
+    },
+    {
+      "name": "deep-document-evidence.csv",
+      "bytes": 46279,
+      "sha256": "3ab20ae3fc5742b783445ad5c9caf05fd62ea359629fbb5ac5b31a1436d1a23b"
+    },
+    {
+      "name": "deep-extracted-specs.csv",
+      "bytes": 659948,
+      "sha256": "712cec6209d38f09c22a32f760920d58cbab671e909c9f1cfb1c2419a3bd8bcc"
+    },
+    {
+      "name": "deep-image-evidence.csv",
+      "bytes": 30307,
+      "sha256": "c25455c7ac2d455779e8c824da684abea83c853479d993eef3614d89b2af7f45"
+    },
+    {
+      "name": "deep-pdf-evidence.json",
+      "bytes": 100166,
+      "sha256": "84362ef8b8e2ab1949fe36cca724b4ebb3383d934dbe0d8db155df61e2456b7d"
+    },
+    {
+      "name": "deep-raw-html-tables.json",
+      "bytes": 247774,
+      "sha256": "340affc9cce0d110af3f6c701f726e010ab7a5605b4e37bb24fa813fdd0d4bbb"
+    },
+    {
+      "name": "enrichment-run-log.json",
+      "bytes": 5488,
+      "sha256": "4b095423d68623b820da44a37c24f771a2fef49c3cfef640e09eef6fb1615ddc"
+    },
+    {
+      "name": "huawei-model-level-specs.csv",
+      "bytes": 95720,
+      "sha256": "911d62a305a5ad886f14dd7d8de6e1f0c108f7650de01f6d6f4200a3a59ee1b6"
+    },
+    {
+      "name": "huawei-model-level-summary.json",
+      "bytes": 1326,
+      "sha256": "3af2a1e3e12b8596e89e541992049f4777a27ac315fb5f51ae355748f9e21aab"
+    },
+    {
+      "name": "manufacturer-extra-models-20261117.json",
+      "bytes": 6965,
+      "sha256": "a9a52b51d91214dd33bba8e58f87bce1483d2826569abd466dc182cb465a3c40"
+    },
+    {
+      "name": "manufacturer-media-qa-queue.csv",
+      "bytes": 4976,
+      "sha256": "4ed7d28f98d378fc72f21405882320712df3d795d1d3a096ff96dc36d6b6196d"
+    },
+    {
+      "name": "manufacturer-seeds.json",
+      "bytes": 22989,
+      "sha256": "81defae131ed9e46f08b202f0521f274014e58992b24856442cd93f2c8e9d2b0"
+    },
+    {
+      "name": "more-official-product-links-summary.json",
+      "bytes": 703,
+      "sha256": "47282b8cb954c55ccff23e05b8ac67b0c85b6163a0fd4302f5f18fc405e2c3ad"
+    },
+    {
+      "name": "more-official-product-links.csv",
+      "bytes": 55214,
+      "sha256": "bc7e88a138064bf9e67accd7e08d16fe25a3b9e24ce454ade5de032921ccc299"
+    },
+    {
+      "name": "new-deep-extracted-specs.csv",
+      "bytes": 1019303,
+      "sha256": "a23c67513f3b897593b431e8db719c527c13e986fb069b427b28aa45db395fda"
+    },
+    {
+      "name": "new-deep-html-tables.json",
+      "bytes": 541824,
+      "sha256": "3f4477d26b2c487b1ef9dedb53bfa601acade9b9ed53c1b174731fdb9b695e3c"
+    },
+    {
+      "name": "new-deep-image-urls.csv",
+      "bytes": 126412,
+      "sha256": "e7775111aba98fa2c802d3ed6179ec98413403a6d73d8da0840b92c2f51a527a"
+    },
+    {
+      "name": "new-deep-official-pages.csv",
+      "bytes": 81372,
+      "sha256": "d85e1a82a715f61c9fe9ef0688fac590c41a3e250fb2b980cc87440743c4efb7"
+    },
+    {
+      "name": "new-deep-pdf-urls.csv",
+      "bytes": 199392,
+      "sha256": "0d0a569ff9713a3e7bbc917d5a0585cc58bf06e8c4992ce45f1335fad4f4493d"
+    },
+    {
+      "name": "new-deep-summary.json",
+      "bytes": 334,
+      "sha256": "9f105d4653ac37abf8a7d91a2967dc031ee3fa3660d6ac9bd9befe5e41f60f16"
+    },
+    {
+      "name": "normalized-model-specifications.csv",
+      "bytes": 1043487,
+      "sha256": "b82a6d4fd6c14230545ff6724c402bb207649c960b5639a68f17c602fc977b4c"
+    },
+    {
+      "name": "normalized-models-staging.csv",
+      "bytes": 70937,
+      "sha256": "5e261c4c514cb83e7760558f5caeb05ba565c24a96513f4eff7e4a793205e4bc"
+    },
+    {
+      "name": "normalized-models-summary.json",
+      "bytes": 714,
+      "sha256": "bc345347a8cf37580b5c60671758c893510333a422a994fc9aae5ff124fafadd"
+    },
+    {
+      "name": "official-detail-page-samples.json",
+      "bytes": 19515,
+      "sha256": "5b7e3d9fab8237e54ddedb61aa246ba6e26a6ca71099cb55ded5a2e484487d5b"
+    },
+    {
+      "name": "official-family-candidates.csv",
+      "bytes": 38486,
+      "sha256": "d2f78d259b48806e715c09a28830dd716c113fa4ac585180aa32dd1cb2848ccd"
+    },
+    {
+      "name": "official-family-detail-links.csv",
+      "bytes": 48852,
+      "sha256": "9a09f261ef9af0fa383c8dd9032723731f156b7c353c1b8db08327af0e66af42"
+    },
+    {
+      "name": "official-page-fetch-evidence.json",
+      "bytes": 4268,
+      "sha256": "8141e3e839e0dc0c12702e48958e72b50b531faa9ec1ed85e03570fa3c57dcc0"
+    },
+    {
+      "name": "public-products-inventory.csv",
+      "bytes": 62544,
+      "sha256": "af0bed98abfcf7f0f2f0f0e2b2c71efe9c79f3506f51ae5b76b8f8748c18b66b"
+    },
+    {
+      "name": "public-products-snapshot.json",
+      "bytes": 192446,
+      "sha256": "7c6682b8807761cf8353f4d0b645ad8302724a67009de2c1e55fc1c87d4b9d54"
+    }
+  ]
+}

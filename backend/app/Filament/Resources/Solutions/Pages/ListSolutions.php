@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Solutions\Pages;
 
-use App\Filament\Resources\Solutions\SolutionResource;
 use App\Filament\Concerns\HasInlineEditMode;
+use App\Filament\Resources\Solutions\SolutionResource;
 use App\Filament\Support\AdminActor;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;

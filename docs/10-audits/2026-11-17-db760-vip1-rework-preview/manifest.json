@@ -1,0 +1,36 @@
+{
+  "sku": "DB-760",
+  "brand": "ORIANA",
+  "status": "DESIGN_PREVIEW_NOT_PRODUCTION",
+  "source_file": "/home/admin01/src/Web_PTS_PHP/deploy/laravel13/runtime/upload/product/db-760-9593.png",
+  "source_sha256": "6be3cf088ac7ed0bdee81988348920ad896bc77930c4248ae990690fef3e8db1",
+  "detail_source": "/home/admin01/src/Web_PTS_PHP/backend/resources/product-gallery/2026-11-17/den-pha-qa-batch-1/detail-candidates/pts-db-760-original-led-detail-qareview.jpg",
+  "vip1_reference": "/mnt/c/Users/ADMIN/Downloads/VIP1_PHÚC THỊNH SOLAR_12TR5-20261117T050129Z-1-001/VIP1_PHÚC THỊNH SOLAR_12TR5/2- Mã DB7100, DB7200, DB7300/29.png",
+  "policy": "Only original photo pixels for physical product; all layouts are 2D compositing. No generative device redesign. Check per-SKU technical claims before publication.",
+  "files": {
+    "ORIANA-DB-760-01-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "4788b5ad9d4b69d820338928ea29eab699cfcf9b5af2bf519a24e00c2eec1c2a",
+      "bytes": 1175378
+    },
+    "ORIANA-DB-760-02-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "157ea86177203231680e57f39c997bc6e95beb815bf18a329692a257b0fc3b30",
+      "bytes": 895288
+    },
+    "ORIANA-DB-760-03-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "5b804ad60121c988b447a8e7a440a1ef933ecee733e93dbdff9bc8d9bbd6df47",
+      "bytes": 1217422
+    },
+    "ORIANA-DB-760-04-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "caf74aefba270a2ce97133e4231e693fcefa0f0a216a66ac24e29d25dd73ac79",
+      "bytes": 425268
+    },
+    "ORIANA-DB-760-05-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "542d04cb4023331872fe26eae38faeba95cd965f0466a34f1c0b2c7117580c59",
+      "bytes": 510765
+    },
+    "ORIANA-DB-760-06-VIP1-CORRECTED-PREVIEW.png": {
+      "sha256": "91cd6693e870338a94fca482aa9fe8228936a9b1cbe286b5f15d409bc040e3d0",
+      "bytes": 267808
+    }
+  }
+}

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Albums;
 
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
+use App\Filament\Support\InlineEdit;
 use App\Filament\Support\PublicStatusColumn;
 use App\Models\Album;
 use BackedEnum;
@@ -17,9 +18,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
-use App\Filament\Support\InlineEdit;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -67,7 +67,7 @@ class AlbumResource extends Resource
             ->defaultSort('sort_order')->reorderable('sort_order')
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->height(48),
-                $edit ? TextInputColumn::make('title')->label('Album')->searchable()->rules(['required','string','max:255']) : TextColumn::make('title')->label('Album')->searchable(),
+                $edit ? TextInputColumn::make('title')->label('Album')->searchable()->rules(['required', 'string', 'max:255']) : TextColumn::make('title')->label('Album')->searchable(),
                 TextColumn::make('images_count')->label('Số ảnh')->counts('images'),
                 ToggleColumn::make('is_visible')->label('Hiển thị'),
                 PublicStatusColumn::make(besideSwitch: true),

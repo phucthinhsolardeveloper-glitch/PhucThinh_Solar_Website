@@ -1,0 +1,510 @@
+﻿manufacturer,model,spec_name_original,spec_value_original,source_url,mapping,review_state
+Huawei,SUN2000-12K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,European weighted efficiency,97.9%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,European weighted efficiency,98.0%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,European weighted efficiency,98.1%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,European weighted efficiency,98.1%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,European weighted efficiency,98.2%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Recommended max. PV power,"18,000 Wp",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Recommended max. PV power,"22,500 Wp",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Recommended max. PV power,"22,500 Wp",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Recommended max. PV power,"30,000 Wp",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Recommended max. PV power,"37,500 Wp",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. input voltage 2,1100 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. input voltage 2,1100 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. input voltage 2,1100 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. input voltage 2,1100 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. input voltage 2,1100 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,MPPT operating voltage range 3,200 V - 1000 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,MPPT operating voltage range 3,200 V - 1000 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,MPPT operating voltage range 3,200 V - 1000 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,MPPT operating voltage range 3,200 V - 1000 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,MPPT operating voltage range 3,200 V - 1000 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Full-load MPPT voltage range,370 V - 800 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Full-load MPPT voltage range,410 V - 800 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Full-load MPPT voltage range,440 V - 800 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Full-load MPPT voltage range,480 V - 800 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Full-load MPPT voltage range,530 V - 800 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. discharge power,13.2 kW,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. discharge power,16.5 kW,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. discharge power,18.7 kW,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. discharge power,22.0 kW,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. discharge power,25.0 kW,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Operating voltage range,600 V ~ 980 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Operating voltage range,600 V ~ 980 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Operating voltage range,600 V ~ 980 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Operating voltage range,600 V ~ 980 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Operating voltage range,600 V ~ 980 V,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Rated output power,"12,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Rated output power,"15,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Rated output power,"17,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Rated output power,"20,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Rated output power,"25,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. apparent power,"13,200 VA",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. apparent power,"16,500 VA",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. apparent power,"18,700 VA",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. apparent power,"22,000 VA",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. apparent power,"27,500 VA",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. active power (cosφ = 1),"13,200 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. active power (cosφ = 1),"16,500 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. active power (cosφ = 1),"18,700 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. active power (cosφ = 1),"22,000 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. active power (cosφ = 1),"27,500 W",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 Vac, 240 V AC / 415 V AC; 3 W/N + PE",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 Vac, 240 V AC / 415 V AC; 3 W/N + PE",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 Vac, 240 V AC / 415 V AC; 3 W/N + PE",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 Vac, 240 V AC / 415 V AC; 3 W/N + PE",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 Vac, 240 V AC / 415 V AC; 3 W/N + PE",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Rated output current,18.2 A / 380 V AC 17.3 A / 400 V AC 16.7 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Rated output current,22.8 A / 380 V AC 21.7 A / 400 V AC 20.9 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Rated output current,25.8 A / 380 V AC 24.5 A / 400 V AC 23.7 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Rated output current,30.4 A / 380 V AC 28.9 A / 400 V AC 27.8 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Rated output current,38.0 A / 380 V AC 36.1 A / 400 V AC 34.8 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. output current,20.2 A / 380 V AC 19.1 A / 400 V AC 18.5 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. output current,25.2 A / 380 V AC 23.9 A / 400 V AC 23.1 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. output current,28.6 A / 380 V AC 27.1 A / 400 V AC 26.1 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. output current,33.6 A / 380 V AC 31.9 A / 400 V AC 30.8 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. output current,42.0 A / 380 V AC 39.9 A / 400 V AC 38.5 A / 415 V AC,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Operating temperature range,-25 °C to +60 °C (-13 °F to 140 °F),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Operating temperature range,-25 °C to +60 °C (-13 °F to 140 °F),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Operating temperature range,-25 °C to +60 °C (-13 °F to 140 °F),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Operating temperature range,-25 °C to +60 °C (-13 °F to 140 °F),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Operating temperature range,-25 °C to +60 °C (-13 °F to 140 °F),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Communication,RS485; WLAN/Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); SmartAssistant (Optional),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Communication,RS485; WLAN/Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); SmartAssistant (Optional),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Communication,RS485; WLAN/Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); SmartAssistant (Optional),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Communication,RS485; WLAN/Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); SmartAssistant (Optional),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Communication,RS485; WLAN/Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); SmartAssistant (Optional),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Dimensions (W x H x D),546 mm x 460 mm x 228 mm (21.5 x 18.1 x 9.0 inch),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Dimensions (W x H x D),546 mm x 460 mm x 228 mm (21.5 x 18.1 x 9.0 inch),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Dimensions (W x H x D),546 mm x 460 mm x 228 mm (21.5 x 18.1 x 9.0 inch),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Dimensions (W x H x D),546 mm x 460 mm x 228 mm (21.5 x 18.1 x 9.0 inch),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Dimensions (W x H x D),546 mm x 460 mm x 228 mm (21.5 x 18.1 x 9.0 inch),https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Compatible optimizer model,"SUN2000-450W-P2, SUN2000-600W-P, MERC-1100W-P, MERC-1300W-P",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Compatible optimizer model,"SUN2000-450W-P2, SUN2000-600W-P, MERC-1100W-P, MERC-1300W-P",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Compatible optimizer model,"SUN2000-450W-P2, SUN2000-600W-P, MERC-1100W-P, MERC-1300W-P",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Compatible optimizer model,"SUN2000-450W-P2, SUN2000-600W-P, MERC-1100W-P, MERC-1300W-P",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Compatible optimizer model,"SUN2000-450W-P2, SUN2000-600W-P, MERC-1100W-P, MERC-1300W-P",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-12K-MB0,Grid connection standards,"IEC61727, IEC62116, IEC61683, EN50530, ABNT NBR 16149/16150, MEA/PEA, G99, IRR-DCC-MV/IRR-TIC, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, CEI-016, C10/C11, EN50549-2, VDE4110",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-15K-MB0,Grid connection standards,"IEC61727, IEC62116, IEC61683, EN50530, ABNT NBR 16149/16150, MEA/PEA, G99, IRR-DCC-MV/IRR-TIC, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, CEI-016, C10/C11, EN50549-2, VDE4110",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-17K-MB0,Grid connection standards,"IEC61727, IEC62116, IEC61683, EN50530, ABNT NBR 16149/16150, MEA/PEA, G99, IRR-DCC-MV/IRR-TIC, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, CEI-016, C10/C11, EN50549-2, VDE4110",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-20K-MB0,Grid connection standards,"IEC61727, IEC62116, IEC61683, EN50530, ABNT NBR 16149/16150, MEA/PEA, G99, IRR-DCC-MV/IRR-TIC, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, CEI-016, C10/C11, EN50549-2, VDE4110",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN2000-25K-MB0,Grid connection standards,"IEC61727, IEC62116, IEC61683, EN50530, ABNT NBR 16149/16150, MEA/PEA, G99, IRR-DCC-MV/IRR-TIC, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, CEI-016, C10/C11, EN50549-2, VDE4110",https://solar.huawei.com/en/products/SUN2000-12-15-17-20-25K-MB0/specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. efficiency,98.4%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,European weighted efficiency,98.1%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,European weighted efficiency,98.2%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Recommended max. PV power,"25,500 Wp",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Recommended max. PV power,"37,500 Wp",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. input voltage 1,1100 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. input voltage 1,1100 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. input current per MPPT,30 A (two strings) / 20 A (single string),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. short-circuit current,40 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Start-up voltage,200 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,MPPT operating voltage range 2,200 V – 1000 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,MPPT operating voltage range 2,200 V – 1000 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Full-load MPPT voltage range,440 V - 800 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Full-load MPPT voltage range,530 V - 800 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. number of inputs,4,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Compatible Smart String ESS model,"LUNA2000-5/10/15-S0, LUNA2000-7/14/21-S1",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Number of terminals,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. charging power,21 kW (Single string) / 25 kW (Two strings),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. discharge power,18.7 kW,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. discharge power,25.0 kW,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. operating current,26.25 A (per string),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Operating voltage range,600 V – 980 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Operating voltage range,600 V – 980 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Rated output power,"17,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Rated output power,"25,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. apparent power,"18,700 VA",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. apparent power,"27,500 VA",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. active power (cosφ = 1),"18,700 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. active power (cosφ = 1),"27,500 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Rated output voltage,"220 Vac / 380 Vac, 230 Vac / 400 Vac, 240 Vac / 415 Vac; 3 W / N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Rated output voltage,"220 Vac / 380 Vac, 230 Vac / 400 Vac, 240 Vac / 415 Vac; 3 W / N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Rated output current,24.5 A / 400 Vac,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Rated output current,36.1 A / 400 Vac,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. output current,28.6 A / 380 Vac,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. output current,42.0 A / 380 Vac,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Overvoltage category,PV II / AC III,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,AC over-current protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,DC reverse-polarity protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,DC surge protection,TYPE II,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,DC insulation resistance detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Residual current monitoring unit,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,RSD function,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,RSD function,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Operating temperature range,-25 °C – 60 °C (-13 °F – 140 °F),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Operating temperature range,-25 °C – 60 °C (-13 °F – 140 °F),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Relative humidity,0% RH - 100% RH,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. operating altitude,"4000 m (13,123 ft.) (Derated above 2000 m)",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Cooling,Smart air cooling,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Display,"LED indicators, Integrated WLAN + FusionSolar APP",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Communication,RS485; WLAN / Ethernet via Smart Dongle-WLAN-FE (Optional) 4G / 3G / 2G via Smart Dongle-4G (Optional); EMMA (Optional),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Communication,RS485; WLAN / Ethernet via Smart Dongle-WLAN-FE (Optional) 4G / 3G / 2G via Smart Dongle-4G (Optional); EMMA (Optional),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Weight,21 kg,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Dimensions (W x H x D),546 x 460 x 228 mm,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Dimensions (W x H x D),546 x 460 x 228 mm,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Protection level,IP66,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. number of paralleled unit (with Smart String ESS),3,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,DC MBUS compatible optimizer 3,"SUN2000-450W-P2, SUN2000-600W-P",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,DC MBUS compatible optimizer 3,"SUN2000-450W-P2, SUN2000-600W-P",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Certificates,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,PV system design,SUN5000-17/25K-MB0,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,PV system design,SUN5000-17/25K-MB0,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Min. string length (power optimizers),6,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Min. string length (power optimizers),6,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. string length (power optimizers),35,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. string length (power optimizers),35,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-17K-MB0,Max. DC power per string,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-25K-MB0,Max. DC power per string,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-17-25K-MB0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. efficiency,98.6%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. efficiency,98.6%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,European weighted efficiency,98.0%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,European weighted efficiency,98.2%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Recommended max. PV power,"14,600 Wp",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Recommended max. PV power,"22,000 Wp",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. input voltage 1,1100 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. input voltage 1,1100 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Operating voltage range 2,160 - 1000 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Operating voltage range 2,160 - 1000 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Startup voltage,160 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Startup voltage,160 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated input voltage,600 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. input current per MPPT,16 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. input current per MPPT,16 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. short-circuit current,22 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. short-circuit current,22 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Number of MPP trackers,2,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. input per MPP tracker,1,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. input per MPP tracker,1,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Compatible battery model,LUNA2000-5/10/15-S0 / LUNA2000-7/14/21-S1,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Compatible battery model,LUNA2000-5/10/15-S0 / LUNA2000-7/14/21-S1,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Operating voltage range,600 – 980 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Operating voltage range,600 – 980 V,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. operating current,20 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. operating current,20 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. charging power,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. charging power,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. discharging power,8000 W,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. discharging power,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Grid connection,Three-phase,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Grid connection,Three-phase,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated output power,8000 W,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated output power,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. apparent power,8800 VA,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. apparent power,"13,200 VA",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 V AC, 240 V AC / 415 V AC 3W/N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 V AC, 240 V AC / 415 V AC 3W/N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Overload capability,110%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Overload capability,110%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated AC grid frequency,50 Hz / 60 Hz,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. output current,13.3 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. output current,20.2 A,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Adjustable power factor,0.8 leading ... 0.8 lagging,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. total harmonic distortion,≤ 3%,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Compatible backup device,SmartGuard-63A-T0 (3 phase),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Compatible backup device,SmartGuard-63A-T0 (3 phase),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated output power,8000 W,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated output power,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 V AC, 240 V AC / 415 V AC 3W/N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Rated output voltage,"220 V AC / 380 V AC, 230 V AC / 400 V AC, 240 V AC / 415 V AC 3W/N + PE",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,110% overload,Continuous,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,110% overload,Continuous,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,150% overload,5 min (3-phase) / 5 min (Single-phase),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,150% overload,1 min (3-phase) / 5 min (Single-phase),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,200% overload,10 seconds,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,200% overload,10 seconds,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Automatic switchover time,≤ 20 ms (with SmartGuard-63A-T0),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Automatic switchover time,≤ 20 ms (with SmartGuard-63A-T0),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Asymmetric load,"Yes, supports 100% three-phase asymmetric load",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Asymmetric load,"Yes, supports 100% three-phase asymmetric load",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Input-side disconnection device,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Anti-islanding protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,DC reverse polarity protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,DC reverse polarity protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Insulation detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Insulation detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,DC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,DC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,AC surge protection,"Yes, compatible with TYPE II protection class according to EN/IEC 61643-11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Residual current detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Residual current detection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,AC overcurrent protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,AC overcurrent protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,AC short-circuit protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,AC short-circuit protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,AC overvoltage protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,AC overvoltage protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Arc fault protection,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Terminal temperature detection,Yes (PV & Battery & Optimizer connectors),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Terminal temperature detection,Yes (PV & Battery & Optimizer connectors),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Ripple receiver control,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Ripple receiver control,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Battery charging from grid,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Battery charging from grid,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,RSD function,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,RSD function,Yes,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Operating temperature range,–25 °C to +60 °C (–13 °F to +140 °F),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Operating temperature range,–25 °C to +60 °C (–13 °F to +140 °F),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Relative operating humidity,0% - 100% RH,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Relative operating humidity,0% - 100% RH,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. operating altitude,4000 m,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. operating altitude,4000 m,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Cooling,Natural convection,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Cooling,Natural convection,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Noise,≤ 29 dB,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Noise,≤ 29 dB,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Display,LED Indicators; Integrated WLAN + FusionSolar APP,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Display,LED Indicators; Integrated WLAN + FusionSolar APP,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Communication,RS485; WLAN / Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); EMMA (Optional),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Communication,RS485; WLAN / Ethernet via Smart Dongle-WLAN-FE (Optional) 4G/3G/2G via Smart Dongle-4G (Optional); EMMA (Optional),https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Weight (incl. mounting brackets),21 kg,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Weight (incl. mounting brackets),21 kg,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Dimensions (incl. mounting brackets),490 mm x 460 mm x 130 mm,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Dimensions (incl. mounting brackets),490 mm x 460 mm x 130 mm,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,IP rating,IP66,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,IP rating,IP66,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Nighttime power,< 5.5 W,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Nighttime power,< 5.5 W,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,DC MBUS compatible optimizer 3,"SUN2000-450W-P2, SUN2000-600W-P",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,DC MBUS compatible optimizer 3,"SUN2000-450W-P2, SUN2000-600W-P",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Safety,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Safety,"EN/IEC62109-1, EN/IEC62109-2",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Grid connection standards,"IEC61727, IEC62116, MEA/PEA, G99/G100, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, C10/C11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Grid connection standards,"IEC61727, IEC62116, MEA/PEA, G99/G100, Philippine Grid Code Resolution No. 07, NRS 097-2-1, EN50549-1, VDE4105, UTE15-712-1/VFR 2019, UNE217002, NTS631, RD244(UNE217001), PPDS, ROGA, TOR Erzeuger, CEI 0-21:2020-12 V1, C10/C11",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,PV system design,SUN5000-8K/12K-MAP0,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,PV system design,SUN5000-8K/12K-MAP0,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Min. string length (power optimizers),6,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Min. string length (power optimizers),6,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. string length (power optimizers),35,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. string length (power optimizers),35,https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-8K-MAP0,Max. DC power per string,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SUN5000-12K-MAP0,Max. DC power per string,"12,000 W",https://solar.huawei.com/en/products/SUN5000-Series/SUN5000-8-12K-MAP0-specs/,SINGLE_SHARED_VALUE,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Max. devices supported,10,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Max. inverters supported,10,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Connection interface,USB,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Ethernet interface,10 / 100 M Ethernet,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Installation,Plug-and-play,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Indicator,LED Indicator,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Dimensions (W x H x D),146 mm x 48 mm x 33 mm (5.1 in. x 1.9 in. x 1.3 in.),https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Weight,90 g (0.2 lb.),https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),IP rating,IP65,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Power (typical),2.5 W,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Working mode,AP + STA,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Security,Security protocol: WPA/WPA2 Encryption: TKIP/CCMP/AES,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Supported standards & frequencies,"LTE-FDD/TDD, WCDMA, GSM, 802.11b/g/n (2.412–2.484 GHz)",https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Operating temperature range,-30 °C to +65 °C (-22 °F to +149 °F),https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Relative humidity range,5% - 95% RH,https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Storage temperature range,-40 °C to +70 °C (-40 °F to +158 °F),https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Max. operating altitude,"4000 m (13,123 ft.)",https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Certificate,"SRRC, CE, RCM",https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
+Huawei,SDongleA-05 (AP+STA),Inverter model,"SUN2000-2/3/3.68/4/4.6/5/6KTL-L1, SUN2000-8/10K-LC0, SUN2000-3/4/5/6/8/10KTL-M1, SUN2000-12/15/17/20/25KTL-M5, SUN2000-12/15/17/20/25K-MB0, SUN2000-5/6/8/10/12K-MAP0, SUN5000-8/12K-MAP0, SUN5000-17/25K-MB0",https://solar.huawei.com/en/products/SmartDongle-WLAN-FE/specs/,MODEL_COLUMN_MATCHED,EXTRACT_NOT_REVIEWED
