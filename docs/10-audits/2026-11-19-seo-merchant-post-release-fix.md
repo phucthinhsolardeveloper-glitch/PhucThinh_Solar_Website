@@ -17,10 +17,11 @@ Trạng thái tồn kho hợp lệ duy nhất là `in_stock` (Admin + workbook c
 
 ## Lý do 15 URL sitemap không có trong feed (đọc API public)
 
-- 12 sản phẩm không có mã (`code` trống), trong đó 4 đang báo giá (3 cáp Thipha, kẹp biên 35) -> cần mã thật và giá công khai.
+- 13 sản phẩm không có mã (`code` trống), trong đó 4 đang báo giá (3 cáp Thipha, kẹp biên 35) -> cần mã thật và giá công khai.
 - JD-18300: có mã, đang báo giá.
-- SolaX T-BAT-SYS-LV D150 Pro: có mã, giá, ảnh chính 1600 px; lý do không xác định từ dữ liệu public
-  (nghi ảnh Shopping `feed_image` hỏng/nhỏ). Chạy lệnh readiness trên DB production (chỉ đọc) để xác nhận.
+- SolaX T-BAT-SYS-LV D150 Pro (ID 847): đã xác minh ảnh Shopping `t-bat-sys-lvd150pro-3-6450-shopping-trang.jpg`
+  chỉ 454x454 (< 500 px), feed ưu tiên ảnh Shopping nên loại; ảnh chính 1600x1600. Cần ảnh Shopping sạch >= 500 px
+  (hoặc Admin chọn ảnh chính sau khi kiểm tra không có chữ/logo). Code không tự thay ảnh.
 
 Không có lỗi code loại sai; không tự cấp mã/giá. Danh sách từng SKU: `merchant-data-blocked-2026-11-19.csv`.
 

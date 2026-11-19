@@ -19,6 +19,6 @@ not_in_feed,,kep-bien-tam-pin-35,code_missing|quote_only_or_price_missing,DATA B
 not_in_feed,,khop-noi-ruot-ga-voi-ruot-ga-phi-25-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 34000
 not_in_feed,,ong-ruot-ga-loi-thep-phi-16-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 35000
 not_in_feed,,ong-ruot-ga-loi-thep-phi-25-cat-van-loi,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 63000
-not_in_feed,T-BAT-SYS-LV D150 Pro,pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro,unknown_public: chạy pts:merchant-readiness trên DB (nghi feed_image hỏng/nhỏ),DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 56538000
+not_in_feed,T-BAT-SYS-LV D150 Pro,pin-luu-truhe-thong-luu-tru-solax-t-bat-sys-lv-d150-pro,image_too_small,DATA BLOCKED,VERIFIED: ảnh Shopping 454x454 < 500 px; ảnh chính 1600x1600; giá 56538000
 not_in_feed,,pv-module-sharp-mono-half-cut-cell-395-wp,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 4900000
 not_in_feed,,quat-nang-luong-mat-troi-blue-fan-20w,code_missing,DATA BLOCKED,Ảnh chính 1600x1600 hợp lệ; giá 1860000
