@@ -229,7 +229,9 @@ function toggleDescription() {
 <style scoped>
 @media (max-width: 820px) {
   .pdp-photo { margin-inline: calc(50% - 50vw); }
-  .pdp-sheet { position: relative; z-index: 1; margin: -22px calc(50% - 50vw) 0; padding: 18px 16px 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 24px rgb(6 21 55 / 10%); }
+  /* No z-index here: it would make a stacking context that traps the fixed buy bar under the section rail.
+     The sheet follows the photo in the DOM, so it already paints above it. */
+  .pdp-sheet { position: relative; margin: -22px calc(50% - 50vw) 0; padding: 18px 16px 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 24px rgb(6 21 55 / 10%); }
   /* One control for the description on phones: the button under it opens and closes the same <details>. */
   .pdp-description :deep(details) { border: 0; }
   .pdp-description :deep(details > summary) { display: none; }
