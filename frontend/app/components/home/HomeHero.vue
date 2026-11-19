@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
 
     <!-- Centered editorial copy sits in the upper-left field of the image. -->
     <div class="hero-copy-layer relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col items-start justify-start px-0 pb-0 pt-[clamp(132px,22vh,190px)] max-[640px]:items-center max-[640px]:px-4 max-[640px]:pt-[clamp(76px,12vh,108px)]">
-      <div class="hero-copy ml-[clamp(64px,6.2vw,112px)] flex w-full max-w-[820px] flex-col items-center text-center max-[1100px]:max-w-[760px] max-[640px]:ml-0 max-[640px]:max-w-[min(100%,520px)]">
+      <div class="hero-copy ml-[clamp(64px,6.2vw,112px)] flex w-auto self-stretch min-[641px]:max-[900px]:mx-4 max-w-[820px] flex-col items-center text-center max-[1100px]:max-w-[760px] max-[640px]:ml-0 max-[640px]:w-full max-[640px]:max-w-[min(100%,520px)] max-[640px]:self-center">
         <h1 id="home-title" class="m-0 w-full text-center text-[clamp(42px,4.3vw,62px)] min-[1800px]:text-[clamp(56px,3.4vw,72px)] font-black uppercase leading-[1.1] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(29px,8.8vw,38px)] max-[640px]:leading-[1.08]">
           Thiết bị và giải pháp <br><span class="hero-accent">năng lượng mặt trời</span>
         </h1>
