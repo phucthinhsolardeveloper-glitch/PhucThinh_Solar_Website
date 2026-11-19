@@ -286,6 +286,12 @@ onBeforeUnmount(() => {
   from { transform: scale(1.06) translate3d(0, 0, 0); }
   to { transform: scale(1.12) translate3d(var(--hero-pan-x, -1.4%), -1%, 0); }
 }
+/* Phones and tablets (up to 820px, where the dock appears): the card spans the width, clear of the dock. */
+@media (max-width: 820px) {
+  .hero-caption { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; padding: 2px 14px 12px; }
+  .hero-caption > strong { font-size: 14.5px; }
+  .hero-caption > span { font-size: 12.5px; line-height: 1.4; }
+}
 @media (max-width: 640px) {
   .hero-copy-layer { justify-content: flex-end !important; padding: 0 0 92px !important; }
   .hero-copy-layer::before { content: ''; position: absolute; inset: auto 0 0; z-index: -1; height: 72%; background: linear-gradient(180deg, transparent, rgb(6 21 55 / 78%) 42%, var(--color-navy-950)); pointer-events: none; }
@@ -318,9 +324,7 @@ onBeforeUnmount(() => {
   .hero-cta-arrow { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); }
   .hero-cta-second { justify-content: center; border-color: rgb(255 255 255 / 38%) !important; background: rgb(255 255 255 / 12%) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%) !important; color: #fff !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
   .hero-cta-second__arrow { display: none; }
-  /* Phones: the card spans the width, clear of the dock, on the same light glass as before (the photo is still behind it). */
-  .hero-caption { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; padding: 2px 14px 12px; border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 9%); -webkit-backdrop-filter: blur(14px) saturate(130%); backdrop-filter: blur(14px) saturate(130%); }
-  .hero-caption > strong { font-size: 14.5px; }
-  .hero-caption > span { font-size: 12.5px; line-height: 1.4; }
+  /* Only phones have the navy foot under the photo, so only they can carry the light glass. */
+  .hero-caption { border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 9%); -webkit-backdrop-filter: blur(14px) saturate(130%); backdrop-filter: blur(14px) saturate(130%); }
 }
 </style>
