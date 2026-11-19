@@ -65,3 +65,12 @@
 - Sửa P2 `MerchantIdentifier`: GTIN-8 có bảng tiền tố riêng — chặn `0xx`, `2xx` (RCN-8) và `97–99`; trước đó áp nhầm bảng GTIN-13 nên `01234565` lọt qua.
 - Còn để ý (P2, chưa sửa): ô Excel GTIN/MPN kiểu số bị thay bằng 71 chữ X nên thông báo lỗi là "vượt quá ký tự" thay vì "hãy nhập dạng văn bản"; MPN thuần số hợp lệ cũng bị từ chối nếu ô là Number.
 - Pest/Pint/PHPStan: **BLOCKED** — `docker info` exit 1 (daemon không chạy), WSL không có `php`. Không tự khởi động Docker. 0 test PHP đã chạy.
+
+## QA backend sau khi Docker khôi phục — 2026-11-19
+
+Container tạm `pts-local-laravel13`, DB `pts_app_test` trên `pts-mariadb-local` (không production), worktree mount `/app`, vendor/.env master read-only.
+
+- Pest `MerchantIdentifierTest ProductWorkbookTest ProductDuplicateTest WarehousesTest`: 33 passed (272 assertions), exit 0.
+- Pint `--test` 17 file PHP đổi: PASS, exit 0. PHPStan các file `app/` đổi: exit 0 (3 cảnh báo `?->` ở BulkPlanner coordinator đã sửa).
+- Full suite (trước lần hợp nhất cuối của controller): 440 passed, 2 skipped, 13 failed — đều do môi trường: 12 thiếu ảnh `/srv/assets`/`/srv/upload`, 1 MediaTest thiếu ảnh storefront. Chạy lại 6 nhóm với assets+upload read-only: 19/20 pass; test còn lại (`EditorialBatchTest` "upload volume has no copy") yêu cầu KHÔNG mount upload — chạy chỉ với assets: 2/2 pass. Không còn lỗi do code.
+- Bug sửa thêm: cache "dưới ngưỡng" giữ feed ở fallback tới 1 giờ sau khi admin đã xác minh sản phẩm. Hợp nhất với sửa của coordinator: giữ negative-cache (tránh quét ảnh toàn bộ mỗi lần URL public bị gọi) nhưng `Product::saved/deleted` gọi `MerchantFeed::forgetVerifiedCache()` khi cột ảnh hưởng feed đổi; test bao trùm cả hai chiều.

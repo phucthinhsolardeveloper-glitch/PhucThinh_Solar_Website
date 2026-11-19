@@ -4,6 +4,7 @@ namespace App\Domain\Catalog;
 
 use App\Filament\Support\Options;
 use App\Support\SiteSettings;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -18,7 +19,27 @@ final class MerchantFeed
 
     public const VERIFIED_HEADERS = ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price', 'sale_price', 'brand', 'condition', 'identifier_exists', 'gtin', 'mpn', 'product_type', 'additional_image_link'];
 
+    public const VERIFIED_CACHE_KEY = 'merchant-feed-xml-verified-v1';
+
+    /** Row count of the last verified build that fell below the release threshold. */
+    public const VERIFIED_BELOW_CACHE_KEY = 'merchant-feed-xml-verified-v1-below';
+
+    /** Product columns that decide whether, and how, a product appears in the verified feed. */
+    public const VERIFIED_INPUT_COLUMNS = ['merchant_availability', 'merchant_gtin', 'merchant_mpn', 'merchant_identifiers_absent',
+        'is_visible', 'quote_only', 'code', 'name', 'slug', 'regular_price', 'sale_price', 'image', 'feed_image', 'brand_id'];
+
     public function __construct(private readonly SiteSettings $settings) {}
+
+    /**
+     * A product change can lift the verified feed over its threshold or change an item's availability: drop the
+     * verified caches so the next fetch rebuilds instead of serving the fallback or a stale "in stock" for an hour.
+     * The legacy cache is left alone, as before.
+     */
+    public static function forgetVerifiedCache(): void
+    {
+        Cache::forget(self::VERIFIED_CACHE_KEY);
+        Cache::forget(self::VERIFIED_BELOW_CACHE_KEY);
+    }
 
     public function pricesArePublic(): bool
     {

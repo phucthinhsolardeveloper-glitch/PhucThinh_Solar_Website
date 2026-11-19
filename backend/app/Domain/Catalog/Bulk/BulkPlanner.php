@@ -577,9 +577,9 @@ final class BulkPlanner
         if ($regular > 0 && $sale > $regular) {
             $item['errors'][] = 'Giá khuyến mãi không được lớn hơn giá gốc.';
         }
-        $gtin = (string) (array_key_exists('merchant_gtin', $item['columns']) ? ($item['columns']['merchant_gtin'] ?? '') : ($existing?->merchant_gtin ?? ''));
-        $mpn = (string) (array_key_exists('merchant_mpn', $item['columns']) ? ($item['columns']['merchant_mpn'] ?? '') : ($existing?->merchant_mpn ?? ''));
-        $identifiersAbsent = (bool) (array_key_exists('merchant_identifiers_absent', $item['columns']) ? $item['columns']['merchant_identifiers_absent'] : ($existing?->merchant_identifiers_absent ?? false));
+        $gtin = (string) (array_key_exists('merchant_gtin', $item['columns']) ? ($item['columns']['merchant_gtin'] ?? '') : ($existing->merchant_gtin ?? ''));
+        $mpn = (string) (array_key_exists('merchant_mpn', $item['columns']) ? ($item['columns']['merchant_mpn'] ?? '') : ($existing->merchant_mpn ?? ''));
+        $identifiersAbsent = (bool) (array_key_exists('merchant_identifiers_absent', $item['columns']) ? $item['columns']['merchant_identifiers_absent'] : ($existing->merchant_identifiers_absent ?? false));
         $merchantColumnsChanged = array_intersect(['merchant_gtin', 'merchant_mpn', 'merchant_identifiers_absent'], array_keys($item['columns'])) !== [];
         if ($merchantColumnsChanged && $identifiersAbsent && (trim($gtin) !== '' || trim($mpn) !== '')) {
             $item['errors'][] = 'Không thể xác nhận không có GTIN/MPN khi một trong hai ô vẫn có dữ liệu.';

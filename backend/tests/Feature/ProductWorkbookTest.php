@@ -419,13 +419,27 @@ it('requires verified availability before replacing the legacy feed and does not
         $merchantItem = $item->children('g', true);
         $byId[(string) $merchantItem->id] = $merchantItem;
     }
-    expect(array_keys($byId))->toBe(['FEED-VERIFIED', 'FEED-MPN', 'FEED-NO-UPI'])
+    // Feed rows are ordered by database product ID, not by fixture update order.
+    $feedIds = array_keys($byId);
+    sort($feedIds);
+    expect($feedIds)->toBe(['FEED-MPN', 'FEED-NO-UPI', 'FEED-VERIFIED'])
         ->and((string) $byId['FEED-VERIFIED']->availability)->toBe('in_stock')
         ->and((string) $byId['FEED-VERIFIED']->gtin)->toBe('042100005264')
         ->and((string) $byId['FEED-VERIFIED']->identifier_exists)->toBe('yes')
         ->and((string) $byId['FEED-MPN']->mpn)->toBe('MPN-22')
         ->and((string) $byId['FEED-MPN']->identifier_exists)->toBe('yes')
-        ->and((string) $byId['FEED-NO-UPI']->identifier_exists)->toBe('no');
+        ->and((string) $byId['FEED-NO-UPI']->identifier_exists)->toBe('no')
+        ->and(Cache::has(MerchantFeed::VERIFIED_CACHE_KEY))->toBeTrue();
+
+    // An availability change must reach the next fetch, not wait for the hourly cache.
+    $product->update(['merchant_availability' => null]);
+    expect(Cache::has(MerchantFeed::VERIFIED_CACHE_KEY))->toBeFalse();
+    $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'legacy-fallback');
+    // The failed gate is remembered, but a product change clears it so the next fetch rebuilds.
+    expect(Cache::get(MerchantFeed::VERIFIED_BELOW_CACHE_KEY))->toBe(2);
+    $product->update(['merchant_availability' => 'in_stock']);
+    expect(Cache::has(MerchantFeed::VERIFIED_BELOW_CACHE_KEY))->toBeFalse();
+    $this->get('/google-shopping.xml')->assertOk()->assertHeader('X-Feed-Mode', 'verified');
 
     $csvResponse = app(MerchantFeed::class)->download([array_values(array_combine(MerchantFeed::VERIFIED_HEADERS, [
         'FEED-VERIFIED', 'Feed', 'Description', 'https://example.test/p', 'https://example.test/i.jpg', 'in_stock', '100000 VND', '', 'Brand', 'new', 'yes', '042100005264', '', '', '',

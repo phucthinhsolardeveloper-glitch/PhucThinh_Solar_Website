@@ -19,19 +19,20 @@ class MerchantFeedController extends Controller
         }
         $origin = (string) config('site.canonical_origin');
         $verified = (bool) config('services.merchant_feed.verified_enabled', false);
-        $cacheKey = $verified ? 'merchant-feed-xml-verified-v1' : 'merchant-feed-xml';
+        $cacheKey = $verified ? MerchantFeed::VERIFIED_CACHE_KEY : 'merchant-feed-xml';
         $feedMode = $verified ? 'verified' : 'legacy';
         $xml = Cache::get($cacheKey);
         if (! is_string($xml)) {
             $minimum = max(0, (int) config('services.merchant_feed.verified_minimum_items', 286));
-            $belowKey = 'merchant-feed-xml-verified-v1-below';
-            $belowCount = $verified ? Cache::get($belowKey) : null;
-            $cachedBelow = $verified && is_int($belowCount) && ($belowCount === 0 || $belowCount < $minimum);
-            // An unchanged failed release gate avoids a full image-size scan on each fetch.
+            // A failed release gate is remembered (row count) so a public URL cannot trigger a full image-size scan on
+            // every hit. Any product change that affects the feed clears it (MerchantFeed::forgetVerifiedCache), and a
+            // changed threshold is compared against the remembered count, so readiness is never held back stale.
+            $belowCount = $verified ? Cache::get(MerchantFeed::VERIFIED_BELOW_CACHE_KEY) : null;
+            $cachedBelow = is_int($belowCount) && ($belowCount === 0 || $belowCount < $minimum);
             $rows = $cachedBelow ? [] : $feed->build($origin, $verified)['rows'];
             if ($verified && ($cachedBelow || $rows === [] || count($rows) < $minimum)) {
                 if (! $cachedBelow) {
-                    Cache::put($belowKey, count($rows), 3600);
+                    Cache::put(MerchantFeed::VERIFIED_BELOW_CACHE_KEY, count($rows), 3600);
                 }
                 // Preserve the currently published product set if availability has not been fully confirmed.
                 $feedMode = 'legacy-fallback';
@@ -54,7 +55,7 @@ class MerchantFeedController extends Controller
                 $xml = $feed->xml($rows, $origin, $verified);
                 Cache::put($cacheKey, $xml, 3600);
                 if ($verified) {
-                    Cache::forget($belowKey);
+                    Cache::forget(MerchantFeed::VERIFIED_BELOW_CACHE_KEY);
                 }
             }
         }

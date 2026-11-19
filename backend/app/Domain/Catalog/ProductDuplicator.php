@@ -20,6 +20,9 @@ class ProductDuplicator
             $copy->is_visible = false;
             $copy->is_bestseller = false;
             $copy->views = 0;
+            // replicate() omits the field; set it explicitly so the in-memory copy
+            // matches the database default without requiring an extra refresh.
+            $copy->merchant_identifiers_absent = false;
             $copy->save();
 
             foreach ($source->images as $image) {

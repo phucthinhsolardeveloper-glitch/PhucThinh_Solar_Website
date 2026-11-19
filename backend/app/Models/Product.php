@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\UnicodeJson;
+use App\Domain\Catalog\MerchantFeed;
 use App\Domain\Catalog\SpecFormat;
 use App\Domain\Content\PostVisibility;
 use App\Models\Concerns\Audited;
@@ -35,6 +36,12 @@ class Product extends Model
                 }
             }
         });
+        static::saved(function (Product $product) {
+            if ($product->wasRecentlyCreated || $product->wasChanged(MerchantFeed::VERIFIED_INPUT_COLUMNS)) {
+                MerchantFeed::forgetVerifiedCache();
+            }
+        });
+        static::deleted(fn () => MerchantFeed::forgetVerifiedCache());
     }
 
     protected function casts(): array
