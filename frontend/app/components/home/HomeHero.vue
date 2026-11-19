@@ -254,8 +254,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .hero-cta-arrow { display: none; }
-/* The slide's story sits on one glass card with its progress bars, on every screen. */
-.hero-caption { position: absolute; z-index: 5; right: clamp(24px, 4vw, 96px); bottom: clamp(112px, 14vh, 132px); display: flex; width: min(460px, calc(100vw - 48px)); flex-direction: column; gap: 4px; padding: 2px 16px 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-md); background: rgb(6 21 55 / 55%); color: #fff; text-align: left; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+/* The slide's story sits on one card with its progress bars, on every screen. No blur here: the photo behind
+   moves all the time, and a live backdrop blur over it repaints every frame. */
+.hero-caption { position: absolute; z-index: 5; right: clamp(24px, 4vw, 96px); bottom: clamp(112px, 14vh, 132px); display: flex; width: min(460px, calc(100vw - 48px)); flex-direction: column; gap: 4px; padding: 2px 16px 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-md); background: rgb(6 21 55 / 72%); color: #fff; text-align: left; }
 .hero-caption > strong { font-size: clamp(17px, 1.35vw, 21px); font-weight: 800; line-height: 1.25; }
 .hero-caption > span { color: #dbe4f0; font-size: clamp(13px, 1vw, 14.5px); font-weight: 600; line-height: 1.45; text-wrap: pretty; }
 .hero-steps { display: flex; gap: 6px; }
@@ -317,7 +318,7 @@ onBeforeUnmount(() => {
   .hero-cta-arrow { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); }
   .hero-cta-second { justify-content: center; border-color: rgb(255 255 255 / 38%) !important; background: rgb(255 255 255 / 12%) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%) !important; color: #fff !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
   .hero-cta-second__arrow { display: none; }
-  /* Phones: the card spans the width, clear of the dock, on the same light glass as before. */
+  /* Phones: the card spans the width, clear of the dock, on the same light glass as before (the photo is still behind it). */
   .hero-caption { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; padding: 2px 14px 12px; border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 9%); -webkit-backdrop-filter: blur(14px) saturate(130%); backdrop-filter: blur(14px) saturate(130%); }
   .hero-caption > strong { font-size: 14.5px; }
   .hero-caption > span { font-size: 12.5px; line-height: 1.4; }
