@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SearchSuggestions from '~/components/search/SearchSuggestions.vue'
 import type { PublicCatalogGroup, PublicProductCategoryNode, PublicSiteLink, PublicSitePayload } from '#shared/contracts/public-site'
-import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 import {
   catalogGroupMeta,
   catalogItemIcon,
@@ -36,7 +35,6 @@ const cartCountAvailable = computed(() => true)
 // The cart page fills this state after the header has rendered on the server, so the count is client-only.
 const cartBadgeReady = ref(false)
 onMounted(() => { cartBadgeReady.value = true })
-const reducedMotion = useReducedMotion()
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
@@ -746,15 +744,12 @@ onBeforeUnmount(() => {
               >
                 {{ item.label }}
               </NuxtLink>
-              <AnimatePresence :initial="false">
-                <motion.div
-                  v-if="item.children?.length && navDropdownOpen === item.href"
-                  :key="item.href"
+              <!-- Kept in the page and only hidden, so the translation widget translates it with the rest of the page. -->
+              <Transition name="pts-navmenu">
+                <div
+                  v-if="item.children?.length"
+                  v-show="navDropdownOpen === item.href"
                   :id="`ptsNavMenu-${index}`"
-                  :initial="reducedMotion ? false : { opacity: 0, y: 8 }"
-                  :animate="{ opacity: 1, y: 0 }"
-                  :exit="{ opacity: 0, y: 5 }"
-                  :transition="{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }"
                   class="absolute left-0 top-full z-20 min-w-[320px] max-w-[calc(100vw-2rem)] rounded-btn border border-hdr-line bg-white p-3 shadow-[0_14px_28px_rgba(16,36,58,.12)]"
                   role="group"
                   :aria-label="`${item.label} - menu con`"
@@ -769,8 +764,8 @@ onBeforeUnmount(() => {
                   >
                     {{ entry.link.label }}
                   </NuxtLink>
-                </motion.div>
-              </AnimatePresence>
+                </div>
+              </Transition>
             </li>
           </ul>
         </nav>
@@ -847,7 +842,7 @@ onBeforeUnmount(() => {
       <!-- Backdrop mờ cho hộp thoại tìm kiếm: click ra ngoài để đóng nhanh -->
       <Transition name="pts-search" :duration="{ enter: 260, leave: 180 }">
       <div
-        v-if="searchOpen"
+        v-show="searchOpen"
         ref="searchOverlay"
         class="contents"
       >
@@ -943,7 +938,7 @@ onBeforeUnmount(() => {
       <!-- Mega-menu Danh mục sản phẩm: neo sát ngay dưới thanh header sticky -->
       <Transition name="pts-catalog-menu">
       <div
-        v-if="catalogOpen"
+        v-show="catalogOpen"
         ref="catalogOverlay"
         class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden catalog-overlay"
         aria-hidden="false"
@@ -1147,7 +1142,7 @@ onBeforeUnmount(() => {
     <!-- Drawer điều hướng mobile/tablet, used through 1320px -->
     <Teleport to="body">
     <Transition name="pts-drawer" :duration="{ enter: 380, leave: 260 }">
-    <div v-if="mobileOpen" ref="mobileOverlay" class="pts-drawer fixed inset-0 z-[1100] overflow-hidden">
+    <div v-show="mobileOpen" ref="mobileOverlay" class="pts-drawer fixed inset-0 z-[1100] overflow-hidden">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"
         aria-hidden="true"
@@ -1352,6 +1347,10 @@ onBeforeUnmount(() => {
 .pts-morph span:nth-child(1) { transform: rotate(45deg); }
 .pts-morph span:nth-child(2) { opacity: 0; }
 .pts-morph span:nth-child(3) { transform: rotate(-45deg); }
+.pts-navmenu-enter-active, .pts-navmenu-leave-active { transition: opacity .16s ease-out, transform .16s ease-out; }
+.pts-navmenu-enter-from { opacity: 0; transform: translateY(8px); }
+.pts-navmenu-leave-to { opacity: 0; transform: translateY(5px); }
+@media (prefers-reduced-motion: reduce) { .pts-navmenu-enter-active, .pts-navmenu-leave-active { transition: none; } }
 .pts-drawer-enter-active, .pts-drawer-leave-active { transition: background-color .26s ease; }
 .pts-drawer-enter-from, .pts-drawer-leave-to { background-color: rgb(6 21 55 / 0%); }
 .pts-drawer-enter-active .pts-drawer__panel { transition: transform .38s cubic-bezier(.22, 1, .36, 1); }

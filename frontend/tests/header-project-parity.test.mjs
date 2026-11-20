@@ -27,7 +27,7 @@ test('mobile sidebar follows the PHP product-first order and narrower drawer siz
   assert.match(header, /w-\[min\(326px,calc\(100vw-24px\)\)\][\s\S]*min-\[761px\]:w-\[360px\]/)
   assert.match(header, /<h2 id="ptsMobileTitle" class="sr-only">\{\{ brandName \}\}<\/h2>[\s\S]*pts-drawer__logo/)
   assert.match(header, /props\.site\.productCategoryTree\?\.length[\s\S]*flattenProductCategories\(tree\)/)
-  assert.match(header, /<Teleport to="body">[\s\S]*<div v-if="mobileOpen" ref="mobileOverlay"/)
+  assert.match(header, /<Teleport to="body">[\s\S]*<div v-show="mobileOpen" ref="mobileOverlay"/)
   assert.match(sidebar, /v-show="mobileCategoryVisible\(entry\)"/)
   assert.match(sidebar, /:aria-expanded="Boolean\(mobileCategoryExpanded\[entry\.key\]\)"/)
   assert.match(header, /mt-3 flex min-h-\[50px\] w-full flex-none/)
