@@ -41,7 +41,10 @@ Route::prefix('v1')->group(function () {
     Route::get('solar-estimator', [SolarEstimatorController::class, 'form']);
     Route::post('solar-estimate', [SolarEstimatorController::class, 'estimate'])->middleware('throttle:60,1');
     Route::get('lead-form', [PagesController::class, 'leadForm']);
-    Route::post('lead-form', [PagesController::class, 'submitLead']);
+    // Quote requests read the same cookie-backed cart that /api/v1/cart writes.
+    // Preserve the existing stateless FormToken and IP throttling for all lead kinds.
+    Route::post('lead-form', [PagesController::class, 'submitLead'])
+        ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class]);
     Route::get('news', [PagesController::class, 'news']);
     Route::get('news-detail', [PagesController::class, 'newsDetail']);
     Route::get('policy-detail', [PagesController::class, 'policyDetail']);

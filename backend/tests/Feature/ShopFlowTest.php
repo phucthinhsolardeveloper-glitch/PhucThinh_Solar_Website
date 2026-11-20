@@ -37,6 +37,21 @@ it('adds, merges, updates and removes cart lines', function () {
     shop('POST', '/api/v1/cart', ['action' => 'delete', 'csrfToken' => $token, 'code' => $code])->assertNotFound();
 });
 
+it('carries a cart into a quote lead across cookie-backed HTTP requests', function () {
+    $product = buyableProduct();
+    shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 2])->assertOk();
+    shop('GET', '/api/v1/cart')->assertOk()->assertJsonPath('items.0.quantity', 2);
+
+    shop('POST', '/api/v1/lead-form', ['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách báo giá giỏ', 'phone' => '0912345678', 'subject' => 'Giỏ hàng: Yêu cầu báo giá',
+        'content' => 'Xin báo giá số lượng', 'quote_cart' => '1', 'source_url' => '/gio-hang/',
+    ]])->assertOk()->assertJsonPath('ok', true);
+
+    $lead = DB::table('leads')->orderByDesc('id')->first();
+    expect($lead->message)->toContain('Xin báo giá số lượng', (string) $product->code, 'SL: 2')
+        ->and($lead->source_url)->toBe('/gio-hang/');
+});
+
 it('places an order once, mails shop and customer, and shows the thank-you page once', function () {
     $product = buyableProduct();
     $ward = DB::table('wards as w')->join('provinces as p', 'p.id', '=', 'w.province_id')
