@@ -5,5 +5,16 @@ Disallow: /_api/
 Disallow: /gio-hang/
 Disallow: /thanh-toan/
 Disallow: /cam-on/
+# Filter combinations are non-indexable and create near-infinite crawl paths.
+# Keep clean category/product URLs and ?page=N pagination crawlable.
+# Google Search Central: faceted-navigation crawl-budget guidance.
+Disallow: /*?*brand=
+Disallow: /*?*category=
+Disallow: /*?*subcategory=
+Disallow: /*?*price=
+Disallow: /*?*need=
+Disallow: /*?*sort=
+Disallow: /*?*per_page=
+Disallow: /*?*keyword=
 
 Sitemap: https://phucthinhsolar.com/sitemap.xml
