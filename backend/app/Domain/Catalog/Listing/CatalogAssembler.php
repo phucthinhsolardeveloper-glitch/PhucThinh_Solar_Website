@@ -138,7 +138,7 @@ class CatalogAssembler
                 'priceRanges' => array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES),
                 'subcategories' => $subcategories,
                 // The product landing page also shows partner logos that have no product yet.
-                ...($category === [] ? ['partners' => $this->partners()] : []),
+                ...($category === [] ? ['partners' => $this->partners()] : ['partners' => $this->partners($this->tree->chain((int) $selectedId)[0]['id'] ?? 0)]),
                 'needs' => $needsEnabled ? array_map(fn ($key, $label) => ['key' => $key, 'label' => $label], array_keys(CatalogFilters::NEED_LABELS), CatalogFilters::NEED_LABELS) : [],
             ],
             'selected' => [
@@ -177,10 +177,16 @@ class CatalogAssembler
         return ['faq' => $faq, 'cards' => array_values(array_filter($rest, fn ($block) => ($block['type'] ?? '') === 'cards'))];
     }
 
-    /** @return list<array{id: int, name: string, logo: string}> visible brands with a logo, in Admin order */
-    private function partners(): array
+    /**
+     * Visible brands with a logo, in Admin order. With a top category id: only the brands related to it (Admin → Thương hiệu).
+     *
+     * @return list<array{id: int, name: string, logo: string}>
+     */
+    private function partners(int $topCategoryId = 0): array
     {
-        return DB::table('brands')->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'image'])
+        return DB::table('brands')->where('is_visible', true)
+            ->when($topCategoryId > 0, fn ($q) => $q->whereIn('id', DB::table('brand_category')->where('category_id', $topCategoryId)->pluck('brand_id')))
+            ->orderBy('sort_order')->orderByDesc('id')->get(['id', 'name', 'image'])
             ->map(fn ($brand) => ['id' => (int) $brand->id, 'name' => Text::plain($brand->name), 'logo' => Brand::logoUrl($brand->image)])
             ->filter(fn (array $brand) => $brand['logo'] !== '' && $brand['name'] !== '')->values()->all();
     }

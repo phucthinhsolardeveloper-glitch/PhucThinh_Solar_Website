@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\Audited;
 use App\Models\Concerns\RedirectsOldSlug;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -26,6 +27,12 @@ class Brand extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    /** Top-level categories this brand is related to (logo shown in their header). */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'brand_category');
     }
 
     public function contentSection(): MorphOne

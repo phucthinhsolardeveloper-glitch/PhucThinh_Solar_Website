@@ -9,6 +9,7 @@ use App\Filament\Support\PublicStatusColumn;
 use App\Models\Brand;
 use BackedEnum;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -48,6 +49,8 @@ class BrandResource extends Resource
                 Textarea::make('summary')->label('Mô tả ngắn')->rows(3)->columnSpanFull(),
                 Fields::rich('body', 'Giới thiệu')->columnSpanFull(),
                 Fields::image('image', 'product', 'Logo'),
+                Select::make('categories')->label('Danh mục liên quan')->relationship('categories', 'name', fn ($query) => $query->whereNull('parent_id')->orderBy('sort_order'))->multiple()->preload()
+                    ->helperText('Logo thương hiệu hiện ở đầu trang các danh mục này, kể cả khi chưa có sản phẩm. Thương hiệu đã có sản phẩm trong danh mục thì luôn hiện.'),
                 Section::make()->schema([Fields::visible()]),
             ]),
             Section::make('Khối mô tả dùng chung')->relationship('contentSection', Fields::keepRelation('contentSection', fn (array $state) => filled($state['blocks'] ?? null)))->collapsed()

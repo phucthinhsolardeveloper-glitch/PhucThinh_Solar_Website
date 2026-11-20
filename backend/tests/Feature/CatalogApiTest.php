@@ -44,3 +44,13 @@ it('gives a sub-category page the trail of its parents, like the product page', 
         ->assertJsonPath('breadcrumbs', [['label' => 'Đèn '.$tag, 'url' => "/danh-muc-san-pham/den-{$tag}/"]]);
     $this->getJson("/api/v1/catalog?category=den-{$tag}")->assertOk()->assertJsonPath('breadcrumbs', []);
 });
+
+it('lists the brands related to a category in its header, also those with no product there yet', function () {
+    $top = DB::table('categories')->whereNull('parent_id')->where('is_visible', true)->orderBy('id')->first();
+    $other = DB::table('categories')->whereNull('parent_id')->where('is_visible', true)->where('id', '!=', $top->id)->first();
+    $brand = DB::table('brands')->insertGetId(['name' => 'Hãng thử liên quan', 'slug' => 'hang-thu-lien-quan', 'image' => 'hang-thu.png', 'is_visible' => true, 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()]);
+    DB::table('brand_category')->insert(['brand_id' => $brand, 'category_id' => $top->id]);
+    $names = fn (string $slug) => collect($this->getJson('/api/v1/catalog?category='.$slug)->assertOk()->json('filters.partners'))->pluck('name')->all();
+
+    expect($names($top->slug))->toContain('Hãng thử liên quan')->and($names($other->slug))->not->toContain('Hãng thử liên quan');
+});

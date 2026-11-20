@@ -214,6 +214,19 @@ const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 .masthead-brands .masthead-brand[data-active="true"] { border-color: var(--color-gold-500); background: #fff; box-shadow: 0 0 0 2px var(--color-gold-400); }
 .masthead-brands a.masthead-brand:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 
+/* Desktop: a taller band with a lighter shade so the photo reads clearly, larger logo plates kept to the copy side. */
+@media (min-width: 1024px) {
+  .masthead:not([data-compact]) .masthead-inner { min-height: clamp(400px, 31vw, 500px); padding-block: 44px; }
+  .masthead:not([data-compact]) .masthead-shade {
+    background:
+      linear-gradient(90deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 74%) 30%, rgb(6 21 55 / 14%) 52%, rgb(6 21 55 / 0%) 100%),
+      linear-gradient(0deg, rgb(6 21 55 / 30%) 0%, transparent 34%);
+  }
+  .masthead:not([data-compact]) .masthead-brands { gap: 10px; max-width: min(780px, 60%); margin-top: 26px; }
+  .masthead:not([data-compact]) .masthead-brands .masthead-brand { min-width: 124px; min-height: 52px; padding: 0 16px; }
+  .masthead:not([data-compact]) .masthead-brands .masthead-brand img { max-width: 140px; height: 34px; }
+}
+
 @keyframes photo-settle { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
 @keyframes sun-rise { from { opacity: 0; transform: translateY(18%); } to { opacity: 1; transform: translateY(0); } }
 
