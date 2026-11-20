@@ -758,6 +758,14 @@ PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild ima
 - Kiểm: mã lấy bằng trình duyệt trên phucthinhsolar.com, siteverify trả success, score 0.9, hostname đúng; gửi biểu mẫu liên hệ với dữ liệu trống: mã đúng hành động -> 422 thiếu họ tên (qua captcha, không tạo lead); sai hành động hoặc không mã -> 422 CAPTCHA_FAILED. 0 lead mới.
 - Lưu ý: đọc khóa từ ảnh dễ nhầm I/l/1; Google trả cùng lỗi `invalid-input-response` cho secret sai với mã giả nên phải thử bằng mã thật. Nếu trình duyệt khách chặn script Google (một số chế độ chặn quảng cáo), biểu mẫu báo lỗi; khách vẫn có hotline và Zalo.
 
+## 2026-11-20 — menu danh mục (Bơm nước, Biến tần bơm), vá dịch menu (release 7059d8fc, backend + Nuxt)
+
+- Backup DB `20261120T050612Z-db`. Rollback: `releases/rollback-7059d8fc/stack.env.before` (backend `ea6e6f3d`, Nuxt `380ca794`). Gói backend 316 MB, Nuxt 172 MB, sha256 khớp. Không có migration mới.
+- Menu danh mục (SiteAssembler): cột Điện mặt trời thêm "Bơm nước" (danh mục Máy bơm NLMT) và "Biến tần bơm" (Biến tần bơm NLMT); "Biến tần / Inverter" thành "Biến tần năng lượng mặt trời"; cột Thiết bị ứng dụng còn Quạt. Tên danh mục ở trang danh mục chưa đổi.
+- Dịch: các hộp mở ra (menu con, menu danh mục, hộp tìm kiếm, menu điện thoại) dùng `v-show` thay `v-if`, luôn có trong trang nên GTranslate dịch chúng (đã đo: nội dung có sẵn được dịch, nội dung chèn sau thì không). Menu con dùng chuyển động CSS thay AnimatePresence. Chú thích xoay vòng trên banner vẫn có lúc còn tiếng Việt.
+- Kiểm trên web thật: các trang chính 200, menu đúng, hover mở/Esc đóng trên PC, menu điện thoại mở và đóng (Esc, X, bấm ngoài), 0 lỗi JS.
+- Ghi chú: release `ea6e6f3d` (phiên khác) đã đưa sẵn kho gửi hàng, nhãn Mới, mẫu email mới lên web.
+
 ## Mẫu ghi cho lần tiếp theo
 
 ```text
