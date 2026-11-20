@@ -36,6 +36,19 @@ class Product extends Model
                 }
             }
         });
+        // A product saved without a code gets PTS-000123 (from its ID) so Merchant and the product list always have one; staff replace it with the real code later.
+        static::created(function (Product $product) {
+            if (trim((string) $product->code) !== '') {
+                return;
+            }
+            $code = sprintf('PTS-%06d', $product->id);
+            for ($n = 2; DB::table('products')->where('code', $code)->exists(); $n++) {
+                $code = sprintf('PTS-%06d-%d', $product->id, $n);
+            }
+            DB::table('products')->where('id', $product->id)->update(['code' => $code]);
+            $product->setAttribute('code', $code);
+            $product->syncOriginalAttribute('code');
+        });
         static::saved(function (Product $product) {
             if ($product->wasRecentlyCreated || $product->wasChanged(MerchantFeed::VERIFIED_INPUT_COLUMNS)) {
                 MerchantFeed::forgetVerifiedCache();

@@ -586,3 +586,17 @@ it('writes the readiness CSV without formulas and keeps GTIN leading zeros', fun
         ->and($row['slug'])->toBe('den-a')
         ->and($row['legacy_feed'])->toBe('in');
 });
+
+it('gives a product saved without a code the code PTS-<id> and keeps a code that was typed', function () {
+    $row = bulkPlan([bulkRow(['name' => 'Đèn chưa có mã', 'category' => leafCategory()])])['rows'][0];
+    expect($row['errors'])->toBe([]);
+
+    $made = Product::query()->create(['name' => 'Đèn chưa có mã', 'slug' => 'den-chua-co-ma', 'category_id' => Product::query()->value('category_id'), 'is_visible' => false, 'code' => '']);
+    expect($made->fresh()->code)->toBe(sprintf('PTS-%06d', $made->id));
+
+    $made->update(['code' => 'MA-THUC-TE-01']);
+    expect($made->fresh()->code)->toBe('MA-THUC-TE-01');
+
+    $typed = Product::query()->create(['name' => 'Đèn có mã', 'slug' => 'den-co-ma', 'category_id' => Product::query()->value('category_id'), 'is_visible' => false, 'code' => 'ABC-1']);
+    expect($typed->fresh()->code)->toBe('ABC-1');
+});

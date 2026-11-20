@@ -19,7 +19,7 @@ final class BulkColumns
             'action' => ['label' => 'Thao tác', 'kind' => 'control'],
             'id' => ['label' => 'ID sản phẩm', 'kind' => 'control', 'locked' => true, 'old' => ['id', 'ID']],
             'expected_updated_at' => ['label' => 'Mốc cập nhật', 'kind' => 'control', 'import_only' => true],
-            'code' => ['label' => 'Mã sản phẩm', 'kind' => 'text', 'field' => 'code', 'max' => 30, 'required' => true],
+            'code' => ['label' => 'Mã sản phẩm', 'kind' => 'text', 'field' => 'code', 'max' => 30],
             'name' => ['label' => 'Tên sản phẩm', 'kind' => 'text', 'field' => 'name', 'max' => 255, 'required' => true, 'old' => ['namevi']],
             'slug' => ['label' => 'Đường dẫn', 'kind' => 'slug', 'field' => 'slug', 'max' => 200, 'old' => ['slugvi']],
             'category' => ['label' => 'Danh mục', 'kind' => 'category', 'field' => 'category_id', 'required' => true, 'old' => ['_cat_name', 'Danh mục cấp 2']],

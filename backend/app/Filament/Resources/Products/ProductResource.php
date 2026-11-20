@@ -93,7 +93,8 @@ class ProductResource extends Resource
                 Tab::make('Thông tin chung')->columns(2)->schema([
                     Fields::title(),
                     Fields::publicSlug('products'),
-                    TextInput::make('code')->label('Mã sản phẩm'),
+                    TextInput::make('code')->label('Mã sản phẩm')->maxLength(30)
+                        ->helperText('Để trống để tự sinh mã PTS-000123 theo ID. Có thể đổi lại mã này sau khi lưu.'),
                     Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required()->live(),
                     Select::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->searchable()->preload(),
                     Select::make('pdp_profile')->label('Kiểu trang sản phẩm')->options(Options::pdpProfiles())->live()

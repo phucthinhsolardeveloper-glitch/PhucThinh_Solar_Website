@@ -561,9 +561,6 @@ final class BulkPlanner
             if (trim($name) === '') {
                 $item['errors'][] = 'Dòng tạo mới bắt buộc có Tên sản phẩm.';
             }
-            if ($item['code'] === '') {
-                $item['errors'][] = 'Dòng tạo mới bắt buộc có Mã sản phẩm.';
-            }
             if (empty($item['columns']['category_id'])) {
                 $item['errors'][] = 'Dòng tạo mới bắt buộc có Danh mục.';
             }
