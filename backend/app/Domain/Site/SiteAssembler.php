@@ -28,10 +28,11 @@ class SiteAssembler
         ['lighting', 'Đèn UFO năng lượng mặt trời', 'den-nlmt', 'den-ufo'],
         ['lighting', 'Đèn ốp trần', 'den-nlmt', 'den-op-tran'],
         ['solar', 'Tấm pin năng lượng mặt trời', 'tam-pin-nang-luong-mat-troi', null],
-        ['solar', 'Biến tần / Inverter', 'bien-tan-inverter', null],
+        ['solar', 'Biến tần năng lượng mặt trời', 'bien-tan-inverter', null],
         ['solar', 'Pin lưu trữ', 'pin-luu-tru', null],
+        ['solar', 'Bơm nước', 'bien-tan-bom', 'may-bom-nlmt'],
+        ['solar', 'Biến tần bơm', 'bien-tan-bom', 'bien-tan-bom-nlmt'],
         ['solar', 'Thiết bị & phụ kiện', 'thiet-bi-dien-nang-luong-mat-troi', null],
-        ['devices', 'Bơm nước năng lượng mặt trời', 'bien-tan-bom', null],
         ['devices', 'Quạt năng lượng mặt trời', 'quat-nang-luong-mat-troi', null],
     ];
 
