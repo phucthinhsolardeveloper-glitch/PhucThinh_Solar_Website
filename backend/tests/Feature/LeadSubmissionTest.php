@@ -134,3 +134,55 @@ it('keeps ad click ids on the lead source, Google first, within 255 characters',
     $long = str_repeat('y', 190);
     expect(LeadSource::normalize("/lien-he/?gclid={$long}&fbclid={$long}"))->toBe("/lien-he/?gclid={$long}");
 });
+
+it('transfers a quote cart from server session to the sales lead and notification', function () {
+    $products = DB::table('products')->where('is_visible', true)->whereNotNull('code')->where('code', '<>', '')->orderBy('id')->limit(2)->get(['id', 'name', 'code', 'slug']);
+    expect($products)->toHaveCount(2);
+    $lines = [];
+    foreach ($products as $index => $product) {
+        $lines[] = ['product_id' => (int) $product->id, 'quantity' => $index + 2, 'color' => 0, 'size' => 0, 'code' => md5($product->id.'00')];
+    }
+    test()->withSession(['cart' => $lines]);
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách báo giá', 'phone' => '0912345678',
+        'subject' => 'Giỏ hàng: Yêu cầu báo giá', 'content' => 'Giao tại công trình',
+        'quote_cart' => '1', 'source_url' => '/gio-hang/',
+        'items' => [['product_id' => 999999, 'quantity' => 999]],
+    ]])->assertOk()->assertJsonPath('ok', true);
+
+    $lead = DB::table('leads')->orderByDesc('id')->first();
+    expect($lead->kind)->toBe('contact')
+        ->and($lead->source_url)->toBe('/gio-hang/')
+        ->and($lead->subject)->toBe('Giỏ hàng: Yêu cầu báo giá')
+        ->and($lead->message)->toContain('Giao tại công trình', 'Danh sách thiết bị cần báo giá', 'Mã:', 'SL: 2', 'SL: 3');
+    foreach ($products as $product) {
+        expect($lead->message)->toContain((string) $product->code, '/san-pham/'.$product->slug);
+    }
+    expect($lead->message)->not->toContain('999999');
+    Mail::assertSent(AdminNotification::class, fn ($mail) => str_contains((string) $mail->copy['subject'], 'Giỏ hàng: Yêu cầu báo giá'));
+});
+
+it('does not accept a quote from an empty or stale cart', function () {
+    test()->withSession(['cart' => []]);
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách báo giá', 'phone' => '0912345678', 'content' => 'Báo giá', 'quote_cart' => '1',
+    ]])->assertStatus(422)->assertJsonPath('error.code', 'VALIDATION_FAILED');
+
+    test()->withSession(['cart' => [
+        ['product_id' => 99999999, 'quantity' => 2, 'color' => 0, 'size' => 0, 'code' => md5('9999999900')],
+    ]]);
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách báo giá', 'phone' => '0912345678', 'content' => 'Báo giá', 'quote_cart' => '1',
+    ]])->assertStatus(422)->assertJsonPath('error.code', 'VALIDATION_FAILED');
+});
+
+it('keeps ordinary consultations independent of an existing quote cart', function () {
+    $product = DB::table('products')->where('is_visible', true)->first(['id']);
+    test()->withSession(['cart' => [
+        ['product_id' => (int) $product->id, 'quantity' => 3, 'color' => 0, 'size' => 0, 'code' => md5($product->id.'00')],
+    ]]);
+    lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => [
+        'fullname' => 'Khách tư vấn', 'phone' => '0912345678', 'content' => 'Chỉ hỏi về mái nhà',
+    ]])->assertOk();
+    expect(DB::table('leads')->orderByDesc('id')->value('message'))->toBe('Chỉ hỏi về mái nhà');
+});

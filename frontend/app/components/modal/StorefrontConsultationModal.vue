@@ -2,7 +2,9 @@
 import { useStorefrontModal } from '~/composables/useStorefrontModal'
 import { useLeadForm } from '~/composables/useLeadForm'
 
-const { isConsultationOpen, consultationSubject, closeConsultation } = useStorefrontModal()
+const { isConsultationOpen, consultationSubject, quoteCartMode, closeConsultation } = useStorefrontModal()
+const { cart: quoteCart } = useShopCart()
+const quoteItems = computed(() => quoteCart.value?.items ?? [])
 const { security, loadingSecurity, ensureSecurity, refreshSecurity, submit } = useLeadForm()
 
 const form = reactive({
@@ -102,6 +104,11 @@ async function send() {
     if (!security.value) return
   }
 
+  if (quoteCartMode.value && !quoteItems.value.length) {
+    error.value = 'Giỏ hàng đã trống hoặc chưa tải xong. Vui lòng quay lại giỏ hàng và thử lại.'
+    return
+  }
+
   submitting.value = true
   try {
     const noteText = form.notes.trim()
@@ -115,6 +122,7 @@ async function send() {
       email: form.email,
       subject: subjectText,
       content: contentText,
+      ...(quoteCartMode.value ? { quote_cart: '1' } : {}),
     })
 
     success.value = result.message || 'Gửi yêu cầu tư vấn thành công. Kỹ sư Phúc Thịnh Solar sẽ liên hệ với bạn trong vòng 15 phút.'
@@ -166,6 +174,25 @@ async function send() {
           <UIcon name="i-lucide-sparkles" class="size-4 shrink-0 text-gold-400" aria-hidden="true" />
         </div>
 
+        <section v-if="quoteCartMode" aria-label="Sản phẩm yêu cầu báo giá" class="rounded-btn border border-slate-200 bg-slate-50 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <strong class="text-sm text-navy-950">Danh sách yêu cầu báo giá</strong>
+            <span class="text-xs font-semibold text-slate-600">{{ quoteItems.length }} sản phẩm</span>
+          </div>
+          <ul v-if="quoteItems.length" class="mt-3 mb-2 max-h-44 space-y-2 overflow-y-auto pl-5 text-sm text-navy-800">
+            <li v-for="item in quoteItems" :key="item.code">
+              <span class="font-semibold">{{ item.name }}</span>
+              <span class="text-slate-600"> · SL: {{ item.quantity }}</span>
+              <span v-if="item.color || item.size" class="block text-xs text-slate-500">
+                {{ [item.color, item.size].filter(Boolean).join(' · ') }}
+              </span>
+            </li>
+          </ul>
+          <p class="m-0 text-xs leading-5 text-slate-600">
+            Mã sản phẩm, số lượng và tùy chọn được đối chiếu lại từ giỏ hàng khi gửi đến bộ phận bán hàng.
+          </p>
+        </section>
+
         <div class="grid min-w-0 gap-x-6 gap-y-3 sm:grid-cols-2 sm:gap-y-5">
           <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
@@ -209,7 +236,7 @@ async function send() {
 
         <div class="grid gap-3">
           <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || loadingSecurity || !security" class="min-h-12 w-full justify-center sm:min-h-14 rounded-btn bg-gold-500 px-6 text-base font-extrabold text-navy-950">
-            {{ submitting ? 'Đang gửi yêu cầu…' : 'Gửi yêu cầu tư vấn' }}
+            {{ submitting ? 'Đang gửi yêu cầu…' : (quoteCartMode ? 'Gửi yêu cầu báo giá' : 'Gửi yêu cầu tư vấn') }}
             <UIcon v-if="!submitting" name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
           </UButton>
           <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-slate-500">

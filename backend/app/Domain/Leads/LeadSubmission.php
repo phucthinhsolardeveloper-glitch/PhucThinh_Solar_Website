@@ -79,8 +79,21 @@ class LeadSubmission
         if ($data['content'] === '') {
             $errors[] = 'Nội dung không được trống';
         }
+
+        // The customer chooses the quote flow, but the item details come only from
+        // the server session and product database, never from a writable text field.
+        $quoteSummary = null;
+        if (($input['quote_cart'] ?? null) === '1') {
+            $quoteSummary = app(QuoteCartSummary::class)->render();
+            if ($quoteSummary === null) {
+                $errors[] = 'Giỏ hàng không còn sản phẩm hợp lệ. Vui lòng kiểm tra lại giỏ hàng';
+            }
+        }
         if ($errors) {
             return self::invalid($errors);
+        }
+        if ($quoteSummary !== null) {
+            $data['content'] .= "\n\n".$quoteSummary;
         }
         $data['subject'] = $data['subject'] ?: 'Yêu cầu tư vấn từ website';
         $saved = $this->insert(['kind' => 'contact', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'address' => $data['address'] ?: null,

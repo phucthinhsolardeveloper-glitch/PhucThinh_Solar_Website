@@ -7,7 +7,7 @@ import { isPublicCheckoutNoticePayload, type PublicCheckoutNoticePayload, type P
 import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
 
 const { site } = await usePublicSite()
-const { openConsultation } = useStorefrontModal()
+const { openConsultation, openCartQuote } = useStorefrontModal()
 const { cart, loading, error, refresh, mutate } = useShopCart()
 const links = usePublicLinks()
 const checkoutNotice = ref<PublicCheckoutNoticePayload | null>(null)
@@ -283,9 +283,13 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
               Tiến hành thanh toán
               <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
             </NuxtLink>
-            <button v-if="!payload.canCheckout" type="button" class="cart-summary__cta" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">
+            <button v-if="!payload.canCheckout" type="button" class="cart-summary__cta" :disabled="loading" @click="openCartQuote()">
               Nhận báo giá
               <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
+            </button>
+            <button v-if="payload.canCheckout" type="button" class="cart-summary__quote-alt" :disabled="loading" @click="openCartQuote()">
+              <UIcon name="i-lucide-file-text" class="size-4" aria-hidden="true" />
+              Xin báo giá theo số lượng / công trình
             </button>
             <div ref="checkoutActionEnd" aria-hidden="true" />
             <ul class="cart-summary__trust">
@@ -300,7 +304,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
     <div v-if="payload && hasCartItems" class="m-island print:hidden" :class="{ 'is-away': checkoutActionReached }">
       <span><small>Tổng tạm tính</small><strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong></span>
       <NuxtLink v-if="payload.canCheckout" to="/thanh-toan/" @click="openCheckout">Thanh toán</NuxtLink>
-      <button v-else type="button" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">Nhận báo giá</button>
+      <button v-else type="button" :disabled="loading" @click="openCartQuote()">Nhận báo giá</button>
     </div>
   </div>
 </template>
@@ -347,6 +351,10 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 .cart-summary__cta:hover { box-shadow: inset 0 0 0 999px rgb(255 255 255 / 9%); }
 .cart-summary__cta:hover > span { transform: translateX(4px); }
 .cart-summary__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.cart-summary__quote-alt { display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; border: 1px solid rgb(255 255 255 / 25%); border-radius: var(--radius-btn); background: transparent; color: #f1f5f9; font-size: 14px; font-weight: 750; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
+.cart-summary__quote-alt:hover { border-color: var(--color-gold-300); color: var(--color-gold-300); }
+.cart-summary__quote-alt:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.cart-summary__quote-alt:disabled, .cart-summary__cta:disabled { opacity: 0.65; cursor: wait; }
 .cart-summary__trust { display: grid; gap: 10px; margin: 20px 0 0; padding: 18px 0 0; border-top: 1px solid rgb(255 255 255 / 12%); list-style: none; }
 .cart-summary__trust li { display: flex; align-items: center; gap: 10px; color: #c3cfdf; font-size: 13.5px; }
 .cart-summary__trust li :deep(.iconify), .cart-summary__trust li > :first-child { color: var(--color-gold-300); }
