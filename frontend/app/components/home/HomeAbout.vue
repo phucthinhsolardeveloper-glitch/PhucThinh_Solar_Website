@@ -21,6 +21,7 @@ function pointImage(src: string): string {
 const bandRef = ref<HTMLElement | null>(null)
 const shift = ref(0)
 let ticking = false
+let observer: IntersectionObserver | null = null
 function measure() {
   ticking = false
   const band = bandRef.value
@@ -37,9 +38,20 @@ function onScroll() {
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   measure()
-  window.addEventListener('scroll', onScroll, { passive: true })
+  // Only follow the scroll while the band is near the screen; leaving it still takes one last reading.
+  if (!bandRef.value || typeof IntersectionObserver === 'undefined') { window.addEventListener('scroll', onScroll, { passive: true }); return }
+  observer = new IntersectionObserver(([entry]) => {
+    if (!entry) return
+    if (entry.isIntersecting) window.addEventListener('scroll', onScroll, { passive: true })
+    else window.removeEventListener('scroll', onScroll)
+    measure()
+  }, { rootMargin: '200px 0px' })
+  observer.observe(bandRef.value)
 })
-onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  window.removeEventListener('scroll', onScroll)
+})
 </script>
 
 <template>

@@ -249,6 +249,8 @@
 @layer base {
   html {
     scroll-behavior: auto;
+    /* The scrollbar's room stays reserved, so locking the page for an overlay does not move or relayout anything. */
+    scrollbar-gutter: stable;
   }
 
   @media (prefers-reduced-motion: reduce) {

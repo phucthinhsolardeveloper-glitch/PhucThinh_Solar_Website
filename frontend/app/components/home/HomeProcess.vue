@@ -7,6 +7,7 @@ const listRef = ref<HTMLElement | null>(null)
 const progress = ref(0)
 const reached = ref(-1)
 let ticking = false
+let observer: IntersectionObserver | null = null
 
 function measure() {
   ticking = false
@@ -32,10 +33,22 @@ onMounted(() => {
     return
   }
   measure()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', onScroll)
+  // Following the scroll costs a style update per frame, so it only runs while the section is near the screen.
+  const listen = (on: boolean) => {
+    const method = on ? 'addEventListener' : 'removeEventListener'
+    window[method]('scroll', onScroll, { passive: true })
+    window[method]('resize', onScroll)
+  }
+  if (!listRef.value || typeof IntersectionObserver === 'undefined') { listen(true); return }
+  observer = new IntersectionObserver(([entry]) => {
+    if (!entry) return
+    listen(entry.isIntersecting)
+    measure()
+  }, { rootMargin: '200px 0px' })
+  observer.observe(listRef.value)
 })
 onBeforeUnmount(() => {
+  observer?.disconnect()
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onScroll)
 })

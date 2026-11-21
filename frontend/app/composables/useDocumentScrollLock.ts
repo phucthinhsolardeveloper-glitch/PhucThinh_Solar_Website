@@ -20,7 +20,9 @@ export function useDocumentScrollLock() {
           overflow: document.body.style.overflow,
           paddingRight: document.body.style.paddingRight,
         }
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+        // With scrollbar-gutter: stable the page keeps its width, so nothing needs compensating (and nothing relayouts).
+        const gutterReserved = getComputedStyle(document.documentElement).scrollbarGutter.includes('stable')
+        const scrollbarWidth = gutterReserved ? 0 : window.innerWidth - document.documentElement.clientWidth
         if (scrollbarWidth > 0) {
           const currentPadding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0
           document.body.style.paddingRight = `${currentPadding + scrollbarWidth}px`

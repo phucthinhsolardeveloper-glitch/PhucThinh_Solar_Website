@@ -444,12 +444,23 @@ function toggleSearch() {
   closeNavDropdown(false)
   searchOpen.value = true
   // The panel covers the header on wide screens; its first row matches the header's height.
+  // Writing the same value again would still restyle the whole page, so only a changed height is written.
   const capsule = import.meta.client ? document.querySelector<HTMLElement>('.pts-header-capsule') : null
-  if (capsule) document.documentElement.style.setProperty('--pts-header-h', `${capsule.offsetHeight}px`)
-  syncBodyLock()
+  if (capsule) {
+    const headerHeight = `${capsule.offsetHeight}px`
+    if (document.documentElement.style.getPropertyValue('--pts-header-h') !== headerHeight) {
+      document.documentElement.style.setProperty('--pts-header-h', headerHeight)
+    }
+  }
   nextTick(() => {
-    syncModalBackground()
-    searchInput.value?.focus()
+    searchInput.value?.focus({ preventScroll: true })
+    // Locking the page and marking the rest of it inert touch the whole document. They wait until the panel
+    // has painted its first frames, so its slide-in is not dropped.
+    requestAnimationFrame(() => setTimeout(() => {
+      if (!searchOpen.value) return
+      syncBodyLock()
+      syncModalBackground()
+    }, 0))
   })
 }
 
