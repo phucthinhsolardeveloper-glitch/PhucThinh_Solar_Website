@@ -2,6 +2,7 @@
 // A/B: which part of the homepage costs the most while scrolling? Each variant injects CSS that switches one thing off,
 // then wheel-scrolls the whole page and reports frame times (p50 / p95 / worst / frames over 50 ms) and long tasks. Read only.
 //   AUDIT_BASE=https://phucthinhsolar.com AUDIT_CPU=2 node audit/home-scroll-ab.cjs
+//   AUDIT_ONLY='baseline,no iframe 3D'   run only these variants
 const { chromium } = require('playwright');
 const base = process.env.AUDIT_BASE || 'http://localhost:3100';
 const route = process.env.AUDIT_ROUTE || '/';
@@ -17,7 +18,9 @@ const variants = {
 };
 (async () => {
   const browser = await chromium.launch();
+  const only = (process.env.AUDIT_ONLY || '').split(',').filter(Boolean);
   for (const [name, css] of Object.entries(variants)) {
+    if (only.length && !only.includes(name)) continue;
     const ctx = await browser.newContext({ viewport: { width: 1536, height: 864 }, locale: 'vi-VN' });
     await ctx.route(/cdn\.gtranslate\.net/, (r) => r.abort());
     const page = await ctx.newPage();
