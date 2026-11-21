@@ -220,6 +220,9 @@ onMounted(() => {
   }
 
   window.addEventListener('scroll', onWindowScroll, { passive: true })
+  // No margin: the model draws only while some of it is on the screen. It is loaded and has its first frame well before
+  // that (see the near observer), and a margin here made it draw non-stop just below the neighbouring section, which
+  // is what made that section stutter.
   observer = new IntersectionObserver(([entry]) => {
     visible.value = entry?.isIntersecting === true
     notifyViewer()
@@ -228,7 +231,7 @@ onMounted(() => {
       if (storyStarted.value) runChapters()
       else beginStory()
     } else stopChapters()
-  }, { rootMargin: '200px 0px', threshold: 0 })
+  }, { rootMargin: '0px', threshold: 0 })
 
   // Loading starts a good way ahead of the section, while the visitor is at rest.
   nearObserver = new IntersectionObserver(([entry]) => {
