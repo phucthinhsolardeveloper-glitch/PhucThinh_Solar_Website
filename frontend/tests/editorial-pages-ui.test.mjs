@@ -138,7 +138,11 @@ test('solution imagery stays 8:5, empty CTA follows shared links, and equipment 
   assert.match(detail, /\.solution-hero__image \{[^}]*object-fit: cover/)
   assert.match(gallery, /aspect-\[8\/5\]/)
   assert.doesNotMatch(equipment, /bg-slate-50|border border-gray-200|rounded-btn/)
-  assert.ok(equipment.includes('/\\.(?:png|webp|avif)(?:[?#]|$)/i'))
+  // The desktop stage takes each product's clean Shopping picture from the page payload and puts it on a white tile.
+  assert.match(equipment, /function stageProducts\(item\?: PublicSolutionEquipment\)/)
+  assert.match(equipment, /item\?\.showcase \?\? \[\]/)
+  assert.match(equipment, /\.showroom-product-media \{[^}]*background: #fff/)
+  assert.doesNotMatch(equipment, /png\|webp\|avif/)
   assert.doesNotMatch(equipment, /showroom-backdrop|payload\.categoryHero\?\.image/)
   assert.match(equipment, /function equipmentCategoryPath\(item: PublicSolutionEquipment\)/)
   assert.match(equipment, /canonicalCategoryUrl\(props\.categoryTree \?\? \[\], slug, item\.name\)/)

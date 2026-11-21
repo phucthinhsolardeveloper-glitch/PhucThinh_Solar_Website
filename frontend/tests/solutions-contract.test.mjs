@@ -42,6 +42,16 @@ test('accepts sanitized editorial content but rejects unsafe markup or fake TOC 
   assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: true, items: [{ id: '../bad', label: 'x', level: 2 }] } } }), false)
   assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: false, reason: 'toc_generation_not_implemented' } } }), false)
 })
+test('accepts a showcase of Shopping pictures and rejects unsafe ones', () => {
+  const item = { ...good.equipment[0], showcase: [{ id: 5, name: 'Inverter X', url: '/san-pham/inverter-x/', image: '/upload/product/inverter-x-shopping-trang.jpg' }] }
+  assert.equal(isPublicSolutionsPayload({ ...good, equipment: [item] }), true)
+  const withShowcase = (showcase) => isPublicSolutionsPayload({ ...good, equipment: [{ ...item, showcase }] })
+  assert.equal(withShowcase([{ ...item.showcase[0], image: 'https://evil.test/x.jpg' }]), false)
+  assert.equal(withShowcase([{ ...item.showcase[0], image: '/upload/product/../x.jpg' }]), false)
+  assert.equal(withShowcase([{ ...item.showcase[0], url: '/gio-hang/' }]), false)
+  assert.equal(withShowcase(Array(4).fill(item.showcase[0])), false)
+})
+
 test('rejects too many equipment items', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, equipment: Array(5).fill(good.equipment[0]) }), false)
 })

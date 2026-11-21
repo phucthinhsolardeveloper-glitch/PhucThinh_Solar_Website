@@ -2,6 +2,8 @@
 
 namespace App\Domain\Solutions;
 
+use App\Domain\Catalog\CategoryTree;
+use App\Domain\Catalog\Listing\CatalogFilters;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Content\PostVisibility;
 use App\Domain\Pages\PageSupport;
@@ -80,6 +82,32 @@ class SolutionsListing extends PageSupport
         return [200, $data];
     }
 
+    /**
+     * Up to three products of a top category for the desktop stage, in the order its catalog page lists them, each with its
+     * clean Shopping picture (a plain-background square, or a cutout). The main photo is not used: it keeps its own background.
+     *
+     * @return list<array{id: int, name: string, url: string, image: string}>
+     */
+    private function showcase(CategoryTree $tree, int $categoryId): array
+    {
+        $rows = $this->db->table('products as p')->where('p.is_visible', 1)->whereIn('p.category_id', $tree->descendantIds($categoryId))
+            ->whereNotNull('p.feed_image')->where('p.feed_image', '<>', '')->where('p.slug', '<>', '')
+            ->orderByRaw(CatalogFilters::defaultOrder($tree))->limit(12)->get(['p.id', 'p.name', 'p.slug', 'p.feed_image']);
+        $showcase = [];
+        foreach ($rows as $row) {
+            $image = $this->looseImage($row->feed_image, 'upload/product/');
+            if ($image === '') {
+                continue;
+            }
+            $showcase[] = ['id' => (int) $row->id, 'name' => Text::cms($row->name), 'url' => '/san-pham/'.Text::slug((string) $row->slug), 'image' => $image];
+            if (count($showcase) === 3) {
+                break;
+            }
+        }
+
+        return $showcase;
+    }
+
     private function payload(array $solutions, array $introRows, array $ctaRows, array $products): array
     {
         $ui = self::UI;
@@ -119,10 +147,12 @@ class SolutionsListing extends PageSupport
         }
 
         $equipment = [];
+        $tree = new CategoryTree;
         foreach (SolutionHub::select($products, true, 4) as $row) {
             $slug = trim($row['slug'], '/');
             $equipment[] = ['name' => Text::cms($row['name']), 'description' => Text::cms($row['summary']),
-                'url' => '/danh-muc-san-pham/'.($slug !== '' ? $slug.'/' : ''), 'image' => self::path($row['_image'])];
+                'url' => '/danh-muc-san-pham/'.($slug !== '' ? $slug.'/' : ''), 'image' => self::path($row['_image']),
+                'showcase' => $this->showcase($tree, (int) $row['id'])];
         }
 
         $cta = null;

@@ -50,10 +50,11 @@ function thumb(src: string, size = 480): string {
 }
 function hideBroken(id: number) { failed.value = new Set(failed.value).add(id) }
 function visible(products: PublicCatalogProduct[]) { return products.filter((product) => !failed.value.has(product.id)) }
-// The desktop stage presents isolated product cutouts. Opaque JPEGs stay in
-// the mobile product tiles, where their photo background is an intentional surface.
-function cutouts(products: PublicCatalogProduct[]) {
-  return visible(products.filter((product) => product.media[0] && /\.(?:png|webp|avif)(?:[?#]|$)/i.test(product.media[0]!)))
+// The desktop stage shows each product's clean Shopping picture (plain white background or a cutout), which the page
+// payload carries. It sits on a white tile, so a white background reads as part of the tile. The mobile strip below
+// keeps the catalog's main photos, whose own background is an intentional surface there.
+function stageProducts(item?: PublicSolutionEquipment) {
+  return (item?.showcase ?? []).filter((product) => !failed.value.has(product.id))
 }
 
 async function loadShowcases() {
@@ -81,8 +82,7 @@ onMounted(() => {
 onBeforeUnmount(() => observer?.disconnect())
 
 const current = computed(() => props.equipment[active.value])
-const currentShowcase = computed(() => current.value ? showcases.value[current.value.url] : undefined)
-const currentCutouts = computed(() => currentShowcase.value ? cutouts(currentShowcase.value.products) : [])
+const currentStageProducts = computed(() => stageProducts(current.value))
 </script>
 
 <template>
@@ -127,11 +127,11 @@ const currentCutouts = computed(() => currentShowcase.value ? cutouts(currentSho
     <div class="showroom-stage" aria-live="polite">
       <Transition name="stage" mode="out-in">
         <div :key="current?.url" class="showroom-stage-inner">
-          <ul v-if="currentCutouts.length" class="showroom-products" :data-count="currentCutouts.length">
-            <li v-for="(product, index) in currentCutouts" :key="product.id" :style="{ '--i': index }">
+          <ul v-if="currentStageProducts.length" class="showroom-products" :data-count="currentStageProducts.length">
+            <li v-for="(product, index) in currentStageProducts" :key="product.id" :style="{ '--i': index }">
               <a :href="links.generic(product.url)" class="showroom-product">
                 <span class="showroom-product-media">
-                  <img :src="thumb(product.media[0]!)" :alt="product.name" width="480" height="480" loading="lazy" decoding="async" @error="hideBroken(product.id)">
+                  <img :src="thumb(product.image)" :alt="product.name" width="480" height="480" loading="lazy" decoding="async" @error="hideBroken(product.id)">
                 </span>
                 <span class="showroom-product-name">{{ product.name }}</span>
               </a>
@@ -218,9 +218,11 @@ const currentCutouts = computed(() => currentShowcase.value ? cutouts(currentSho
 /* Middle product sits forward: a podium rhythm instead of a flat row. */
 .showroom-products[data-count="3"] > li:nth-child(2) { transform: translateY(-8%); }
 .showroom-product { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--color-navy-800); text-decoration: none; }
-.showroom-product-media { display: block; width: 100%; max-width: 260px; aspect-ratio: 1; }
-.showroom-product-media img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 22px 22px rgb(6 21 55 / 18%)); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
-.showroom-product:hover .showroom-product-media img { transform: translateY(-6px) scale(1.03); }
+/* A white tile: the Shopping pictures have a plain white background, which becomes part of the tile (a white inverter
+   would fade into a pale stage if the background were stripped). Cutouts sit on it just the same. */
+.showroom-product-media { display: grid; width: 100%; max-width: 260px; aspect-ratio: 1; place-items: center; padding: 7%; border-radius: var(--radius-btn); background: #fff; box-shadow: 0 0 0 1px rgb(10 34 81 / 6%), 0 22px 40px -26px rgb(6 21 55 / 38%); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease; }
+.showroom-product-media img { width: 100%; height: 100%; object-fit: contain; }
+.showroom-product:hover .showroom-product-media { transform: translateY(-6px); box-shadow: 0 0 0 1px rgb(10 34 81 / 8%), 0 30px 46px -26px rgb(6 21 55 / 44%); }
 .showroom-product-name { display: -webkit-box; max-width: 26ch; overflow: hidden; color: #334155; font-size: 14px; font-weight: 600; line-height: 1.45; text-align: center; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .showroom-product:hover .showroom-product-name { color: var(--color-navy-800); }
 .showroom-product:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: var(--radius-btn); }
