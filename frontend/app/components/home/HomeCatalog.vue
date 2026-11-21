@@ -201,6 +201,9 @@ const links = usePublicLinks()
   position: relative;
   flex: 1 1 0;
   min-width: 0;
+  /* Each card is its own layout and paint island while its width animates, so a growing card does not
+     make the browser re-measure and repaint its neighbours' pictures on every frame. */
+  contain: layout style;
   transition: flex-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .chain-link.is-active { flex-grow: 4.2; }
@@ -212,6 +215,7 @@ const links = usePublicLinks()
   height: 100%;
   overflow: hidden;
   overflow: clip;
+  contain: layout paint style;
   border-radius: var(--radius-btn);
   background: var(--color-navy-950);
   color: #fff;
