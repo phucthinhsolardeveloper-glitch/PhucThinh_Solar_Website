@@ -211,7 +211,7 @@ const currentStageProducts = computed(() => stageProducts(current.value))
 }
 .showroom-stage-inner { display: flex; width: 100%; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(24px, 3vw, 44px); }
 
-.showroom-products { display: grid; flex: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: clamp(12px, 2vw, 28px); margin: 0; padding: 0; list-style: none; }
+.showroom-products { display: grid; flex: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: clamp(12px, 2vw, 28px); margin: 0; padding: 0; list-style: none; }
 .showroom-products[data-count="1"] { grid-template-columns: minmax(0, 1fr); justify-items: center; }
 .showroom-products[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .showroom-products > li { min-width: 0; animation: product-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i) * 90ms); }
