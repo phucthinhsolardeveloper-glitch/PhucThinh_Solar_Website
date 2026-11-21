@@ -857,3 +857,13 @@ Rủi ro còn lại:
 - QA: frontend 538/538 tests on a clean worktree; Nuxt production image built with the full source SHA label, ID and revision re-verified on the VPS.
 - Deployment under exclusive operation.lock with /srv/pts-laravel13/releases/3062af04/deploy.sh: only the Nuxt container recreated; result RELEASE_3062AF04_NUXT_PERF_SUCCESS; nine routes HTTP 200, dealer map and the new CSS served, backend unchanged and healthy, Merchant feed route 200.
 - Rollback: restore releases/3062af04/stack.env.before and recreate nuxt (image pts-laravel13-nuxt:cf25eb27-candidate is still on the VPS).
+
+## 2026-11-21 Solutions stage fix d04de9e6 ("Di thang den san pham")
+
+- Fault: the desktop stage on /giai-phap/ only accepted products whose main picture was PNG/WebP/AVIF. Since the main product photos became JPEG (16/11) it found none in any category and showed the placeholder icon.
+- Fix: the Solutions payload (SolutionsListing) carries up to three visible products per top category with their clean Shopping picture (feed_image), ordered like the catalog page; the contract validator checks the product path and the /upload/product/ image path; the stage shows them on white tiles (the pictures have a plain white background, and white inverters would fade if it were stripped), centred vertically. The mobile strip keeps the catalog photos.
+- QA: frontend 539/539 tests; backend CatalogApiTest, PageLayoutTest and the new SolutionsShowcaseTest 15 passed (80 assertions). Stage checked in a local build for all four rows before release.
+- Build: the Docker cache had just been pruned and a full backend build stalled on slow apt downloads, so the backend image was built incrementally FROM the deployed cf25eb27 image with the one changed PHP file (SolutionsListing.php) and the new revision label; class load and PHP lint checked in the image. Nuxt built from the normal Dockerfile.
+- Deployment under exclusive operation.lock with /srv/pts-laravel13/releases/d04de9e6/deploy.sh: DB-only backup /srv/pts-laravel13/backups/20261121-solutions-showcase-d04de9e6-predeploy/, no migration, backend/worker/scheduler/Nuxt recreated. RELEASE_D04DE9E6_SOLUTIONS_SHOWCASE_SUCCESS: ten routes HTTP 200, /api/v1/solutions returns 3 showcase products for each of the four categories, stage rendered in the HTML, Merchant Verified flag still OFF.
+- Rollback: restore releases/d04de9e6/stack.env.before and recreate backend worker scheduler nuxt (cf25eb27 backend and 3062af04 Nuxt images remain on the VPS).
+- Note: VPS disk 89% used (14 GB free) after the nightly full backups; clean old candidate images and old backups before the next large release.
