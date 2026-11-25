@@ -28,7 +28,7 @@ Các phép kiểm này chỉ so dữ liệu trong cùng một trang. **Chưa đ�
 
 ## Merchant Center: điều kiện còn thiếu
 
-- Feed đang khai `in_stock` và `identifier_exists=no` cho mọi sản phẩm. Số mục trong feed ngày 25/11: sáng 324, chiều 274. Chưa xác minh nguyên nhân (trùng thời điểm bản phát hành bật "liên hệ báo giá" cho khoảng 50 sản phẩm).
+- Feed đang khai `in_stock` và `identifier_exists=no` cho mọi sản phẩm. Số mục trong feed ngày 25/11: sáng 324, chiều 274, do 50 đèn đường được chuyển sang "Liên hệ báo giá". Việc cần làm: `../2026-11-25-ga4-merchant-gsc-checklist.md`.
 - Cần cho từng mã: tồn kho thật; MPN hoặc GTIN lấy từ nhãn/datasheet, hoặc xác nhận hàng không có mã định danh.
 - Công cụ sẵn có: `php artisan pts:merchant-readiness --csv=<file>` (chỉ đọc; chưa chạy trên production trong đợt này). Cổng feed xác minh giữ **tắt** cho tới khi đạt ngưỡng 286.
 - Không dùng mã `PTS-…` làm MPN, không tạo GTIN, tồn kho hay chính sách.
