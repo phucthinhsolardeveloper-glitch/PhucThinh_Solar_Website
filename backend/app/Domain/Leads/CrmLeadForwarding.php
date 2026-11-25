@@ -3,6 +3,7 @@
 namespace App\Domain\Leads;
 
 use App\Domain\Outbox\Outbox;
+use App\Support\LogSafe;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
@@ -78,7 +79,7 @@ final class CrmLeadForwarding
             try {
                 $queued += (int) self::queue((int) $id);
             } catch (Throwable $e) {
-                Log::warning('Lead could not be handed to the CRM', ['lead' => (int) $id, 'error' => $e->getMessage()]);
+                Log::warning('Lead could not be handed to the CRM', ['lead' => (int) $id, 'error' => LogSafe::error($e)]);
             }
         }
 

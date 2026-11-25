@@ -13,6 +13,7 @@ use App\Mail\MailActions;
 use App\Mail\MailTemplates;
 use App\Mail\OrderNotification;
 use App\Support\FormToken;
+use App\Support\LogSafe;
 use App\Support\SiteSettings;
 use App\Support\Text;
 use Illuminate\Contracts\Session\Session;
@@ -326,7 +327,7 @@ class Shop
                 return [$orderId, $items];
             });
         } catch (Throwable $e) {
-            Log::error('Checkout failed to save the order', ['error' => $e->getMessage()]);
+            Log::error('Checkout failed to save the order', ['error' => LogSafe::error($e)]);
             if ($existing = $this->persistedOrder($token)) {
                 return $this->finishExistingOrder($existing, $ip);
             }

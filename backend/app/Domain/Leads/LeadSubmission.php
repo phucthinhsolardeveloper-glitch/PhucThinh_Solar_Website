@@ -11,6 +11,7 @@ use App\Mail\AdminNotification;
 use App\Mail\MailActions;
 use App\Mail\MailTemplates;
 use App\Support\FormToken;
+use App\Support\LogSafe;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -254,7 +255,7 @@ class LeadSubmission
                     app(MailActions::class)->staff(LeadResource::getUrl('index', ['tableSearch' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), (string) ($values['customer_phone'] ?? ''))));
         } catch (Throwable $e) {
             // The lead row is saved and listed in Admin even if the alert cannot be queued.
-            Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
+            Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => LogSafe::error($e)]);
         }
     }
 
@@ -269,7 +270,7 @@ class LeadSubmission
                 new AdminNotification($this->templates->copy($template, $values), $fields, actions: app(MailActions::class)->customer()));
         } catch (Throwable $e) {
             // The lead is saved either way; a failed acknowledgement must not lose the enquiry.
-            Log::warning('Customer acknowledgement could not be queued', ['lead' => $this->leadId, 'error' => $e->getMessage()]);
+            Log::warning('Customer acknowledgement could not be queued', ['lead' => $this->leadId, 'error' => LogSafe::error($e)]);
         }
     }
 
@@ -285,7 +286,7 @@ class LeadSubmission
 
             return true;
         } catch (Throwable $e) {
-            Log::error('Lead insert failed', ['error' => $e->getMessage()]);
+            Log::error('Lead insert failed', ['error' => LogSafe::error($e)]);
 
             return false;
         }
@@ -297,7 +298,7 @@ class LeadSubmission
             CrmLeadForwarding::queue($leadId);
         } catch (Throwable $e) {
             // The lead is saved either way; the CRM must never cost an enquiry. The outbox sweep queues it later.
-            Log::warning('Lead could not be handed to the CRM', ['lead' => $leadId, 'error' => $e->getMessage()]);
+            Log::warning('Lead could not be handed to the CRM', ['lead' => $leadId, 'error' => LogSafe::error($e)]);
         }
     }
 

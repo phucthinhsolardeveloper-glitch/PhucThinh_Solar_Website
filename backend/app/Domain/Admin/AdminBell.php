@@ -3,6 +3,7 @@
 namespace App\Domain\Admin;
 
 use App\Models\User;
+use App\Support\LogSafe;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,7 @@ final class AdminBell
                 $user->notifyNow($message);
             }
         } catch (Throwable $e) {
-            Log::warning('Admin bell could not ring', ['key' => $key, 'error' => $e->getMessage()]);
+            Log::warning('Admin bell could not ring', ['key' => $key, 'error' => LogSafe::error($e)]);
         }
     }
 
