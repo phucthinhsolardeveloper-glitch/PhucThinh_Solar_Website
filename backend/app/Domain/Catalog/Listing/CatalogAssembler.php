@@ -60,6 +60,7 @@ class CatalogAssembler
 
         $subcategoryIds = $listId > 0 ? $request->subcategoryIds : [];
         $price = $pricesVisible ? $request->price : '';
+        $priceRanges = CatalogFilters::priceRangesForCategory($request->categoryPath);
         $keyword = $request->keyword !== '' ? CatalogFilters::keywordSlug($request->keyword) : '';
         $where = $baseWhere;
         $params = $baseParams;
@@ -72,7 +73,7 @@ class CatalogAssembler
             $where .= ' and p.category_id in ('.implode(',', array_fill(0, count($ids), '?')).')';
             array_push($params, ...$ids);
         }
-        foreach ([$price !== '' ? CatalogFilters::price($price) : ['', []], CatalogFilters::needs($request->needKeys, $this->tree)] as [$sql, $values]) {
+        foreach ([$price !== '' ? CatalogFilters::price($price, $priceRanges) : ['', []], CatalogFilters::needs($request->needKeys, $this->tree)] as [$sql, $values]) {
             $where .= $sql;
             array_push($params, ...$values);
         }
@@ -138,7 +139,7 @@ class CatalogAssembler
             'pagination' => ['page' => $request->page, 'perPage' => $request->perPage, 'total' => max(0, $total)],
             'filters' => [
                 'brands' => $brands,
-                'priceRanges' => array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys(CatalogFilters::PRICE_RANGES), CatalogFilters::PRICE_RANGES),
+                'priceRanges' => array_map(fn ($key, $range) => ['key' => (string) $key, 'label' => $range[2]], array_keys($priceRanges), $priceRanges),
                 'subcategories' => $subcategories,
                 // The product landing page also shows partner logos that have no product yet.
                 ...($category === [] ? ['partners' => $this->partners()] : ['partners' => $this->partners($this->tree->chain((int) $selectedId)[0]['id'] ?? 0)]),

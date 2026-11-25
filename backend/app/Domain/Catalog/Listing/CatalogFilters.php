@@ -15,6 +15,32 @@ final class CatalogFilters
         '3' => [3000000, null, 'Trên 3.000.000đ'],
     ];
 
+    /** Observed VND catalog ranges for these high-value categories; other categories keep the established bands. */
+    private const CATEGORY_PRICE_RANGES = [
+        'hybrid-luu-tru' => [
+            '1' => [0, 50000000, 'Dưới 50.000.000đ'],
+            '2' => [50000000, 100000000, '50.000.000đ - 100.000.000đ'],
+            '3' => [100000000, null, 'Trên 100.000.000đ'],
+        ],
+        'pin-luu-tru' => [
+            '1' => [0, 100000000, 'Dưới 100.000.000đ'],
+            '2' => [100000000, 1500000000, '100.000.000đ - 1.500.000.000đ'],
+            '3' => [1500000000, null, 'Trên 1.500.000.000đ'],
+        ],
+    ];
+
+    /** @return array<string, array{0: int, 1: int|null, 2: string}> */
+    public static function priceRangesForCategory(string $categoryPath): array
+    {
+        foreach (explode('/', trim($categoryPath, '/')) as $segment) {
+            if (isset(self::CATEGORY_PRICE_RANGES[$segment])) {
+                return self::CATEGORY_PRICE_RANGES[$segment];
+            }
+        }
+
+        return self::PRICE_RANGES;
+    }
+
     public const NEED_LABELS = [
         'du-an-cong-trinh' => 'Dự án & công trình',
         'chieu-sang-gia-dinh' => 'Chiếu sáng gia đình',
@@ -45,16 +71,17 @@ final class CatalogFilters
         ." coalesce(p.regular_price,0) as regular_price, coalesce(p.sale_price,0) as sale_price, coalesce(p.power_watts,'') as power_watts";
 
     /** @return array{0: string, 1: list<mixed>} price bands on the price the buyer pays; quotation-only products never match */
-    public static function price(string $keys): array
+    public static function price(string $keys, ?array $ranges = null): array
     {
+        $ranges ??= self::PRICE_RANGES;
         $conditions = [];
         $params = [];
         $effective = 'if(coalesce(p.sale_price,0)>0,p.sale_price,coalesce(p.regular_price,0))';
         foreach (explode(',', $keys) as $key) {
-            if (! isset(self::PRICE_RANGES[$key])) {
+            if (! isset($ranges[$key])) {
                 continue;
             }
-            [$min, $max] = self::PRICE_RANGES[$key];
+            [$min, $max] = $ranges[$key];
             if ($max === null) {
                 $conditions[] = "({$effective} >= ?)";
                 $params[] = $min;
@@ -104,11 +131,14 @@ final class CatalogFilters
     /** null = no explicit order; price sorts fall back to default when prices are hidden. */
     public static function sort(string $key, bool $pricesVisible): ?string
     {
+        $effectivePrice = 'if(coalesce(p.sale_price,0)>0,p.sale_price,coalesce(p.regular_price,0))';
+        $pricedProductsFirst = 'case when p.quote_only=0 and (coalesce(p.sale_price,0)>0 or coalesce(p.regular_price,0)>0) then 0 else 1 end asc, ';
+
         return match ($key) {
             'abc' => 'p.name asc',
             'abc-desc' => 'p.name desc',
-            'price' => $pricesVisible ? 'coalesce(p.regular_price,0) asc' : null,
-            'price-desc' => $pricesVisible ? 'coalesce(p.regular_price,0) desc' : null,
+            'price' => $pricesVisible ? $pricedProductsFirst.$effectivePrice.' asc' : null,
+            'price-desc' => $pricesVisible ? $pricedProductsFirst.$effectivePrice.' desc' : null,
             'new' => 'p.created_at desc',
             'new-desc' => 'p.created_at asc',
             default => null,

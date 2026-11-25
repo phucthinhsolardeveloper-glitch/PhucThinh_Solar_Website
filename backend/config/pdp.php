@@ -469,6 +469,18 @@ return [
             ],
         ],
         'variants' => [
+            'inverter_grid_tie' => [
+                0 => [
+                    'title' => 'Hệ thống điện mặt trời hòa lưới',
+                    'text' => 'Kết nối điện mặt trời với tải tiêu thụ và hệ thống điện lưới tại công trình.',
+                    'photo' => 'assets/images/site-visuals/pdp-usecase-v2/inverter-home-room.webp',
+                ],
+                1 => [
+                    'title' => 'Nhà xưởng & thương mại',
+                    'text' => 'Lựa chọn theo công suất tải, số pha và phương án giám sát của công trình.',
+                    'photo' => 'assets/images/site-visuals/pdp-usecase-v2/inverter-commercial-room.webp',
+                ],
+            ],
             'lighting_street' => [
                 0 => [
                     'title' => 'Đường nội bộ',
