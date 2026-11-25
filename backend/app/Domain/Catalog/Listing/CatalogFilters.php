@@ -29,7 +29,7 @@ final class CatalogFilters
         ],
     ];
 
-    /** @return array<string, array{0: int, 1: int|null, 2: string}> */
+    /** @return array<int|string, array{0: int, 1: int|null, 2: string}> */
     public static function priceRangesForCategory(string $categoryPath): array
     {
         foreach (explode('/', trim($categoryPath, '/')) as $segment) {

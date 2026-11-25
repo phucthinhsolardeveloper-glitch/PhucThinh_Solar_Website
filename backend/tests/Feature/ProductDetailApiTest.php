@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Catalog\ProductDetail\ProductApplications;
 use Illuminate\Support\Facades\DB;
 
 // Query rules and error codes of the product endpoint; every field is covered by pts:snapshot.
@@ -39,7 +40,7 @@ it('sends only Admin-verified Merchant facts, so the page never claims stock it 
 });
 
 it('does not attach storage or backup use cases to a grid-tie inverter', function (array $row, array $categorySlugs) {
-    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+    $cards = app(ProductApplications::class)
         ->cards([], $row, ['slug' => 'bien-tan-inverter'], 'inverter', $categorySlugs);
 
     expect($cards['items'])->not->toBeEmpty()
@@ -53,14 +54,14 @@ it('does not attach storage or backup use cases to a grid-tie inverter', functio
 
 it('keeps storage and backup use cases for an inverter explicitly marked hybrid', function () {
     $row = ['name' => 'Inverter Hybrid thử', 'inverter_type' => 'Hybrid (có lưu trữ)'];
-    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+    $cards = app(ProductApplications::class)
         ->cards([], $row, ['slug' => 'bien-tan-inverter'], 'inverter');
 
     expect(json_encode($cards, JSON_UNESCAPED_UNICODE))->toContain('Lưu trữ & dự phòng');
 });
 
 it('lets a typed hybrid inverter keep its storage use cases even when filed under grid-tie', function () {
-    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+    $cards = app(ProductApplications::class)
         ->cards([], ['name' => 'Inverter thử', 'inverter_type' => 'Hybrid hòa lưới có lưu trữ'], ['slug' => 'bien-tan-inverter'], 'inverter', ['bien-tan-inverter', 'hoa-luoi']);
 
     expect(json_encode($cards, JSON_UNESCAPED_UNICODE))->toContain('Lưu trữ & dự phòng');

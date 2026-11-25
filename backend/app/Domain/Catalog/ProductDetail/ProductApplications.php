@@ -77,7 +77,7 @@ class ProductApplications
     /** A grid-tie inverter has no battery side: the typed "Loại biến tần" when filled, else its "Hòa lưới" category. */
     private function gridTie(array $row, array $categorySlugs): bool
     {
-        $type = Text::slug($this->specs->value($row, 'inverter_type'));
+        $type = Text::changeTitle($this->specs->value($row, 'inverter_type'));
 
         return $type !== '' ? str_contains($type, 'hoa-luoi') && ! str_contains($type, 'hybrid') : in_array('hoa-luoi', $categorySlugs, true);
     }
