@@ -83,7 +83,13 @@ class ProductSearch
             $clauses[] = 'p.slug LIKE ?';
             $params[] = '%'.$slug.'%';
         }
-        $where = '('.implode(' or ', $clauses).') and p.is_visible = 1';
+        $db = DB::connection();
+        $match = '('.implode(' or ', $clauses).')';
+        if (($terms = SearchTerms::where($keyword)) !== null
+            && ! $db->selectOne("select 1 found from products p where {$match} and p.is_visible = 1 limit 1", $params)) {
+            [$match, $params] = $terms;
+        }
+        $where = $match.' and p.is_visible = 1';
         $brandIds = isset($get['brand']) ? array_values(array_unique(array_map('intval', explode(',', $get['brand'])))) : [];
         $priceKeys = isset($get['price']) && $pricesVisible ? array_values(array_unique(explode(',', $get['price']))) : [];
         if ($brandIds) {
@@ -95,7 +101,6 @@ class ProductSearch
             $where .= $sql;
             array_push($params, ...$values);
         }
-        $db = DB::connection();
         $total = (int) ($db->selectOne("select count(*) total from products p where {$where}", $params)->total ?? 0);
         $order = CatalogFilters::sort($sort, $pricesVisible) ?? CatalogFilters::defaultOrder();
         $pricing = new PricingPolicy($pricesVisible);
