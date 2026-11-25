@@ -9,7 +9,8 @@ test('unknown valid catalog category is a 404 from PHP and stays a 404 through N
   const nitro = read('../server/routes/_api/catalog.get.ts')
   const page = read('../app/components/catalog/CatalogPage.vue')
 
-  assert.match(nitro, /passThroughStatuses: \[404\]/)
+  assert.match(nitro, /passThroughStatuses: \[400, 404\]/)
+  assert.match(read('../server/routes/_api/brand-detail.get.ts'), /passThroughStatuses: \[400, 404\]/)
   assert.match(page, /publicListErrorStatus\(catalogErrorStatus\)/)
 })
 

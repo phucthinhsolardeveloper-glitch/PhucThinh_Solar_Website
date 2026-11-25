@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
     validate: isPublicBrandDetailPayload,
     invalidMessage: 'Invalid brand detail data contract',
     unavailableMessage: 'brand detail data source unavailable',
-    passThroughStatuses: [404],
+    passThroughStatuses: [400, 404],
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
   return payload

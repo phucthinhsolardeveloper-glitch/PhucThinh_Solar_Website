@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     validate: isPublicCatalogPayload,
     invalidMessage: 'Invalid catalog data contract',
     unavailableMessage: 'catalog data source unavailable',
-    passThroughStatuses: [404],
+    passThroughStatuses: [400, 404],
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
   return payload

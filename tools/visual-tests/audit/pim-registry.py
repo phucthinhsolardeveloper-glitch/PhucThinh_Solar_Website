@@ -91,7 +91,7 @@ def main():
             failed.append((slug, str(error)[:120]))
         time.sleep(0.15)
     with open(out, 'w', encoding='utf-8-sig', newline='') as handle:
-        writer = csv.DictWriter(handle, ['ma_loi', 'van_de', 'ma_sp', 'ten', 'url', 'bang_chung'])
+        writer = csv.DictWriter(handle, ['ma_loi', 'van_de', 'ma_sp', 'ten', 'url', 'bang_chung'], lineterminator='\n')
         writer.writeheader()
         writer.writerows(sorted(rows, key=lambda r: (r['ma_loi'], r['ten'])))
     counts = {}

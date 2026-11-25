@@ -99,7 +99,7 @@ async function send() {
       <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
     </UFormField>
     <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
-      <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
+      <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,22}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
     </UFormField>
     <UFormField label="Email" name="email" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-sm font-semibold text-white' }">
       <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" variant="none" class="w-full" :ui="inputUi" />

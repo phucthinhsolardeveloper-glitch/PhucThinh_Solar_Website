@@ -163,7 +163,7 @@ async function send() {
               <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
             <UFormField label="Số điện thoại" name="phone" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
-              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" required variant="none" class="w-full" :ui="inputUi" />
+              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" pattern="(\+?84|0)[0-9 .\-]{8,22}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
             <UFormField label="Tỉnh/Thành phố" name="address" :class="detailsOpen ? '' : 'max-tb:hidden'" class="hc-province mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.address" name="address" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai" variant="none" class="w-full" :ui="inputUi" />
