@@ -296,7 +296,7 @@ class LeadSubmission
         try {
             CrmLeadForwarding::queue($leadId);
         } catch (Throwable $e) {
-            // The lead is saved either way; the CRM must never cost an enquiry.
+            // The lead is saved either way; the CRM must never cost an enquiry. The outbox sweep queues it later.
             Log::warning('Lead could not be handed to the CRM', ['lead' => $leadId, 'error' => $e->getMessage()]);
         }
     }

@@ -85,6 +85,7 @@ class ProductSearch
         }
         $db = DB::connection();
         $match = '('.implode(' or ', $clauses).')';
+        // The keyword alone picks phrase or word matching; brand and price filters only narrow that result.
         if (($terms = SearchTerms::where($keyword)) !== null
             && ! $db->selectOne("select 1 found from products p where {$match} and p.is_visible = 1 limit 1", $params)) {
             [$match, $params] = $terms;

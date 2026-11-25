@@ -5,6 +5,7 @@ use App\Domain\Outbox\Outbox;
 use App\Jobs\SendOutboxMessage;
 use App\Support\FormToken;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -21,7 +22,8 @@ beforeEach(function () {
 
 function crmOn(): void
 {
-    config(['site.crm_leads' => ['enabled' => true, 'url' => 'https://crm.example.test/api/public/leads', 'key' => 'test-key']]);
+    config(['site.crm_leads' => ['enabled' => true, 'url' => 'https://crm.example.test/api/public/leads', 'key' => 'test-key',
+        'since' => now()->subMinute()->toIso8601String()]]);
 }
 
 function sendContact(array $data = [])
@@ -58,9 +60,12 @@ it('sends nothing while the connection is off or incomplete', function (array $s
     expect(crmRow())->toBeNull()->and(CrmLeadForwarding::ready())->toBeFalse();
     Http::assertNothingSent();
 })->with([
-    'switched off' => [['enabled' => false, 'url' => 'https://crm.example.test/leads', 'key' => 'k']],
-    'no key' => [['enabled' => true, 'url' => 'https://crm.example.test/leads', 'key' => '']],
-    'no address' => [['enabled' => true, 'url' => '', 'key' => 'k']],
+    'switched off' => [['enabled' => false, 'url' => 'https://crm.example.test/leads', 'key' => 'k', 'since' => '2026-01-01']],
+    'no key' => [['enabled' => true, 'url' => 'https://crm.example.test/leads', 'key' => '', 'since' => '2026-01-01']],
+    'no address' => [['enabled' => true, 'url' => '', 'key' => 'k', 'since' => '2026-01-01']],
+    'other protocol' => [['enabled' => true, 'url' => 'ftp://crm.example.test/leads', 'key' => 'k', 'since' => '2026-01-01']],
+    'no start date' => [['enabled' => true, 'url' => 'https://crm.example.test/leads', 'key' => 'k', 'since' => '']],
+    'unreadable start date' => [['enabled' => true, 'url' => 'https://crm.example.test/leads', 'key' => 'k', 'since' => 'yesterday']],
 ]);
 
 it('is off in a default installation', function () {
@@ -143,3 +148,28 @@ it('cancels a waiting lead when the connection is switched off', function () {
     expect(DB::table('outbox_messages')->find($id)->status)->toBe('cancelled');
     Http::assertNothingSent();
 });
+
+it('queues a lead that lost its message, once', function () {
+    $id = waitingCrmMessage();
+    $lead = (int) DB::table('leads')->orderByDesc('id')->value('id');
+    DB::table('outbox_messages')->where('id', $id)->delete();
+
+    Artisan::call('pts:outbox', ['--sweep' => true]);
+
+    expect(crmRow()?->status)->toBe('pending')->and(CrmLeadForwarding::reconcile())->toBe(0)
+        ->and(DB::table('outbox_messages')->where('dedupe_key', 'crm:lead:'.$lead)->count())->toBe(1);
+});
+
+it('never sends a late lead that is spam, older than the start date, or saved while still switched off', function (array $lead, array $settings) {
+    Queue::fake();
+    sendContact()->assertOk();
+    DB::table('leads')->where('id', DB::table('leads')->max('id'))->update($lead + ['updated_at' => now()]);
+    crmOn();
+    config($settings);
+
+    expect(CrmLeadForwarding::reconcile())->toBe(0)->and(crmRow())->toBeNull();
+})->with([
+    'spam' => [['status' => 'spam'], []],
+    'older than the start date' => [['created_at' => '2020-01-01 00:00:00'], []],
+    'connection off' => [[], ['site.crm_leads.enabled' => false]],
+]);

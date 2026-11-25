@@ -32,6 +32,7 @@ return [
         'enabled' => (bool) env('CRM_LEADS_ENABLED', false),
         'url' => (string) env('CRM_LEADS_URL', ''),
         'key' => (string) env('CRM_LEADS_API_KEY', ''),
+        'since' => (string) env('CRM_LEADS_SINCE', ''),
     ],
 
     // Checkout asks for a delivery address when true.

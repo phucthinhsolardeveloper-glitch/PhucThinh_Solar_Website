@@ -31,12 +31,13 @@ Phía CRM (một endpoint mới, phạm vi mới `leads.write`):
 Phía website (`CrmLeadForwarding`, dùng bảng `outbox_messages`, không thêm migration):
 
 - Sau khi lead lưu xong, xếp một thông điệp `crm_lead`, khóa chống trùng `crm:lead:<id>`. Lỗi CRM không làm hỏng form.
-- Bật bằng `CRM_LEADS_ENABLED`, `CRM_LEADS_URL` (HTTPS), `CRM_LEADS_API_KEY` trong `runtime/backend.env`; mặc định tắt. Đổi xong phải tạo lại backend, worker, scheduler.
+- Bật bằng `CRM_LEADS_ENABLED`, `CRM_LEADS_URL` (HTTPS), `CRM_LEADS_API_KEY`, `CRM_LEADS_SINCE` trong `runtime/backend.env`; mặc định tắt, thiếu một mục là coi như tắt. Đổi xong phải tạo lại backend, worker, scheduler.
+- Gửi bù: lượt quét outbox (5 phút một lần) xếp hàng mọi lead tạo từ `CRM_LEADS_SINCE` chưa có thông điệp (yêu cầu chết giữa chừng, không ghi được outbox), trừ lead "Rác". Lead cũ hơn mốc này không bao giờ gửi. Bật lại sau khi tắt mà không muốn gửi lead của khoảng đã tắt thì đặt lại mốc trước khi bật.
 - Thân gửi: `externalId`, `fullName`, `phone`, `email`, `need`, `sourcePath` (không kèm query), `kind`, `createdAt`; trường trống bị bỏ. Không gửi IP, nội dung tin nhắn, giỏ hàng hay mã click quảng cáo.
 - 2xx: đã gửi. 408/425/429/5xx hoặc mất kết nối: thử lại tối đa 6 lần. Mã khác (kể cả chuyển hướng, 401, 403, 422): dừng, đánh dấu thất bại. Không lưu nội dung CRM trả về.
 - Thất bại hiện ở "Việc cần làm" trong Admin và `php artisan pts:outbox`, tách khỏi lỗi email.
-- Tắt công tắc: thông điệp đang chờ chuyển `cancelled`. Lead tạo khi đang tắt không được gửi bù.
-- Chưa có: nút gửi lại cho thông điệp thất bại và gửi bù lead cũ.
+- Tắt công tắc: thông điệp đang chờ chuyển `cancelled` và không tự gửi lại.
+- Chưa có: nút gửi lại cho thông điệp thất bại hoặc đã hủy.
 
 Chiều ngược lại (chốt / mất, giá trị đơn) để giai đoạn sau; hiện Admin lead chỉ có Mới / Đã liên hệ / Đã xong / Rác nên chưa đo được lead → doanh thu.
 
@@ -52,5 +53,5 @@ CRM đích và tổ chức nhận; ai nhận lead mới; cách xử lý khách t
 
 ## Kiểm thử
 
-Đã có (`CrmLeadForwardingTest`, endpoint giả): tắt/thiếu cấu hình; gửi một lần; CRM lỗi 429/5xx/mất kết nối; bị từ chối 301/401/403/422; tắt khi đang chờ.
+Đã có (`CrmLeadForwardingTest`, endpoint giả): tắt/thiếu cấu hình; gửi một lần; gửi bù lead mất thông điệp (không gửi lead Rác, lead trước mốc); CRM lỗi 429/5xx/mất kết nối; bị từ chối 301/401/403/422; tắt khi đang chờ.
 Còn lại, cần CRM thử: gửi lặp cùng `externalId`, gộp số ở ba cách viết, khóa sai phạm vi. Không ghi CRM thật.
