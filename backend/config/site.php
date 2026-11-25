@@ -27,6 +27,13 @@ return [
         'verify_url' => 'https://www.google.com/recaptcha/api/siteverify',
     ],
 
+    // Website leads handed to the CRM. Off until the CRM has the receiving endpoint and issued a key.
+    'crm_leads' => [
+        'enabled' => (bool) env('CRM_LEADS_ENABLED', false),
+        'url' => (string) env('CRM_LEADS_URL', ''),
+        'key' => (string) env('CRM_LEADS_API_KEY', ''),
+    ],
+
     // Checkout asks for a delivery address when true.
     'order_shipping' => (bool) env('ORDER_SHIPPING', true),
 ];

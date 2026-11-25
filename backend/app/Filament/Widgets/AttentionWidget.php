@@ -60,6 +60,9 @@ class AttentionWidget extends Widget
         } elseif ($mail['retrying'] > 0) {
             $items[] = ['tone' => 'warning', 'text' => $mail['retrying'].' email đang gửi lại', 'url' => ''];
         }
+        if ($mail['crm_failed'] > 0) {
+            $items[] = ['tone' => 'danger', 'text' => $mail['crm_failed'].' liên hệ chưa chuyển được sang CRM, vẫn xem được trong mục Liên hệ', 'url' => ''];
+        }
         if (MediaFileResource::canViewAny() && ($broken = MediaInventory::health()['broken']) > 0) {
             $items[] = ['tone' => 'danger', 'text' => $broken.' chỗ trên website trỏ tới ảnh không còn', 'url' => MediaFileResource::getUrl().'?tableFilters[on_disk][value]=0'];
         }

@@ -18,8 +18,8 @@ class OutboxCommand extends Command
             $this->info('Re-dispatched: '.Outbox::sweep());
         }
         $health = Outbox::health();
-        $this->table(['Chờ gửi', 'Đang thử lại', 'Thất bại', 'Job lỗi'], [[$health['pending'], $health['retrying'], $health['failed'], $health['failed_jobs']]]);
+        $this->table(['Chờ gửi', 'Đang thử lại', 'Thất bại', 'Job lỗi', 'CRM thất bại'], [[$health['pending'], $health['retrying'], $health['failed'], $health['failed_jobs'], $health['crm_failed']]]);
 
-        return $health['failed'] + $health['failed_jobs'] > 0 ? self::FAILURE : self::SUCCESS;
+        return $health['failed'] + $health['failed_jobs'] + $health['crm_failed'] > 0 ? self::FAILURE : self::SUCCESS;
     }
 }

@@ -281,12 +281,23 @@ class LeadSubmission
         try {
             $this->leadId = (int) DB::table('leads')->insertGetId($row + ['status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
             app(LeadRouting::class)->assign($this->leadId);
+            $this->forwardToCrm($this->leadId);
 
             return true;
         } catch (Throwable $e) {
             Log::error('Lead insert failed', ['error' => $e->getMessage()]);
 
             return false;
+        }
+    }
+
+    private function forwardToCrm(int $leadId): void
+    {
+        try {
+            CrmLeadForwarding::queue($leadId);
+        } catch (Throwable $e) {
+            // The lead is saved either way; the CRM must never cost an enquiry.
+            Log::warning('Lead could not be handed to the CRM', ['lead' => $leadId, 'error' => $e->getMessage()]);
         }
     }
 
