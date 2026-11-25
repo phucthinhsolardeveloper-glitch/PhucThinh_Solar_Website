@@ -141,7 +141,8 @@ const secrets = [customer.fullname, customer.phone, '0912345678', customer.email
   }
 
   // 5. List addresses: refused filters and pages past the end are 404; real and campaign addresses stay 200.
-  const status = async (path) => (await page.request.get(`${base}${path}`, { maxRedirects: 0 })).status();
+  // Fetched inside the page: only the browser knows a mapped .test host. A redirect reads as 0.
+  const status = (path) => page.evaluate(async (p) => (await fetch(p, { redirect: 'manual', headers: { accept: 'text/html' } })).status, path);
   const brandPath = process.env.AUDIT_BRAND_PATH || '/thuong-hieu/solax/';
   const expected = {
     '/san-pham/': 200, '/san-pham/?page=2': 200, '/san-pham/?utm_source=qa&gclid=1&fbclid=2': 200, '/san-pham/?sort=unknown': 200,
