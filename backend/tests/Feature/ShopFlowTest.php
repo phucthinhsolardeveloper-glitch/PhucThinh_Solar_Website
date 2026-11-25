@@ -60,13 +60,14 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
     shop('POST', '/api/v1/cart', ['action' => 'add', 'csrfToken' => FormToken::issue(), 'productId' => $product->id, 'quantity' => 2]);
     $checkout = shop('GET', '/api/v1/checkout')->assertOk()->assertJsonPath('cartReady', true);
     $body = ['csrfToken' => $checkout->json('csrfToken'), 'checkoutToken' => $checkout->json('checkoutToken'), 'data' => [
-        'fullname' => 'Khách thử', 'phone' => '0912345678', 'email' => 'khach@example.test', 'city' => $ward->id_city, 'ward' => $ward->id, 'address' => '1 Đường Thử', 'payments' => $payment]];
+        'fullname' => 'Khách thử', 'phone' => '+84 912.345 678', 'email' => 'khach@example.test', 'city' => $ward->id_city, 'ward' => $ward->id, 'address' => '1 Đường Thử', 'payments' => $payment]];
 
     shop('POST', '/api/v1/checkout', ['data' => ['phone' => '1']] + $body)->assertStatus(422)->assertJsonPath('error.code', 'VALIDATION_FAILED');
     $placed = shop('POST', '/api/v1/checkout', $body)->assertOk()->assertJsonPath('ok', true);
     $order = DB::table('orders')->where('code', $placed->json('orderCode'))->first();
     expect($order->checkout_token)->toBe($checkout->json('checkoutToken'))
         ->and($order->status)->toBe('new')
+        ->and($order->phone)->toBe('0912345678')
         ->and((int) DB::table('order_items')->where('order_id', $order->id)->value('quantity'))->toBe(2);
     Mail::assertSent(OrderNotification::class, 2);
 
@@ -78,7 +79,10 @@ it('places an order once, mails shop and customer, and shows the thank-you page 
     $thanks = '/api/v1/order-thanks?token='.$placed->json('thanksToken');
     shop('GET', $thanks)->assertOk()->assertJsonPath('order.code', $order->code)->assertJsonPath('paymentState', 'accepted')->assertJsonPath('conversionPending', true)
         ->assertJsonStructure(['order' => ['items' => [['id', 'name', 'price', 'quantity']]]]);
-    shop('GET', $thanks)->assertOk()->assertJsonPath('conversionPending', false);
+    shop('GET', $thanks)->assertOk()->assertJsonPath('conversionPending', false)
+        ->assertJsonPath('order.subtotal', (int) round((float) $order->subtotal))
+        ->assertJsonPath('order.shippingFee', (int) round((float) $order->shipping_fee))
+        ->assertJsonPath('order.totalPrice', (int) round((float) $order->total));
     shop('GET', '/api/v1/cart')->assertJsonPath('count', 0);
 });
 

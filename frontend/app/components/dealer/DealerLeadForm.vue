@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { leadErrorMessage } from '#shared/lead-submit'
 const props = withDefaults(defineProps<{
   selectedProduct?: string
   hotline?: { text: string; tel: string } | null
@@ -67,7 +68,7 @@ async function send() {
     const result = await submit('dealer', {
       ...form,
       company: companyWithContext || form.company,
-    })
+    }, 'dealer_page')
     success.value = result.message
     form.fullname = ''
     form.phone = ''
@@ -77,7 +78,7 @@ async function send() {
     selectedProfile.value = ''
     emit('clearProduct')
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }

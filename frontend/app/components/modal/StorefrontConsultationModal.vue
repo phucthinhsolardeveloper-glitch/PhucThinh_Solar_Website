@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStorefrontModal } from '~/composables/useStorefrontModal'
 import { useLeadForm } from '~/composables/useLeadForm'
+import { leadErrorMessage } from '#shared/lead-submit'
 
 const { isConsultationOpen, consultationSubject, quoteCartMode, closeConsultation } = useStorefrontModal()
 const { cart: quoteCart } = useShopCart()
@@ -123,7 +124,7 @@ async function send() {
       subject: subjectText,
       content: contentText,
       ...(quoteCartMode.value ? { quote_cart: '1' } : {}),
-    })
+    }, quoteCartMode.value ? 'cart_quote' : 'consultation_popup')
 
     success.value = result.message || 'Gửi yêu cầu tư vấn thành công. Kỹ sư Phúc Thịnh Solar sẽ liên hệ với bạn trong vòng 15 phút.'
     form.fullname = ''
@@ -131,7 +132,7 @@ async function send() {
     form.email = ''
     form.notes = ''
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || reason?.statusMessage || reason?.message || 'Không thể gửi yêu cầu tư vấn. Vui lòng thử lại.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }

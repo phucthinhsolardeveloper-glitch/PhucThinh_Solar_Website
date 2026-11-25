@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStorefrontModal } from '~/composables/useStorefrontModal'
 import { useLeadForm } from '~/composables/useLeadForm'
+import { leadErrorMessage } from '#shared/lead-submit'
 
 const { isDealerOpen, closeDealer } = useStorefrontModal()
 const { security, ensureSecurity, refreshSecurity, submit } = useLeadForm()
@@ -98,7 +99,7 @@ async function send() {
       email: form.email,
       city_id: selectedCity.id,
       company: companyText,
-    })
+    }, 'dealer_popup')
 
     success.value = result.message || 'Đăng ký đại lý thành công. Bộ phận phát triển đại lý Phúc Thịnh Solar sẽ liên hệ với bạn.'
     form.fullname = ''
@@ -109,7 +110,7 @@ async function send() {
     form.notes = ''
     detailsOpen.value = false
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || reason?.statusMessage || reason?.message || 'Không thể gửi đăng ký đối tác & đại lý. Vui lòng thử lại.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }

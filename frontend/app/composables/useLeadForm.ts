@@ -1,6 +1,8 @@
 import type { PublicLeadFormSecurity, PublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { isPublicLeadFormSecurity, isPublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { leadSourceFromUrl } from '#shared/lead-source'
+import { sendWithFreshToken, toLeadFormError } from '#shared/lead-submit'
+import type { LeadFormSource } from '#shared/lead-analytics'
 
 type LeadKind = 'contact' | 'dealer' | 'product'
 
@@ -61,36 +63,37 @@ export function useLeadForm() {
     return ensureSecurity()
   }
 
-  async function submit(kind: LeadKind, data: Record<string, string | number>) {
+  async function post(kind: LeadKind, data: Record<string, string | number>) {
     const meta = await ensureSecurity()
     const action = kind === 'contact' ? 'contact' : kind === 'product' ? 'Newsletter' : 'Newsletter2'
+    // A reCAPTCHA token works once, so a retry asks for a new one.
     const token = await recaptchaToken(meta, action)
     let source = ''
     if (import.meta.client) {
       const campaign = rememberedLeadCampaign()
       source = leadSourceFromUrl(window.location.href, campaign)
     }
+    // Keep this rate-limited mutation on the browser-to-Caddy path so Apache
+    // can restore the real client IP from X-Forwarded-For; a Nitro proxy hop
+    // would make every visitor share the Nuxt container's rate-limit key.
+    return $fetch<unknown>('/api/v1/lead-form', {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data: { ...data, source_url: source } },
+    })
+  }
+
+  /** `formSource` names the form for analytics only; it is not sent to Laravel. */
+  async function submit(kind: LeadKind, data: Record<string, string | number>, formSource: LeadFormSource) {
     let payload: unknown
     try {
-      // Keep this rate-limited mutation on the browser-to-Caddy path so Apache
-      // can restore the real client IP from X-Forwarded-For; a Nitro proxy hop
-      // would make every visitor share the Nuxt container's rate-limit key.
-      payload = await $fetch<unknown>('/api/v1/lead-form', {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data: { ...data, source_url: source } },
-      })
+      payload = await sendWithFreshToken(() => post(kind, data), refreshSecurity)
     } catch (reason) {
-      const responseData = (reason as { data?: unknown } | null)?.data
-      const message = responseData && typeof responseData === 'object'
-        ? (responseData as { error?: { message?: unknown } }).error?.message
-        : undefined
-      if (typeof message === 'string' && message.trim()) throw new Error(message)
-      throw reason
+      throw toLeadFormError(reason)
     }
-    if (!isPublicLeadFormResult(payload)) throw new Error('Invalid lead form result contract')
+    if (!isPublicLeadFormResult(payload)) throw toLeadFormError(null)
     // GA4 generate_lead: which form and which page only, never what the visitor typed.
-    pushDataLayer('generate_lead', { form_kind: kind, page_path: import.meta.client ? window.location.pathname : '' })
+    pushDataLayer('generate_lead', { form_kind: kind, form_source: formSource, page_path: import.meta.client ? window.location.pathname : '' })
     return payload
   }
 

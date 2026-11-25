@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { normalizeVnPhone } from '#shared/vn-phone'
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
 import { checkoutViewState } from '#shared/checkout-state'
@@ -199,7 +200,7 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
 const touched = reactive<Record<string, boolean>>({})
 const fieldState = computed(() => ({
   fullname: form.fullname.length >= 2,
-  phone: /^(?:\+?84|0)(?:\d[\s.-]?){8,10}$/.test(form.phone),
+  phone: normalizeVnPhone(form.phone) !== null,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email),
   address: form.address.length >= 5,
 }))

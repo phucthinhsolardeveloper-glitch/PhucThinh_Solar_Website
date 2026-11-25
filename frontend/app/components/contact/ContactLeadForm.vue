@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { leadErrorMessage } from '#shared/lead-submit'
 const { security, loadingSecurity, ensureSecurity, refreshSecurity, submit } = useLeadForm()
 const form = reactive({ fullname: '', phone: '', email: '', subject: '', content: '' })
 const detailsOpen = ref(false)
@@ -87,7 +88,7 @@ async function send() {
   submitting.value = true
   try {
     // Phones ask for need, name and number first; staff still receive a readable request.
-    const result = await submit('contact', { ...form, content: form.content || `Khách để lại số điện thoại, cần tư vấn: ${form.subject || 'chưa chọn nhu cầu'}.` })
+    const result = await submit('contact', { ...form, content: form.content || `Khách để lại số điện thoại, cần tư vấn: ${form.subject || 'chưa chọn nhu cầu'}.` }, 'contact_page')
     success.value = result.message
     form.fullname = ''
     form.phone = ''
@@ -95,7 +96,7 @@ async function send() {
     form.subject = ''
     form.content = ''
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }

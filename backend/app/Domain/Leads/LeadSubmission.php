@@ -64,13 +64,14 @@ class LeadSubmission
 
     private function contact(array $input): array
     {
-        $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'address' => 255, 'subject' => 180, 'content' => 5000]);
+        $data = self::values($input, ['fullname' => 100, 'phone' => 40, 'email' => 150, 'address' => 255, 'subject' => 180, 'content' => 5000]);
         $source = LeadSource::normalize($input['source_url'] ?? null);
         $errors = [];
         if ($data['fullname'] === '') {
             $errors[] = 'Họ tên không được trống';
         }
-        if (! self::isPhone($data['phone'])) {
+        $phone = self::normalizePhone($data['phone']);
+        if ($phone === null) {
             $errors[] = 'Số điện thoại không hợp lệ';
         }
         if ($data['email'] !== '' && ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -92,6 +93,7 @@ class LeadSubmission
         if ($errors) {
             return self::invalid($errors);
         }
+        $data['phone'] = (string) $phone;
         if ($quoteSummary !== null) {
             $data['content'] .= "\n\n".$quoteSummary;
         }
@@ -114,7 +116,7 @@ class LeadSubmission
 
     private function consultation(array $input): array
     {
-        $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'loaihinh' => 180, 'congsuat' => 255, 'product_id' => 12, 'profile_key' => 32, 'need_code' => 64, 'details' => 1000, 'city_id' => 12, 'ward_id' => 12]);
+        $data = self::values($input, ['fullname' => 100, 'phone' => 40, 'email' => 150, 'loaihinh' => 180, 'congsuat' => 255, 'product_id' => 12, 'profile_key' => 32, 'need_code' => 64, 'details' => 1000, 'city_id' => 12, 'ward_id' => 12]);
         $source = LeadSource::normalize($input['source_url'] ?? null);
         $productId = (int) $data['product_id'];
         $cityId = (int) $data['city_id'];
@@ -130,7 +132,8 @@ class LeadSubmission
         if ($data['fullname'] === '') {
             $errors[] = 'Vui lòng nhập họ và tên';
         }
-        if (! self::isPhone($data['phone'])) {
+        $phone = self::normalizePhone($data['phone']);
+        if ($phone === null) {
             $errors[] = 'Số điện thoại không hợp lệ';
         }
         if ($data['email'] !== '' && ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -151,6 +154,7 @@ class LeadSubmission
         if ($errors) {
             return self::invalid($errors);
         }
+        $data['phone'] = (string) $phone;
         $address = $place ? $place['ward_name'].', '.$place['city_name'] : '';
         $needLabel = $data['need_code'] !== '' ? (string) $needs[$data['need_code']] : '';
         $saved = $this->insert(['kind' => 'consultation', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'] ?: null, 'audience' => $data['loaihinh'] ?: null,
@@ -169,7 +173,7 @@ class LeadSubmission
 
     private function dealer(array $input): array
     {
-        $data = self::values($input, ['fullname' => 100, 'phone' => 20, 'email' => 150, 'city_id' => 12, 'address' => 180, 'company' => 180]);
+        $data = self::values($input, ['fullname' => 100, 'phone' => 40, 'email' => 150, 'city_id' => 12, 'address' => 180, 'company' => 180]);
         $source = LeadSource::normalize($input['source_url'] ?? null);
         $db = DB::connection();
         $city = [];
@@ -183,7 +187,8 @@ class LeadSubmission
         if ($data['fullname'] === '') {
             $errors[] = 'Vui lòng nhập họ và tên';
         }
-        if (! self::isPhone($data['phone'])) {
+        $phone = self::normalizePhone($data['phone']);
+        if ($phone === null) {
             $errors[] = 'Số điện thoại không hợp lệ';
         }
         if (! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -198,6 +203,7 @@ class LeadSubmission
         if ($errors) {
             return self::invalid($errors);
         }
+        $data['phone'] = (string) $phone;
         $cityName = trim(strip_tags((string) $city['name']));
         $saved = $this->insert(['kind' => 'dealer', 'name' => $data['fullname'], 'phone' => $data['phone'], 'email' => $data['email'], 'address' => $cityName,
             'province_id' => (int) $city['id'], 'company' => $data['company'], 'source_url' => $source]);
@@ -295,12 +301,33 @@ class LeadSubmission
         return $out;
     }
 
-    /** Vietnamese mobile number, 10 digits (Functions::isPhone). */
-    public static function isPhone(string $number): bool
+    /** Longest phone text accepted, separators included ("+84 944 - 555 - 957"). */
+    private const PHONE_INPUT_MAX = 24;
+
+    /**
+     * A Vietnamese mobile number as its 10 digits, or null. People type it with spaces, dots, hyphens or
+     * the +84 country code, which the forms allow; anything else (letters, brackets) is refused.
+     */
+    public static function normalizePhone(string $number): ?string
     {
         $number = trim($number);
+        if (mb_strlen($number) > self::PHONE_INPUT_MAX || ! preg_match('/^\+?[0-9](?:[0-9 .\-\x{00A0}]*[0-9])?$/u', $number)) {
+            return null;
+        }
+        $digits = (string) preg_replace('/[^0-9]/', '', $number);
+        if (str_starts_with($number, '+') && ! str_starts_with($digits, '84')) {
+            return null;
+        }
+        if (strlen($digits) === 11 && str_starts_with($digits, '84')) {
+            $digits = '0'.substr($digits, 2);
+        }
 
-        return (bool) preg_match('/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/', $number) && strlen($number) === 10;
+        return preg_match('/^0[35789][0-9]{8}$/', $digits) ? $digits : null;
+    }
+
+    public static function isPhone(string $number): bool
+    {
+        return self::normalizePhone($number) !== null;
     }
 
     private static function invalid(array $errors): array

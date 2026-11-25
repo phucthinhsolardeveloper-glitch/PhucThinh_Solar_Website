@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { PublicSolarEstimate, PublicSolarEstimatorForm } from '#shared/contracts/public-solar-estimator'
 import { isPublicSolarEstimate, isPublicSolarEstimatorForm } from '#shared/contracts/public-solar-estimator'
+import { leadErrorMessage } from '#shared/lead-submit'
+import { normalizeVnPhone } from '#shared/vn-phone'
 
 // The figures are only computed by Laravel (POST /api/v1/solar-estimate); this page asks, shows and hands the
 // result to staff with the visitor's phone number.
@@ -35,6 +37,16 @@ const billText = computed({
   set: (text: string) => { form.bill = Number(text.replace(/\D/g, '')) || 0 },
 })
 
+// GA4 estimator_result: once per visit, and only for a figure the visitor asked for (the page also
+// calculates its defaults on load). No bill amount or anything typed is sent.
+let visitorAsked = false
+let resultReported = false
+function reportResult() {
+  if (!visitorAsked || resultReported) return
+  resultReported = true
+  pushDataLayer('estimator_result', { building_type: form.type, with_battery: form.battery ? 'yes' : 'no', page_path: window.location.pathname })
+}
+
 let timer: ReturnType<typeof setTimeout> | undefined
 let sequence = 0
 async function estimate() {
@@ -51,13 +63,17 @@ async function estimate() {
     }).catch((reason: { data?: { errors?: string[] } }): Answer => ({ ok: false, errors: reason?.data?.errors ?? ['Chưa tính được lúc này, vui lòng thử lại.'] }))
     if (ticket !== sequence) return
     problems.value = answer.ok ? [] : (answer.errors ?? [])
-    if (answer.ok && isPublicSolarEstimate(answer.result)) result.value = answer.result
+    if (answer.ok && isPublicSolarEstimate(answer.result)) {
+      result.value = answer.result
+      reportResult()
+    }
     else if (answer.ok) problems.value = ['Kết quả chưa hợp lệ, vui lòng thử lại.']
   } finally {
     if (ticket === sequence) busy.value = false
   }
 }
 watch(() => ({ ...form }), () => {
+  visitorAsked = true
   ++sequence
   clearTimeout(timer)
   result.value = null
@@ -86,9 +102,8 @@ const touched = reactive({ fullname: false, phone: false })
 const sending = ref(false)
 const sent = ref('')
 const sendError = ref('')
-// Same rule as Laravel's LeadSubmission::isPhone, after dropping the spaces and dots people type.
-const phoneDigits = computed(() => lead.phone.replace(/[\s.-]/g, ''))
-const leadInvalid = computed(() => ({ fullname: !lead.fullname.trim(), phone: !/^(03|05|07|08|09)\d{8}$/.test(phoneDigits.value) }))
+const phoneDigits = computed(() => normalizeVnPhone(lead.phone))
+const leadInvalid = computed(() => ({ fullname: !lead.fullname.trim(), phone: phoneDigits.value === null }))
 async function sendLead() {
   touched.fullname = touched.phone = true
   if (!result.value || busy.value || leadInvalid.value.fullname || leadInvalid.value.phone || sending.value) return
@@ -97,10 +112,10 @@ async function sendLead() {
   const requestSequence = sequence
   const summary = result.value.summary
   try {
-    const answer = await submit('contact', { fullname: lead.fullname.trim(), phone: phoneDigits.value, subject: 'Ước tính điện mặt trời', content: summary })
+    const answer = await submit('contact', { fullname: lead.fullname.trim(), phone: phoneDigits.value!, subject: 'Ước tính điện mặt trời', content: summary }, 'solar_estimator')
     if (requestSequence === sequence) sent.value = answer.message
   } catch (reason) {
-    sendError.value = reason instanceof Error && reason.message ? reason.message : 'Chưa gửi được, vui lòng thử lại hoặc gọi hotline.'
+    sendError.value = leadErrorMessage(reason)
   } finally {
     sending.value = false
   }

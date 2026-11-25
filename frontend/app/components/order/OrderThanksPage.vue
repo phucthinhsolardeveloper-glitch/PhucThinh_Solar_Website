@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isPublicOrderThanksPayload, type PublicOrderThanksPayload } from '#shared/contracts/public-checkout'
 import { ORDER_SUCCESS_PUBLIC_PATH } from '#shared/public-route-gate'
+import { purchaseAmounts } from '#shared/purchase-amounts'
 
 const { site } = await usePublicSite()
 const { openConsultation } = useStorefrontModal()
@@ -78,7 +79,7 @@ function trackOrderConversion() {
   })
   // The same order in the GA4 shape, for Google Ads / GA4 purchase conversions (one per order, same guard as above).
   const items = (current.order.items ?? []).map((line) => ({ item_id: String(line.id), item_name: line.name, price: line.price, quantity: line.quantity }))
-  pushDataLayer('purchase', { ecommerce: { transaction_id: current.order.code, value: current.order.totalPrice, currency: 'VND', ...(items.length ? { items } : {}) } })
+  pushDataLayer('purchase', { ecommerce: { transaction_id: current.order.code, ...purchaseAmounts(current.order), currency: 'VND', ...(items.length ? { items } : {}) } })
   trackedConversions.add(currentToken)
 }
 onMounted(trackOrderConversion)

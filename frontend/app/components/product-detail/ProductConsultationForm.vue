@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { leadErrorMessage } from '#shared/lead-submit'
 import type { PublicProductNeed } from '#shared/contracts/public-product-extras'
 
 // Phones ask for name and phone first; everything else is optional and one tap away.
@@ -109,7 +110,7 @@ async function send() {
       details: form.details,
       city_id: form.city || '',
       ward_id: form.ward || '',
-    })
+    }, 'product_page')
     success.value = result.message
     form.fullname = ''
     form.phone = ''
@@ -121,7 +122,7 @@ async function send() {
     form.quantity = ''
     form.details = ''
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }

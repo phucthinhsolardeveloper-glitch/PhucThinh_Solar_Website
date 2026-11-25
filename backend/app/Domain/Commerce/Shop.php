@@ -276,7 +276,7 @@ class Shop
             'code' => $this->newOrderCode(),
             'checkout_token' => $token,
             'customer_name' => $value('fullname'),
-            'phone' => $value('phone'),
+            'phone' => (string) LeadSubmission::normalizePhone($value('phone')),
             'email' => $value('email'),
             'address' => $address,
             'province_id' => $cityId,
@@ -397,7 +397,7 @@ class Shop
 
             return $notFound;
         }
-        $order = DB::selectOne('select id, code, customer_name as fullname, total as total_price, payment_code, payment_status, transfer_reported_at from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
+        $order = DB::selectOne('select id, code, customer_name as fullname, total as total_price, subtotal, shipping_fee, payment_code, payment_status, transfer_reported_at from orders where id=? and code=? limit 1', [(int) $entry['id'], (string) $entry['code']]);
         if (! $order || empty($order->code)) {
             unset($all[$token]);
             $this->session->put('order_thanks', $all);
@@ -420,7 +420,8 @@ class Shop
             ->values()->all();
 
         return [200, ['schemaVersion' => 1, 'locale' => 'vi', 'order' => ['code' => trim((string) $order->code), 'customerName' => trim(strip_tags((string) $order->fullname)),
-            'totalPrice' => max(0, (int) round((float) $order->total_price)), 'items' => $items], 'paymentState' => $paymentState, 'conversionPending' => $fire]
+            'totalPrice' => max(0, (int) round((float) $order->total_price)),
+            'subtotal' => max(0, (int) round((float) $order->subtotal)), 'shippingFee' => max(0, (int) round((float) $order->shipping_fee)), 'items' => $items], 'paymentState' => $paymentState, 'conversionPending' => $fire]
             + ($instruction ? ['transfer' => self::transfer($instruction, $order->transfer_reported_at !== null)] : [])];
     }
 

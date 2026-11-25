@@ -186,3 +186,33 @@ it('keeps ordinary consultations independent of an existing quote cart', functio
     ]])->assertOk();
     expect(DB::table('leads')->orderByDesc('id')->value('message'))->toBe('Chỉ hỏi về mái nhà');
 });
+
+it('stores a typed phone number as 10 digits for every kind of lead', function () {
+    $product = DB::table('products')->where('is_visible', true)->first();
+    $profile = app(ProductSpecs::class)->profileKey(
+        ['pdp_profile' => (string) $product->pdp_profile, 'category_profile' => ProductSpecs::categoryProfile(app(CategoryTree::class), (int) $product->category_id)],
+        (function () use ($product) {
+            $root = app(CategoryTree::class)->atDepth((int) $product->category_id, 1);
+
+            return ['pdp_profile' => $root['pdp_profile'] ?? '', 'slug' => $root['slug'] ?? ''];
+        })());
+    $city = DB::table('provinces')->where('is_visible', true)->value('id');
+    $forms = [
+        'contact' => ['fullname' => 'Khách thử', 'content' => 'Cần tư vấn'],
+        'product' => ['fullname' => 'Khách thử', 'product_id' => $product->id, 'profile_key' => $profile],
+        'dealer' => ['fullname' => 'Khách thử', 'email' => 'daily@example.test', 'city_id' => $city, 'company' => 'Cửa hàng thử'],
+    ];
+    RateLimiter::clear('form:newsletter-consulting|127.0.0.1');
+    foreach ($forms as $kind => $data) {
+        lead(['kind' => $kind, 'csrfToken' => FormToken::issue(), 'data' => $data + ['phone' => '+84 944.555-957']])->assertOk();
+        expect(DB::table('leads')->orderByDesc('id')->value('phone'))->toBe('0944555957');
+    }
+});
+
+it('does not save a lead whose phone number has letters or hides them after a long run of spaces', function () {
+    $before = DB::table('leads')->count();
+    foreach (['0944 555 95x', '0944555957                    abc'] as $phone) {
+        lead(['kind' => 'contact', 'csrfToken' => FormToken::issue(), 'data' => ['fullname' => 'Khách thử', 'phone' => $phone, 'content' => 'x']])->assertStatus(422);
+    }
+    expect(DB::table('leads')->count())->toBe($before);
+});

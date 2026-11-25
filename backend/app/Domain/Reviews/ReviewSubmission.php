@@ -59,7 +59,9 @@ class ReviewSubmission
         if ($star < 1 || $star > 5) {
             return [422, ['errors' => ['Chưa chọn đánh giá sao.']]];
         }
-        $data = ['title' => $text('title', 180), 'content' => $text('content', 5000), 'fullname' => $text('fullname', 100), 'phone' => $text('phone', 20), 'email' => $text('email', 150)];
+        $data = ['title' => $text('title', 180), 'content' => $text('content', 5000), 'fullname' => $text('fullname', 100), 'phone' => $text('phone', 40), 'email' => $text('email', 150)];
+        // Stored and compared as 10 digits; an unreadable number keeps its text so the message below names it.
+        $data['phone'] = LeadSubmission::normalizePhone($data['phone']) ?? $data['phone'];
         $orderCode = $text('orderCode', 40);
         $requireOrder = (string) ($this->settings->options()['review_require_order_code'] ?? '') === '1';
         $photos = array_values((array) $request->file('review-file-photo', []));

@@ -34,7 +34,7 @@ test('ad clicks are remembered 30 days on the device and analytics never carries
   assert.match(read('app/plugins/lead-attribution.client.ts'), /localStorage\.setItem\(LEAD_CAMPAIGN_KEY/)
   assert.match(read('app/utils/leadCampaign.ts'), /LEAD_CAMPAIGN_DAYS \* 86_400_000/)
   const lead = read('app/composables/useLeadForm.ts')
-  assert.match(lead, /pushDataLayer\('generate_lead', \{ form_kind: kind, page_path:/)
+  assert.match(lead, /pushDataLayer\('generate_lead', \{ form_kind: kind, form_source: formSource, page_path:/)
   assert.doesNotMatch(read('app/composables/useDataLayer.ts').replace(/^\s*\/\/.*$/gm, ''), /phone|email|fullname/i)
   assert.match(read('app/plugins/contact-clicks.client.ts'), /click_call/)
   assert.match(read('app/plugins/contact-clicks.client.ts'), /click_zalo/)

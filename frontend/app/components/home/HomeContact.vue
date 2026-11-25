@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { leadErrorMessage } from '#shared/lead-submit'
 import { publicEmailHref, publicPhoneHref } from '#shared/contact-links'
 import type { PublicHomePayload } from '#shared/contracts/public-home'
 
@@ -73,12 +74,12 @@ async function send() {
       subject: form.subject,
       // The phone form asks only for need, name and number; staff still receive a readable request.
       content: form.content.trim() || `Khách để lại số điện thoại, cần tư vấn: ${form.subject || 'chưa chọn nhu cầu'}.`,
-    })
+    }, 'home')
     success.value = result.message
     Object.assign(form, { fullname: '', phone: '', address: '', subject: '', content: '' })
     prefilledFrom.value = ''
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
+    error.value = leadErrorMessage(reason)
   } finally {
     submitting.value = false
   }
