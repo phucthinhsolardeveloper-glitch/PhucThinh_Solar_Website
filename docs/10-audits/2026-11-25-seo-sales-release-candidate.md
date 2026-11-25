@@ -22,6 +22,8 @@ Trạng thái: **chưa đủ cổng để phát hành** — còn `nuxt build` v�
 | `pattern` trên bốn form lead chặn số máy chủ chấp nhận (`+84 944 - 555 - 957`) | Nới `pattern` theo quy tắc máy chủ |
 | `pim-registry.csv` xuống dòng CRLF làm `git diff --check` báo lỗi | Đổi sang LF, nội dung 337 dòng không đổi |
 
+`25e1d6a1` và `088fc0b8` do chính phiên viết nên **chưa có người thứ hai review**. Đã nhờ phiên Sol; phiên này từ chối vì phạm vi được giao cấm đụng nhánh SEO/Sales. Cần điều phối người review khác trước khi bật CRM.
+
 ## Kiểm tra (máy cục bộ, database sao chép riêng)
 
 | Cổng | Kết quả |
