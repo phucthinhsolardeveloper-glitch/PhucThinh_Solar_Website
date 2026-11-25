@@ -2,6 +2,8 @@
 
 namespace App\Domain\Shipping\NhatTin;
 
+use Illuminate\Support\Facades\Cache;
+
 /**
  * Local stand-in for Nhất Tín with the documented response shapes. Fees and codes are invented and
  * marked MOCK; nothing leaves the server.
@@ -20,12 +22,24 @@ final class NtlMock
             ]],
             '/v3/bill/tracking' => ['success' => true, 'data' => [[
                 'bill_code' => $body['bill_code'] ?? '', 'bill_status_id' => 15, 'bill_status_desc' => 'Đang vận chuyển (mô phỏng)',
-                'histories' => [['status_id' => 2, 'status_name' => 'Chờ lấy hàng', 'time' => now()->subDay()->timestamp],
-                    ['status_id' => 15, 'status_name' => 'Đang vận chuyển', 'time' => now()->timestamp]],
+                'histories' => $this->journey((string) ($body['bill_code'] ?? '')),
             ]]],
             '/v3/bill/destroy' => ['success' => true, 'data' => ['bill_code' => $body['bill_code'] ?? []]],
             default => throw new NtlException('Mô phỏng chưa hỗ trợ '.$method.' '.$path.'.', 'NOT_SUPPORTED'),
         };
+    }
+
+    /**
+     * The same past events on every call, as a carrier reports them: their times are set the first time a bill is tracked.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function journey(string $billCode): array
+    {
+        $seen = (int) Cache::rememberForever('ntl-mock:tracked:'.$billCode, fn () => now()->timestamp);
+
+        return [['status_id' => 2, 'status_name' => 'Chờ lấy hàng', 'time' => $seen - 86400],
+            ['status_id' => 15, 'status_name' => 'Đang vận chuyển', 'time' => $seen]];
     }
 
     /** @return list<array<string, mixed>> */

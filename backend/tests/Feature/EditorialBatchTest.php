@@ -42,9 +42,17 @@ it('imports bundled knowledge articles as hidden drafts, preserves edits and is 
 });
 
 it('serves source-controlled editorial photos when the legacy upload volume has no copy', function () {
+    // A private upload folder: whether this machine's volume holds the photo must not decide the result.
+    Storage::fake('upload_news');
+    $root = Storage::disk('upload_news')->path('volume');
+    config(['site.upload_path' => $root]);
     $urls = app(ProductMediaUrls::class);
     $path = 'upload/news/pts-solar-how-it-works.webp';
     expect($urls->exists($path))->toBeTrue()
         ->and($urls->absolute($path))->toContain('images/editorial/');
     $this->get('/'.$path)->assertOk()->assertHeader('Content-Type', 'image/webp');
+
+    // The volume's own copy wins as soon as there is one.
+    Storage::disk('upload_news')->put('volume/news/pts-solar-how-it-works.webp', 'volume copy');
+    expect($urls->absolute($path))->toStartWith($root);
 });

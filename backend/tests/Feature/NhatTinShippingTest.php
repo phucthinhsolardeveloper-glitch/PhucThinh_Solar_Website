@@ -55,6 +55,8 @@ it('quotes, creates one waybill, follows it and cancels it in mock mode without 
 
     $shipments->refresh($shipment);
     expect($shipment->fresh()->status)->toBe('in_transit')->and($shipment->events()->count())->toBe(2);
+    // Asked again later: the journey already seen keeps its own times, so nothing is stored twice.
+    $this->travel(90)->seconds();
     $shipments->refresh($shipment);
     expect($shipment->events()->count())->toBe(2);
 
