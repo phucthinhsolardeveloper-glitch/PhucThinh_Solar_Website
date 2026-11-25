@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Domain\Leads\CrmLeadForwarding;
 use App\Domain\Outbox\Outbox;
+use App\Support\LogSafe;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -55,9 +56,11 @@ class SendOutboxMessage implements ShouldQueue
             Mail::to($message->recipient)->send($mail);
         } catch (Throwable $e) {
             $giveUp = (int) $message->attempts >= self::MAX_ATTEMPTS;
-            $this->finish($giveUp ? 'failed' : 'retrying', $e->getMessage());
+            // A mail server error may name the recipient: neither the row nor the worker log keeps its text.
+            $error = LogSafe::error($e);
+            $this->finish($giveUp ? 'failed' : 'retrying', $error);
             if (! $giveUp) {
-                throw new RuntimeException('Outbox mail '.$this->messageId.' failed: '.Str::limit($e->getMessage(), 200), 0, $e);
+                throw new RuntimeException('Outbox mail '.$this->messageId.' failed: '.$error);
             }
 
             return;
@@ -98,7 +101,7 @@ class SendOutboxMessage implements ShouldQueue
 
     public function failed(?Throwable $e): void
     {
-        $this->finish('failed', $e?->getMessage() ?? 'Job failed');
+        $this->finish('failed', $e !== null ? LogSafe::error($e) : 'Job failed');
     }
 
     private function finish(string $status, string $error): void

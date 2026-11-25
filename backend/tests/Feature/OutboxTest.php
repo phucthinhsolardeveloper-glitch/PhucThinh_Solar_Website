@@ -40,11 +40,23 @@ it('keeps a message for retry when the mail server fails, and gives up after the
     Queue::fake();
     Outbox::queue('test:3', 'contact_admin', 'a@example.test', alert());
     $id = (int) DB::table('outbox_messages')->where('dedupe_key', 'test:3')->value('id');
-    Mail::shouldReceive('to')->andThrow(new RuntimeException('SMTP down'));
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('550 mailbox khach@example.test unavailable', 550));
 
-    expect(fn () => (new SendOutboxMessage($id))->handle())->toThrow(RuntimeException::class);
+    $thrown = null;
+    try {
+        (new SendOutboxMessage($id))->handle();
+    } catch (RuntimeException $e) {
+        $thrown = $e;
+    }
+    // The server's reply names the recipient: the row and the exception the worker logs keep only its kind and code.
+    expect($thrown?->getMessage())->toContain('RuntimeException code 550')->not->toContain('khach@example.test')
+        ->and($thrown->getPrevious())->toBeNull();
     $row = DB::table('outbox_messages')->find($id);
-    expect($row->status)->toBe('retrying')->and($row->last_error)->toContain('SMTP down');
+    expect($row->status)->toBe('retrying')->and($row->last_error)->toContain('code 550')->not->toContain('khach@example.test');
+
+    (new SendOutboxMessage($id))->failed(new RuntimeException('timeout sending to khach@example.test'));
+    expect(DB::table('outbox_messages')->where('id', $id)->value('last_error'))->toStartWith('RuntimeException at ')->not->toContain('khach@example.test');
+    DB::table('outbox_messages')->where('id', $id)->update(['status' => 'retrying']);
 
     DB::table('outbox_messages')->where('id', $id)->update(['attempts' => SendOutboxMessage::MAX_ATTEMPTS - 1]);
     (new SendOutboxMessage($id))->handle();
