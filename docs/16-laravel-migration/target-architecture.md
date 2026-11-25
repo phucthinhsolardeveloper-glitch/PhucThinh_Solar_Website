@@ -30,7 +30,7 @@ production 30 ngày (chỉ đọc) để chắc không còn ai gọi.
 | `/api/v2/*` | Thiết kế cho Nuxt từ đầu, chỉ làm sau khi v1 chạy ổn |
 
 Nâng cấp so với PHP:
-- **Bộ nhớ đệm theo sự kiện.** Hiện Nitro giữ 60 giây rồi mới thấy thay đổi. Laravel gắn tag theo dữ
+- **Bộ nhớ đệm theo sự kiện.** Hiện Nitro giữ 10 giây rồi mới thấy thay đổi. Laravel gắn tag theo dữ
   liệu: Admin lưu sản phẩm thì xóa đúng tag của sản phẩm đó và danh mục chứa nó, Nuxt thấy ngay.
 - **Gom một lần gọi.** Hiện mỗi trang gọi riêng `site` và dữ liệu trang. v2 trả kèm phần dùng chung
   có ETag, Nuxt chỉ tải lại khi đổi.

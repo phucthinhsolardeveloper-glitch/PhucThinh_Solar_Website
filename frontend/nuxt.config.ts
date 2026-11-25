@@ -99,10 +99,12 @@ export default defineNuxtConfig({
     // Short shared cache for public read-only API DTOs (no cookies forwarded, bounded cache keys).
     // Session/token routes (cart, checkout, lead-form, order-thanks) and free-text queries
     // (search, catalog, news, route resolve) are deliberately excluded.
+    // Never stale-while-revalidate: it served the first visitor after an Admin change the old copy, however old
+    // (a price that had just been hidden stayed on the page). The backend answers in about 50 ms.
     ...Object.fromEntries([
       'site', 'home', 'about', 'dealer', 'contact', 'solutions', 'projects', 'gallery', 'video',
       'policy-detail', 'product-detail', 'solution-detail', 'project-detail', 'gallery-detail',
-    ].map((name) => [`/_api/${name}`, { cache: { maxAge: 60, swr: true } }])),
+    ].map((name) => [`/_api/${name}`, { cache: { maxAge: 10, swr: false } }])),
     // Phòng thí nghiệm component của CODEX 1. Không bao giờ được index: đây là
     // trang kiểm thử control, không phải nội dung site.
     '/experience-design-system': {

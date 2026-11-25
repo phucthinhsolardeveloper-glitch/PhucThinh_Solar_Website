@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\Products;
 
 use App\Domain\Catalog\MerchantIdentifier;
+use App\Domain\Catalog\ProductDetail\ProductDetailAssembler;
 use App\Domain\Catalog\ProductSalesReadiness;
 use App\Domain\Catalog\SpecFormat;
+use App\Domain\Routing\PublicStatus;
+use App\Domain\Routing\PublicUrls;
 use App\Domain\Shipping\Warehouses;
 use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Support\Fields;
@@ -16,6 +19,7 @@ use App\Filament\Support\TypedSpecsForm;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\SiteSettings;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
@@ -107,10 +111,8 @@ class ProductResource extends Resource
                     ]),
                 ]),
                 Tab::make('Giá')->columns(2)->schema([
-                    Toggle::make('quote_only')->label('Chỉ báo giá (ẩn giá, hiện "Liên hệ báo giá")')->live()->columnSpanFull(),
-                    TextInput::make('regular_price')->label('Giá bán (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only')),
-                    TextInput::make('sale_price')->label('Giá khuyến mãi (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only'))
-                        ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
+                    self::quoteToggle()->columnSpanFull(),
+                    ...self::priceInputs(),
                     TextInput::make('weight_kg')->label('Cân nặng khi đóng gói (kg)')->numeric()->minValue(0.01)->maxValue(5000)
                         ->helperText('Dùng để tính phí Nhất Tín lúc khách đặt hàng. Để trống thì nhân viên báo phí giao hàng sau.'),
                     Select::make('warehouse_id')->label(NewFeatures::label('Kho giữ hàng', 'kho-san-pham'))->options(fn () => app(Warehouses::class)->options())->placeholder('Chưa gán kho')
@@ -222,12 +224,14 @@ class ProductResource extends Resource
         $categoryOptions = $edit ? Options::categoryPaths() : [];
         $brandOptions = $edit ? Brand::query()->orderBy('name')->pluck('name', 'id')->all() : [];
         $warehouseOptions = app(Warehouses::class)->options();
+        $pricesVisible = app(SiteSettings::class)->productPricesVisible();
 
         return $table
             ->paginationPageOptions([10, 25, 50, 100, 200])->defaultPaginationPageOption(50)
             ->description($edit ? 'Đang sửa trên bảng: sửa ô nào, ô đó được lưu ngay khi bạn bấm ra ngoài. Bấm "Xong sửa" để thoát.' : null)
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['seo', 'category', 'brand'])->withCount('visibleArticles'))
             ->defaultSort('id', 'desc')
+            ->recordClasses(fn (Product $record) => $record->is_visible ? null : 'pts-row-hidden')
             ->reorderable('sort_order', fn () => self::canBulkImport())->paginatedWhileReordering(false)
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_product')->square()->height(48),
@@ -242,43 +246,46 @@ class ProductResource extends Resource
                         ->rules(fn (Product $record) => ['nullable', 'numeric', 'min:0', ...((float) $record->regular_price > 0 ? ['lte:'.(float) $record->regular_price] : [])]),
                 ] : [
                     TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
-                        ->description(fn (Product $record) => $record->code),
+                        ->description(fn (Product $record) => implode(' · ', array_filter([$record->code, $record->is_bestseller ? '★ Nổi bật' : null]))),
                     TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
                         ->description(fn (Product $record) => data_get($record, 'brand.name')),
-                    TextColumn::make('price')->label('Giá')
-                        ->state(fn (Product $record) => match (true) {
-                            $record->quote_only => 'Báo giá',
-                            (float) ($record->sale_price ?: $record->regular_price) > 0 => number_format((float) ($record->sale_price ?: $record->regular_price), 0, ',', '.').'đ',
-                            default => 'Chưa có giá',
-                        }),
+                    TextColumn::make('price')->label('Giá khách thấy')
+                        ->state(fn (Product $record) => ProductPriceState::of($record, $pricesVisible)['text'])
+                        ->description(fn (Product $record) => ProductPriceState::of($record, $pricesVisible)['detail'])
+                        ->badge(fn (Product $record) => ProductPriceState::of($record, $pricesVisible)['quote'])
+                        ->color(fn (Product $record) => ProductPriceState::of($record, $pricesVisible)['color'])
+                        ->icon(fn (Product $record) => ProductPriceState::of($record, $pricesVisible)['icon'])
+                        ->tooltip('Bấm để sửa giá')
+                        ->action(self::quickEditAction('priceEdit')),
                 ]),
                 TextColumn::make('warehouse_id')->label('Kho giữ hàng')->formatStateUsing(fn ($state) => $warehouseOptions[(int) $state] ?? 'Chưa gán')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('merchant_availability')->label('Merchant')->formatStateUsing(fn ($state) => $state === 'in_stock' ? 'Đã xác minh giao ngay' : 'Chưa xác minh')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sales_readiness')->label('Cần bổ sung')
                     ->state(function (Product $record): string {
-                        $issues = app(ProductSalesReadiness::class)->issues($record);
+                        $issues = app(ProductSalesReadiness::class)->issues($record, includeHidden: true);
 
                         return $issues === [] ? 'Đủ dữ liệu cơ bản' : implode(', ', $issues);
                     })->wrap()->toggleable(),
-                ToggleColumn::make('is_visible')->label('Hiển thị')->disabled(fn () => ! self::canBulkImport())
+                ToggleColumn::make('is_visible')->label('Hiện / ẩn')->disabled(fn () => ! self::canBulkImport())
                     ->updateStateUsing(function (Product $record, bool $state): bool {
                         if ($state && ! PublishGate::allowSwitchOn($record)) {
                             return false;
                         }
                         $record->update(['is_visible' => $state]);
+                        Notification::make()->success()->title($state ? 'Đã hiện trên website' : 'Đã ẩn khỏi website')->body($record->name)->send();
 
                         return $state;
                     }),
-                PublicStatusColumn::make(besideSwitch: true),
-                ToggleColumn::make('quote_only')->label('Ẩn giá / báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: ! $edit),
+                self::statusColumn(),
+                ToggleColumn::make('quote_only')->label('Ẩn giá')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: ! $edit),
                 ToggleColumn::make('is_bestseller')->label('Nổi bật')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable(),
                 SelectFilter::make('brand_id')->label('Thương hiệu')->relationship('brand', 'name')->preload(),
-                TernaryFilter::make('is_visible')->label('Hiển thị'),
-                TernaryFilter::make('quote_only')->label('Chỉ báo giá'),
+                TernaryFilter::make('is_visible')->label('Trên website')->trueLabel('Đang hiện')->falseLabel('Đang ẩn'),
+                TernaryFilter::make('quote_only')->label('Giá')->trueLabel('Đang ẩn giá')->falseLabel('Không ẩn giá'),
                 SelectFilter::make('warehouse_id')->label('Kho giữ hàng')->options(fn () => app(Warehouses::class)->options())->placeholder('Tất cả'),
                 TernaryFilter::make('weight_kg')->label('Cân nặng đóng gói')->trueLabel('Đã có')->falseLabel('Chưa có')
                     ->queries(true: fn (Builder $q) => $q->where('weight_kg', '>', 0), false: fn (Builder $q) => $q->where(fn ($q) => $q->whereNull('weight_kg')->orWhere('weight_kg', '<=', 0))),
@@ -289,25 +296,59 @@ class ProductResource extends Resource
             ->toolbarActions(ProductBulkActions::groups());
     }
 
-    /** Price, category and flags from the list; the same model save as the edit page. */
-    public static function quickEditAction(): Action
+    /** "Trên website" in words on every row, hidden ones too; a hidden product opens as a 15-minute preview. */
+    private static function statusColumn(): TextColumn
     {
-        return Action::make('quickEdit')->label('Sửa nhanh')->icon(Heroicon::OutlinedBanknotes)->iconButton()->tooltip('Sửa nhanh giá, danh mục')
+        $hidden = fn (Product $record): bool => PublicStatus::of($record)['key'] === PublicStatus::HIDDEN;
+
+        return PublicStatusColumn::make()
+            ->icon(fn (Product $record) => $hidden($record) ? 'heroicon-m-eye-slash' : 'heroicon-m-arrow-top-right-on-square')
+            ->tooltip(fn (Product $record) => $hidden($record) ? 'Khách không thấy. Bấm để xem trước (liên kết dùng 15 phút).' : PublicStatus::of($record)['reason'])
+            ->url(fn (Product $record) => $hidden($record) ? ProductDetailAssembler::previewUrl((int) $record->getKey()) : PublicUrls::url($record), shouldOpenInNewTab: true);
+    }
+
+    private static function quoteToggle(): Toggle
+    {
+        return Toggle::make('quote_only')->label('Ẩn giá, hiện "Liên hệ báo giá"')->live()
+            ->helperText(fn (Get $get) => $get('quote_only') ? 'Khách đang không thấy giá và không đặt mua được. Giá bên dưới vẫn được lưu.' : 'Khách thấy giá bên dưới. Chưa nhập giá thì website tự hiện "Liên hệ báo giá".');
+    }
+
+    /** @return list<TextInput> */
+    private static function priceInputs(): array
+    {
+        return [
+            TextInput::make('regular_price')->label('Giá bán (đ)')->numeric()->minValue(0),
+            TextInput::make('sale_price')->label('Giá khuyến mãi (đ)')->numeric()->minValue(0)
+                ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
+        ];
+    }
+
+    /** Visibility, price, category and the featured flag from the list; the same model save as the edit page. */
+    public static function quickEditAction(string $name = 'quickEdit'): Action
+    {
+        return Action::make($name)->label('Sửa nhanh')->icon(Heroicon::OutlinedBolt)->link()
             ->modalHeading(fn (Product $record) => $record->name)->modalWidth('lg')->modalSubmitActionLabel('Lưu')
-            ->fillForm(fn (Product $record) => $record->only(['regular_price', 'sale_price', 'quote_only', 'category_id', 'is_bestseller']))
+            ->fillForm(fn (Product $record) => $record->only(['is_visible', 'regular_price', 'sale_price', 'quote_only', 'category_id', 'is_bestseller']))
             ->schema([
-                Toggle::make('quote_only')->label('Chỉ báo giá (ẩn giá)')->live(),
-                Grid::make(2)->schema([
-                    TextInput::make('regular_price')->label('Giá bán (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only')),
-                    TextInput::make('sale_price')->label('Giá khuyến mãi (đ)')->numeric()->minValue(0)->hidden(fn (Get $get) => $get('quote_only'))
-                        ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
-                ]),
+                Toggle::make('is_visible')->label('Hiện trên website')->visible(fn () => self::canBulkImport()),
+                self::quoteToggle(),
+                Grid::make(2)->schema(self::priceInputs()),
                 Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required(),
                 Toggle::make('is_bestseller')->label('Nổi bật')->helperText('Hiện nhãn "Nổi bật" trên thẻ sản phẩm và đưa lên đầu khi khách chọn sắp xếp Nổi bật. Chỉ nên chọn một ít sản phẩm.'),
             ])
             ->action(function (Product $record, array $data): void {
+                $show = (bool) ($data['is_visible'] ?? false);
+                $switchOn = $show && ! $record->is_visible;
+                // Switching on is checked after the new price and category are in; the switch itself comes last.
+                if ($switchOn) {
+                    unset($data['is_visible']);
+                }
                 $record->update($data);
-                Notification::make()->success()->title('Đã lưu '.$record->name)->send();
+                if ($switchOn && PublishGate::allowSwitchOn($record)) {
+                    $record->update(['is_visible' => true]);
+                }
+                Notification::make()->success()->title('Đã lưu '.$record->name)
+                    ->body($record->is_visible ? 'Đang hiện trên website.' : 'Đang ẩn khỏi website.')->send();
             });
     }
 

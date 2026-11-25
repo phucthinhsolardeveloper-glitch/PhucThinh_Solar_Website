@@ -26,10 +26,13 @@ class ProductSalesReadiness
         'discount' => 'Đang giảm giá',
     ];
 
-    /** @return list<string> */
-    public function issues(Product $product): array
+    /**
+     * @param  bool  $includeHidden  also list the gaps of a hidden product (what is left to do before showing it)
+     * @return list<string>
+     */
+    public function issues(Product $product, bool $includeHidden = false): array
     {
-        if (! $product->is_visible) {
+        if (! $product->is_visible && ! $includeHidden) {
             return [];
         }
 

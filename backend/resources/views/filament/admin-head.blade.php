@@ -65,4 +65,8 @@
     .pts-top-pages td:first-child { position: relative; max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .pts-top-pages td:first-child a { position: relative; z-index: 1; }
     .pts-top-pages__bar { position: absolute; left: 0; top: 15%; bottom: 15%; background: rgb(224 165 38 / .16); border-radius: 3px; }
+
+    /* Product list: a hidden product reads as switched off at a glance; its status and buttons stay clear. */
+    .fi-ta-row.pts-row-hidden .fi-ta-image img { filter: grayscale(1); opacity: .4; }
+    .fi-ta-row.pts-row-hidden .fi-ta-cell:is(.fi-ta-cell-name, .fi-ta-cell-category\.name, .fi-ta-cell-price, .fi-ta-cell-sales-readiness) { opacity: .5; }
 </style>

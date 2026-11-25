@@ -16,5 +16,9 @@ test('only public, cookie-free DTO bridges with bounded keys are cached', () => 
     assert.match(route, /fetchBackendPayload/, `${name} must use the cookie-free bridge`)
     assert.doesNotMatch(route, /fetchSessionResponse|getHeader\(event, 'cookie'\)/, `${name} must not forward the session`)
   }
-  assert.match(config, /cache: \{ maxAge: 60, swr: true \}/)
+})
+
+test('an Admin change shows within seconds: an expired copy is never served', () => {
+  assert.match(config, /cache: \{ maxAge: 10, swr: false \}/)
+  assert.doesNotMatch(config, /swr: true/)
 })

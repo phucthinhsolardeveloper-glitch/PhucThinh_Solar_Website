@@ -22,6 +22,10 @@ class PublishChecks
         $out = ['errors' => [], 'warnings' => []];
         foreach ($this->health->forProduct((int) $product->getKey()) as $key) {
             [$severity, $label] = CatalogHealth::CHECKS[$key];
+            // "info" is a normal state staff chose (a hidden price that is still stored), not something to fix.
+            if ($severity === 'info') {
+                continue;
+            }
             $out[$severity === 'error' ? 'errors' : 'warnings'][] = $label;
         }
         foreach (ProductSpecChecks::missingRequired($product) as $label) {
