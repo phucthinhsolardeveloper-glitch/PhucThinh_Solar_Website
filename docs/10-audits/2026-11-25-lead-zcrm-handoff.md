@@ -1,7 +1,7 @@
 # Chuyển lead website sang ZCRM
 
 Trạng thái: **phía website đã viết, mặc định tắt; phía CRM chưa có.** Chưa tạo khóa API, chưa gọi CRM nào, chỉ thử với endpoint giả trong test.
-Căn cứ: đọc `zalo-crm-solar` tại commit `19f2f344` (`backend/src/modules/api/`): chưa có `POST /api/public/leads` và phạm vi `leads.write`. Chưa kiểm CRM đang chạy.
+Căn cứ: đọc `zalo-crm-solar` tại commit `19f2f344` (`backend/src/modules/api/`): chưa có `POST /api/public/leads` và phạm vi `leads.write` (kiểm lại chỉ đọc ngày 26/11, vẫn commit đó). Chưa kiểm CRM đang chạy.
 
 ## Interface đang có
 

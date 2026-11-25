@@ -71,4 +71,4 @@ Dữ liệu cần xuất để quyết các việc còn treo (28 ngày, theo tra
 | Trang Đại lý còn đoạn "Năm 2021" | Nội dung mới |
 | Lưu mã click quảng cáo khi khách từ chối cookie | Quyết định chính sách |
 
-Báo cáo CRO và kỹ thuật của THY: không có trên máy này và chưa đọc được qua Bridge, nên chưa đối chiếu.
+Báo cáo CRO và kỹ thuật của THY: đối chiếu theo trích đoạn ngày 26/11, xem `2026-11-25-seo-sales-release-candidate.md`.
