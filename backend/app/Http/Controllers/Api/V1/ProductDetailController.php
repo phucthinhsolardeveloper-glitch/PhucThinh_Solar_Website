@@ -29,6 +29,25 @@ class ProductDetailController extends Controller
         return response()->json($payload, 200, ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
+    /** GET /api/v1/product-retired?slug= — the name and nearest category of a hidden product, for visitors of its old link. */
+    public function retired(Request $request, ProductDetailAssembler $assembler): JsonResponse
+    {
+        $query = $request->query();
+        if (array_diff(array_keys($query), ['slug']) || (isset($query['slug']) && ! is_string($query['slug']))) {
+            return $this->error(400, 'BAD_QUERY');
+        }
+        $slug = Text::slug(trim((string) ($query['slug'] ?? ''), '/'));
+        if ($slug === '') {
+            return $this->error(400, 'BAD_QUERY');
+        }
+        $info = $assembler->retiredInfo($slug);
+        if ($info === null) {
+            return $this->error(404, 'PRODUCT_NOT_FOUND');
+        }
+
+        return response()->json(['schemaVersion' => 1] + $info, 200, ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
     private function error(int $status, string $code): JsonResponse
     {
         return response()->json(['error' => ['code' => $code]], $status);

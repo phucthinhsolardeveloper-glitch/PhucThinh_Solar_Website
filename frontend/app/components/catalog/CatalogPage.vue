@@ -211,6 +211,7 @@ const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds:
 const sortOptions = computed(() => {
   const base = [
     { value: 'default', label: 'Mặc định' },
+    { value: 'featured', label: 'Nổi bật' },
     { value: 'abc', label: 'Tên A-Z' },
     { value: 'abc-desc', label: 'Tên Z-A' },
     { value: 'price', label: 'Giá tăng dần' },
@@ -246,7 +247,8 @@ const metadataCanonicalPath = computed(() => {
   const clean = base.split('?')[0] || route.path
   return currentPageNumber.value > 1 && !hasQueryFilters.value ? `${clean}?page=${currentPageNumber.value}` : clean
 })
-const catalogFilterKeys = new Set(['category', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
+// q, s, search and query are search words someone typed into the address: every word is a new page with the same list, so none is indexed.
+const catalogFilterKeys = new Set(['category', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need', 'q', 's', 'search', 'query'])
 const hasQueryFilters = computed(() => Object.keys(route.query).some((key) => catalogFilterKeys.has(key)))
 const catalogIndexable = computed(() => {
   const enabled = route.path.startsWith('/danh-muc-san-pham/')

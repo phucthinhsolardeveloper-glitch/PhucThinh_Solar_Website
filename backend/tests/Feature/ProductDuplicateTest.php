@@ -14,7 +14,8 @@ it('duplicates a product and its editable content without exposing or linking co
     expect($copy->id)->not->toBe($source->id)
         ->and($copy->slug)->not->toBe($source->slug)
         ->and($copy->is_visible)->toBeFalse()
-        ->and($copy->code)->toBeNull()
+        // The source's code is not copied; a product saved without one gets the temporary code PTS-<id>.
+        ->and($copy->code)->not->toBe($source->code)->and($copy->code)->toBe(sprintf('PTS-%06d', $copy->id))
         ->and($copy->views)->toBe(0)
         ->and($copy->regular_price)->toBe($source->regular_price)
         ->and($copy->merchant_availability)->toBeNull()

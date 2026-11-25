@@ -35,12 +35,36 @@ class ProductDetailAssembler
         return $slug === '' ? null : $this->forSlug($slug, true);
     }
 
-    /** Signed link (15 minutes) to the Nuxt preview of a product page, hidden products included. */
-    public static function previewUrl(int $id): string
+    /** Signed link to the Nuxt preview of a product page, hidden products included (15 minutes unless told otherwise). */
+    public static function previewUrl(int $id, int $minutes = 15): string
     {
-        $signed = URL::temporarySignedRoute('product.preview', now()->addMinutes(15), ['product' => $id], absolute: false);
+        $signed = URL::temporarySignedRoute('product.preview', now()->addMinutes($minutes), ['product' => $id], absolute: false);
 
         return PublicUrls::base().'/xem-truoc/san-pham/'.$id.'?'.parse_url($signed, PHP_URL_QUERY);
+    }
+
+    /**
+     * What a visitor of an old link to a hidden product is told: its name and the closest visible category to look in.
+     *
+     * @return array{name: string, category: array{name: string, url: string}|null}|null null when no hidden product has this slug
+     */
+    public function retiredInfo(string $slug): ?array
+    {
+        $product = DB::table('products')->where('slug', $slug)->where('is_visible', false)->first(['name', 'category_id']);
+        $name = $product ? Text::plain($product->name) : '';
+        if ($name === '') {
+            return null;
+        }
+        $category = null;
+        foreach (array_reverse($product->category_id ? $this->tree->chain((int) $product->category_id) : []) as $node) {
+            $label = Text::plain($node['name']);
+            if ($node['is_visible'] && $label !== '') {
+                $category = ['name' => $label, 'url' => '/'.$this->tree->path((int) $node['id'])];
+                break;
+            }
+        }
+
+        return ['name' => $name, 'category' => $category];
     }
 
     /** @return array<string, mixed>|null null when no visible product has this slug */

@@ -103,7 +103,7 @@ class ProductResource extends Resource
                     Grid::make(4)->columnSpanFull()->schema([
                         Fields::visible()->default(false)
                             ->helperText('Sản phẩm mới mặc định ẩn. Bật khi đã có ảnh, mô tả, giá hoặc báo giá và SEO.'),
-                        Toggle::make('is_bestseller')->label('Bán chạy'),
+                        Toggle::make('is_bestseller')->label('Nổi bật')->helperText('Hiện nhãn "Nổi bật" trên thẻ sản phẩm và đưa lên đầu khi khách chọn sắp xếp Nổi bật. Chỉ nên chọn một ít sản phẩm.'),
                     ]),
                 ]),
                 Tab::make('Giá')->columns(2)->schema([
@@ -271,7 +271,7 @@ class ProductResource extends Resource
                     }),
                 PublicStatusColumn::make(besideSwitch: true),
                 ToggleColumn::make('quote_only')->label('Ẩn giá / báo giá')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: ! $edit),
-                ToggleColumn::make('is_bestseller')->label('Bán chạy')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
+                ToggleColumn::make('is_bestseller')->label('Nổi bật')->disabled(fn () => ! self::canBulkImport())->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('Cập nhật')->since()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -303,7 +303,7 @@ class ProductResource extends Resource
                         ->lte('regular_price')->validationMessages(['lte' => 'Giá khuyến mãi phải nhỏ hơn hoặc bằng giá bán.']),
                 ]),
                 Select::make('category_id')->label('Danh mục')->options(fn () => Options::categoryPaths())->searchable()->required(),
-                Toggle::make('is_bestseller')->label('Bán chạy'),
+                Toggle::make('is_bestseller')->label('Nổi bật')->helperText('Hiện nhãn "Nổi bật" trên thẻ sản phẩm và đưa lên đầu khi khách chọn sắp xếp Nổi bật. Chỉ nên chọn một ít sản phẩm.'),
             ])
             ->action(function (Product $record, array $data): void {
                 $record->update($data);

@@ -16,6 +16,8 @@ export interface PublicCatalogProduct {
   pricing?: PublicCatalogPricing
   /** Transparent promotion frame laid over the picture while a campaign covers the product. */
   promoFrame?: string
+  /** Present (true) only for products staff marked as featured in Admin. */
+  featured?: true
 }
 
 export type PublicCatalogPricing =
@@ -30,7 +32,7 @@ export interface PublicCatalogHero { image: string; alt: string }
 export interface PublicCatalogFaq { question: string; answer: string }
 export interface PublicCatalogApplication { title: string; description: string; image: string; href: string }
 export interface PublicCatalogSupport { title: string; description: string; image: string; href: string }
-export type PublicCatalogSortKey = 'default' | 'abc' | 'abc-desc' | 'price' | 'price-desc' | 'new' | 'new-desc'
+export type PublicCatalogSortKey = 'default' | 'abc' | 'abc-desc' | 'price' | 'price-desc' | 'new' | 'new-desc' | 'featured'
 
 export interface PublicCatalogPayload {
   schemaVersion: 1
@@ -102,6 +104,10 @@ const PROMO_FRAME = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.png$/i
 
 export function isPublicCatalogProduct(value: unknown): value is PublicCatalogProduct {
   if (!isRecord(value)) return false
+  if ('featured' in value) {
+    const { featured, ...card } = value
+    return featured === true && isPublicCatalogProduct(card)
+  }
   if ('promoFrame' in value) {
     const { promoFrame, ...card } = value
     return typeof promoFrame === 'string' && PROMO_FRAME.test(promoFrame) && isPublicCatalogProduct(card)
@@ -148,7 +154,7 @@ function isNeed(value: unknown): value is PublicCatalogNeed {
     && typeof value.key === 'string' && (catalogNeedKeys as string[]).includes(value.key) && isSafeText(value.label)
 }
 
-const catalogSortKeys: PublicCatalogSortKey[] = ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc']
+const catalogSortKeys: PublicCatalogSortKey[] = ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc', 'featured']
 function isSortKey(value: unknown): value is PublicCatalogSortKey {
   return typeof value === 'string' && (catalogSortKeys as string[]).includes(value)
 }

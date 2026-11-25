@@ -47,6 +47,10 @@ class ProductCard
             'quickSpecs' => array_slice($quick, 0, 3),
             'pricing' => $pricing->forProduct($row),
         ];
+        // Present only for products staff marked as featured (Admin: Nổi bật), so other cards keep their shape.
+        if (! empty($row['is_bestseller'])) {
+            $card['featured'] = true;
+        }
         // Present only while a campaign covers the product, so cards without one keep their shape.
         if (($frame = $this->frames->for($row)) !== null) {
             $card['promoFrame'] = $frame;

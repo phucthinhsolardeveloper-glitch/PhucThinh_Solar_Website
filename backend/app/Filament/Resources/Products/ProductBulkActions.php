@@ -33,8 +33,8 @@ final class ProductBulkActions
                     ->modalDescription('Sản phẩm chưa đủ điều kiện (thiếu ảnh, chưa có danh mục, giá sai…) được giữ ẩn và liệt kê lý do.')
                     ->action(fn (Collection $records) => self::showReady($records)),
                 self::flag('hide', 'Ẩn khỏi website', Heroicon::OutlinedEyeSlash, ['is_visible' => false]),
-                self::flag('bestsellerOn', 'Đánh dấu Bán chạy', Heroicon::OutlinedFire, ['is_bestseller' => true]),
-                self::flag('bestsellerOff', 'Bỏ Bán chạy', Heroicon::OutlinedMinusCircle, ['is_bestseller' => false]),
+                self::flag('bestsellerOn', 'Đánh dấu Nổi bật', Heroicon::OutlinedFire, ['is_bestseller' => true]),
+                self::flag('bestsellerOff', 'Bỏ Nổi bật', Heroicon::OutlinedMinusCircle, ['is_bestseller' => false]),
             ])->label('Trạng thái')->icon(Heroicon::OutlinedAdjustmentsHorizontal),
             BulkActionGroup::make([
                 self::base('adjustPrices', 'Tăng / giảm giá theo %', Heroicon::OutlinedArrowTrendingUp)

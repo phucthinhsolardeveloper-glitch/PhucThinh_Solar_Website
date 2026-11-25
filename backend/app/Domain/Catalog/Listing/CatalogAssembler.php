@@ -82,7 +82,10 @@ class CatalogAssembler
         }
 
         $total = (int) ($db->selectOne("select count(*) as total from products p where {$where}", $params)->total ?? 0);
-        $order = CatalogFilters::sort($request->sort, $pricesVisible) ?? CatalogFilters::defaultOrder($this->tree);
+        // "Nổi bật" puts the products staff marked first and keeps the usual order inside each group.
+        $order = $request->sort === 'featured'
+            ? 'p.is_bestseller desc, '.CatalogFilters::defaultOrder($this->tree)
+            : (CatalogFilters::sort($request->sort, $pricesVisible) ?? CatalogFilters::defaultOrder($this->tree));
         $offset = ($request->page - 1) * $request->perPage;
         $rows = $db->select('select '.CatalogFilters::CARD_COLUMNS." from products p where {$where} order by {$order} limit {$offset}, {$request->perPage}", $params);
         $pricing = new PricingPolicy($pricesVisible);

@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
     Route::post('review', [PagesController::class, 'submitReview']);
     Route::get('projects', [PagesController::class, 'projects']);
     Route::get('product-detail', ProductDetailController::class);
+    Route::get('product-retired', [ProductDetailController::class, 'retired']);
     Route::get('solution-detail', [PagesController::class, 'solutionDetail']);
     Route::get('solutions', [PagesController::class, 'solutions']);
     Route::get('video', [PagesController::class, 'video']);

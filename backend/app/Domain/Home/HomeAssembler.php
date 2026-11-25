@@ -249,7 +249,8 @@ class HomeAssembler
             $products = [];
             $pictured = $this->db->table('products')->where('is_visible', true)->whereNotNull('image')->where('image', '<>', '')
                 ->whereIn('category_id', $this->categories->descendantIds((int) $category['id']))
-                ->orderBy('sort_order')->orderByDesc('id')->limit(10)->get(['id', 'name', 'slug', 'image']);
+                // Products staff marked as featured come first in each group, then the usual order.
+                ->orderByDesc('is_bestseller')->orderBy('sort_order')->orderByDesc('id')->limit(10)->get(['id', 'name', 'slug', 'image']);
             foreach ($pictured as $row) {
                 $image = $this->path($row->image, 'upload/product/');
                 if ($image !== '') {

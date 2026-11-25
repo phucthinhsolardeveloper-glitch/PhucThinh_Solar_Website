@@ -195,6 +195,12 @@ onBeforeUnmount(() => clearTimeout(fullTimer))
         >
           -{{ discountPercent(product) }}%
         </span>
+        <span
+          v-if="product.featured"
+          class="absolute top-2.5 right-2.5 z-10 rounded-chip bg-gold-500 px-2 py-0.5 text-xs font-black tracking-tight text-navy-950 shadow-xs"
+        >
+          Nổi bật
+        </span>
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="productImageSrc(product)"

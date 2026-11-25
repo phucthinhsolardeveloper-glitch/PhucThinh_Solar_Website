@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { isPublicSeoIndexable, productSeoDescription } from '#shared/public-seo'
 import { buildAnalyticsPageContext } from '~/utils/analyticsPageContext'
+import { isPublicProductRetiredPayload } from '#shared/contracts/public-product-retired'
+import NotFoundExperience from '~/components/NotFoundExperience.vue'
 import ProductDetailPage from '~/components/product-detail/ProductDetailPage.vue'
 definePageMeta({
   layout: false,
@@ -14,9 +16,13 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const { site, payload, extras, product, error, pending, ready } = useProductDetailData(slug)
 await ready
 const productErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-if (import.meta.server && productErrorStatus === 404) setResponseStatus(404, 'Not Found')
+// A hidden product (taken off sale) answers 410 with its name and the nearest category, instead of a bare error.
+const retiredFetch = useFetch<unknown>('/_api/product-retired', { query: computed(() => ({ slug: slug.value })), immediate: false, default: () => null })
+if (productErrorStatus === 404) await retiredFetch.execute()
+const retired = computed(() => productErrorStatus === 404 && isPublicProductRetiredPayload(retiredFetch.data.value) ? retiredFetch.data.value : null)
+if (import.meta.server && productErrorStatus === 404) { if (retired.value) setResponseStatus(410, 'Gone'); else setResponseStatus(404, 'Not Found') }
 else if (import.meta.server && (error.value || !product.value)) setResponseStatus(502, 'Bad Gateway')
-const productTitle = computed(() => payload.value?.seo.title || product.value?.name || 'Sản phẩm — Phúc Thịnh Solar')
+const productTitle = computed(() => payload.value?.seo.title || product.value?.name || (retired.value ? `${retired.value.name} — Phúc Thịnh Solar` : 'Sản phẩm — Phúc Thịnh Solar'))
 const productDescription = computed(() => productSeoDescription({
   seo: payload.value?.seo.description,
   summary: product.value?.summary,
@@ -102,6 +108,18 @@ usePublicSocialMeta({
         <h1 class="mb-3 text-3xl font-black tracking-tight">Đang tải sản phẩm…</h1>
         <p class="text-slate-500">Đang tải thông tin sản phẩm…</p>
       </div>
+
+      <div v-else-if="retired" class="pts-container min-h-[45vh] pt-12 pb-20" role="status">
+        <h1 class="mb-3 max-w-[26ch] text-3xl font-black leading-tight tracking-tight">{{ retired.name }}</h1>
+        <p class="max-w-[60ch] text-lg leading-relaxed text-slate-600">Sản phẩm này hiện không còn trong danh mục của Phúc Thịnh Solar. Bạn có thể xem các thiết bị cùng loại, hoặc gọi để được tư vấn mẫu thay thế phù hợp.</p>
+        <div class="mt-6 flex flex-wrap items-center gap-4">
+          <NuxtLink v-if="retired.category" :to="retired.category.url" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-5 py-2.5 font-extrabold text-navy-950 no-underline">Xem {{ retired.category.name }} →</NuxtLink>
+          <NuxtLink to="/san-pham/" class="inline-flex min-h-11 items-center font-extrabold text-navy-800 underline decoration-gold-500 decoration-2 underline-offset-4">Xem tất cả sản phẩm</NuxtLink>
+          <a v-if="site.brand.hotline" :href="`tel:${site.brand.hotline.replace(/[^0-9+]/g, '')}`" class="inline-flex min-h-11 items-center font-extrabold text-navy-800">Gọi {{ site.brand.hotline }}</a>
+        </div>
+      </div>
+
+      <NotFoundExperience v-else-if="productErrorStatus === 404" :status-code="404" :hotline="site.brand.hotline" />
 
       <div v-else-if="error || !product" class="pts-container min-h-[45vh] pt-12 pb-20" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Sản phẩm</h1>

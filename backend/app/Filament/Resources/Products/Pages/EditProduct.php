@@ -15,6 +15,7 @@ use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 
@@ -71,9 +72,18 @@ class EditProduct extends EditRecord
             Action::make('preview')->label('Xem trước')->icon('heroicon-o-eye')->color('gray')
                 ->tooltip('Trang sản phẩm theo bản đã lưu, kể cả khi đang ẩn. Liên kết dùng được 15 phút.')
                 ->url(fn (Product $record) => ProductDetailAssembler::previewUrl((int) $record->getKey()), shouldOpenInNewTab: true),
+            Action::make('share')->label('Link gửi khách')->icon('heroicon-o-link')->color('gray')
+                ->tooltip('Liên kết xem sản phẩm này kể cả khi đang ẩn, dùng được 7 ngày.')
+                ->modalHeading('Link gửi khách xem riêng (7 ngày)')
+                ->modalDescription('Sản phẩm vẫn ẩn với mọi người khác. Ai có liên kết này đều xem được cho tới khi hết 7 ngày; muốn gửi lại thì tạo liên kết mới.')
+                ->modalSubmitAction(false)->modalCancelActionLabel('Đóng')
+                ->schema(fn (Product $record) => [
+                    TextInput::make('link')->label('Liên kết')->readOnly()->dehydrated(false)->copyable(copyMessage: 'Đã chép liên kết')
+                        ->default(ProductDetailAssembler::previewUrl((int) $record->getKey(), 60 * 24 * 7)),
+                ]),
             ActionGroup::make([
                 Action::make('duplicate')->label('Tạo bản sao')->color('gray')->icon('heroicon-o-square-2-stack')
-                    ->requiresConfirmation()->modalDescription('Bản sao sẽ ẩn trên website và bỏ mã sản phẩm. Ảnh, tài liệu, SEO và khối nội dung được sao chép để bạn kiểm tra trước khi bật hiển thị.')
+                    ->requiresConfirmation()->modalDescription('Bản sao sẽ ẩn trên website và không giữ mã của sản phẩm gốc (tự nhận mã tạm PTS-…, sửa lại khi có mã thật). Ảnh, tài liệu, SEO và khối nội dung được sao chép để bạn kiểm tra trước khi bật hiển thị.')
                     ->action(function (Product $record) {
                         $copy = app(ProductDuplicator::class)->duplicate($record);
 

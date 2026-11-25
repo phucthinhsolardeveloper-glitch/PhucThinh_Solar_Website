@@ -40,7 +40,8 @@ test('public order confirmation matches PHP generic success without exposing ses
 test('public product detail preserves not-found and upstream errors and enforces its no-slash canonical path', () => {
   const page = read('app/pages/san-pham/[slug].vue')
   const middleware = read('app/middleware/product-detail-public-route.ts')
-  assert.match(page, /productErrorStatus === 404\) setResponseStatus\(404, 'Not Found'\)/)
+  // 404 stays 404 for an unknown product; a hidden one answers 410 with its name (see product-retired-featured.test.mjs).
+  assert.match(page, /productErrorStatus === 404\) \{ if \(retired\.value\) setResponseStatus\(410, 'Gone'\); else setResponseStatus\(404, 'Not Found'\) \}/)
   assert.match(page, /else if \(import\.meta\.server && \(error\.value \|\| !product\.value\)\) setResponseStatus\(502, 'Bad Gateway'\)/)
   assert.match(middleware, /to\.path !== targetPath\) return navigateTo\(targetPath, \{ redirectCode: 301 \}\)/)
   assert.match(middleware, /Product not found/)

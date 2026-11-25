@@ -77,7 +77,7 @@ final class CatalogRequest
             brandIds: $ids($get('brand')),
             subcategoryIds: $ids($get('subcategory')),
             price: (string) $get('price'),
-            sort: in_array($get('sort'), ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc'], true) ? $get('sort') : 'default',
+            sort: in_array($get('sort'), ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc', 'featured'], true) ? $get('sort') : 'default',
             keyword: trim((string) $get('keyword')),
             needKeys: $needs,
         );
