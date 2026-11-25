@@ -46,6 +46,29 @@ family sau:
 
 ## Exact local crawl command
 
+**Trạng thái checkout 2026-11-25:** file `tools/visual-tests/scripts/migration-seo-audit.cjs`
+được nhắc trong lệnh bên dưới hiện không có trong worktree. Không coi lệnh đó là
+công cụ chạy được hoặc dùng kết quả lịch sử làm bằng chứng hiện tại. Công cụ mới
+`tools/visual-tests/audit/sitemap-crawl.py` chỉ kiểm tra sitemap public bằng GET,
+trạng thái/final URL, canonical và robots trên các trang HTML; nó không thay thế
+so sánh hai origin PHP/Nuxt, href mapping hay fixture 404/410 đã xác minh.
+
+Chạy crawl sitemap public có throttle (mặc định 0,75 giây giữa các request):
+
+```bash
+python3 tools/visual-tests/audit/sitemap-crawl.py \
+  https://phucthinhsolar.com/sitemap.xml \
+  --delay 0.75 \
+  --output docs/10-audits/YYYY-MM-DD-sitemap-crawl
+```
+
+Script chỉ gửi GET, giới hạn URL và redirect ở HTTPS cùng hostname sitemap, timeout
+request và ghi `sitemap-report.json` cùng `sitemap-report.md`. Dùng ngày crawl thật
+thay `YYYY-MM-DD`; URL sitemap ngoài host được ghi nhận để review nhưng không được
+request.
+
+### Công cụ so sánh migration lịch sử
+
 Khi hai local origin đã sẵn sàng, chạy đúng lệnh sau từ repository root:
 
 ```bash

@@ -34,6 +34,35 @@ it('builds keyword slugs without accents or punctuation', function () {
         ->and(CatalogFilters::keywordSlug('  Đường '))->toBe('duong');
 });
 
+it('uses purchase-relevant price bands for hybrid and storage categories', function () {
+    $inverter = Category::query()->create(['name' => 'Biến tần', 'slug' => 'bien-tan-inverter', 'depth' => 1, 'is_visible' => true]);
+    Category::query()->create(['name' => 'Hybrid / lưu trữ', 'slug' => 'hybrid-luu-tru', 'depth' => 2, 'parent_id' => $inverter->id, 'is_visible' => true]);
+    Category::query()->create(['name' => 'Pin lưu trữ', 'slug' => 'pin-luu-tru', 'depth' => 1, 'is_visible' => true]);
+    $hybridRanges = CatalogFilters::priceRangesForCategory('bien-tan-inverter/hybrid-luu-tru');
+    $storageRanges = CatalogFilters::priceRangesForCategory('pin-luu-tru');
+    [$hybridSql, $hybridParams] = CatalogFilters::price('1,2,3', $hybridRanges);
+    [$storageSql, $storageParams] = CatalogFilters::price('1,2,3', $storageRanges);
+
+    expect($hybridRanges['1'][1])->toBe(50000000)
+        ->and($storageRanges['1'][1])->toBe(100000000)
+        ->and($hybridParams)->toBe([0, 50000000, 50000000, 100000000, 100000000])
+        ->and($storageParams)->toBe([0, 100000000, 100000000, 1500000000, 1500000000])
+        ->and($hybridSql)->toContain('sale_price')
+        ->and(CatalogFilters::sort('price', true))->toContain('p.sale_price')
+        ->and(CatalogFilters::sort('price', true))->toContain('p.quote_only=0')
+        ->and(CatalogFilters::sort('price-desc', true))->toEndWith('desc')
+        ->and(CatalogFilters::priceRangesForCategory('den-nlmt'))->toBe(CatalogFilters::PRICE_RANGES);
+
+    $this->getJson('/api/v1/catalog?category=bien-tan-inverter/hybrid-luu-tru')->assertOk()
+        ->assertJsonPath('seo.title', 'Hybrid / lưu trữ | Phúc Thịnh Solar')
+        ->assertJsonPath('filters.priceRanges.0.label', 'Dưới 50.000.000đ')
+        ->assertJsonPath('filters.priceRanges.1.label', '50.000.000đ - 100.000.000đ');
+
+    $this->getJson('/api/v1/catalog?category=pin-luu-tru')->assertOk()
+        ->assertJsonPath('filters.priceRanges.0.label', 'Dưới 100.000.000đ')
+        ->assertJsonPath('filters.priceRanges.2.label', 'Trên 1.500.000.000đ');
+});
+
 it('gives a sub-category page the trail of its parents, like the product page', function () {
     $tag = bin2hex(random_bytes(3));
     $top = Category::query()->create(['name' => 'Đèn '.$tag, 'slug' => 'den-'.$tag, 'depth' => 1, 'is_visible' => true]);

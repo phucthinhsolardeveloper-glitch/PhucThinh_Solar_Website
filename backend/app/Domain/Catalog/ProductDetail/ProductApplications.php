@@ -20,11 +20,15 @@ class ProductApplications
 
     /**
      * @param  list<array<string, mixed>>  $blocks  resolved content blocks
+     * @param  list<string>  $categorySlugs  the product's category chain, top first
      * @return array{title: string, items: list<array{title: string, text: string, image: string}>}|null
      */
-    public function cards(array $blocks, array $row, array $list, string $profileKey): ?array
+    public function cards(array $blocks, array $row, array $list, string $profileKey, array $categorySlugs = []): ?array
     {
         $variant = $this->variant($row, $list, $profileKey);
+        if ($profileKey === 'inverter' && $this->gridTie($row, $categorySlugs)) {
+            $variant = 'inverter_grid_tie';
+        }
         $items = $this->fromContent($blocks);
         $defaults = $this->defaults($profileKey, $variant);
         if (! $items && $profileKey !== 'general') {
@@ -68,6 +72,14 @@ class ProductApplications
             'title' => Text::plain($this->specs->profile($profileKey)['application_title'] ?? ''),
             'items' => array_slice($cards, 0, 3),
         ];
+    }
+
+    /** A grid-tie inverter has no battery side: the typed "Loại biến tần" when filled, else its "Hòa lưới" category. */
+    private function gridTie(array $row, array $categorySlugs): bool
+    {
+        $type = Text::slug($this->specs->value($row, 'inverter_type'));
+
+        return $type !== '' ? str_contains($type, 'hoa-luoi') && ! str_contains($type, 'hybrid') : in_array('hoa-luoi', $categorySlugs, true);
     }
 
     /** @return list<array{key: string, label: string, value: string}> up to three profile fields that are not metrics */

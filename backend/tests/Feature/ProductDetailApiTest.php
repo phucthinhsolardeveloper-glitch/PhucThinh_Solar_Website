@@ -37,3 +37,31 @@ it('sends only Admin-verified Merchant facts, so the page never claims stock it 
     $this->getJson('/api/v1/product-detail?slug='.$slug)->assertOk()
         ->assertJsonPath('product.merchant', ['availability' => 'in_stock', 'gtin' => '042100005264', 'mpn' => 'MPN-22']);
 });
+
+it('does not attach storage or backup use cases to a grid-tie inverter', function (array $row, array $categorySlugs) {
+    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+        ->cards([], $row, ['slug' => 'bien-tan-inverter'], 'inverter', $categorySlugs);
+
+    expect($cards['items'])->not->toBeEmpty()
+        ->and(json_encode($cards, JSON_UNESCAPED_UNICODE))->not->toContain('lưu trữ', 'dự phòng', 'backup')
+        ->and($cards['items'][0]['title'])->toBe('Hệ thống điện mặt trời hòa lưới');
+})->with([
+    // On the live catalog the typed field is empty: the "Hòa lưới" category is what says it.
+    'grid-tie category, type not filled in' => [['name' => 'Inverter SolaX X3-PRO-20', 'code' => 'X3-PRO- 20'], ['bien-tan-inverter', 'hoa-luoi']],
+    'typed as grid-tie' => [['name' => 'Inverter thử', 'inverter_type' => 'Hoà lưới'], ['bien-tan-inverter']],
+]);
+
+it('keeps storage and backup use cases for an inverter explicitly marked hybrid', function () {
+    $row = ['name' => 'Inverter Hybrid thử', 'inverter_type' => 'Hybrid (có lưu trữ)'];
+    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+        ->cards([], $row, ['slug' => 'bien-tan-inverter'], 'inverter');
+
+    expect(json_encode($cards, JSON_UNESCAPED_UNICODE))->toContain('Lưu trữ & dự phòng');
+});
+
+it('lets a typed hybrid inverter keep its storage use cases even when filed under grid-tie', function () {
+    $cards = app(\App\Domain\Catalog\ProductDetail\ProductApplications::class)
+        ->cards([], ['name' => 'Inverter thử', 'inverter_type' => 'Hybrid hòa lưới có lưu trữ'], ['slug' => 'bien-tan-inverter'], 'inverter', ['bien-tan-inverter', 'hoa-luoi']);
+
+    expect(json_encode($cards, JSON_UNESCAPED_UNICODE))->toContain('Lưu trữ & dự phòng');
+});

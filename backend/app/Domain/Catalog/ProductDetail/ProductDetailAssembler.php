@@ -90,7 +90,8 @@ class ProductDetailAssembler
 
         $profile = $this->specs->profileKey($row, $list);
         $sections = $this->contentResolver->resolve($row);
-        $applications = $this->applications->cards($sections['blocks'], $row, $list, $profile);
+        $categorySlugs = $row['category_id'] ? array_map(fn (array $node) => (string) $node['slug'], $this->tree->chain((int) $row['category_id'])) : [];
+        $applications = $this->applications->cards($sections['blocks'], $row, $list, $profile, $categorySlugs);
         $content = $this->contentPresenter->present($sections, ! empty($applications));
         $content['highlights'] = $this->specs->highlights($row, $profile);
 
