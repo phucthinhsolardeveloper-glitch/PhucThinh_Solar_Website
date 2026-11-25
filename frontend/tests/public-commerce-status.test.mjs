@@ -12,14 +12,16 @@ test('public category returns 404 only when validated taxonomy lacks the request
   assert.match(page, /isPublicSitePayload\(payload\)[\s\S]*statusCode: 502/)
   assert.match(page, /if \(import\.meta\.server && props\.categoryPath && siteData\.value && !selectedCategory\.value\) \{\s*setResponseStatus\(404, 'Not Found'\)/)
   assert.match(route, /<CatalogPage :category-path="categoryPath" \/>/)
-  assert.doesNotMatch(page, /catalogError\.value[\s\S]*setResponseStatus\(404/)
+  // A data error is mapped by publicListErrorStatus, never forced to 404.
+  assert.doesNotMatch(page, /catalogError\.value[^\n]*setResponseStatus\(404/)
+  assert.match(page, /const status = publicListErrorStatus\(catalogErrorStatus\)/)
 })
 
 test('public brand detail preserves API 404 and reports upstream errors as 502', () => {
   const page = read('components/catalog/BrandDetailPage.vue')
   assert.match(page, /const \{ generic: publicHref \} = usePublicLinks\(\)/)
   assert.match(page, /const brandErrorStatus = \(error\.value as \{ statusCode\?: unknown \} \| null\)\?\.statusCode/)
-  assert.match(page, /if \(import\.meta\.server && \(error\.value \|\| !data\.value\)\) \{\s*const status = brandErrorStatus === 404 \? 404 : 502\s*setResponseStatus\(status, status === 404 \? 'Not Found' : 'Bad Gateway'\)/)
+  assert.match(page, /if \(import\.meta\.server && \(error\.value \|\| !data\.value\)\) \{\s*const status = publicListErrorStatus\(brandErrorStatus\)\s*setResponseStatus\(status, status === 404 \? 'Not Found' : 'Bad Gateway'\)/)
 })
 
 test('public Home, Contact, and Dealer return 502 for failed or invalid CMS payloads', () => {

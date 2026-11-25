@@ -10,7 +10,7 @@ import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
 import { catalogSeoDescription, isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
-import { publicPageQueryValue } from '#shared/public-pagination'
+import { isPageBeyondList, publicListErrorStatus, publicPageQueryValue } from '#shared/public-pagination'
 
 /*
  * để dùng chung đúng một logic cho cả preview noindex và route public thật -
@@ -129,9 +129,12 @@ const isPublicCatalogPath = computed(() => route.path === '/san-pham/' || route.
 const publicEnabled = computed(() => isPublicCatalogPath.value)
 const catalogErrorStatus = (catalogError.value as { statusCode?: unknown } | null)?.statusCode
 if (import.meta.server && publicEnabled.value && (siteError.value || catalogError.value || !catalogData.value)) {
-  const status = catalogErrorStatus === 404 ? 404 : 502
+  const status = publicListErrorStatus(catalogErrorStatus)
   setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
 }
+const pageBeyondList = computed(() => !!catalogData.value
+  && isPageBeyondList(catalogData.value.pagination.page, catalogData.value.pagination.total, catalogData.value.pagination.perPage))
+if (import.meta.server && publicEnabled.value && pageBeyondList.value) setResponseStatus(404, 'Not Found')
 const activeCategoryRoot = computed(() => {
   const tree = siteData.value?.productCategoryTree ?? []
   if (!selectedCategory.value) return null
@@ -255,7 +258,7 @@ const catalogIndexable = computed(() => {
     ? isPublicSeoIndexable(config.public.catalogCategoryPublicRouteIndexable, true)
     : isPublicSeoIndexable(config.public.catalogPublicRouteIndexable, true)
   return publicEnabled.value && enabled && !!catalogData.value && !catalogError.value && !siteError.value
-    && !hasQueryFilters.value && (!props.categoryPath || !!selectedCategory.value)
+    && !hasQueryFilters.value && !pageBeyondList.value && (!props.categoryPath || !!selectedCategory.value)
 })
 useSeoMeta({
   title: metadataTitle,

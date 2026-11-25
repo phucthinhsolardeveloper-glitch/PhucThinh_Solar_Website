@@ -4,7 +4,7 @@ import type { PublicBrandDetailPayload } from '#shared/contracts/public-brand-de
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { conciseSeoDescription, isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
-import { publicPageQueryValue } from '#shared/public-pagination'
+import { isPageBeyondList, publicListErrorStatus, publicPageQueryValue } from '#shared/public-pagination'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
 /*
@@ -41,13 +41,16 @@ const { data, error, pending } = await useAsyncData<PublicBrandDetailPayload>(
 
 const brandErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 if (import.meta.server && (error.value || !data.value)) {
-  const status = brandErrorStatus === 404 ? 404 : 502
+  const status = publicListErrorStatus(brandErrorStatus)
   setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
 }
 
 const totalPages = computed(() => data.value ? Math.max(1, Math.ceil(data.value.pagination.total / data.value.pagination.perPage)) : 1)
 const currentPage = computed(() => data.value?.pagination.page ?? 1)
 const paginationItems = usePaginationItems(currentPage, totalPages)
+const pageBeyondList = computed(() => !!data.value
+  && isPageBeyondList(data.value.pagination.page, data.value.pagination.total, data.value.pagination.perPage))
+if (import.meta.server && pageBeyondList.value) setResponseStatus(404, 'Not Found')
 const mobileFiltersExpanded = ref(false)
 const sortOptions = computed(() => {
   const options = [
@@ -96,9 +99,15 @@ function pageLink(nextPage: number) {
   return { path: selfPath.value, query: next }
 }
 
+// As in the catalog: page 2, 3… are real lists with their own canonical; filtered and sorted views are not indexed.
+const hasBrandFilters = computed(() => ['sort', 'price'].some((key) => key in route.query))
+const brandCanonicalPath = computed(() => {
+  const number = Number(page.value) || 1
+  return number > 1 && !hasBrandFilters.value ? `${route.path}?page=${number}` : route.path
+})
 const brandIndexable = computed(() =>
   isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
-  && !!data.value && !error.value && !['page', 'p', 'sort', 'price'].some((key) => key in route.query))
+  && !!data.value && !error.value && !hasBrandFilters.value && !pageBeyondList.value)
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
 // No CMS text: a sentence built from the brand name and how many of its products are listed.
 const brandDescription = computed(() => data.value?.seo?.description || (data.value
@@ -110,14 +119,14 @@ const brandSocialImage = computed(() => data.value?.seo?.image || site.value.bra
 useSeoMeta({
   title: brandTitle,
   description: brandDescription,
-  robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, ['page', 'p', 'sort', 'price'].some((key) => key in route.query))),
+  robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, hasBrandFilters.value)),
 })
 useHead({ meta: computed(() => brandKeywords.value ? [{ name: 'keywords', content: brandKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => !!data.value && !error.value),
   title: brandTitle,
   description: brandSocialDescription,
-  canonicalPath: computed(() => route.path),
+  canonicalPath: brandCanonicalPath,
   image: brandSocialImage,
 })
 </script>

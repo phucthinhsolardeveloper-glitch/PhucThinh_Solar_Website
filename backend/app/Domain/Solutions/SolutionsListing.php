@@ -235,7 +235,8 @@ class SolutionsListing extends PageSupport
         return [
             'id' => $id,
             'name' => $name,
-            'description' => Text::cms((string) $group['summary']) ?: 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
+            // Named, so two groups without their own text never share one meta description.
+            'description' => Text::cms((string) $group['summary']) ?: 'Khám phá giải pháp cho '.mb_strtolower(Text::cms((string) $group['name'])).', phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
             'seo' => self::seo($seo),
             'slug' => $slug,
             'canonicalPath' => '/'.$slug,

@@ -12,3 +12,13 @@ export function publicPageQueryValue(page: unknown, legacyPage: unknown): string
   if (isPage(legacyPage)) return legacyPage
   return ''
 }
+
+/** A page past the end of the list does not exist. Page 1 of an empty list still does. */
+export function isPageBeyondList(page: number, total: number, perPage: number): boolean {
+  return page > 1 && perPage > 0 && page > Math.ceil(total / perPage)
+}
+
+/** A refused filter value or an unknown address is "not found"; anything else is a failing data source. */
+export function publicListErrorStatus(status: unknown): 404 | 502 {
+  return status === 400 || status === 404 ? 404 : 502
+}
