@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { leadCampaignFromUrl, orderCampaign, storedConsent } from '#shared/lead-source'
+import { rememberedLeadCampaign } from '~/utils/leadCampaign'
 import { normalizeVnPhone } from '#shared/vn-phone'
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
@@ -224,6 +226,14 @@ function paymentIcon(name: string): string {
 
 // Native POST to the checkout API; this only blocks a second click while the browser navigates.
 const submitting = ref(false)
+// The ad campaign that brought the buyer, sent with the order only when cookies were accepted.
+const campaign = ref('')
+onMounted(() => {
+  let storage: string | null = null
+  try { storage = localStorage.getItem('pts-consent') } catch { /* Storage can be unavailable. */ }
+  const consent = storedConsent(storage, document.cookie)
+  campaign.value = orderCampaign(leadCampaignFromUrl(window.location.href) || rememberedLeadCampaign(), consent)
+})
 function onSubmit(event: Event) {
   if (submitting.value) { event.preventDefault(); return }
   for (const key of Object.keys(fieldState.value)) touched[key] = true
@@ -311,6 +321,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
       <form v-else method="post" :action="checkoutPostAction" class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_minmax(420px,480px)] nav:gap-8" @submit="onSubmit">
         <input type="hidden" name="form_csrf" :value="checkout.csrfToken">
         <input type="hidden" name="checkout_token" :value="checkout.checkoutToken">
+        <input v-if="campaign" type="hidden" name="dataOrder[campaign]" :value="campaign">
         <section class="space-y-5">
           <div class="checkout-card">
             <h2 class="checkout-card__title"><UIcon name="i-lucide-user-round" class="size-5" aria-hidden="true" />Người nhận</h2>
