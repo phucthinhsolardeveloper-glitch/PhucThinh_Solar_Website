@@ -1,8 +1,8 @@
 import type { PublicLeadFormSecurity, PublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { isPublicLeadFormSecurity, isPublicLeadFormResult } from '#shared/contracts/public-lead-form'
 import { leadSourceFromUrl } from '#shared/lead-source'
-import { sendWithFreshToken, toLeadFormError } from '#shared/lead-submit'
-import type { LeadFormSource } from '#shared/lead-analytics'
+import { leadErrorStatus, sendWithFreshToken, toLeadFormError } from '#shared/lead-submit'
+import { leadErrorType, type LeadFormSource } from '#shared/lead-analytics'
 
 type LeadKind = 'contact' | 'dealer' | 'product'
 
@@ -85,13 +85,21 @@ export function useLeadForm() {
 
   /** `formSource` names the form for analytics only; it is not sent to Laravel. */
   async function submit(kind: LeadKind, data: Record<string, string | number>, formSource: LeadFormSource) {
+    const page = import.meta.client ? window.location.pathname : ''
+    const funnel = { form_kind: kind, form_source: formSource, page_path: page }
+    // One submit per attempt (a silent token retry is the same attempt), then exactly one outcome.
+    pushDataLayer('lead_form_submit', { ...funnel })
     let payload: unknown
     try {
       payload = await sendWithFreshToken(() => post(kind, data), refreshSecurity)
     } catch (reason) {
+      pushDataLayer('lead_form_error', { ...funnel, error_type: leadErrorType(leadErrorStatus(reason)) })
       throw toLeadFormError(reason)
     }
-    if (!isPublicLeadFormResult(payload)) throw toLeadFormError(null)
+    if (!isPublicLeadFormResult(payload)) {
+      pushDataLayer('lead_form_error', { ...funnel, error_type: 'other' })
+      throw toLeadFormError(null)
+    }
     // GA4 generate_lead: which form and which page only, never what the visitor typed.
     pushDataLayer('generate_lead', { form_kind: kind, form_source: formSource, page_path: import.meta.client ? window.location.pathname : '' })
     return payload

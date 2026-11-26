@@ -261,7 +261,7 @@ async function sendLead() {
                 <div class="est-lead">
                   <h3>Nhận phương án chi tiết cho công trình của bạn</h3>
                   <p v-if="sent" class="est-sent" role="status"><UIcon name="i-lucide-circle-check" class="size-5" aria-hidden="true" />{{ sent }}</p>
-                  <form v-else class="est-lead__form" novalidate @submit.prevent="sendLead">
+                  <form v-else class="est-lead__form" data-lead-form="solar_estimator" data-lead-kind="contact" novalidate @submit.prevent="sendLead">
                     <label class="est-field" :class="{ 'is-invalid': touched.fullname && leadInvalid.fullname }">
                       <span>Họ và tên</span>
                       <input v-model="lead.fullname" autocomplete="name" maxlength="100" required placeholder="Nguyễn Văn A" @blur="touched.fullname = true">

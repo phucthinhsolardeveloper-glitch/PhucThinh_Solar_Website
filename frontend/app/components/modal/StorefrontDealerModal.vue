@@ -154,7 +154,7 @@ async function send() {
         </div>
       </div>
 
-      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-3" @submit.prevent="send">
+      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-3" data-lead-form="dealer_popup" data-lead-kind="dealer" @submit.prevent="send">
         <div class="grid grid-cols-4 gap-2 rounded-btn bg-navy-950 p-3.5 text-xs text-white max-sm:hidden">
           <div class="border-l-2 border-gold-500 pl-2.5">
             <strong class="block text-gold-300">Chiết khấu gốc</strong>

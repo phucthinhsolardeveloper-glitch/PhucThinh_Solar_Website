@@ -86,7 +86,7 @@ async function send() {
 </script>
 
 <template>
-  <form class="dealer-form grid min-w-0 grid-cols-1 gap-x-5 gap-y-5 min-[640px]:grid-cols-2" @submit.prevent="send">
+  <form data-lead-form="dealer_page" data-lead-kind="dealer" class="dealer-form grid min-w-0 grid-cols-1 gap-x-5 gap-y-5 min-[640px]:grid-cols-2" @submit.prevent="send">
     <div v-if="selectedProduct" class="dealer-form__selected flex items-center justify-between gap-2 rounded-btn border border-gold-400/50 bg-gold-500/15 px-3.5 py-2.5 text-xs font-bold text-gold-200 min-[640px]:col-span-2">
       <span class="flex items-center gap-2">
         <UIcon name="i-lucide-circle-check" class="size-4 flex-none text-gold-400" aria-hidden="true" />

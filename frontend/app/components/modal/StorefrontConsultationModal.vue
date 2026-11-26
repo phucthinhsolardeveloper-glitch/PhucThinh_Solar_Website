@@ -166,7 +166,7 @@ async function send() {
         </UButton>
       </div>
 
-      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-3" @submit.prevent="send">
+      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-3" :data-lead-form="quoteCartMode ? 'cart_quote' : 'consultation_popup'" data-lead-kind="contact" @submit.prevent="send">
         <div v-if="needSubject" class="flex items-center justify-between gap-3 pts-note-dark px-4 py-3 text-white">
           <div class="min-w-0">
             <span class="block text-xs text-white/70">Nội dung đang quan tâm</span>
