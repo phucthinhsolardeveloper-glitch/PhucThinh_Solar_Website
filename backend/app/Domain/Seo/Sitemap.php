@@ -63,7 +63,10 @@ class Sitemap
             }
         }
         $this->add($entries, DB::table('products')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/san-pham/'.$slug);
-        $this->add($entries, DB::table('brands')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/thuong-hieu/'.$slug.'/');
+        // A brand page without a visible product answers noindex, so it is not listed until it sells something.
+        $this->add($entries, DB::table('brands')->where('is_visible', true)
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('products')->whereColumn('products.brand_id', 'brands.id')->where('products.is_visible', true))
+            ->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/thuong-hieu/'.$slug.'/');
 
         // Editorial: top categories are bare paths without a slash, posts follow their kind.
         foreach (['article', 'solution', 'project'] as $kind) {

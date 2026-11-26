@@ -11,7 +11,7 @@ Cách đo: chỉ gửi yêu cầu GET, mỗi địa chỉ một lần, tối đa
 | 325 Offer thiếu `availability` | 325 Product, 275 Offer, 0 `availability` | Giữ: chưa có tồn kho thật | — |
 | 50 sản phẩm báo giá không có Offer | Đúng 325 − 275 = 50 | Giữ: không có giá thì không có Offer là đúng | Có test |
 | GTIN, MPN | 0 và 0 | Giữ: không có nguồn; SKU không thay MPN | — |
-| Mô tả trang thương hiệu | Cả 22 trang đều có mô tả; **13 trang không có sản phẩm nào** nhưng vẫn cho index | Chờ chủ website (mục 3) | Không đổi |
+| Mô tả trang thương hiệu | Cả 22 trang đều có mô tả; **13 trang không có sản phẩm nào** nhưng vẫn cho index | Chủ website chọn cho Google bỏ qua: trang trống `noindex` và ra khỏi sitemap, tự trở lại khi có sản phẩm | Đạt (kiểm một trang trống và một trang có hàng) |
 | 7 liên kết nội bộ đi qua chuyển hướng | 10 đích: 3 `/category/…` (mọi trang), 3 `den-san-vuon` cũ, 1 `den-nlmt/blue-carbon`, 3 địa chỉ chuyên mục có dấu `/` cuối | Sửa menu, breadcrumb; thẻ và banner danh mục đi theo bảng chuyển hướng. Địa chỉ cũ vẫn chuyển hướng | Còn 1: liên kết gõ tay trong nội dung bài (mục 4) |
 | Phân trang thương hiệu trỏ canonical về trang 1 | Đúng trên web thật (11 trang từ trang 2) | Đã sửa ở `cc5011b6`, chưa phát hành | Mọi trang từ 2 có canonical của chính nó |
 | (Phát hiện thêm) Phân trang bài viết `?p=` | `noindex`, canonical về trang 1 | Sửa: canonical riêng, index; tìm kiếm và trang vượt cuối vẫn `noindex` | Đạt |
@@ -45,8 +45,8 @@ Trang danh mục chưa có mô tả SEO riêng sẽ tự mô tả bằng số s�
 
 1. Ba nhận xét ở hai sản phẩm đèn: chủ website xác nhận ngày 26/11 là **khách thật**. Giữ nguyên, không còn việc.
 2. Bốn tấm pin trả 410 đang **ẩn khỏi website** (bật "Hiển thị" trong Admin là sống lại, đúng địa chỉ cũ). Còn bán thì thêm ảnh, kiểm giá rồi hiện; ngừng bán thì không cần làm gì.
-3. 13 thương hiệu chưa có sản phẩm (Canadian Solar, AESOLAR, TCL Solar, Sungrow, Huawei, Growatt, GoodWe, SOFAR, Anker SOLIX, Deye, Sigenergy, Leader Solar, Phúc Thịnh Solar): thêm sản phẩm, ẩn thương hiệu trong Admin, hoặc đồng ý cho tự `noindex` đến khi có hàng (cần xem lượt tìm trước).
+3. 13 thương hiệu chưa có sản phẩm: **đã quyết 26/11**, cho Google bỏ qua; đã làm trên nhánh, có hiệu lực khi phát hành.
 4. Sửa liên kết trong hai bài `duoc-gi-khi-hop-tac-cung-phuc-thinh-solar` và `blue-carbon-den-nang-luong-mat-troi-cho-du-an` thành `/thuong-hieu/blue-carbon/`.
 5. `/ho-gia-dinh`, `/doanh-nghiep` không trang nào dẫn tới (menu đi thẳng vào từng giải pháp, đúng thiết kế đã chốt): thêm lối vào ở trang Giải pháp hay bỏ khỏi chỉ mục.
 6. HSTS: nếu đồng ý, thêm ở Caddy ngoài cùng `Strict-Transport-Security "max-age=86400"`, theo dõi một tuần rồi mới tăng; chưa dùng `includeSubDomains`, `preload`. Trình duyệt nhớ giá trị này nên khó rút nhanh.
-7. Địa chỉ: nguồn ENF ghi 403 Trần Xuân Soạn, website ghi 424 Trường Chinh. Xác nhận địa chỉ đúng rồi tự sửa nơi sai; không đổi gì từ phía code.
+7. Địa chỉ: **đã xác nhận 26/11**. Trụ sở 424 Trường Chinh (website đúng); 403 Trần Xuân Soạn là kho. [Trang ENF](https://www.enfsolar.com/phuc-thinh-solar) đang ghi địa chỉ kho làm địa chỉ công ty; muốn khớp thì chủ website sửa tại ENF.

@@ -29,6 +29,10 @@ test('empty photo and video libraries are not offered to search engines', () => 
   assert.match(read('app/components/views/VideoView.vue'), /payload\.value\.videos\.length > 0/)
 })
 
+test('a brand page with nothing on sale is not offered to search engines', () => {
+  assert.match(read('app/components/catalog/BrandDetailPage.vue'), /data\.value\.pagination\.total > 0 && !error\.value && !hasBrandFilters\.value && !pageBeyondList\.value\)/)
+})
+
 test('project category and brand links point at the address search engines index', () => {
   assert.match(read('app/components/projects/ProjectFilters.vue'), /category\.canonicalPath \|\| category\.url/)
   assert.match(read('app/components/views/ProjectDetailView.vue'), /links\.generic\(`\/\$\{payload\.project\.category\.slug\}`\)/)

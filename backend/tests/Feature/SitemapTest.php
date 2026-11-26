@@ -14,7 +14,7 @@ it('lists visible products, brands and posts by their canonical address', functi
     $origin = rtrim((string) config('site.canonical_origin'), '/');
     $product = DB::table('products')->where('is_visible', true)->value('slug');
     $hidden = DB::table('products')->where('is_visible', false)->value('slug');
-    $brand = DB::table('brands')->where('is_visible', true)->value('slug');
+    $brand = DB::table('brands as b')->join('products as p', 'p.brand_id', '=', 'b.id')->where('b.is_visible', true)->where('p.is_visible', true)->value('b.slug');
     $policy = DB::table('posts')->where('kind', 'policy')->where('is_visible', true)->value('slug');
 
     expect($locs)->toContain($origin.'/', $origin.'/san-pham/'.$product, $origin.'/thuong-hieu/'.$brand.'/', $origin.'/ho-tro/'.$policy.'/')

@@ -53,3 +53,13 @@ it('rewrites a category card link only when its old address no longer answers', 
     expect($followed->invoke($landing, $live))->toBe($live)
         ->and($followed->invoke($landing, '/danh-muc-san-pham/khong-con/'))->toBe('/san-pham/');
 });
+
+it('lists a brand page only while the brand has a product on the website', function () {
+    $paths = fn () => array_column(app(Sitemap::class)->entries(), 'path');
+    $brand = DB::table('brands as b')->join('products as p', 'p.brand_id', '=', 'b.id')->where('b.is_visible', true)->where('p.is_visible', true)->first(['b.id', 'b.slug']);
+    expect($paths())->toContain('/thuong-hieu/'.$brand->slug.'/');
+
+    DB::table('products')->where('brand_id', $brand->id)->update(['is_visible' => false]);
+    expect($paths())->not->toContain('/thuong-hieu/'.$brand->slug.'/');
+    $this->getJson('/api/v1/brand-detail?slug='.$brand->slug)->assertOk()->assertJsonPath('pagination.total', 0);
+});

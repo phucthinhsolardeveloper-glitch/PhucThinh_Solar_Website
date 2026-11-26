@@ -76,7 +76,7 @@ Chi tiết và số đo: `2026-11-26-seo-crawl-verification.md`.
 
 - Tên thương hiệu trên trang sản phẩm và tường logo trang Giới thiệu dẫn tới trang thương hiệu.
 - Danh mục chưa có mô tả riêng được mô tả bằng số sản phẩm, nhóm, thương hiệu thật.
-- Hết liên kết đi qua chuyển hướng do code sinh; phân trang bài viết index được; thư viện trống không vào sitemap.
+- Hết liên kết đi qua chuyển hướng do code sinh; phân trang bài viết index được; thư viện trống và trang thương hiệu chưa có sản phẩm không vào sitemap, `noindex` đến khi có nội dung.
 - Điện thoại: nút "Mua ngay" và "Nhận báo giá" dưới cùng bấm được ở trang đã thử (390 px). Không cần sửa.
 
 ## Kiểm tra
@@ -96,6 +96,7 @@ Máy cục bộ, bản sao database riêng (xóa sau khi chạy), mail không g�
 | So API với `cc5011b6` (`pts:snapshot`, cùng database) | `70f09a1e` | **PASS** 1.386/1.754 giống; 368 khác đúng chủ đích: `product.brandUrl` 349, `article.category.url` 12, liên kết thẻ danh mục 5, `brandPath` 1, menu 1 |
 | Bản cũ gửi thư do bản mới xếp hàng (đường lùi) | cũ `cc5011b6` | **PASS** 3 loại thư gửi được (mailer giả), phiếu đính kèm bị bỏ |
 | Phiếu PDF, email, màn Admin | dữ liệu giả | Đã xem ảnh chụp; 1 và 3 trang, không tràn ngang trên 390 px |
+| Trang thương hiệu rỗng (thêm sau): test backend liên quan 10, `npm test` 562/562, typecheck, build, kiểm thẻ robots | commit thêm | **PASS**; chưa chạy lại toàn bộ test backend |
 | Review của người thứ hai | — | **Chưa có** |
 | Gửi SMTP thật, GA4/GTM, Lighthouse, trợ năng | — | **NOT RUN** |
 
@@ -118,4 +119,4 @@ Commit: `e05b80f7` phiếu và email, `3a40044b` sự kiện form, `38c5d9c5` th
 - Thông tin công ty trên phiếu lấy từ Admin; chủ website cần xem phiếu mẫu.
 - Thẻ danh mục có liên kết cũ được đổi theo bảng chuyển hướng trong Admin (trừ danh mục còn sản phẩm).
 - Phí giao bằng 0 luôn hiện "Chờ xác nhận", kể cả khi thật sự miễn phí (giữ cách hiểu hiện có).
-- Trang thương hiệu rỗng, địa chỉ công ty, tồn kho, GTIN, bảo hành: chờ chủ website. Đánh giá sản phẩm đã được xác nhận là khách thật (26/11).
+- Tồn kho, GTIN, bảo hành: chờ chủ website. Đánh giá sản phẩm đã được xác nhận là khách thật (26/11).
