@@ -912,3 +912,10 @@ Rủi ro còn lại:
 - Sau khi lên: 0 lỗi log backend/worker, hàng đợi email 0, sitemap 425 URL (bỏ trang thương hiệu chưa có sản phẩm, thư viện ảnh/video trống).
 - Rollback: khôi phục `releases/a4be39d1/stack.env.before`, tạo lại backend worker scheduler nuxt (image `cc5011b6` còn trên VPS), rồi `php artisan view:clear` và khởi động lại worker. Bảng `order_documents` để nguyên.
 - Chưa kiểm: hiển thị email thật trên Gmail/Outlook (chưa gửi thư thật).
+
+## 2026-11-26 — trang cảm ơn gọn lại, nguồn quảng cáo trên đơn (có đồng ý cookie), nhóm giải pháp 1 bài ẩn khỏi Google, logo ngân hàng trong Admin, HSTS (63b9ff7e)
+
+- Migration `add_campaign_to_orders` (thêm cột). `releases/63b9ff7e/deploy.sh`: `RELEASE_63B9FF7E_POLISH_SUCCESS`, 11 route 200, mọi kiểm tra tính năng PASS. Backup `backups/20261126-polish-63b9ff7e-predeploy/`.
+- HSTS bật ở Caddy ngoài cùng (`/srv/phucthinhsolar/Caddyfile`, ghi đè tại chỗ, cùng inode, `caddy validate` trước, `caddy reload`): `Strict-Transport-Security: max-age=86400` chỉ cho `phucthinhsolar.com`. Bản trước: `Caddyfile.pre-hsts-20261126`. Bậc tiếp theo: 604800 sau một tuần, rồi 31536000.
+- Rollback: `releases/63b9ff7e/stack.env.before` -> image `a4be39d1`, `view:clear`, khởi động lại worker. Cột `orders.campaign` để nguyên.
+- Đĩa 85%: nên dọn image ứng viên cũ (giữ bản đang chạy, bản trước và một bản lùi).
