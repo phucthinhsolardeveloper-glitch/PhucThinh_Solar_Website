@@ -29,24 +29,51 @@ Con số "22 trang thương hiệu" và "11 trang phân trang" là hai thứ kh�
 Trả **410** trên web thật: `tam-pin-nang-luong-mat-troi-canadian-720wp` (Search Console 01–23/11: 163 lượt hiển thị, 8 lượt bấm; khoảng này gồm cả thời gian trước khi ẩn), `…canadian-620wp`, `…canadian-715wp-2-mat-kinh`, `…tcl-solar-720wp`.
 Đọc database web thật ngày 26/11 (chỉ SELECT): sản phẩm không bị xóa, được **ẩn trong Admin ngày 17/11** (TCL khoảng 11:13, Canadian khoảng 15:13); cả bốn không có ảnh đại diện, có giá. Tấm pin đang ẩn 10/29, gồm thêm TCL 625Wp, 630Wp.
 
-## Đề xuất chữ cho Admin (chủ website duyệt rồi dán; chỉ dùng số đang đăng trên trang)
+## Sửa trong Admin (chủ website thực hiện; code không đụng dữ liệu thật)
 
-| Trang | Trường | Đề xuất |
+| Việc | Ở đâu | Sửa | Kiểm lại |
+|---|---|---|---|
+| Liên kết Blue Carbon 1 | Admin → Bài viết → "Được gì khi hợp tác cùng Phúc Thịnh Solar" → chữ **đèn Blue Carbon** | Địa chỉ cũ `…/danh-muc-san-pham/den-nlmt/blue-carbon/` → `/thuong-hieu/blue-carbon/` | Bấm trên web, tới thẳng trang hãng |
+| Liên kết Blue Carbon 2 | Admin → Bài viết → "Đèn năng lượng mặt trời Blue Carbon cho dự án" → chữ **xem đèn Blue Carbon** | như trên; nếu còn liên kết `…/tags-san-pham/blue-carbon/` (trả 404) thì sửa cùng địa chỉ | Như trên |
+| Lỗi gõ | Admin → Nội dung các trang → trang Đại lý, đoạn mở đầu | "Mặt Tròi" → "Mặt Trời" | Mở `/dai-ly/` |
+| Câu cũ | Cùng đoạn | "Năm 2021, doanh thu ngành đèn NLMT…": giữ nếu có nguồn, không thì bỏ | |
+
+Lỗi gõ nằm trong dữ liệu web thật, không có trong mã nguồn và không có trong bản sao database trên máy.
+Đã diễn tập hai sửa đổi liên kết trên database thử: cả hai bài trỏ thẳng `/thuong-hieu/blue-carbon/` (trả 200, không chuyển hướng).
+
+## Đề xuất tiêu đề và mô tả (chủ website duyệt rồi dán)
+
+Chỉ dùng tên, mã, loại sản phẩm và việc khách làm được trên trang. **Không đưa công suất, lumen, pin, hiệu suất, bảo hành** vào đoạn mới khi chưa đối chiếu datasheet.
+Số liệu Search Console 01–23/11 dùng để chọn trang; sửa chữ chưa chứng minh được sẽ tăng tỷ lệ bấm, xem lại sau 4 tuần.
+
+| Trang (hiển thị / bấm) | Tiêu đề SEO | Mô tả SEO |
 |---|---|---|
-| Sharp NU-JD550L | Mô tả SEO | Tấm pin Sharp NU-JD550L 550W Mono, hiệu suất 21,29%, Voc 50,70V, kích thước 2.278 × 1.134 × 35 mm, nặng 27,5 kg. Xem giá tại Phúc Thịnh Solar. |
-| ORIANA DB01-1 40W | Mô tả SEO | Đèn đường năng lượng mặt trời ORIANA DB01-1 40W: pin 3.2V/50Ah LiFePO4, tấm pin 6V/50W mono, quang thông 5200–5600 lumen. Nhận báo giá. |
-| ORIANA DB02-1 50W | Mô tả SEO | Đèn đường năng lượng mặt trời ORIANA DB02-1 50W: pin 3.2V/80Ah, tấm pin mono 6V/90W, cho đường nội bộ và khuôn viên xưởng. Nhận báo giá. |
-| Đại lý | Tiêu đề SEO | Đăng ký đại lý đèn năng lượng mặt trời \| Phúc Thịnh Solar |
+| Sharp NU-JD550L (445 / 12) | Giữ | Tấm pin Sharp NU-JD550L loại mono. Xem giá, thông số theo model và gửi yêu cầu tư vấn cho mái nhà, nhà xưởng tại Phúc Thịnh Solar. |
+| Đèn đường NLMT, danh mục đèn (207 / 4) | Đèn năng lượng mặt trời: đèn pha, đèn đường, sân vườn | Để trống: trang tự mô tả bằng số sản phẩm, nhóm và thương hiệu thật |
+| Danh mục tấm pin (187 / 4) | Tấm pin năng lượng mặt trời LONGi, Astronergy, Sharp | Để trống như trên |
+| ORIANA DB01-1 (161 / 13) | Giữ | Đèn đường năng lượng mặt trời ORIANA DB01-1 cho đường nội bộ, công viên. Xem cấu hình theo model và nhận báo giá tại Phúc Thịnh Solar. |
+| Đại lý (96 / 3) | Đăng ký đại lý đèn năng lượng mặt trời \| Phúc Thịnh Solar | Giữ |
+| ORIANA DB02-1 (34 / 5) | Giữ | Đèn đường năng lượng mặt trời ORIANA DB02-1 cho khuôn viên xưởng, đường nội bộ. Xem cấu hình theo model và nhận báo giá tại Phúc Thịnh Solar. |
+| Canadian 720Wp (163 / 8) | Đang ẩn theo ý chủ website | Không viết |
 
-Trang Đại lý còn chữ "Năm 2021", lỗi gõ "Mặt Tròi" và các số về chip, pin, chứng nhận cần chủ website xác nhận.
-Trang danh mục chưa có mô tả SEO riêng sẽ tự mô tả bằng số sản phẩm, nhóm và thương hiệu thật.
+Mô tả sản phẩm hiện có của ORIANA và Sharp đang nêu thông số và bảo hành; việc xác minh các số đó vẫn mở.
+
+## Hai chuyên mục giải pháp
+
+`/ho-gia-dinh` và `/doanh-nghiep` mỗi trang khoảng 140 chữ, chỉ có đúng một thẻ giải pháp đã hiện ở `/giai-phap/`. Thêm liên kết sẽ trái quy tắc đã chốt (nhóm một nội dung thì đi thẳng vào giải pháp), nên **không thêm**.
+Đề xuất: cho `noindex` và ra khỏi sitemap khi nhóm chỉ có một giải pháp (như trang thương hiệu trống). Chờ chủ website quyết; chưa làm.
+
+## Crawl lại bản trên máy sau mọi sửa đổi (`13bced76`)
+
+457/457 trang trong sitemap trả 200 (ít hơn 468 đúng bằng 11 trang thương hiệu trống của bản sao dữ liệu). 0 liên kết qua chuyển hướng, 0 liên kết hỏng, 0 liên kết không tên; chỉ `?page=1` canonical về trang gốc; còn 2 trang mồ côi nêu trên.
+Con số "còn 1 liên kết trong nội dung bài" ở bảng đầu là trước khi diễn tập sửa hai bài.
 
 ## Cần chủ website
 
 1. Ba nhận xét ở hai sản phẩm đèn: chủ website xác nhận ngày 26/11 là **khách thật**. Giữ nguyên, không còn việc.
 2. Bốn tấm pin trả 410 đang **ẩn khỏi website** (bật "Hiển thị" trong Admin là sống lại, đúng địa chỉ cũ). Còn bán thì thêm ảnh, kiểm giá rồi hiện; ngừng bán thì không cần làm gì.
 3. 13 thương hiệu chưa có sản phẩm: **đã quyết 26/11**, cho Google bỏ qua; đã làm trên nhánh, có hiệu lực khi phát hành.
-4. Sửa liên kết trong hai bài `duoc-gi-khi-hop-tac-cung-phuc-thinh-solar` và `blue-carbon-den-nang-luong-mat-troi-cho-du-an` thành `/thuong-hieu/blue-carbon/`.
-5. `/ho-gia-dinh`, `/doanh-nghiep` không trang nào dẫn tới (menu đi thẳng vào từng giải pháp, đúng thiết kế đã chốt): thêm lối vào ở trang Giải pháp hay bỏ khỏi chỉ mục.
+4. Sửa hai liên kết và lỗi gõ theo bảng "Sửa trong Admin".
+5. `/ho-gia-dinh`, `/doanh-nghiep`: đồng ý cho Google bỏ qua đến khi mỗi nhóm có từ hai giải pháp, hay viết thêm nội dung riêng.
 6. HSTS: nếu đồng ý, thêm ở Caddy ngoài cùng `Strict-Transport-Security "max-age=86400"`, theo dõi một tuần rồi mới tăng; chưa dùng `includeSubDomains`, `preload`. Trình duyệt nhớ giá trị này nên khó rút nhanh.
 7. Địa chỉ: **đã xác nhận 26/11**. Trụ sở 424 Trường Chinh (website đúng); 403 Trần Xuân Soạn là kho. [Trang ENF](https://www.enfsolar.com/phuc-thinh-solar) đang ghi địa chỉ kho làm địa chỉ công ty; muốn khớp thì chủ website sửa tại ENF.

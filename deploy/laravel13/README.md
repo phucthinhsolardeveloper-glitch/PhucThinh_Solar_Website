@@ -135,6 +135,9 @@ còn sót từ một volume local cũ làm bằng chứng cho release mới. Cá
 CSRF/checkout token biến động đã được thay bằng placeholder; mọi trường còn lại
 giữ nguyên so với bộ chuẩn cũ.
 
+View đã biên dịch cũng nằm trong `app_storage`. Bản phát hành (hoặc lùi) có đổi file `*.blade.php` phải chạy
+`php artisan view:clear` trong container backend và khởi động lại worker, nếu không có thể vẫn hiện giao diện cũ.
+
 Upload ở `${PTS_UPLOAD_DIR}` là bind mount **có thể ghi** cho Admin, nằm ngoài
 DocumentRoot PHP. `app_storage` chứa session/cache/log và `db_data` chứa MariaDB;
 không xóa chúng khi đổi image. Ảnh site có trong release và mount chỉ đọc cho
