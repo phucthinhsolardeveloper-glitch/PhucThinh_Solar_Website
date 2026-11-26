@@ -46,3 +46,26 @@ export function leadSourceFromUrl(value: string, earlierCampaign = ''): string {
     return ''
   }
 }
+
+const orderCampaignKeys = ['utm_source', 'utm_medium', 'utm_campaign'] as const
+
+/**
+ * The campaign kept with an order: utm_source, utm_medium and utm_campaign only, never an ad click id, and only for
+ * a visitor who agreed to cookies. Laravel checks the same rules again.
+ */
+export function orderCampaign(query: string, consent: string): string {
+  if (consent !== 'granted') return ''
+  const params = new URLSearchParams(query)
+  const kept = new URLSearchParams()
+  for (const key of orderCampaignKeys) {
+    const value = params.get(key)
+    if (value && campaignCode.test(value)) kept.set(key, value)
+  }
+  return kept.toString()
+}
+
+/** The visitor's cookie choice as the notice stored it ('granted', 'denied' or ''). */
+export function storedConsent(storage: string | null, cookie: string): string {
+  const value = storage || cookie.match(/(?:^|; )pts_consent=([^;]*)/)?.[1] || ''
+  return value === 'granted' || value === 'denied' ? value : ''
+}

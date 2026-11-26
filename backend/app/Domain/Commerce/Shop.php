@@ -288,6 +288,7 @@ class Shop
             'shipping_fee' => $shipPrice,
             'total' => $total,
             'requirements' => $requirements,
+            'campaign' => self::campaign($value('campaign')),
             'status' => 'new',
             'warehouse_id' => $this->cart->parcel()['warehouse'],
             'created_at' => now(),
@@ -528,6 +529,24 @@ class Shop
         }
 
         return [200, ($alreadyPaid || $status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
+    }
+
+    /**
+     * utm_source, utm_medium and utm_campaign from the checkout, or null. The page sends them only for a buyer who
+     * accepted cookies; ad click ids are never kept with an order.
+     */
+    private static function campaign(string $query): ?string
+    {
+        parse_str($query, $params);
+        $kept = [];
+        foreach (['utm_source', 'utm_medium', 'utm_campaign'] as $key) {
+            $code = $params[$key] ?? null;
+            if (is_string($code) && preg_match('/^[A-Za-z0-9._-]{1,60}$/', $code)) {
+                $kept[$key] = $code;
+            }
+        }
+
+        return $kept === [] ? null : substr(http_build_query($kept), 0, 255);
     }
 
     /** Letters and digits staff can read off a bank statement or say on the phone: no 0/O, 1/I/L. */

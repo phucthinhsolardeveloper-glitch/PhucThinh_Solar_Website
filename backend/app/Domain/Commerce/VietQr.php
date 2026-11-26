@@ -2,6 +2,7 @@
 
 namespace App\Domain\Commerce;
 
+use App\Domain\Routing\PublicUrls;
 use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
@@ -63,7 +64,7 @@ final class VietQr
     }
 
     /**
-     * Picker options, BIN => a row with the badge beside the name.
+     * Picker options, BIN => a row with the bank's logo (or its badge) beside the name.
      *
      * The styling is inline on purpose: Admin's stylesheet is built ahead of time and never sees
      * these strings, so utility classes would not exist and the badge would come out as bare text.
@@ -78,10 +79,14 @@ final class VietQr
             if ($search !== '' && ! str_contains(mb_strtolower($name.' '.$short.' '.$bin), $search)) {
                 continue;
             }
-            $options[$bin] = '<span style="display:inline-flex;align-items:center;gap:.5rem;line-height:1.5">'
-                .'<span style="display:inline-flex;flex:none;align-items:center;justify-content:center;width:2.75rem;height:1.5rem;'
-                .'border-radius:.375rem;font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:'.$color.'">'
-                .e($short).'</span><span>'.e($name).'</span></span>';
+            // The bank's own logo on a white tile (Admin may be dark); the coloured badge when no logo file is bundled.
+            $mark = self::logoFile((string) $bin) !== ''
+                ? '<span style="display:inline-flex;flex:none;align-items:center;justify-content:center;width:5.5rem;height:1.75rem;padding:.2rem .4rem;'
+                    .'box-sizing:border-box;border-radius:.375rem;background:#fff;box-shadow:0 0 0 1px rgba(15,23,42,.08)">'
+                    .'<img src="'.e(PublicUrls::base().'/assets/images/payments/banks/'.strtolower($short).'.png').'" alt="" style="display:block;max-width:100%;max-height:100%;object-fit:contain"></span>'
+                : '<span style="display:inline-flex;flex:none;align-items:center;justify-content:center;width:2.75rem;height:1.5rem;'
+                    .'border-radius:.375rem;font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:'.$color.'">'.e($short).'</span>';
+            $options[$bin] = '<span style="display:inline-flex;align-items:center;gap:.6rem;line-height:1.5">'.$mark.'<span>'.e($name).'</span></span>';
         }
 
         return $options;

@@ -3,6 +3,7 @@
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\Listing\CatalogLanding;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Commerce\Shop;
 use App\Domain\Routing\Redirects;
 use App\Domain\Seo\Sitemap;
 use Illuminate\Support\Facades\DB;
@@ -62,4 +63,22 @@ it('lists a brand page only while the brand has a product on the website', funct
     DB::table('products')->where('brand_id', $brand->id)->update(['is_visible' => false]);
     expect($paths())->not->toContain('/thuong-hieu/'.$brand->slug.'/');
     $this->getJson('/api/v1/brand-detail?slug='.$brand->slug)->assertOk()->assertJsonPath('pagination.total', 0);
+});
+
+it('lists a solution group only once it holds two solutions', function () {
+    $paths = fn () => array_column(app(Sitemap::class)->entries(), 'path');
+    $group = DB::table('post_categories')->insertGetId(['kind' => 'solution', 'parent_id' => null, 'depth' => 1, 'name' => 'Nhóm thử', 'slug' => 'nhom-giai-phap-thu', 'is_visible' => true, 'sort_order' => 999, 'created_at' => now(), 'updated_at' => now()]);
+    $post = fn (string $slug) => DB::table('posts')->insert(['kind' => 'solution', 'category_id' => $group, 'title' => $slug, 'slug' => $slug, 'body' => '<p>x</p>', 'is_visible' => true, 'created_at' => now(), 'updated_at' => now()]);
+    $post('giai-phap-thu-mot');
+    expect($paths())->not->toContain('/nhom-giai-phap-thu');
+    $post('giai-phap-thu-hai');
+    expect($paths())->toContain('/nhom-giai-phap-thu');
+});
+
+it('keeps the ad campaign with an order only as utm source, medium and campaign', function () {
+    $keep = new ReflectionMethod(Shop::class, 'campaign');
+    expect($keep->invoke(null, 'utm_source=google&utm_medium=cpc&utm_campaign=den-duong&gclid=abc'))->toBe('utm_source=google&utm_medium=cpc&utm_campaign=den-duong')
+        ->and($keep->invoke(null, 'gclid=abc&fbclid=x'))->toBeNull()
+        ->and($keep->invoke(null, 'utm_source=<script>'))->toBeNull()
+        ->and($keep->invoke(null, ''))->toBeNull();
 });

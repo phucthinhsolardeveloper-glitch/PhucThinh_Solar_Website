@@ -4,9 +4,9 @@ import { ORDER_SUCCESS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { purchaseAmounts } from '#shared/purchase-amounts'
 
 const { site } = await usePublicSite()
-const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const links = usePublicLinks()
+const { openConsultation } = useStorefrontModal()
 const requestFetch = useRequestFetch()
 const token = computed(() => typeof route.query.token === 'string' ? route.query.token : '')
 const hasValidToken = computed(() => /^[a-f0-9]{48}$/.test(token.value))
@@ -21,8 +21,27 @@ const paymentState = computed(() => payload.value?.paymentState ?? 'accepted')
 const paymentConfirmed = computed(() => paymentState.value === 'accepted' || paymentState.value === 'paid')
 const confirmationTitle = computed(() => paymentState.value === 'failed' ? 'Thanh toán chưa thành công'
   : paymentState.value === 'pending' ? 'Đang chờ xác nhận thanh toán'
-  : paymentState.value === 'awaiting_transfer' ? 'Đặt hàng thành công, mời chuyển khoản' : 'Đặt hàng thành công')
+  : paymentState.value === 'awaiting_transfer' ? 'Đặt hàng thành công' : 'Đặt hàng thành công')
 const transfer = computed(() => payload.value?.transfer ?? null)
+/** One short sentence under the title: what happens next for this payment. */
+const statusLine = computed(() => {
+  const name = payload.value?.order.customerName
+  if (paymentState.value === 'pending') return 'Đơn hàng đã được tạo và đang chờ VNPay xác nhận thanh toán.'
+  if (paymentState.value === 'failed') return 'Giao dịch VNPay chưa thành công, đơn chưa được thanh toán. Gọi hotline nếu cần hỗ trợ.'
+  if (paymentState.value === 'awaiting_transfer') return `Cảm ơn ${name || 'bạn'}. Chuyển khoản theo thông tin bên dưới để hoàn tất đơn.`
+  return `Cảm ơn ${name || 'bạn'}. Phúc Thịnh Solar sẽ gọi xác nhận đơn trong giờ làm việc.`
+})
+/** The facts of the transfer, in the order a banking app asks for them. */
+const transferRows = computed(() => {
+  const current = transfer.value
+  if (!current) return []
+  return [
+    { key: 'amount', label: 'Số tiền', shown: money(current.amount), copy: String(current.amount) },
+    { key: 'account', label: `Số tài khoản · ${current.bankName}`, shown: current.accountNo, copy: current.accountNo },
+    { key: 'name', label: 'Chủ tài khoản', shown: current.accountName, copy: '' },
+    { key: 'note', label: 'Nội dung chuyển khoản', shown: current.note, copy: current.note },
+  ]
+})
 const transferReported = ref(false)
 const reportingTransfer = ref(false)
 const reportError = ref('')
@@ -162,79 +181,53 @@ watch([payload, token], trackOrderConversion)
         <p class="mb-5 text-slate-600">Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.</p>
         <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
-      <div v-else class="mx-auto max-w-[860px]">
-        <svg v-if="paymentConfirmed" class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-          <circle cx="32" cy="32" r="30" fill="currentColor" />
-          <path d="m17 32 10 10 21-22" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" />
-        </svg>
-        <UIcon v-else :name="paymentState === 'failed' ? 'i-lucide-circle-alert' : 'i-lucide-clock-3'" class="mx-auto mb-4 h-16 w-16 text-gold-600" aria-hidden="true" />
-        <h1 class="mb-4 mt-5 text-[clamp(28px,4vw,38px)] font-black tracking-tight text-navy-800">{{ confirmationTitle }}{{ paymentConfirmed ? '!' : '' }}</h1>
-        <p v-if="paymentState === 'pending'" class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Đơn hàng đã được tạo và đang chờ xác nhận thanh toán VNPay. Vui lòng kiểm tra lại trạng thái sau khi hoàn tất giao dịch.</p>
-        <p v-else-if="paymentState === 'awaiting_transfer'" class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }}. Quét mã bên dưới bằng ứng dụng ngân hàng để chuyển khoản. Đơn được xác nhận sau khi bộ phận kế toán thấy tiền vào tài khoản công ty.</p>
-        <p v-else-if="paymentState === 'failed'" class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Giao dịch VNPay chưa thành công. Đơn hàng chưa được xác nhận thanh toán; vui lòng liên hệ Phúc Thịnh Solar nếu cần hỗ trợ.</p>
-        <p v-else class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
-        <p v-if="payload" class="mt-3 text-base text-slate-700">Mã đơn hàng: <strong class="text-navy-800">{{ payload.order.code }}</strong></p>
+      <div v-else class="mx-auto max-w-[880px]">
+        <span class="mx-auto grid size-14 place-items-center rounded-full" :class="paymentConfirmed ? 'bg-emerald-50 text-emerald-600' : paymentState === 'failed' ? 'bg-red-50 text-red-600' : 'bg-gold-100 text-gold-700'" aria-hidden="true">
+          <UIcon :name="paymentConfirmed ? 'i-lucide-check' : paymentState === 'failed' ? 'i-lucide-circle-alert' : 'i-lucide-clock-3'" class="size-7" />
+        </span>
+        <h1 class="mb-2 mt-4 text-[clamp(24px,3.2vw,32px)] font-black tracking-tight text-navy-900">{{ confirmationTitle }}</h1>
+        <p class="mx-auto my-0 max-w-[600px] text-[15px] leading-relaxed text-slate-600">{{ statusLine }}</p>
+        <p v-if="payload" class="mt-3 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm text-slate-600">Mã đơn hàng <strong class="tracking-wide text-navy-900">{{ payload.order.code }}</strong></p>
 
-        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="transfer-card mt-8 text-left" aria-labelledby="transfer-title">
-          <div class="grid gap-0 overflow-hidden rounded-[20px] bg-white sm:grid-cols-[minmax(0,330px)_1fr]">
-            <!-- The code, framed like the cards banks print: VietQR above, the receiving bank below. -->
-            <div class="transfer-qr flex flex-col items-center gap-3 px-6 pb-6 pt-5">
-              <div class="flex w-full items-center justify-between gap-3">
-                <img src="/assets/images/payments/vietqr.svg" alt="VietQR" width="104" height="30" class="h-[30px] w-auto">
-                <span class="text-[12px] font-bold uppercase tracking-wide text-slate-500">Quét để thanh toán</span>
-              </div>
-              <div class="relative w-full max-w-[260px] rounded-[14px] border border-slate-200 bg-white p-2.5 shadow-[0_8px_24px_rgb(10_34_81/10%)]">
-                <img :src="transfer.qrImage" :alt="`Mã VietQR chuyển khoản ${money(transfer.amount)} cho đơn ${payload?.order.code}`" width="240" height="240" class="block aspect-square w-full">
-                <span v-if="bankLogo?.mark" class="absolute left-1/2 top-1/2 grid size-[19%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[8px] bg-white p-[3px] shadow-sm" aria-hidden="true">
-                  <img :src="bankLogo.mark" alt="" width="48" height="48" class="block size-full rounded-[5px]">
+        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="mt-8 overflow-hidden rounded-[18px] border border-slate-200 bg-white text-left shadow-[0_12px_32px_rgb(10_34_81/8%)]" aria-labelledby="transfer-title">
+          <div class="grid sm:grid-cols-[300px_1fr]">
+            <!-- The code with the marks of the scheme and the receiving bank, as banks print it. -->
+            <div class="flex flex-col items-center gap-3 border-b border-slate-200 bg-slate-50 px-6 py-6 sm:border-b-0 sm:border-r">
+              <div class="relative w-full max-w-[232px] rounded-[14px] bg-white p-2.5 shadow-[0_4px_14px_rgb(10_34_81/8%)]">
+                <img :src="transfer.qrImage" :alt="`Mã VietQR chuyển khoản ${money(transfer.amount)} cho đơn ${payload?.order.code}`" width="212" height="212" class="block aspect-square w-full">
+                <span v-if="bankLogo?.mark" class="absolute left-1/2 top-1/2 grid size-[19%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[8px] bg-white p-[3px]" aria-hidden="true">
+                  <img :src="bankLogo.mark" alt="" width="44" height="44" class="block size-full rounded-[5px]">
                 </span>
               </div>
-              <div class="flex w-full items-center justify-center gap-3 border-t border-slate-100 pt-3">
-                <img v-if="bankLogo" :src="bankLogo.logo" :alt="transfer.bankName" width="180" height="28" class="h-7 w-auto max-w-[190px] object-contain">
+              <div class="flex items-center justify-center gap-3">
+                <img src="/assets/images/payments/vietqr.svg" alt="VietQR" width="80" height="23" class="h-[22px] w-auto">
+                <span class="h-5 w-px bg-slate-300" aria-hidden="true" />
+                <img v-if="bankLogo" :src="bankLogo.logo" :alt="transfer.bankName" width="140" height="22" class="h-[22px] w-auto max-w-[150px] object-contain">
                 <span v-else class="inline-flex h-6 items-center rounded-md px-2 text-[11px] font-bold text-white" :style="{ background: transfer.bankColor }">{{ transfer.bankShort || transfer.bankName }}</span>
               </div>
-              <button type="button" :disabled="savingQr" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-btn border border-navy-800/20 bg-white px-4 text-sm font-bold text-navy-900 hover:border-navy-800 disabled:cursor-wait" @click="saveQr">
+              <button type="button" :disabled="savingQr" class="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-btn px-3 text-sm font-bold text-navy-800 underline decoration-slate-300 underline-offset-4 hover:decoration-navy-800 disabled:cursor-wait" @click="saveQr">
                 <UIcon name="i-lucide-download" class="size-4" aria-hidden="true" />
                 {{ savingQr ? 'Đang lưu…' : 'Lưu ảnh mã QR' }}
               </button>
-              <p class="m-0 text-center text-xs leading-relaxed text-slate-500">Mở ứng dụng ngân hàng, chọn quét mã hoặc tải ảnh mã QR từ thư viện.</p>
             </div>
 
-            <div class="flex flex-col gap-4 border-t border-slate-100 p-5 sm:border-l sm:border-t-0 sm:p-7">
-              <div>
-                <h2 id="transfer-title" class="m-0 text-lg font-black text-navy-900">Thông tin chuyển khoản</h2>
-                <p class="m-0 mt-1 text-sm text-slate-500">Số tiền và nội dung đã có sẵn trong mã QR.</p>
-              </div>
-              <div class="rounded-[14px] bg-navy-950 px-5 py-4 text-white">
-                <p class="m-0 text-xs font-semibold text-white/70">Số tiền cần chuyển</p>
-                <p class="m-0 mt-1 flex items-center justify-between gap-3">
-                  <strong class="text-[28px] font-black tabular-nums leading-none text-gold-300">{{ money(transfer.amount) }}</strong>
-                  <button type="button" class="inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-btn border border-white/25 px-2.5 text-xs font-bold text-white hover:border-white" aria-label="Sao chép số tiền" @click="copyText('amount', String(transfer.amount))">
-                    <UIcon :name="copied === 'amount' ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3.5" aria-hidden="true" />{{ copied === 'amount' ? 'Đã chép' : 'Chép' }}
-                  </button>
-                </p>
-              </div>
-              <dl class="m-0 grid gap-3 text-sm">
-                <div class="grid gap-0.5">
-                  <dt class="text-slate-500">Chủ tài khoản</dt>
-                  <dd class="m-0 font-bold leading-snug text-navy-900">{{ transfer.accountName }}</dd>
-                </div>
-                <div v-for="row in [
-                  { key: 'account', label: 'Số tài khoản', value: transfer.accountNo, shown: transfer.accountNo, hint: transfer.bankName },
-                  { key: 'note', label: 'Nội dung chuyển khoản', value: transfer.note, shown: transfer.note, hint: 'Giữ đúng để kế toán nhận ra đơn' },
-                ]" :key="row.key" class="flex items-center justify-between gap-3 rounded-[12px] border border-slate-200 px-3.5 py-2.5">
+            <div class="px-5 py-5 sm:px-7 sm:py-6">
+              <h2 id="transfer-title" class="m-0 text-lg font-black text-navy-900">Chuyển khoản để hoàn tất đơn</h2>
+              <p class="m-0 mt-1 text-sm text-slate-500">Quét mã bằng app ngân hàng, số tiền và nội dung đã điền sẵn.</p>
+              <dl class="m-0 mt-4 divide-y divide-slate-100 border-y border-slate-100">
+                <div v-for="row in transferRows" :key="row.key" class="flex items-center justify-between gap-3 py-3">
                   <div class="min-w-0">
                     <dt class="text-xs text-slate-500">{{ row.label }}</dt>
-                    <dd class="m-0 mt-0.5 text-[17px] font-black tracking-wide tabular-nums" :class="row.key === 'note' ? 'text-gold-800' : 'text-navy-900'">{{ row.shown }}</dd>
-                    <p class="m-0 text-xs text-slate-500">{{ row.hint }}</p>
+                    <dd class="m-0 mt-0.5 font-black tabular-nums" :class="row.key === 'amount' ? 'text-[24px] leading-tight text-navy-900' : row.key === 'note' ? 'text-[17px] tracking-wide text-gold-800' : row.key === 'name' ? 'text-sm font-bold text-navy-900' : 'text-[17px] tracking-wide text-navy-900'">{{ row.shown }}</dd>
                   </div>
-                  <button type="button" class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1 rounded-btn border border-slate-300 bg-white px-2.5 text-xs font-bold text-navy-800 hover:border-navy-800" :aria-label="`Sao chép ${row.label.toLowerCase()}`" @click="copyText(row.key, row.value)">
+                  <button v-if="row.copy" type="button" class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1 rounded-btn border border-slate-300 bg-white px-2.5 text-xs font-bold text-navy-800 hover:border-navy-800" :aria-label="`Sao chép ${row.label.toLowerCase()}`" @click="copyText(row.key, row.copy)">
                     <UIcon :name="copied === row.key ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3.5" aria-hidden="true" />
                     <span>{{ copied === row.key ? 'Đã chép' : 'Chép' }}</span>
                   </button>
                 </div>
               </dl>
-              <div>
+              <p class="m-0 mt-3 text-xs leading-relaxed text-slate-500">Giữ đúng nội dung chuyển khoản. Đơn được xác nhận khi kế toán thấy tiền vào tài khoản công ty.</p>
+              <div class="mt-4">
                 <p v-if="transfer.reported || transferReported" class="m-0 flex items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
                   <UIcon name="i-lucide-check-circle-2" class="size-4" aria-hidden="true" />
                   Đã nhận thông báo. Chúng tôi sẽ kiểm tra tài khoản và xác nhận đơn.
@@ -244,23 +237,18 @@ watch([payload, token], trackOrderConversion)
                   {{ reportingTransfer ? 'Đang gửi…' : 'Tôi đã chuyển khoản' }}
                 </button>
                 <p v-if="reportError" class="m-0 mt-2 text-sm text-red-600" role="alert">{{ reportError }}</p>
-                <p class="m-0 mt-2 text-xs leading-relaxed text-slate-500">Đơn được xác nhận khi kế toán thấy tiền vào tài khoản công ty.</p>
               </div>
             </div>
           </div>
         </section>
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
           <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center gap-2 rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400">
             <span>Tiếp tục mua sắm</span>
             <span aria-hidden="true">→</span>
           </NuxtLink>
-          <button
-            type="button"
-            class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-btn border border-navy-800/20 bg-white px-5 font-bold text-navy-900 transition-colors hover:border-navy-800 hover:bg-slate-50"
-            @click="openConsultation(payload ? `Hỗ trợ đơn hàng #${payload.order.code}` : 'Hỗ trợ đơn hàng mới đặt')"
-          >
-            <UIcon name="i-lucide-headset" class="size-4 text-gold-600" aria-hidden="true" />
-            <span>Cần tư vấn kỹ thuật lắp đặt</span>
+          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center gap-2 font-bold text-navy-800 underline decoration-slate-300 underline-offset-4 hover:decoration-navy-800" @click="openConsultation(payload ? `Hỗ trợ đơn hàng #${payload.order.code}` : 'Hỗ trợ đơn hàng mới đặt')">
+            <UIcon name="i-lucide-headset" class="size-4 text-gold-700" aria-hidden="true" />
+            <span>Cần tư vấn lắp đặt</span>
           </button>
         </div>
 
@@ -288,30 +276,7 @@ watch([payload, token], trackOrderConversion)
           </div>
         </div>
 
-        <!-- Same width as the transfer card above, so the page has one edge. -->
-        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center sm:px-6">
-          <div>
-            <p class="m-0 text-base font-bold text-white">Cần hỗ trợ hoặc bổ sung thông tin giao hàng?</p>
-            <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Giờ hành chính, Thứ Hai – Thứ Bảy.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2.5 sm:shrink-0">
-            <a href="tel:0944555957" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-gold-500 px-3.5 py-2 text-xs font-extrabold text-navy-950 no-underline hover:bg-gold-400">
-              <UIcon name="i-lucide-phone-call" class="size-3.5" aria-hidden="true" />
-              <span>Bán hàng: 0944 555 957</span>
-            </a>
-            <a href="tel:0945536899" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-white/10 px-3.5 py-2 text-xs font-bold text-white no-underline hover:bg-white/20">
-              <UIcon name="i-lucide-wrench" class="size-3.5 text-gold-400" aria-hidden="true" />
-              <span>Kỹ thuật: 0945 536 899</span>
-            </a>
-          </div>
-        </div>
       </div>
     </main>
   </div>
 </template>
-
-<style scoped>
-/* The gradient rim of a printed VietQR card, in the site's navy and gold. */
-.transfer-card { padding: 2px; border-radius: 22px; background: linear-gradient(135deg, var(--color-navy-800), #2c5aa6 45%, var(--color-gold-500)); box-shadow: 0 18px 40px rgb(10 34 81 / 12%); }
-.transfer-qr { background: linear-gradient(180deg, #f6f8fc, #ffffff 40%); }
-</style>

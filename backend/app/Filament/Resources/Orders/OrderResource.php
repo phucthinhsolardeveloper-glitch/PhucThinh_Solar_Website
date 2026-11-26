@@ -142,6 +142,13 @@ class OrderResource extends Resource
                             .($record->transfer_reported_at ? ' · khách báo đã chuyển lúc '.Carbon::parse($record->transfer_reported_at)->format('H:i d/m') : '') : '';
                     }),
                 TextEntry::make('requirements')->label('Yêu cầu của khách')->placeholder('Không có')->columnSpanFull(),
+                // Only for buyers who accepted cookies; most orders have none.
+                TextEntry::make('campaign')->label('Nguồn quảng cáo')->columnSpanFull()->visible(fn (?Order $record) => filled($record?->campaign))
+                    ->formatStateUsing(function ($state) {
+                        parse_str((string) $state, $c);
+
+                        return implode(' · ', array_filter([$c['utm_source'] ?? '', $c['utm_medium'] ?? '', $c['utm_campaign'] ?? '']));
+                    }),
             ]),
             Section::make('Sản phẩm')->columnSpanFull()->schema([
                 View::make('filament.order-items')->viewData(fn (?Order $record) => ['order' => $record?->loadMissing('items')]),

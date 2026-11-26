@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { editorialListPage } from '../shared/editorial-public-route.ts'
+import { orderCampaign, storedConsent } from '../shared/lead-source.ts'
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 
@@ -44,4 +45,20 @@ test('a rating is marked up only when approved reviews are shown, and a quote-on
   const detail = read('app/composables/useProductDetailData.ts')
   assert.match(detail, /if \(extras\.value && extras\.value\.reviews\.total > 0\) \{\s*productNode\.aggregateRating/)
   assert.match(detail, /const offer = productOfferNode\(pricing, p\.merchant, canonicalUrl, siteOrigin\)\s*if \(offer\) productNode\.offers = offer/)
+})
+
+test('an order keeps only utm source, medium and campaign, and only after cookies were accepted', () => {
+  const query = 'utm_source=google&utm_medium=cpc&utm_campaign=den-duong&gclid=abc&fbclid=x'
+  assert.equal(orderCampaign(query, 'granted'), 'utm_source=google&utm_medium=cpc&utm_campaign=den-duong')
+  assert.equal(orderCampaign(query, 'denied'), '')
+  assert.equal(orderCampaign(query, ''), '')
+  assert.equal(orderCampaign('gclid=abc', 'granted'), '')
+  assert.equal(storedConsent('granted', ''), 'granted')
+  assert.equal(storedConsent(null, 'a=1; pts_consent=denied'), 'denied')
+  assert.equal(storedConsent('maybe', ''), '')
+  assert.match(read('app/pages/thanh-toan.vue'), /<input v-if="campaign" type="hidden" name="dataOrder\[campaign\]"/)
+})
+
+test('a solution group with one solution is not offered to search engines', () => {
+  assert.match(read('app/components/solutions/SolutionCategoryPage.vue'), /category\.value\.cards\.length >= 2/)
 })

@@ -43,7 +43,8 @@ useSlidingPill(solutionRailRef, 'solutions')
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.solutionsPublicRouteIndexable, !!category.value && !error.value, hasFilters.value)),
+  // A group holding a single solution repeats that solution's own page: offered to search engines from two on.
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.solutionsPublicRouteIndexable, !!category.value && category.value.cards.length >= 2 && !error.value, hasFilters.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
