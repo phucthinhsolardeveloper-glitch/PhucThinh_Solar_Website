@@ -162,7 +162,7 @@ watch([payload, token], trackOrderConversion)
         <p class="mb-5 text-slate-600">Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.</p>
         <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
-      <div v-else class="mx-auto max-w-[900px]">
+      <div v-else class="mx-auto max-w-[860px]">
         <svg v-if="paymentConfirmed" class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
           <circle cx="32" cy="32" r="30" fill="currentColor" />
           <path d="m17 32 10 10 21-22" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" />
@@ -175,7 +175,7 @@ watch([payload, token], trackOrderConversion)
         <p v-else class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
         <p v-if="payload" class="mt-3 text-base text-slate-700">Mã đơn hàng: <strong class="text-navy-800">{{ payload.order.code }}</strong></p>
 
-        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="transfer-card mx-auto mt-8 max-w-[860px] text-left" aria-labelledby="transfer-title">
+        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="transfer-card mt-8 text-left" aria-labelledby="transfer-title">
           <div class="grid gap-0 overflow-hidden rounded-[20px] bg-white sm:grid-cols-[minmax(0,330px)_1fr]">
             <!-- The code, framed like the cards banks print: VietQR above, the receiving bank below. -->
             <div class="transfer-qr flex flex-col items-center gap-3 px-6 pb-6 pt-5">
@@ -288,10 +288,11 @@ watch([payload, token], trackOrderConversion)
           </div>
         </div>
 
-        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center">
+        <!-- Same width as the transfer card above, so the page has one edge. -->
+        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center sm:px-6">
           <div>
             <p class="m-0 text-base font-bold text-white">Cần hỗ trợ hoặc bổ sung thông tin giao hàng?</p>
-            <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Liên hệ trực tiếp tổng đài Phúc Thịnh Solar trong giờ hành chính (T2 – T7):</p>
+            <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Giờ hành chính, Thứ Hai – Thứ Bảy.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2.5 sm:shrink-0">
             <a href="tel:0944555957" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-gold-500 px-3.5 py-2 text-xs font-extrabold text-navy-950 no-underline hover:bg-gold-400">
