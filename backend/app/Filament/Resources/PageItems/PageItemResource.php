@@ -100,7 +100,9 @@ class PageItemResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            Select::make('section')->label('Thuộc phần')->options(fn () => self::sectionOptions())->required()->searchable()->live()->columnSpanFull(),
+            Select::make('section')->label('Thuộc phần')->options(fn () => self::sectionOptions())->required()->searchable()->live()->columnSpanFull()
+                // A new row made from a list filtered to one section starts in that section.
+                ->default(fn ($livewire) => $livewire->tableFilters['section']['value'] ?? null),
             TextInput::make('title')->label(self::FIELD_LABELS['title'])->visible(self::shows('title')),
             TextInput::make('subtitle')->label(self::FIELD_LABELS['subtitle'])->visible(self::shows('subtitle')),
             TextInput::make('figure')->label(self::FIELD_LABELS['figure'])->visible(self::shows('figure')),

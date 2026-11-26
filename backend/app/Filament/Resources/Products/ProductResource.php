@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Catalog\MerchantIdentifier;
 use App\Domain\Catalog\ProductDetail\ProductDetailAssembler;
 use App\Domain\Catalog\ProductSalesReadiness;
@@ -291,6 +292,11 @@ class ProductResource extends Resource
                     ->queries(true: fn (Builder $q) => $q->where('weight_kg', '>', 0), false: fn (Builder $q) => $q->where(fn ($q) => $q->whereNull('weight_kg')->orWhere('weight_kg', '<=', 0))),
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
+                // The same checks as "Chất lượng dữ liệu" and "Việc cần làm", so their links land on this list.
+                SelectFilter::make('health')->label('Lỗi trên website')
+                    ->options(fn () => ['errors' => 'Mọi lỗi nghiêm trọng'] + array_map(fn (array $check) => $check[1], CatalogHealth::CHECKS))
+                    ->query(fn (Builder $query, array $data) => filled($data['value'] ?? null)
+                        ? $query->whereKey(app(CatalogHealth::class)->productIds((string) $data['value'])) : $query),
             ])
             ->recordActions([self::quickEditAction(), EditAction::make()])
             ->toolbarActions(ProductBulkActions::groups());

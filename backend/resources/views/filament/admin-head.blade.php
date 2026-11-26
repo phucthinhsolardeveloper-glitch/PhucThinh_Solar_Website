@@ -21,6 +21,8 @@
     .pts-queue__list li { display: grid; gap: .05rem; }
     .pts-queue__more { display: inline-block; margin-top: .75rem; font-size: .8rem; font-weight: 600; }
     .pts-queue__more:hover { text-decoration: underline; }
+    .pts-section-source { font-size: .8rem; line-height: 1.5; }
+    .pts-section-source__links { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-top: .35rem; }
     .pts-cal__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
     .pts-cal__month { font-size: 1rem; }
     .pts-cal__legend { display: inline-flex; gap: .4rem; margin-left: auto; }

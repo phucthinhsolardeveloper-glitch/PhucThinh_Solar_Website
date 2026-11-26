@@ -15,7 +15,6 @@ use App\Filament\Resources\Reviews\ReviewResource;
 use App\Models\Post;
 use App\Models\Review;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /** Only what is waiting for someone: each line links to where it is handled. Nothing waiting, one short line. */
@@ -39,19 +38,19 @@ class AttentionWidget extends Widget
                 $items[] = ['tone' => 'danger', 'text' => $reported.' đơn khách báo đã chuyển khoản, chờ đối chiếu sao kê', 'url' => $orders];
             }
             if ($new > 0) {
-                $items[] = ['tone' => 'warning', 'text' => $new.' đơn hàng mới chưa xử lý', 'url' => $orders.'?tableFilters[status][value]=new'];
+                $items[] = ['tone' => 'warning', 'text' => $new.' đơn hàng mới chưa xử lý', 'url' => $orders.'?filters[status][value]=new'];
             }
         }
         if (LeadResource::canViewAny() && ($leads = DB::table('leads')->where('status', 'new')->count()) > 0) {
-            $items[] = ['tone' => 'warning', 'text' => $leads.' liên hệ / yêu cầu tư vấn chưa gọi lại', 'url' => LeadResource::getUrl().'?tableFilters[status][value]=new'];
+            $items[] = ['tone' => 'warning', 'text' => $leads.' liên hệ / yêu cầu tư vấn chưa gọi lại', 'url' => LeadResource::getUrl().'?filters[status][value]=new'];
         }
         if (ReviewResource::canViewAny() && ($reviews = Review::query()->whereNull('parent_id')->where('status', 'pending')->count()) > 0) {
-            $items[] = ['tone' => 'info', 'text' => $reviews.' đánh giá chờ duyệt', 'url' => ReviewResource::getUrl()];
+            $items[] = ['tone' => 'info', 'text' => $reviews.' đánh giá chờ duyệt', 'url' => ReviewResource::getUrl().'?filters[status][value]=pending'];
         }
         if (ArticleResource::canViewAny()) {
             $soon = Post::query()->where('kind', 'article')->where('is_visible', true)->whereBetween('published_at', [now(), now()->addDays(7)])->count();
             if ($soon > 0) {
-                $items[] = ['tone' => 'info', 'text' => $soon.' bài viết hẹn giờ đăng trong 7 ngày tới', 'url' => ArticleResource::getUrl().'?tableFilters[scheduled][isActive]=1'];
+                $items[] = ['tone' => 'info', 'text' => $soon.' bài viết hẹn giờ đăng trong 7 ngày tới', 'url' => ArticleResource::getUrl().'?filters[scheduled][isActive]=1'];
             }
         }
         $mail = Outbox::health();
@@ -64,16 +63,21 @@ class AttentionWidget extends Widget
             $items[] = ['tone' => 'danger', 'text' => $mail['crm_failed'].' liên hệ chưa chuyển được sang CRM, vẫn xem được trong mục Liên hệ', 'url' => ''];
         }
         if (MediaFileResource::canViewAny() && ($broken = MediaInventory::health()['broken']) > 0) {
-            $items[] = ['tone' => 'danger', 'text' => $broken.' chỗ trên website trỏ tới ảnh không còn', 'url' => MediaFileResource::getUrl().'?tableFilters[on_disk][value]=0'];
+            $items[] = ['tone' => 'danger', 'text' => $broken.' chỗ trên website trỏ tới ảnh không còn', 'url' => MediaFileResource::getUrl().'?filters[on_disk][value]=0'];
         }
         if (ProductResource::canViewAny()) {
-            $issues = Cache::remember('catalog-health', 600, fn () => app(CatalogHealth::class)->run());
+            $issues = app(CatalogHealth::class)->cached();
             foreach (CatalogHealth::CHECKS as $key => [$severity, $label]) {
                 if ($severity === 'info' || $issues[$key] === []) {
                     continue;
                 }
-                $items[] = ['tone' => $severity === 'error' ? 'danger' : 'warning', 'text' => count($issues[$key]).' sản phẩm: '.mb_lcfirst($label), 'url' => '',
-                    'items' => array_map(fn ($p) => ['name' => $p['name'], 'url' => ProductResource::getUrl('edit', ['record' => $p['id']])], array_slice($issues[$key], 0, 4))];
+                $rows = array_values(array_filter($issues[$key], fn ($row) => CatalogHealth::productId($row) !== null));
+                if ($rows === []) {
+                    continue;
+                }
+                $items[] = ['tone' => $severity === 'error' ? 'danger' : 'warning', 'text' => count($rows).' sản phẩm: '.mb_lcfirst($label),
+                    'url' => ProductResource::getUrl('index', ['filters' => ['health' => ['value' => $key]]]),
+                    'items' => array_map(fn ($p) => ['name' => $p['name'], 'url' => ProductResource::getUrl('edit', ['record' => $p['id']])], array_slice($rows, 0, 4))];
             }
         }
         $order = ['danger' => 0, 'warning' => 1, 'info' => 2];

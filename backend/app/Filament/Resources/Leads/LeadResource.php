@@ -72,7 +72,7 @@ class LeadResource extends Resource
 
     public static function getGlobalSearchResultUrl(Model $record): string
     {
-        return self::getUrl().'?tableSearch='.urlencode((string) $record->getAttribute('phone'));
+        return self::getUrl().'?search='.urlencode((string) $record->getAttribute('phone'));
     }
 
     public static function canCreate(): bool
