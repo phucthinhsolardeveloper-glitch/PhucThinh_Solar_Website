@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { test } from 'node:test'
-import { leadErrorType, leadFormStart } from '../shared/lead-analytics.ts'
+import { leadErrorType, leadFormRefused, leadFormStart } from '../shared/lead-analytics.ts'
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const form = (source, kind) => ({ getAttribute: (name) => ({ 'data-lead-form': source, 'data-lead-kind': kind })[name] ?? null })
@@ -39,9 +39,31 @@ test('every lead form is marked with the source it submits as', () => {
 test('the funnel events carry the form and the page only', () => {
   const lead = read('app/composables/useLeadForm.ts')
   assert.match(lead, /const funnel = \{ form_kind: kind, form_source: formSource, page_path: page \}/)
-  assert.equal(lead.match(/pushDataLayer\('lead_form_submit'/g).length, 1)
+  // One for a send that reaches the server, one for a send the form itself refuses.
+  assert.equal(lead.match(/pushDataLayer\('lead_form_submit'/g).length, 2)
   assert.equal(lead.match(/pushDataLayer\('generate_lead'/g).length, 1)
   const plugin = read('app/plugins/lead-form-start.client.ts')
   assert.match(plugin, /if \(!event\.isTrusted\) return/)
+  assert.match(plugin, /addEventListener\('click'/)
+  assert.match(plugin, /addEventListener\('invalid'/)
   assert.doesNotMatch(plugin.replace(/^\s*\/\/.*$/gm, ''), /\.value|textContent|innerText/)
+})
+
+test('a send refused by the browser is reported once per attempt, only right after the visitor tried to send', () => {
+  const attempts = new WeakMap()
+  const contact = form('contact_page', 'contact')
+  assert.equal(leadFormRefused(field(contact), attempts, 1000), null, 'no send was tried')
+  attempts.set(contact, 1000)
+  assert.deepEqual(leadFormRefused(field(contact), attempts, 1100), { form_kind: 'contact', form_source: 'contact_page' })
+  assert.equal(leadFormRefused(field(contact), attempts, 1101), null, 'a second wrong field in the same attempt')
+  attempts.set(contact, 1000)
+  assert.equal(leadFormRefused(field(contact), attempts, 4000), null, 'too long after the send')
+  attempts.set(contact, 1000)
+  assert.equal(leadFormRefused(field(form('0912345678', 'contact')), attempts, 1100), null)
+})
+
+test('forms that check their own fields report a refused send', () => {
+  assert.match(read('app/components/estimator/SolarEstimatorPage.vue'), /refused\('contact', 'solar_estimator'\)/)
+  assert.match(read('app/components/product-detail/ProductConsultationForm.vue'), /refused\('product', 'product_page'\)/)
+  assert.match(read('app/components/modal/StorefrontDealerModal.vue'), /refused\('dealer', 'dealer_popup'\)/)
 })

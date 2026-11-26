@@ -105,5 +105,15 @@ export function useLeadForm() {
     return payload
   }
 
-  return { security, loadingSecurity, ensureSecurity, refreshSecurity, submit }
+  /**
+   * A send the form itself refused (its own checks, before the request): counted like a refused server answer so
+   * the attempt is not read as an abandoned form.
+   */
+  function refused(kind: LeadKind, formSource: LeadFormSource) {
+    const funnel = { form_kind: kind, form_source: formSource, page_path: import.meta.client ? window.location.pathname : '' }
+    pushDataLayer('lead_form_submit', { ...funnel })
+    pushDataLayer('lead_form_error', { ...funnel, error_type: 'validation' })
+  }
+
+  return { security, loadingSecurity, ensureSecurity, refreshSecurity, submit, refused }
 }

@@ -4,7 +4,7 @@ import { useLeadForm } from '~/composables/useLeadForm'
 import { leadErrorMessage } from '#shared/lead-submit'
 
 const { isDealerOpen, closeDealer } = useStorefrontModal()
-const { security, ensureSecurity, refreshSecurity, submit } = useLeadForm()
+const { security, ensureSecurity, refreshSecurity, submit, refused } = useLeadForm()
 
 const detailsOpen = ref(false)
 const form = reactive({
@@ -84,6 +84,7 @@ async function send() {
   const selectedCity = security.value.cities.find((city) => String(city.id) === form.cityId)
   if (!selectedCity) {
     error.value = 'Vui lòng chọn tỉnh/thành phố trong danh sách.'
+    refused('dealer', 'dealer_popup')
     return
   }
 

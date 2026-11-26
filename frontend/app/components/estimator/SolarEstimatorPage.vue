@@ -96,7 +96,7 @@ const bars = computed(() => {
 })
 
 // Lead: only name and phone; the estimate itself travels as the message.
-const { submit } = useLeadForm()
+const { submit, refused } = useLeadForm()
 const lead = reactive({ fullname: '', phone: '' })
 const touched = reactive({ fullname: false, phone: false })
 const sending = ref(false)
@@ -106,7 +106,12 @@ const phoneDigits = computed(() => normalizeVnPhone(lead.phone))
 const leadInvalid = computed(() => ({ fullname: !lead.fullname.trim(), phone: phoneDigits.value === null }))
 async function sendLead() {
   touched.fullname = touched.phone = true
-  if (!result.value || busy.value || leadInvalid.value.fullname || leadInvalid.value.phone || sending.value) return
+  if (!result.value || busy.value || sending.value) return
+  // This form checks its own fields (novalidate), so the browser reports nothing when they are wrong.
+  if (leadInvalid.value.fullname || leadInvalid.value.phone) {
+    refused('contact', 'solar_estimator')
+    return
+  }
   sending.value = true
   sendError.value = ''
   const requestSequence = sequence

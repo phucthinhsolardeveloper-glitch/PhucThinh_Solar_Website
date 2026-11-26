@@ -12,7 +12,7 @@ const props = defineProps<{
   needs: PublicProductNeed[]
 }>()
 
-const { security, ensureSecurity, submit } = useLeadForm()
+const { security, ensureSecurity, submit, refused } = useLeadForm()
 const form = reactive({
   fullname: '',
   phone: '',
@@ -94,6 +94,7 @@ async function send() {
   error.value = ''
   if ((form.city && !form.ward) || (!form.city && form.ward)) {
     error.value = 'Nếu chọn tỉnh/thành phố, vui lòng chọn cả phường/xã.'
+    refused('product', 'product_page')
     return
   }
   submitting.value = true
