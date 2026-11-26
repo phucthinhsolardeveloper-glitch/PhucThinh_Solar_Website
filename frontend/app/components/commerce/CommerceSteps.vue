@@ -31,7 +31,7 @@ const index = computed(() => steps.findIndex((step) => step.id === props.current
 .commerce-steps ol::before { right: calc(100% / 6); background: #e2e8f0; }
 .commerce-steps ol::after { width: calc((100% - 100% / 3) * var(--progress)); background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300)); animation: steps-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: left; }
 .commerce-steps li { display: flex; justify-content: center; }
-.commerce-steps__item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #94a3b8; font-size: 14px; font-weight: 700; text-align: center; text-decoration: none; }
+.commerce-steps__item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #64748b; font-size: 14px; font-weight: 700; text-align: center; text-decoration: none; }
 .commerce-steps__dot { display: grid; width: 40px; height: 40px; place-items: center; border: 2px solid #e2e8f0; border-radius: 50%; background: #fff; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
 .is-done .commerce-steps__item { color: var(--color-navy-800); }
 .is-done .commerce-steps__dot { border-color: var(--color-gold-500); background: var(--pts-gold-gradient); color: var(--color-navy-950); }

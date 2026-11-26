@@ -11,7 +11,7 @@ const activeIndex = ref(0)
       <h2 id="product-applications-title" class="m-0 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
         {{ applications.title }}
       </h2>
-      <a href="#pts-pdp-consultation" class="inline-flex min-h-11 items-center gap-1.5 text-sm font-extrabold text-gold-700 no-underline transition-colors hover:text-navy-800">
+      <a href="#pts-pdp-consultation" class="inline-flex min-h-11 items-center gap-1.5 text-sm font-extrabold text-gold-800 no-underline transition-colors hover:text-navy-800">
         <span>Tư vấn theo không gian lắp đặt</span>
         <span aria-hidden="true">→</span>
       </a>
