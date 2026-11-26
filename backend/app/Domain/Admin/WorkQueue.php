@@ -2,6 +2,7 @@
 
 namespace App\Domain\Admin;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Resources\Articles\ArticleResource;
@@ -17,6 +18,7 @@ use App\Models\PostRevision;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 /**
@@ -46,7 +48,7 @@ final class WorkQueue
                     ->with('latestShipment')->oldest('updated_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, 'thu hộ '.$this->money($o->latestShipment->cod_amount).' · vận đơn '.$o->latestShipment->bill_code, OrderResource::getUrl('edit', ['record' => $o])],
                 OrderResource::getUrl().'?filters[shipping][value]=delivered');
-            $sections[] = $this->section('orders', 'Đơn hàng mới chưa xử lý', 'warning', Order::query()->where('status', 'new')->oldest(),
+            $sections[] = $this->section('orders', 'Đơn hàng mới chưa xử lý', 'warning', self::newOrders()->oldest(),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone, $this->money($o->total).' · đặt '.$this->when($o->created_at), OrderResource::getUrl('edit', ['record' => $o])],
                 OrderResource::getUrl().'?filters[status][value]=new');
             $sections[] = $this->section('unshipped', 'Đơn đã xác nhận quá 24 giờ, chưa có vận đơn', 'warning',
@@ -113,6 +115,17 @@ final class WorkQueue
         }
 
         return array_values(array_filter($sections, fn ($s) => $s['count'] > 0));
+    }
+
+    /**
+     * New orders someone has to handle, the same set the dashboard counts: an unpaid online (VNPay) order is a payment
+     * that has not gone through, not work yet.
+     *
+     * @return Builder<Order>
+     */
+    public static function newOrders(): Builder
+    {
+        return Order::query()->where('status', 'new')->where(fn (Builder $q) => CountedOrders::apply($q->getQuery()));
     }
 
     /** Sections that count toward the menu badge. */

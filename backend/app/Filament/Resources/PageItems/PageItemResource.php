@@ -68,7 +68,7 @@ class PageItemResource extends Resource
         'catalog.benefits' => ['Danh mục · Lợi ích', ['title', 'summary', 'image']],
         'search.suggestions' => ['Tìm kiếm · Gợi ý', ['title']],
         'solutions.intro' => ['Giải pháp · Phần mở đầu', ['title', 'subtitle', 'summary', 'body', 'image']],
-        'solutions.cta' => ['Giải pháp · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'extra', 'image']],
+        'solutions.cta' => ['Giải pháp · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'image']],
         'news.intro' => ['Tin tức · Phần mở đầu', ['title', 'summary']],
         'news.cta' => ['Tin tức · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'extra', 'image']],
         'projects.intro' => ['Dự án · Phần mở đầu', ['title', 'summary']],
@@ -104,7 +104,8 @@ class PageItemResource extends Resource
                 // A new row made from a list filtered to one section starts in that section.
                 ->default(fn ($livewire) => $livewire->tableFilters['section']['value'] ?? null),
             TextInput::make('title')->label(self::FIELD_LABELS['title'])->visible(self::shows('title')),
-            TextInput::make('subtitle')->label(self::FIELD_LABELS['subtitle'])->visible(self::shows('subtitle')),
+            TextInput::make('subtitle')->label(fn (Get $get) => $get('section') === 'solutions.cta' ? 'Chữ trên nút' : self::FIELD_LABELS['subtitle'])
+                ->visible(self::shows('subtitle')),
             TextInput::make('figure')->label(self::FIELD_LABELS['figure'])->visible(self::shows('figure')),
             TextInput::make('link')->label(self::FIELD_LABELS['link'])->visible(self::shows('link')),
             TextInput::make('extra')->label(self::FIELD_LABELS['extra'])->visible(self::shows('extra')),

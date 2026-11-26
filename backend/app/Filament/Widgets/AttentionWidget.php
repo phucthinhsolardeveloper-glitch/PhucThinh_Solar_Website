@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Domain\Analytics\CountedOrders;
+use App\Domain\Admin\WorkQueue;
 use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Media\MediaInventory;
 use App\Domain\Outbox\Outbox;
@@ -32,7 +32,7 @@ class AttentionWidget extends Widget
         $items = [];
         if (OrderResource::canViewAny()) {
             $orders = OrderResource::getUrl();
-            $new = CountedOrders::apply(DB::table('orders'))->where('status', 'new')->count();
+            $new = WorkQueue::newOrders()->count();
             $reported = DB::table('orders')->whereNotNull('transfer_reported_at')->where('payment_status', 'unpaid')->where('status', '!=', 'cancelled')->count();
             if ($reported > 0) {
                 $items[] = ['tone' => 'danger', 'text' => $reported.' đơn khách báo đã chuyển khoản, chờ đối chiếu sao kê', 'url' => $orders];

@@ -64,6 +64,40 @@ final class PageSectionSources
         ],
     ];
 
+    /**
+     * The other pages built from page_items. They have no layout screen, so a block is only "where it comes from".
+     * Same upkeep rule as MAP: mirrors DealerAssembler, Solutions*, News*, Project*, ProductExtras and their components.
+     * seo: SeoMeta.page or null; path: public page, or null when the block repeats on many pages.
+     */
+    private const OTHER_PAGES = [
+        'dealer' => ['label' => 'Đại lý', 'path' => '/dai-ly/', 'seo' => 'dai-ly', 'blocks' => [
+            ['label' => 'Ảnh đầu trang', 'note' => 'Ảnh và dòng chữ trên ảnh lấy từ ảnh đầu tiên đang hiện.', 'sources' => [['banners', 'dealer-hero']]],
+            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên (theo thứ tự tạo): tiêu đề là tiêu đề lớn của trang, mô tả ngắn là đoạn giới thiệu. Ảnh của dòng này không được dùng; ảnh đầu trang nằm ở "Ảnh theo vị trí".', 'sources' => [['items', 'dealer.intro']]],
+            ['label' => 'Tổng quan và sản phẩm phân phối', 'note' => 'Tiêu đề và mô tả lấy từ dòng Tổng quan đang bật đầu tiên (theo thứ tự tạo). Ảnh sản phẩm phân phối cần có tiêu đề, kèm ảnh hoặc liên kết.', 'sources' => [['items', 'dealer.overview'], ['banners', 'hinh-anh-dai-ly']]],
+            ['label' => 'Hỗ trợ và quyền lợi', 'note' => 'Tiêu đề khối lấy từ dòng Hỗ trợ đang bật đầu tiên. Thẻ lấy từ 4 dòng Quyền lợi đứng đầu theo thứ tự; dòng đang tắt vẫn chiếm một chỗ trong 4, dòng không có tiêu đề không hiện.', 'sources' => [['items', 'dealer.support'], ['items', 'dealer.benefits']]],
+            ['label' => 'Phản hồi đại lý', 'note' => '3 dòng đứng đầu theo thứ tự; dòng đang tắt vẫn chiếm một chỗ trong 3. Nội dung là lời trích, mô tả ngắn là dòng dưới tên.', 'sources' => [['items', 'dealer.testimonials']]],
+            ['label' => 'Số liệu', 'note' => 'Tối đa 3 dòng đang bật. "Con số" chỉ nhận chữ số, dấu chấm và dấu phẩy; viết thêm chữ thì dòng không hiện.', 'sources' => [['items', 'dealer.stats']]],
+        ]],
+        'solutions' => ['label' => 'Giải pháp', 'path' => '/giai-phap/', 'seo' => 'giai-phap', 'blocks' => [
+            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên: tiêu đề, mô tả ngắn, ảnh; phần Nội dung thành bài dài có mục lục trên trang Giải pháp. Tiêu đề phụ không hiện. Có dòng nhưng tắt hết thì khối mở đầu ẩn.', 'sources' => [['items', 'solutions.intro']]],
+            ['label' => 'Thẻ giải pháp', 'note' => 'Thẻ lấy từ các bài Giải pháp.', 'sources' => [['solutions', '']]],
+            ['label' => 'Lời mời tư vấn', 'note' => 'Dòng đang bật đầu tiên, dùng ở trang Giải pháp và từng bài giải pháp. Chữ trên nút lấy từ "Tiêu đề phụ". Chưa có dòng nào thì dùng chữ có sẵn; tắt hết thì ẩn.', 'sources' => [['items', 'solutions.cta']]],
+        ]],
+        'news' => ['label' => 'Tin tức', 'path' => '/tin-tuc/', 'seo' => 'tin-tuc', 'blocks' => [
+            ['label' => 'Mở đầu', 'note' => 'Tiêu đề và mô tả của dòng đang bật đầu tiên. Lưu ý: khi đã có dòng ở phần này, cụm bài nổi bật chỉ hiện nếu dòng đó mang cờ "hero" có từ dữ liệu cũ; form không sửa được cờ, nên dòng tạo mới đứng đầu sẽ làm cụm này ẩn.', 'sources' => [['items', 'news.intro']]],
+            ['label' => 'Lời mời tư vấn', 'note' => 'Dòng đang bật đầu tiên, dùng ở trang danh sách và trang bài viết. Chữ trên nút lấy từ "Chữ trên nút". Chưa có dòng nào thì dùng chữ có sẵn; tắt hết thì ẩn.', 'sources' => [['items', 'news.cta']]],
+        ]],
+        'projects' => ['label' => 'Dự án', 'path' => '/du-an-da-thuc-hien/', 'seo' => 'du-an', 'blocks' => [
+            ['label' => 'Mở đầu', 'note' => 'Tiêu đề và mô tả của dòng đang bật đầu tiên. Trang nhóm dự án ưu tiên tên và mô tả của nhóm.', 'sources' => [['items', 'projects.intro']]],
+            ['label' => 'Lợi ích', 'note' => 'Tối đa 3 dòng đang bật. Không có dòng nào đang bật thì trang dùng 3 lợi ích có sẵn.', 'sources' => [['items', 'projects.benefits']]],
+            ['label' => 'Lời mời tư vấn', 'note' => 'Dòng đang bật đầu tiên, dùng ở trang danh sách và trang dự án. Chữ trên nút lấy từ "Chữ trên nút". Chưa có dòng nào thì dùng chữ có sẵn; tắt hết thì ẩn.', 'sources' => [['items', 'projects.cta']]],
+            ['label' => 'Cam kết trong lời mời', 'note' => 'Tối đa 3 dòng đang bật, nằm trong khối Lời mời tư vấn.', 'sources' => [['items', 'projects.trust']]],
+        ]],
+        'product' => ['label' => 'Trang sản phẩm', 'path' => null, 'seo' => null, 'blocks' => [
+            ['label' => 'Cam kết', 'note' => 'Tối đa 8 dòng đang bật có tiêu đề, hiện giống nhau trên mọi trang sản phẩm. Không có dòng nào thì khối ẩn.', 'sources' => [['items', 'product.commitments']]],
+        ]],
+    ];
+
     /** Layout page key → SeoMeta.page and public path. */
     public const PAGES = ['home' => ['seo' => 'home', 'path' => '/'], 'about' => ['seo' => 'gioi-thieu', 'path' => '/gioi-thieu/']];
 
@@ -92,6 +126,75 @@ final class PageSectionSources
         $published = array_column(app(PageLayouts::class)->published($page), 'type');
 
         return $anchor !== null && in_array($type, $published, true) ? PublicUrls::base().self::PAGES[$page]['path'].'#'.$anchor : null;
+    }
+
+    /**
+     * Every page built from editable blocks, for the "choose by page" list: Home and About first.
+     *
+     * @return list<array{label: string, blocks: list<array{label: string, links: list<array{label: string, url: ?string}>}>}>
+     */
+    public static function directory(): array
+    {
+        $out = [];
+        foreach (array_keys(self::MAP) as $page) {
+            $blocks = [];
+            foreach (PageLayouts::PAGES[$page]['sections'] as $type => $section) {
+                if (self::links($page, $type) !== []) {
+                    $blocks[] = ['label' => $section['label'], 'links' => self::links($page, $type)];
+                }
+            }
+            $out[] = ['label' => PageLayouts::PAGES[$page]['label'], 'blocks' => $blocks];
+        }
+        foreach (self::OTHER_PAGES as $page) {
+            $out[] = ['label' => $page['label'], 'blocks' => array_map(fn (array $block) => ['label' => $block['label'],
+                'links' => array_map(fn (array $source) => self::link($source[0], $source[1]), $block['sources'])], $page['blocks'])];
+        }
+
+        return $out;
+    }
+
+    /**
+     * What a list filtered to one page_items section needs to say: the rule, the block's other sources, the page.
+     * Null for a section that is not mapped.
+     *
+     * @return array{note: string, links: list<array{label: string, url: ?string}>, liveUrl: ?string}|null
+     */
+    public static function sectionHelp(string $section): ?array
+    {
+        foreach (array_keys(self::MAP) as $page) {
+            if ($type = self::itemSections($page)[$section][0] ?? null) {
+                return ['note' => PageLayouts::PAGES[$page]['label'].' · '.self::note($page, $type),
+                    'links' => self::otherLinks(self::MAP[$page][$type]['sources'], $section, self::PAGES[$page]['seo']),
+                    'liveUrl' => self::liveUrl($page, $type)];
+            }
+        }
+        foreach (self::OTHER_PAGES as $page) {
+            foreach ($page['blocks'] as $block) {
+                if (in_array(['items', $section], $block['sources'], true)) {
+                    return ['note' => $page['label'].' · '.$block['note'],
+                        'links' => self::otherLinks($block['sources'], $section, $page['seo']),
+                        'liveUrl' => $page['path'] === null ? null : PublicUrls::base().$page['path']];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  list<array{0: string, 1: string}>  $sources
+     * @return list<array{label: string, url: ?string}>
+     */
+    private static function otherLinks(array $sources, string $current, ?string $seo): array
+    {
+        $links = [];
+        foreach ($sources as [$kind, $key]) {
+            if ($kind !== 'items' || $key !== $current) {
+                $links[] = self::link($kind, $key);
+            }
+        }
+
+        return $seo === null ? $links : [...$links, self::seoLink()];
     }
 
     /** @return array<string, list<string>> page_items section → layout blocks reading it */

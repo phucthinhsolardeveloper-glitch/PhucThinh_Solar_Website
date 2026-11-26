@@ -23,6 +23,9 @@
     .pts-queue__more:hover { text-decoration: underline; }
     .pts-section-source { font-size: .8rem; line-height: 1.5; }
     .pts-section-source__links { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-top: .35rem; }
+    .pts-page-directory__page + .pts-page-directory__page { margin-top: 1.5rem; }
+    .pts-page-directory__page > h3 { font-size: 1rem; font-weight: 700; border-bottom: 1px solid rgb(148 163 184 / 35%); padding-bottom: .35rem; }
+    .pts-page-directory__block { margin-top: .75rem; }
     .pts-cal__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
     .pts-cal__month { font-size: 1rem; }
     .pts-cal__legend { display: inline-flex; gap: .4rem; margin-left: auto; }

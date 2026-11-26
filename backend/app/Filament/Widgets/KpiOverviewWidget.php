@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Domain\Admin\WorkQueue;
 use App\Domain\Analytics\CountedOrders;
 use App\Filament\Pages\WorkQueuePage;
 use App\Filament\Resources\Leads\LeadResource;
@@ -35,7 +36,7 @@ class KpiOverviewWidget extends StatsOverviewWidget
                 ->color($revenue >= $before ? 'success' : 'danger')->chart($this->daily('orders', 'sum(total)', fn ($q) => CountedOrders::apply($q)))
                 ->url(OrderResource::getUrl());
             $orders = $this->count('orders', now()->subDays(29)->startOfDay(), now(), fn ($q) => CountedOrders::apply($q));
-            $waiting = CountedOrders::apply(DB::table('orders'))->where('status', 'new')->count();
+            $waiting = WorkQueue::newOrders()->count();
             $stats[] = Stat::make('Đơn hàng 30 ngày', number_format($orders, 0, ',', '.'))
                 ->description($waiting > 0 ? $waiting.' đơn mới đang chờ xử lý' : 'Không có đơn chờ xử lý')
                 ->descriptionIcon($waiting > 0 ? 'heroicon-m-clock' : 'heroicon-m-check-circle')->color($waiting > 0 ? 'warning' : 'success')

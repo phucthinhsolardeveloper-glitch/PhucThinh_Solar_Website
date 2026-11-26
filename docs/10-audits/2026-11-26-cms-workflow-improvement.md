@@ -121,7 +121,7 @@ P1 là làm trước.
 | Nhóm bài (`content`) | Menu Kiến thức, listing, sitemap | Giữ | |
 | Bản nháp & lịch sử (`content`) | Luồng duyệt/xuất bản | Giữ | Link lịch sử đã sửa |
 | Kế hoạch bài đăng (`content`) | Lệnh import kế hoạch, Lịch biên tập | Gộp / Ẩn khi xong kế hoạch | P3: xem bảng trang bên dưới |
-| Nội dung các trang (`content`) | Assembler trang chủ, giới thiệu, đại lý, giải pháp, tin, dự án | Cải thiện (đã làm một phần) | P1: chỉ Trang chủ và Giới thiệu có bản đồ nguồn |
+| Nội dung các trang (`content`) | Assembler trang chủ, giới thiệu, đại lý, giải pháp, tin, dự án | Cải thiện (đã làm một phần) | Đợt 2 bổ sung Đại lý, Giải pháp, Tin tức, Dự án, trang sản phẩm; còn lại ở mục 5 |
 | Ảnh theo vị trí (`media`) | Logo, hero, chiến dịch, chứng nhận | Cải thiện (đã làm một phần) | Cần quyền `media`, người chỉ có `content` không sửa được ảnh khối |
 | Thư viện ảnh, Video (`media`) | Route album, PDP/tin, sitemap | Giữ | Chưa đo mức dùng |
 | Kho media (`media`) | `MediaInventory`, cảnh báo ảnh mất | Giữ | Link "ảnh mất" đã sửa |
@@ -160,18 +160,95 @@ P1 là làm trước.
 
 | Ưu tiên | Việc | Tiêu chí nghiệm thu | Dữ liệu / quyền cần |
 |---|---|---|---|
-| P1 | Bản đồ nguồn cho Đại lý, Giải pháp, Tin tức, Dự án, trang sản phẩm | Từ danh sách Nội dung các trang, mọi phần cho biết trang hiển thị và quy tắc giới hạn dòng; mỗi câu được đối chiếu với assembler và component | Quyền hiện có |
 | P1 | Cho chủ website thử 3 việc: đổi bước Quy trình, thay ảnh chiến dịch, sửa sản phẩm giá sai | 3/3 tự làm được, không hỏi đường, mỗi việc tối đa 3 lần bấm tới đúng form | 20 phút trên bản staging |
 | P2 | Link "Xem cả" khớp đúng mục đếm | "Chờ đối soát thu hộ", "xác nhận quá 24 giờ", "khách báo chuyển khoản" mở đúng số bản ghi đã đếm; chế độ "Của tôi" giữ nguyên khi bấm | Sửa bộ lọc `OrderResource`: **hoãn** để tránh đụng nhánh đơn hàng/tài chính đang chạy |
 | P2 | Người biên tập `content` thiếu `media`/`settings` | Chủ website quyết cấp quyền hay giữ nguyên; nếu giữ, không có link dẫn tới 403 | Quyết định của chủ website |
-| P2 | Gộp nguồn Cần xử lý và Việc cần làm | Cùng một số cho cùng một loại việc | Không cần dữ liệu mới |
+| P2 | Cần xử lý và Việc cần làm dùng chung toàn bộ truy vấn | Đợt 2 mới thống nhất số đơn mới; các mục còn lại đang cho cùng số nhưng viết ở hai nơi | Không cần dữ liệu mới |
+| P2 | Nguồn cho Chân trang, Liên hệ, Danh mục, Gợi ý tìm kiếm | `site.footer`, `contact.intro`, `catalog.benefits`, `search.suggestions` có câu mô tả đã đối chiếu | Quyền hiện có |
+| P2 | Trường không được trang dùng | Quyết định ẩn ô Ảnh của `dealer.intro` và Tiêu đề phụ của `solutions.intro`; xử lý cờ "hero" của `news.intro` bằng một công tắc | Xác nhận của chủ website |
 | P3 | Gộp Lịch biên tập và Kế hoạch bài đăng | Một mục menu, URL cũ vẫn mở được | Biết kế hoạch 180 bài còn dùng không |
 | P3 | Cho sửa chữ cố định (khối Đại lý trang chủ, tiêu đề Giới thiệu) | Chỉ làm khi chủ website cần đổi; có fallback bằng chữ hiện tại | Yêu cầu nội dung |
 
 `docs/07-features/admin-guide.md` vẫn mô tả Admin PHP cũ, không dùng làm căn cứ
 cho Admin hiện tại; nên viết lại hoặc đánh dấu lịch sử trong đợt rà docs.
 
-## 6. Rollback
+## 6. Đợt 2: nguồn nội dung các trang còn lại và số đơn mới
+
+### 6.1 Chọn trang, chọn khối, tới đúng danh sách
+
+"Nội dung các trang" thêm nút **Chọn theo trang**: liệt kê Trang chủ, Giới thiệu,
+Đại lý, Giải pháp, Tin tức, Dự án, Trang sản phẩm và các khối của từng trang.
+Đường đi: menu, Chọn theo trang, tên nguồn (3 lần bấm). Không thêm mục menu,
+không thêm URL.
+
+Khi danh sách lọc theo một phần, đầu trang ghi quy tắc dòng nào được dùng, kèm
+nguồn khác của cùng khối, SEO của trang và trang đang chạy. Đây là liên kết tới
+trang **đang chạy**; sửa nội dung có hiệu lực ngay, không có xem trước bản nháp.
+"Ảnh theo vị trí" lọc theo ảnh Đại lý có nút về nội dung trang Đại lý; nút Bố cục
+trang chỉ còn hiện cho phần Trang chủ, Giới thiệu hoặc khi chưa lọc.
+
+Quy tắc đáng chú ý, đã đối chiếu source:
+
+- Đại lý: Quyền lợi lấy 4 dòng đầu và Phản hồi lấy 3 dòng đầu **trước khi** bỏ
+  dòng đang tắt. Ảnh của dòng "Phần mở đầu" không được dùng.
+- Giải pháp: chữ nút lời mời lấy từ **Tiêu đề phụ**. Form trước đây còn ô "Chữ
+  trên nút / nội dung thêm" (`extra`) mà không trang nào đọc. Ô đó nay ẩn (giá trị
+  cũ giữ nguyên) và Tiêu đề phụ mang nhãn "Chữ trên nút".
+- Tin tức: khi phần mở đầu đã có dòng, cụm bài nổi bật phụ thuộc cờ `hero` mà form
+  không sửa được.
+
+Chưa có câu mô tả: Liên hệ, Chân trang, Lợi ích danh mục, Gợi ý tìm kiếm.
+
+### 6.2 Cùng một số đơn mới
+
+Cần xử lý và KPI đã loại đơn VNPay chưa thanh toán (`CountedOrders`), còn Việc cần
+làm và số trên menu thì vẫn đếm. Cả ba nay dùng `WorkQueue::newOrders()`.
+**Thay đổi hành vi:** đơn VNPay chưa trả tiền không còn nằm trong mục "Đơn hàng mới
+chưa xử lý" và không cộng vào số trên menu qua mục đó; đơn vẫn ở danh sách Đơn
+hàng. Link "Xem cả" và link từ Cần xử lý vẫn lọc `status = new`, nên có thể ra
+nhiều dòng hơn số đã đếm (cần sửa `OrderResource`, đã hoãn). Không đổi trạng thái
+đơn, thanh toán hay bộ lọc đơn hàng.
+
+### 6.3 Không làm: thêm lối tắt cho sản phẩm
+
+Danh sách sản phẩm đã có lọc theo ảnh, SEO, mô tả, thông số, giá, cân nặng ("Cần
+cải thiện") và theo lỗi (đợt 1); form chia tab sẵn. Chưa thấy khoảng trống đủ rõ
+để thêm.
+
+### 6.4 Kiểm thử đợt 2
+
+- `vendor` dựng riêng bằng `composer install` đúng `composer.lock` (không đổi
+  `composer.json`/`composer.lock`, không sửa `vendor` của master).
+- 20 file test liên quan Admin, bảng điều khiển, liên hệ, đánh giá, vận chuyển,
+  phiếu đơn, email: **145 pass, 1 skip, 0 fail**. Gồm 10 test của
+  `AdminWorkflowLinksTest` và hai file từng fail vì thiếu `dompdf`. **Không chạy
+  lại toàn bộ suite** trong đợt 2.
+- Pint: còn 7 lỗi sẵn có ở file không sửa. PHPStan: trùng base (9 dòng với
+  `vendor` đúng lock; con số 17 ở mục 3 là với `vendor` cũ).
+- Trình duyệt: tiến trình web xác nhận dùng `pts_app_test`, mail `array`. Đi đúng
+  3 lần bấm; mở hết 37 link trong danh bạ: không link nào lỗi, link lọc đều có chip,
+  danh sách Nội dung đều có câu mô tả. Một số phần chưa có dòng nào trong DB test
+  nên danh sách trống. Form lời mời Giải pháp hiện đúng "Chữ trên nút". 390px không
+  cuộn ngang, không lỗi JavaScript hay HTTP 500.
+- Chưa kiểm: tài khoản editor trên trình duyệt (đã có Livewire test), Bảng điều
+  khiển trên trình duyệt, trang công khai Nuxt.
+- Rà lại đợt 1: tên tham số lọc/tìm kiếm có test chặn; quyền theo từng đích có
+  test. Ngay sau deploy, cache `catalog-health` cũ (tối đa 10 phút) chưa có khóa
+  `table`, nên mục trùng đường dẫn còn có thể link sai trong khoảng đó; chạy
+  `cache:clear` hoặc bấm "Kiểm tra lại ngay".
+
+### 6.5 Chủ website tự nghiệm thu
+
+1. Nội dung các trang → Chọn theo trang → "Đại lý · Quyền lợi": đổi tiêu đề một
+   thẻ, mở "Xem trên trang đang chạy" để thấy thay đổi.
+2. Bố cục trang → dưới khối Quy trình bấm link nội dung, sửa một bước.
+3. Bố cục trang → dưới khối Chiến dịch bấm link ảnh, thay một ảnh.
+4. Việc cần làm hoặc Chất lượng dữ liệu → mở danh sách sản phẩm lỗi, sửa một giá.
+5. So số đơn mới giữa Bảng điều khiển và Việc cần làm.
+
+Đạt khi tự làm được cả 5, không cần hỏi đường.
+
+## 7. Rollback
 
 Chỉ có thay đổi code backend. `git revert` commit là đủ; không có dữ liệu hay
 schema cần hoàn tác. Khi deploy cần `view:clear` vì có sửa Blade.
