@@ -121,7 +121,7 @@ Code cuối `13bced76`; các commit sau nó chỉ sửa tài liệu. Máy cục 
 | 3 bài trình duyệt trên bản chờ phát hành `cc5011b6` | **PASS** |
 | `php artisan test` toàn bộ (96 file, 5 đợt tuần tự) | **PASS** 563 đạt, 2 bỏ qua, 0 lỗi. Lần chạy đầu đợt 2 lỗi 1 test do cache view còn bản phiếu cũ mà bước kiểm chứng test đã biên dịch; xóa cache (`view:clear`) chạy lại cả đợt thì đạt |
 | Pint trên file PHP thay đổi | **PASS** |
-| PHPStan | **Không phát sinh** (9 lỗi có sẵn; đo ở `70f09a1e`, các thay đổi PHP sau đó chỉ ở phiếu, quyền và sitemap) |
+| PHPStan | **Không phát sinh** (9 lỗi có sẵn, chạy lại trên code cuối) |
 | `composer audit` | **PASS** không còn cảnh báo |
 | `npm test`, `nuxi typecheck`, `nuxt build` | **PASS** 562/562; 0 lỗi; build được |
 | Trình duyệt: `consent-lead-purchase` (11), `shop-flow`, `lead-form-errors` (6), `growth-links` (6), `lead-attribution` | **PASS**. `lead-attribution` sửa script đọc nơi lưu cũ; hành vi web không đổi |
