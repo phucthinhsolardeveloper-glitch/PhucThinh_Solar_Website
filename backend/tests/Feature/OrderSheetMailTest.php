@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Support\FormToken;
 use App\Support\SiteSettings;
+use Dompdf\Dompdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -247,4 +248,48 @@ it('keeps the switches off until someone saves them, and records who did', funct
     $this->get('/admin/phieu-don-hang-mau.pdf')->assertOk();
     $this->flushSession();
     $this->actingAs(sheetStaff(['orders']), 'admin')->get('/admin/phieu-don-hang-mau.pdf')->assertForbidden();
+});
+
+it('keeps every part of the sheet on the page, however long a word the buyer typed', function () {
+    $sheet = app(OrderSheet::class)->sample();
+    $sheet['customer'] = ['name' => str_repeat('Ng', 70), 'phone' => '0900000000', 'email' => str_repeat('a', 150).'@example.test', 'address' => str_repeat('x', 200)];
+    $sheet['note'] = str_repeat('y', 900);
+    $sheet['items'][0]['name'] = str_repeat('M', 180);
+    $pdf = new Dompdf(['defaultFont' => 'DejaVu Sans', 'fontCache' => sys_get_temp_dir(), 'tempDir' => sys_get_temp_dir()]);
+    $right = 0.0;
+    $pdf->setCallbacks([['event' => 'end_frame', 'f' => function ($frame) use (&$right) {
+        $box = $frame->get_border_box();
+        $right = max($right, (float) $box['x'] + (float) $box['w']);
+    }]]);
+    $pdf->loadHtml(view('pdf.order-sheet', ['sheet' => $sheet, 'reference' => 'x'])->render(), 'UTF-8');
+    $pdf->setPaper('A4');
+    $pdf->render();
+
+    expect($right)->toBeGreaterThan(500.0)->toBeLessThanOrEqual(595.3);
+});
+
+it('leaves out a header picture too large to decode during checkout', function () {
+    $root = sys_get_temp_dir().'/pts-logo-'.bin2hex(random_bytes(4));
+    mkdir($root.'/photo', 0700, true);
+    $chunk = fn (string $type, string $data) => pack('N', strlen($data)).$type.$data.pack('N', crc32($type.$data));
+    // A valid header announcing 20 000 x 20 000 pixels.
+    file_put_contents($root.'/photo/logo-qua-lon.png', "\x89PNG\r\n\x1a\n".$chunk('IHDR', pack('NNCCCCC', 20000, 20000, 8, 6, 0, 0, 0)).$chunk('IEND', ''));
+    config(['site.upload_path' => $root]);
+    $logo = new ReflectionMethod(OrderSheet::class, 'logo');
+
+    expect($logo->invoke(app(OrderSheet::class), 'https://phucthinhsolar.com/upload/photo/logo-qua-lon.png'))->toBe('');
+    unlink($root.'/photo/logo-qua-lon.png');
+    rmdir($root.'/photo');
+    rmdir($root);
+});
+
+it('refuses the sheet and the print page to a switched-off account that is still signed in', function () {
+    $order = placeSheetOrder();
+    $staff = sheetStaff(['orders', 'settings']);
+    $this->actingAs($staff, 'admin')->get('/admin/orders/'.$order->id.'/in')->assertOk();
+    $staff->forceFill(['is_active' => false])->save();
+
+    foreach (['/admin/orders/'.$order->id.'/phieu.pdf', '/admin/phieu-don-hang-mau.pdf', '/admin/orders/'.$order->id.'/in', '/admin/orders/in-nhieu?ids='.$order->id] as $url) {
+        $this->actingAs($staff, 'admin')->get($url)->assertForbidden();
+    }
 });

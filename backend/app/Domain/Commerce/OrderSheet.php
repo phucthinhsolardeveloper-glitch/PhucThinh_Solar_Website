@@ -21,6 +21,9 @@ final class OrderSheet
 {
     private const LOGO_WIDTH = 520;
 
+    /** A picture larger than this is left out: decoding it could exhaust memory in the middle of a checkout. */
+    private const LOGO_MAX_PIXELS = 8_000_000;
+
     public function __construct(private readonly MailBrand $brand) {}
 
     /** Stores the sheet of a new order, once. A failure is logged and never stops the order. */
@@ -149,6 +152,10 @@ final class OrderSheet
     {
         $file = $url === '' ? '' : rtrim((string) config('site.upload_path'), '/').'/photo/'.basename($url);
         if ($file === '' || ! is_file($file) || ! function_exists('imagecreatefromstring')) {
+            return '';
+        }
+        $size = @getimagesize($file);
+        if ($size === false || $size[0] * $size[1] > self::LOGO_MAX_PIXELS) {
             return '';
         }
         $image = @imagecreatefromstring((string) file_get_contents($file));

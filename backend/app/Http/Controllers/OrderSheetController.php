@@ -32,10 +32,11 @@ class OrderSheetController extends Controller
         return $this->pdf($sheets, $sheets->sample(), false);
     }
 
+    /** These routes sit outside the panel, so a switched-off account is refused here as the panel refuses it. */
     private function allow(string $permission): void
     {
         $user = auth('admin')->user();
-        abort_unless($user instanceof User && $user->hasPermission($permission), 403);
+        abort_unless($user instanceof User && $user->is_active && $user->hasPermission($permission), 403);
     }
 
     /** @param array<string, mixed> $sheet */

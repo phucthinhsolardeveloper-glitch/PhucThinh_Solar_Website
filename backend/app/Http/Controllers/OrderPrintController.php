@@ -14,7 +14,7 @@ class OrderPrintController extends Controller
     public function __invoke(Order $order, SiteSettings $settings): View
     {
         $user = auth('admin')->user();
-        abort_unless($user instanceof User && $user->hasPermission('orders'), 403);
+        abort_unless($user instanceof User && $user->is_active && $user->hasPermission('orders'), 403);
 
         return view('order-print', ['order' => $order->load(['items', 'province', 'ward', 'paymentMethod']), 'settings' => $settings]);
     }
@@ -23,7 +23,7 @@ class OrderPrintController extends Controller
     public function many(Request $request, SiteSettings $settings): View
     {
         $user = auth('admin')->user();
-        abort_unless($user instanceof User && $user->hasPermission('orders'), 403);
+        abort_unless($user instanceof User && $user->is_active && $user->hasPermission('orders'), 403);
         $ids = array_slice(array_values(array_unique(array_filter(array_map('intval', explode(',', (string) $request->query('ids')))))), 0, 100);
         abort_if($ids === [], 404);
         $orders = Order::query()->whereKey($ids)->with(['items', 'province', 'ward', 'paymentMethod'])->get()

@@ -18,6 +18,12 @@
     body { margin: 0; font-family: 'DejaVu Sans'; font-size: 9.5pt; line-height: 1.4; color: #15284b; }
     table { width: 100%; border-collapse: collapse; }
     td, th { vertical-align: top; }
+    /* Whatever a buyer types stays inside its column: fixed widths, and a word with no space breaks where it must. */
+    .parties, .items { table-layout: fixed; }
+    .parties td, .items td, .note, .company { word-wrap: break-word; overflow-wrap: anywhere; }
+    .items td.n, .items td.c { word-wrap: normal; overflow-wrap: normal; }
+    /* With fixed layout every cell states its share, or the columns come out equal. */
+    .items .w-no { width: 6%; } .items .w-name { width: 51%; } .items .w-price { width: 17%; } .items .w-qty { width: 7%; } .items .w-sum { width: 19%; }
     .band { background: #09285e; color: #fff; }
     .band td { padding: 16px 18px; vertical-align: middle; }
     .band img { width: 230px; }
@@ -92,19 +98,19 @@
 
     <table class="items">
         <thead>
-            <tr><th class="c" style="width:26px">STT</th><th>Sản phẩm</th><th class="n" style="width:84px">Đơn giá</th><th class="c" style="width:28px">SL</th><th class="n" style="width:94px">Thành tiền</th></tr>
+            <tr><th class="c w-no">STT</th><th class="w-name">Sản phẩm</th><th class="n w-price">Đơn giá</th><th class="c w-qty">SL</th><th class="n w-sum">Thành tiền</th></tr>
         </thead>
         <tbody>
             @foreach ($sheet['items'] as $index => $item)
                 <tr>
-                    <td class="c">{{ $index + 1 }}</td>
-                    <td>{{ $item['name'] }}
+                    <td class="c w-no">{{ $index + 1 }}</td>
+                    <td class="w-name">{{ $item['name'] }}
                         @php($detail = implode('  ·  ', array_filter([$item['code'] !== '' ? 'Mã '.$item['code'] : '', $item['option']])))
                         @if ($detail !== '')<div class="sub">{{ $detail }}</div>@endif
                     </td>
-                    <td class="n">{{ $money($item['price']) }}</td>
-                    <td class="c">{{ $item['quantity'] }}</td>
-                    <td class="n"><strong>{{ $money($item['total']) }}</strong></td>
+                    <td class="n w-price">{{ $money($item['price']) }}</td>
+                    <td class="c w-qty">{{ $item['quantity'] }}</td>
+                    <td class="n w-sum"><strong>{{ $money($item['total']) }}</strong></td>
                 </tr>
             @endforeach
         </tbody>
