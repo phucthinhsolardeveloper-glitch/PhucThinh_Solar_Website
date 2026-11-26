@@ -919,3 +919,8 @@ Rủi ro còn lại:
 - HSTS bật ở Caddy ngoài cùng (`/srv/phucthinhsolar/Caddyfile`, ghi đè tại chỗ, cùng inode, `caddy validate` trước, `caddy reload`): `Strict-Transport-Security: max-age=86400` chỉ cho `phucthinhsolar.com`. Bản trước: `Caddyfile.pre-hsts-20261126`. Bậc tiếp theo: 604800 sau một tuần, rồi 31536000.
 - Rollback: `releases/63b9ff7e/stack.env.before` -> image `a4be39d1`, `view:clear`, khởi động lại worker. Cột `orders.campaign` để nguyên.
 - Đĩa 85%: nên dọn image ứng viên cũ (giữ bản đang chạy, bản trước và một bản lùi).
+
+## 2026-11-26 — xóa 3 đơn thử trên production (chủ website yêu cầu)
+
+- Xóa `TDXA2W`, `BPHPQE`, `FH7GRK` (đều đã hủy, cùng số điện thoại của chủ website, có chữ "test/thử") cùng 5 dòng hàng, 2 lệnh chuyển khoản, 1 bản chụp phiếu đơn và 5 thông báo Admin, trong một transaction. Giữ lại `UDC2G0`, `2UQ3NP`, `QI6PTD`.
+- Sao lưu trước khi xóa: `backups/20261126-delete-test-orders/*.sql` (chỉ dữ liệu, nạp lại bằng `mariadb < file` nếu cần).
