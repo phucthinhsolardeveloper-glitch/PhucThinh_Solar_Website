@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PublicNewsPayload } from '#shared/contracts/public-news'
 import { isPublicNewsPayload } from '#shared/contracts/public-news'
-import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { editorialListPage, editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import { conciseSeoDescription, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
@@ -46,7 +46,11 @@ function submitSearch() {
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !news.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
-const hasFilters = computed(() => Object.keys(route.query).length > 0)
+const listPage = computed(() => editorialListPage(route.query, news.value?.pagination))
+const listCanonicalPath = computed(() => {
+  const base = category.value?.canonicalPath || `/${slug.value}`
+  return listPage.value.page > 1 && !listPage.value.filtered ? `${base}?p=${listPage.value.page}` : base
+})
 const pageUrl = (page: number) => {
   const query = new URLSearchParams()
   if (page > 1) query.set('p', String(page))
@@ -76,14 +80,14 @@ const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsPublicRouteIndexable, !!news.value && news.value.pagination.total > 0 && !error.value, hasFilters.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsPublicRouteIndexable, !!news.value && news.value.pagination.total > 0 && !error.value, listPage.value.filtered)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => !!news.value && !error.value),
   title: pageTitle,
   description: socialDescription,
-  canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),
+  canonicalPath: listCanonicalPath,
   image: computed(() => category.value?.seo?.image || category.value?.image || undefined),
 })
 </script>

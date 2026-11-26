@@ -3,6 +3,7 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use App\Domain\Routing\Redirects;
 use App\Models\Category;
 use App\Support\Text;
 use Illuminate\Database\Connection;
@@ -103,7 +104,7 @@ final class CatalogLanding
                 }
                 $photo = (string) ($item['photo'] ?? '');
                 $image = $this->urls->visual($photo, 'upload/product/') ?: $this->urls->visual($photo, 'assets/images/site-visuals/');
-                $applications[] = ['title' => $itemTitle, 'description' => Text::plain($item['desc'] ?? ''), 'image' => $image, 'href' => self::href($item['link'] ?? '')];
+                $applications[] = ['title' => $itemTitle, 'description' => Text::plain($item['desc'] ?? ''), 'image' => $image, 'href' => Redirects::current(self::href($item['link'] ?? ''))];
             }
         }
         $faqs = [];
@@ -213,7 +214,7 @@ final class CatalogLanding
             'title' => $title,
             'description' => Text::plain($banner['desc']),
             'image' => $this->urls->visual($banner['photo'], 'upload/photo/') ?: $this->urls->visual($banner['photo'], 'assets/images/site-visuals/'),
-            'href' => self::href($banner['link']),
+            'href' => Redirects::current(self::href($banner['link'])),
         ];
     }
 

@@ -30,9 +30,32 @@ final class Redirects
     /** Where an address that no longer answers should go, or null. */
     public static function find(string $path): ?string
     {
+        [$row, $target] = self::lookup($path);
+        if ($row !== null) {
+            DB::table('redirects')->where('id', $row->id)->update(['hits' => DB::raw('hits + 1'), 'last_hit_at' => now()]);
+        }
+
+        return $target;
+    }
+
+    /**
+     * A link the site is about to print, pointed straight at the new address when its page has moved; the query and
+     * fragment stay. Anything else is returned unchanged. Not counted as a visit to the old address.
+     */
+    public static function current(string $href): string
+    {
+        $cut = strcspn($href, '?#');
+        $target = self::lookup(substr($href, 0, $cut))[1];
+
+        return $target === null ? $href : $target.substr($href, $cut);
+    }
+
+    /** @return array{0: object{id: int}|null, 1: string|null} the redirect that applies and where it leads */
+    private static function lookup(string $path): array
+    {
         $path = self::normalise($path);
         if ($path === null) {
-            return null;
+            return [null, null];
         }
         $variants = array_values(array_unique([$path, rtrim($path, '/'), rtrim($path, '/').'/']));
         $row = DB::table('redirects')->whereIn('from_path', $variants)->first();
@@ -44,12 +67,8 @@ final class Redirects
                 ->sortByDesc(fn ($r) => strlen((string) $r->from_path))->first();
             $target = $row ? rtrim((string) $row->to_path, '/').'/'.ltrim(substr($path, strlen(rtrim((string) $row->from_path, '/').'/')), '/') : null;
         }
-        if ($row === null || $target === null || $target === $path) {
-            return null;
-        }
-        DB::table('redirects')->where('id', $row->id)->update(['hits' => DB::raw('hits + 1'), 'last_hit_at' => now()]);
 
-        return $target;
+        return $row === null || $target === null || $target === $path ? [null, null] : [$row, $target];
     }
 
     /** "/a/b/" style internal path, or null for anything else (full URLs, traversal, query strings). */

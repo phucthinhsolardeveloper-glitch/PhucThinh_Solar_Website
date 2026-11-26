@@ -2,7 +2,7 @@
 import type { PublicNewsPayload } from '#shared/contracts/public-news'
 import { isPublicNewsPayload } from '#shared/contracts/public-news'
 import { NEWS_PUBLIC_PATH } from '#shared/public-route-gate'
-import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { editorialListPage, editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsFeatured from '~/components/news/NewsFeatured.vue'
@@ -16,8 +16,10 @@ const robots = computed(() => editorialPublicRouteRobots(
   true,
   config.public.newsPublicRouteIndexable,
   !!news.value && !error.value,
-  Object.keys(requestQuery.value).length > 0,
+  listPage.value.filtered,
 ))
+const listPage = computed(() => editorialListPage(requestQuery.value, news.value?.pagination))
+const listCanonicalPath = computed(() => listPage.value.page > 1 && !listPage.value.filtered ? `${NEWS_PUBLIC_PATH}?p=${listPage.value.page}` : NEWS_PUBLIC_PATH)
 const requestQuery = computed(() => {
   const query: Record<string, string> = {}
   for (const key of ['q', 'p', 'category']) if (typeof route.query[key] === 'string' && route.query[key]) query[key] = route.query[key] as string
@@ -69,7 +71,7 @@ usePublicSocialMeta({
   enabled: computed(() => !!news.value && !error.value),
   title: pageTitle,
   description: pageDescription,
-  canonicalPath: NEWS_PUBLIC_PATH,
+  canonicalPath: listCanonicalPath,
   image: computed(() => news.value?.seo?.image || undefined),
 })
 </script>

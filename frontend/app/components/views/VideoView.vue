@@ -79,7 +79,7 @@ const pageTitle = computed(() => publicSeoTitle(payload.value?.seo.title, 'Video
 useSeoMeta({
   title: pageTitle,
   description: computed(() => payload.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.videoPublicRouteIndexable, !!payload.value && payload.value.videos.length > 0 && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
   enabled: computed(() => !!payload.value && !error.value),
