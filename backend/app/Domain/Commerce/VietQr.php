@@ -98,10 +98,10 @@ final class VietQr
         return $body.self::crc($body);
     }
 
-    /** SVG picture of a code, as a data URI the page can show directly. */
+    /** SVG picture of a code, as a data URI the page can show directly. High error correction: the page puts the bank's mark over the middle. */
     public static function svg(string $payload): string
     {
-        $options = new QROptions(['outputType' => QROutputInterface::MARKUP_SVG, 'eccLevel' => QRCode::ECC_M, 'addQuietzone' => true,
+        $options = new QROptions(['outputType' => QROutputInterface::MARKUP_SVG, 'eccLevel' => QRCode::ECC_H, 'addQuietzone' => true,
             'quietzoneSize' => 2, 'outputBase64' => true, 'svgUseFillAttributes' => true, 'drawLightModules' => false]);
 
         return (new QRCode($options))->render($payload);
