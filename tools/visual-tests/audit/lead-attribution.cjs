@@ -21,7 +21,8 @@ const base = process.env.AUDIT_BASE || 'http://127.0.0.1:18085';
     });
 
     await page.goto(`${base}/?utm_source=google&utm_campaign=solar2026`, { waitUntil: 'networkidle' });
-    const stored = await page.evaluate(() => sessionStorage.getItem('pts-lead-campaign'));
+    // Remembered on the device for 30 days, so an enquiry sent later still says which ad brought the visitor.
+    const stored = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('pts-lead-campaign') || 'null')?.campaign ?? null; } catch { return null; } });
     await page.goto(base + product.url, { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Nhận tư vấn', exact: true }).first().click();
     const dialog = page.getByRole('dialog');
