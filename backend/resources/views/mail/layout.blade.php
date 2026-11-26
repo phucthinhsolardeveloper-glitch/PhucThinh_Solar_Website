@@ -9,6 +9,8 @@
     <meta name="supported-color-schemes" content="light">
     <title>{{ $copy['subject'] }}</title>
     <style>
+        /* A name, address or e-mail typed without spaces wraps instead of widening the whole mail. */
+        td, div, p, strong, span, a { word-break: break-word; }
         @media only screen and (max-width: 520px) {
             .px { padding-left: 18px !important; padding-right: 18px !important; }
             .col { display: block !important; width: 100% !important; box-sizing: border-box; }
@@ -22,7 +24,7 @@
         }
     </style>
 </head>
-<body style="margin:0;padding:0;background:#eaeff6;font-family:-apple-system,'Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#15284b;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%">
+<body style="word-wrap:break-word;overflow-wrap:break-word;margin:0;padding:0;background:#eaeff6;font-family:-apple-system,'Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#15284b;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all">{{ \Illuminate\Support\Str::limit($copy['intro'], 120) }}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#eaeff6">
     <tr>
