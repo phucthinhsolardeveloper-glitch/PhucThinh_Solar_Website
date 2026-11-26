@@ -7,7 +7,7 @@ Gốc `cc5011b6` (bản chờ phát hành, giữ nguyên). **Chưa gộp, chưa 
 | Phần | Trạng thái |
 |---|---|
 | `cc5011b6` | 3 bài trình duyệt chạy lại ngày 26/11 trên đúng commit: **PASS**. Phát hành được độc lập với nhánh này |
-| Nhánh này (code `13bced76`) | Test cục bộ **PASS**. **Chưa sẵn sàng phát hành**: thiếu review của người thứ hai, chủ website chưa xem mẫu và chưa cho phép |
+| Nhánh này (code `3aa0225e`) | Test cục bộ **PASS**, review người thứ hai **PASS**. Chờ chủ website cho phép phát hành |
 | Gửi email thật, GA4/GTM, Merchant, Search Console | NOT RUN |
 | Hóa đơn MISA | Chỉ thiết kế: `../08-integrations/misa-invoice-handoff.md` |
 
@@ -131,7 +131,7 @@ Code cuối `13bced76`; các commit sau nó chỉ sửa tài liệu. Máy cục 
 | Migration lên, lùi, lên | **PASS** |
 | Bản `cc5011b6` gửi 3 loại thư do bản mới xếp hàng | **PASS** (mailer giả), phiếu đính kèm bị bỏ |
 | Phiếu, email, màn Admin | Đã xem ảnh chụp, gồm trường hợp chữ rất dài |
-| Review của người thứ hai | **Chưa có**: đã gửi một yêu cầu gộp, công cụ điều phối không đánh thức được người review |
+| Review của người thứ hai (chỉ đọc) | `cc5011b6..6971212d`: 1 lỗi vừa (sự kiện form bỏ sót nút chọn và lần gửi bị chặn), sửa ở `3aa0225e`; xem lại `6971212d..3aa0225e`: **PASS**, không còn lỗi cao hay vừa. Review không thay việc chủ website cho phép phát hành |
 | Gửi SMTP thật, GA4/GTM/Merchant, Lighthouse, trình đọc màn hình | **NOT RUN** |
 
 Bản xem trước (dữ liệu giả) trên máy chủ website: `C:\Users\ADMIN\Downloads\pts-xem-truoc-26-11\`; tạo lại bằng `php artisan pts:mail-preview <thư mục>`.
