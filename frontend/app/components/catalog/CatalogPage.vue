@@ -238,6 +238,8 @@ const metadataDescription = computed(() => catalogSeoDescription({
   seo: catalogData.value?.seo.description,
   categoryName: catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : '',
   total: catalogData.value?.pagination.total,
+  groups: catalogData.value?.filters?.subcategories.map((group) => group.name),
+  brands: catalogData.value?.filters?.brands.map((brand) => brand.name),
 }))
 const socialDescription = metadataDescription
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')

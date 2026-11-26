@@ -61,15 +61,28 @@ export function productSeoDescription(input: { seo?: unknown; summary?: unknown;
 
 export const PUBLIC_CATALOG_ROOT_DESCRIPTION = `Sản phẩm năng lượng mặt trời tại ${PUBLIC_SEO_SITE_NAME}: đèn năng lượng mặt trời, tấm pin, biến tần và pin lưu trữ.`
 
-/** Explicit SEO text, else a sentence naming the actual category; the root listing gets its own short text. */
-export function catalogSeoDescription(input: { seo?: unknown; categoryName?: unknown; total?: unknown }): string {
+/**
+ * Explicit SEO text, else a sentence from what the list really holds: its name, size, product groups and brands.
+ * The root listing gets its own short text.
+ */
+export function catalogSeoDescription(input: { seo?: unknown; categoryName?: unknown; total?: unknown; groups?: unknown[]; brands?: unknown[] }): string {
   const categoryName = plainSeoText(input.categoryName)
   // The root listing has no category; the CMS text there is a long company intro, so use the topical text.
   if (!categoryName) return PUBLIC_CATALOG_ROOT_DESCRIPTION
   const explicit = conciseSeoDescription(input.seo)
   if (explicit) return explicit
   const total = typeof input.total === 'number' && Number.isInteger(input.total) && input.total > 0 ? `${input.total} sản phẩm ` : 'sản phẩm '
-  return conciseSeoDescription(`${categoryName} tại ${PUBLIC_SEO_SITE_NAME}: xem ${total}kèm hình ảnh, thông số và nhận tư vấn.`)
+  const named = (values: unknown[] | undefined, limit: number) => (values ?? []).map(plainSeoText).filter(Boolean).slice(0, limit)
+  const groups = named(input.groups, 4)
+  const brands = named(input.brands, 3)
+  const plain = `${categoryName} tại ${PUBLIC_SEO_SITE_NAME}: xem ${total}kèm hình ảnh, thông số và nhận tư vấn.`
+  if (!groups.length && !brands.length) return conciseSeoDescription(plain)
+  // Whole parts only, most telling first: a part that does not fit is left out rather than cut in the middle.
+  const start = `${categoryName}: ${total.trim()}`
+  const parts = [groups.length ? ` gồm ${groups.join(', ')}` : '', brands.length ? `. Thương hiệu ${brands.join(', ')}` : '', `. Xem thông số, hỏi giá tại ${PUBLIC_SEO_SITE_NAME}`]
+  let sentence = start
+  for (const part of parts) if (sentence.length + part.length + 1 <= PUBLIC_SEO_DESCRIPTION_MAX) sentence += part
+  return conciseSeoDescription(`${sentence}.`)
 }
 
 /** Append the brand once to page titles. */
