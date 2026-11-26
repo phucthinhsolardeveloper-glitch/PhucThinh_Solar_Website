@@ -11,6 +11,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\PageItems\PageItemResource;
 use App\Filament\Resources\SeoPages\SeoPageResource;
 use App\Filament\Resources\Solutions\SolutionResource;
+use App\Filament\Resources\StoreLocations\StoreLocationResource;
 
 /**
  * Where each Home and About layout block really gets its words and pictures, and where to edit them.
@@ -21,7 +22,7 @@ final class PageSectionSources
 {
     /**
      * note: what the visitor sees comes from. sources: [type, key] pairs, type one of items (page_items section),
-     * banners (placement), settings, categories, solutions, brands. anchor: element id on the public page.
+     * banners (placement), settings, stores, categories, solutions, brands. anchor: element id on the public page.
      */
     private const MAP = [
         'home' => [
@@ -39,7 +40,7 @@ final class PageSectionSources
                 'sources' => [['items', 'home.process']], 'anchor' => 'home-process-title'],
             'dealer' => ['note' => 'Chữ trên khối này cố định trong hệ thống, chưa sửa được trong Admin.',
                 'sources' => [], 'anchor' => 'home-dealer-title'],
-            'about' => ['note' => 'Tiêu đề và mô tả lấy từ dòng giới thiệu ngắn đang bật đầu tiên; tối đa 4 điểm nổi bật. Ảnh nền cố định trong giao diện.',
+            'about' => ['note' => 'Tiêu đề, mô tả và chữ trên nút lấy từ dòng giới thiệu ngắn đang bật đầu tiên; nút luôn dẫn tới trang Giới thiệu; tối đa 4 điểm nổi bật. Ảnh nền cố định trong giao diện.',
                 'sources' => [['items', 'home.about'], ['items', 'home.about_points']], 'anchor' => 'home-about-title'],
             'contact' => ['note' => 'Hotline, email, địa chỉ và giờ làm việc lấy từ Thông tin website.',
                 'sources' => [['settings', '']], 'anchor' => 'home-contact-title'],
@@ -72,14 +73,14 @@ final class PageSectionSources
     private const OTHER_PAGES = [
         'dealer' => ['label' => 'Đại lý', 'path' => '/dai-ly/', 'seo' => 'dai-ly', 'blocks' => [
             ['label' => 'Ảnh đầu trang', 'note' => 'Ảnh và dòng chữ trên ảnh lấy từ ảnh đầu tiên đang hiện.', 'sources' => [['banners', 'dealer-hero']]],
-            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên (theo thứ tự tạo): tiêu đề là tiêu đề lớn của trang, mô tả ngắn là đoạn giới thiệu. Ảnh của dòng này không được dùng; ảnh đầu trang nằm ở "Ảnh theo vị trí".', 'sources' => [['items', 'dealer.intro']]],
+            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên (theo thứ tự tạo): tiêu đề là tiêu đề lớn của trang, mô tả ngắn là đoạn giới thiệu. Ảnh đầu trang nằm ở "Ảnh theo vị trí".', 'sources' => [['items', 'dealer.intro']]],
             ['label' => 'Tổng quan và sản phẩm phân phối', 'note' => 'Tiêu đề và mô tả lấy từ dòng Tổng quan đang bật đầu tiên (theo thứ tự tạo). Ảnh sản phẩm phân phối cần có tiêu đề, kèm ảnh hoặc liên kết.', 'sources' => [['items', 'dealer.overview'], ['banners', 'hinh-anh-dai-ly']]],
             ['label' => 'Hỗ trợ và quyền lợi', 'note' => 'Tiêu đề khối lấy từ dòng Hỗ trợ đang bật đầu tiên. Thẻ lấy từ 4 dòng Quyền lợi đứng đầu theo thứ tự; dòng đang tắt vẫn chiếm một chỗ trong 4, dòng không có tiêu đề không hiện.', 'sources' => [['items', 'dealer.support'], ['items', 'dealer.benefits']]],
             ['label' => 'Phản hồi đại lý', 'note' => '3 dòng đứng đầu theo thứ tự; dòng đang tắt vẫn chiếm một chỗ trong 3. Nội dung là lời trích, mô tả ngắn là dòng dưới tên.', 'sources' => [['items', 'dealer.testimonials']]],
             ['label' => 'Số liệu', 'note' => 'Tối đa 3 dòng đang bật. "Con số" chỉ nhận chữ số, dấu chấm và dấu phẩy; viết thêm chữ thì dòng không hiện.', 'sources' => [['items', 'dealer.stats']]],
         ]],
         'solutions' => ['label' => 'Giải pháp', 'path' => '/giai-phap/', 'seo' => 'giai-phap', 'blocks' => [
-            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên: tiêu đề, mô tả ngắn, ảnh; phần Nội dung thành bài dài có mục lục trên trang Giải pháp. Tiêu đề phụ không hiện. Có dòng nhưng tắt hết thì khối mở đầu ẩn.', 'sources' => [['items', 'solutions.intro']]],
+            ['label' => 'Mở đầu', 'note' => 'Dòng đang bật đầu tiên: tiêu đề, mô tả ngắn, ảnh; phần Nội dung thành bài dài có mục lục trên trang Giải pháp. Có dòng nhưng tắt hết thì khối mở đầu ẩn.', 'sources' => [['items', 'solutions.intro']]],
             ['label' => 'Thẻ giải pháp', 'note' => 'Thẻ lấy từ các bài Giải pháp.', 'sources' => [['solutions', '']]],
             ['label' => 'Lời mời tư vấn', 'note' => 'Dòng đang bật đầu tiên, dùng ở trang Giải pháp và từng bài giải pháp. Chữ trên nút lấy từ "Tiêu đề phụ". Chưa có dòng nào thì dùng chữ có sẵn; tắt hết thì ẩn.', 'sources' => [['items', 'solutions.cta']]],
         ]],
@@ -92,6 +93,16 @@ final class PageSectionSources
             ['label' => 'Lợi ích', 'note' => 'Tối đa 3 dòng đang bật. Không có dòng nào đang bật thì trang dùng 3 lợi ích có sẵn.', 'sources' => [['items', 'projects.benefits']]],
             ['label' => 'Lời mời tư vấn', 'note' => 'Dòng đang bật đầu tiên, dùng ở trang danh sách và trang dự án. Chữ trên nút lấy từ "Chữ trên nút". Chưa có dòng nào thì dùng chữ có sẵn; tắt hết thì ẩn.', 'sources' => [['items', 'projects.cta']]],
             ['label' => 'Cam kết trong lời mời', 'note' => 'Tối đa 3 dòng đang bật, nằm trong khối Lời mời tư vấn.', 'sources' => [['items', 'projects.trust']]],
+        ]],
+        'contact' => ['label' => 'Liên hệ', 'path' => '/lien-he/', 'seo' => 'lien-he', 'blocks' => [
+            ['label' => 'Đầu trang', 'note' => 'Đoạn chữ dưới tiêu đề và ảnh lấy từ ảnh "Liên hệ · Ảnh giới thiệu" đang hiện. Tiêu đề trang cố định.', 'sources' => [['banners', 'contact-visual']]],
+            ['label' => 'Thông tin và chi nhánh', 'note' => 'Hotline, email, địa chỉ, giờ làm việc và các chi nhánh.', 'sources' => [['settings', ''], ['stores', '']]],
+            ['label' => 'Lời giới thiệu (chưa hiển thị)', 'note' => 'Trang Liên hệ hiện không hiển thị phần này. Muốn đổi đoạn chữ dưới tiêu đề, sửa mô tả của ảnh "Liên hệ · Ảnh giới thiệu".', 'sources' => [['items', 'contact.intro'], ['banners', 'contact-visual']]],
+        ]],
+        'shared' => ['label' => 'Phần dùng chung toàn website', 'path' => null, 'seo' => null, 'blocks' => [
+            ['label' => 'Chân trang', 'note' => 'Dòng đang bật đầu tiên: tiêu đề là tên công ty, nội dung là khối thông tin. Link gọi điện và dòng mã số thuế trong nội dung được lọc khỏi chân trang. Chi nhánh và mạng xã hội sửa ở màn riêng.', 'sources' => [['items', 'site.footer'], ['stores', ''], ['settings', ''], ['banners', 'bct']]],
+            ['label' => 'Lợi ích ở trang danh mục', 'note' => '4 ô theo thứ tự: dòng đang bật thay chữ có sẵn, ô để trống giữ chữ có sẵn. Biểu tượng cố định.', 'sources' => [['items', 'catalog.benefits']]],
+            ['label' => 'Gợi ý tìm kiếm', 'note' => 'Tối đa 7 dòng đang bật, hiện ở ô tìm kiếm. Không có dòng nào thì dùng gợi ý có sẵn.', 'sources' => [['items', 'search.suggestions']]],
         ]],
         'product' => ['label' => 'Trang sản phẩm', 'path' => null, 'seo' => null, 'blocks' => [
             ['label' => 'Cam kết', 'note' => 'Tối đa 8 dòng đang bật có tiêu đề, hiện giống nhau trên mọi trang sản phẩm. Không có dòng nào thì khối ẩn.', 'sources' => [['items', 'product.commitments']]],
@@ -222,6 +233,7 @@ final class PageSectionSources
                 fn () => BannerResource::getUrl('index', ['filters' => ['placement' => ['value' => $key]]])],
             'categories' => ['Danh mục sản phẩm', CategoryResource::canViewAny(), fn () => CategoryResource::getUrl()],
             'solutions' => ['Giải pháp', SolutionResource::canViewAny(), fn () => SolutionResource::getUrl()],
+            'stores' => ['Cửa hàng & chi nhánh', StoreLocationResource::canViewAny(), fn () => StoreLocationResource::getUrl()],
             'brands' => ['Thương hiệu', BrandResource::canViewAny(), fn () => BrandResource::getUrl()],
             'settings' => ['Thông tin website', SiteSettingsPage::canAccess(), fn () => SiteSettingsPage::getUrl()],
             'seo' => ['SEO của trang', SeoPageResource::canViewAny(), fn () => SeoPageResource::getUrl()],

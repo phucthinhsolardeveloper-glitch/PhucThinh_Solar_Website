@@ -21,6 +21,7 @@
     .pts-queue__list li { display: grid; gap: .05rem; }
     .pts-queue__more { display: inline-block; margin-top: .75rem; font-size: .8rem; font-weight: 600; }
     .pts-queue__more:hover { text-decoration: underline; }
+    .pts-dq__check > .pts-queue__more { margin-block: .6rem .5rem; }
     .pts-section-source { font-size: .8rem; line-height: 1.5; }
     .pts-section-source__links { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-top: .35rem; }
     .pts-page-directory__page + .pts-page-directory__page { margin-top: 1.5rem; }

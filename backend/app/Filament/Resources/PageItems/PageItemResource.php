@@ -46,10 +46,13 @@ class PageItemResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
 
-    /** section => [label, fields shown]; sections not listed show every field. */
+    /**
+     * section => [label, fields shown]; sections not listed show every field. Show a field only when the page
+     * uses it (assembler and Nuxt component), so nothing staff type is silently ignored.
+     */
     public const SECTIONS = [
-        'home.process' => ['Trang chủ · Quy trình làm việc', ['title', 'summary', 'figure', 'image']],
-        'home.about' => ['Trang chủ · Giới thiệu ngắn', ['title', 'summary', 'body', 'image', 'link']],
+        'home.process' => ['Trang chủ · Quy trình làm việc', ['title', 'summary', 'figure']],
+        'home.about' => ['Trang chủ · Giới thiệu ngắn', ['title', 'summary', 'extra']],
         'home.about_points' => ['Trang chủ · Điểm nổi bật giới thiệu', ['title', 'summary', 'image']],
         'home.energy_chain' => ['Trang chủ · Chuỗi năng lượng', ['title', 'subtitle', 'summary', 'figure', 'image']],
         'about.history' => ['Giới thiệu · Nội dung mở đầu (mốc lịch sử dùng giao diện riêng)', ['title', 'body', 'image']],
@@ -57,29 +60,29 @@ class PageItemResource extends Resource
         'about.reasons' => ['Giới thiệu · Lý do chọn chúng tôi', ['title', 'summary', 'image']],
         'about.principles' => ['Giới thiệu · Nguyên tắc', ['title', 'summary', 'image']],
         'about.team' => ['Giới thiệu · Đội ngũ', ['title', 'summary', 'body', 'image']],
-        'contact.intro' => ['Liên hệ · Lời giới thiệu', ['title', 'body']],
-        'dealer.intro' => ['Đại lý · Phần mở đầu', ['title', 'summary', 'image']],
+        'contact.intro' => ['Liên hệ · Lời giới thiệu (trang chưa hiển thị)', ['title', 'body']],
+        'dealer.intro' => ['Đại lý · Phần mở đầu', ['title', 'summary']],
         'dealer.overview' => ['Đại lý · Tổng quan', ['title', 'summary']],
         'dealer.benefits' => ['Đại lý · Quyền lợi', ['title', 'summary', 'image']],
         'dealer.stats' => ['Đại lý · Số liệu', ['title', 'figure']],
         'dealer.support' => ['Đại lý · Hỗ trợ', ['title', 'summary']],
         'dealer.testimonials' => ['Đại lý · Phản hồi đại lý', ['title', 'summary', 'body', 'image']],
         'product.commitments' => ['Trang sản phẩm · Cam kết', ['title', 'image']],
-        'catalog.benefits' => ['Danh mục · Lợi ích', ['title', 'summary', 'image']],
+        'catalog.benefits' => ['Danh mục · Lợi ích', ['title', 'summary']],
         'search.suggestions' => ['Tìm kiếm · Gợi ý', ['title']],
-        'solutions.intro' => ['Giải pháp · Phần mở đầu', ['title', 'subtitle', 'summary', 'body', 'image']],
+        'solutions.intro' => ['Giải pháp · Phần mở đầu', ['title', 'summary', 'body', 'image']],
         'solutions.cta' => ['Giải pháp · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'image']],
         'news.intro' => ['Tin tức · Phần mở đầu', ['title', 'summary']],
-        'news.cta' => ['Tin tức · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'extra', 'image']],
+        'news.cta' => ['Tin tức · Lời mời tư vấn', ['title', 'summary', 'extra', 'image']],
         'projects.intro' => ['Dự án · Phần mở đầu', ['title', 'summary']],
-        'projects.benefits' => ['Dự án · Lợi ích', ['title', 'summary', 'image']],
+        'projects.benefits' => ['Dự án · Lợi ích', ['title', 'image']],
         'projects.trust' => ['Dự án · Cam kết', ['title', 'image']],
-        'projects.cta' => ['Dự án · Lời mời tư vấn', ['title', 'subtitle', 'summary', 'extra', 'image']],
+        'projects.cta' => ['Dự án · Lời mời tư vấn', ['title', 'summary', 'extra', 'image']],
         'site.footer' => ['Chân trang · Giới thiệu công ty', ['title', 'body']],
     ];
 
     private const FIELD_LABELS = ['title' => 'Tiêu đề', 'subtitle' => 'Tiêu đề phụ', 'summary' => 'Mô tả ngắn', 'body' => 'Nội dung',
-        'extra' => 'Chữ trên nút / nội dung thêm', 'figure' => 'Con số', 'image' => 'Ảnh', 'link' => 'Liên kết'];
+        'extra' => 'Chữ trên nút', 'figure' => 'Con số', 'image' => 'Ảnh', 'link' => 'Liên kết'];
 
     /** @return array<string, string> */
     public static function sectionOptions(): array

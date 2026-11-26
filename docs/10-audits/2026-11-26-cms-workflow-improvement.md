@@ -164,8 +164,6 @@ P1 là làm trước.
 | P2 | Link "Xem cả" khớp đúng mục đếm | "Chờ đối soát thu hộ", "xác nhận quá 24 giờ", "khách báo chuyển khoản" mở đúng số bản ghi đã đếm; chế độ "Của tôi" giữ nguyên khi bấm | Sửa bộ lọc `OrderResource`: **hoãn** để tránh đụng nhánh đơn hàng/tài chính đang chạy |
 | P2 | Người biên tập `content` thiếu `media`/`settings` | Chủ website quyết cấp quyền hay giữ nguyên; nếu giữ, không có link dẫn tới 403 | Quyết định của chủ website |
 | P2 | Cần xử lý và Việc cần làm dùng chung toàn bộ truy vấn | Đợt 2 mới thống nhất số đơn mới; các mục còn lại đang cho cùng số nhưng viết ở hai nơi | Không cần dữ liệu mới |
-| P2 | Nguồn cho Chân trang, Liên hệ, Danh mục, Gợi ý tìm kiếm | `site.footer`, `contact.intro`, `catalog.benefits`, `search.suggestions` có câu mô tả đã đối chiếu | Quyền hiện có |
-| P2 | Trường không được trang dùng | Quyết định ẩn ô Ảnh của `dealer.intro` và Tiêu đề phụ của `solutions.intro`; xử lý cờ "hero" của `news.intro` bằng một công tắc | Xác nhận của chủ website |
 | P3 | Gộp Lịch biên tập và Kế hoạch bài đăng | Một mục menu, URL cũ vẫn mở được | Biết kế hoạch 180 bài còn dùng không |
 | P3 | Cho sửa chữ cố định (khối Đại lý trang chủ, tiêu đề Giới thiệu) | Chỉ làm khi chủ website cần đổi; có fallback bằng chữ hiện tại | Yêu cầu nội dung |
 
@@ -197,7 +195,7 @@ Quy tắc đáng chú ý, đã đối chiếu source:
 - Tin tức: khi phần mở đầu đã có dòng, cụm bài nổi bật phụ thuộc cờ `hero` mà form
   không sửa được.
 
-Chưa có câu mô tả: Liên hệ, Chân trang, Lợi ích danh mục, Gợi ý tìm kiếm.
+Liên hệ, Chân trang, Lợi ích danh mục, Gợi ý tìm kiếm được bổ sung ở đợt 3.
 
 ### 6.2 Cùng một số đơn mới
 
@@ -248,7 +246,38 @@ cải thiện") và theo lỗi (đợt 1); form chia tab sẵn. Chưa thấy kho
 
 Đạt khi tự làm được cả 5, không cần hỏi đường.
 
-## 7. Rollback
+## 7. Đợt 3: form khớp với website
+
+Đối chiếu từng ô của 28 phần nội dung với assembler và component Nuxt. Ô không
+được dùng nay ẩn, **giá trị đã lưu giữ nguyên** (không xóa dữ liệu).
+
+| Phần | Thay đổi trên form |
+|---|---|
+| `home.process` | Bỏ Ảnh |
+| `home.about` | Bỏ Nội dung, Ảnh, Liên kết; **thêm** Chữ trên nút (`extra`, trang vẫn đọc nhưng trước đây không có ô) |
+| `solutions.intro`, `projects.cta`, `news.cta` | Bỏ Tiêu đề phụ (chỉ vào trường `eyebrow` hoặc không được đọc; không component nào hiển thị eyebrow) |
+| `projects.benefits` | Bỏ Mô tả ngắn |
+| `dealer.intro`, `catalog.benefits` | Bỏ Ảnh |
+| `contact.intro` | Giữ ô, nhãn ghi "trang chưa hiển thị": `ContactPageContent` không dùng `intro` |
+| Mọi ô `extra` | Nhãn "Chữ trên nút" |
+
+Cả 28 phần đều có câu mô tả và có trong "Chọn theo trang" (thêm Liên hệ và nhóm
+Phần dùng chung toàn website). Bộ lọc trong bảng vẫn hiện cột Ảnh với ảnh cũ.
+
+Chưa làm: công tắc cho cờ `hero` của `news.intro`; đổi cách đếm 4/3 dòng ở trang
+Đại lý (đổi kết quả API công khai). Nếu dữ liệu production có giá trị ở các ô ẩn
+dạng ghi đè của phần Giới thiệu thì cần kiểm riêng; bản DB test không có.
+
+Kiểm thử đợt 3: toàn bộ backend **578 pass, 2 skip, 0 fail** (`vendor` đúng
+`composer.lock`); PHPStan trùng base; Pint còn 7 lỗi sẵn có. Form Quy trình và
+danh sách Liên hệ đã kiểm trên trình duyệt; form Giới thiệu ngắn kiểm bằng
+Livewire + API (DB test không có dòng). Không chạy test frontend vì không sửa
+frontend.
+
+Ảnh trước/sau và báo cáo cho quản lý nằm ngoài repo:
+`/mnt/d/Docs/outputs/PTS-CMS-2026-11-26/`.
+
+## 8. Rollback
 
 Chỉ có thay đổi code backend. `git revert` commit là đủ; không có dữ liệu hay
 schema cần hoàn tác. Khi deploy cần `view:clear` vì có sửa Blade.

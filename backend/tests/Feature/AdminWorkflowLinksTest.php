@@ -144,16 +144,11 @@ it('explains every editable section and reaches each one from the page directory
     $this->actingAs(flowUser(), 'admin');
     $reachable = collect(PageSectionSources::directory())->flatMap(fn ($p) => $p['blocks'])->flatMap(fn ($b) => $b['links'])
         ->map(fn ($link) => flowQuery((string) $link['url'])['filters']['section']['value'] ?? null)->filter()->unique();
-    foreach (['dealer', 'solutions', 'news', 'projects', 'product', 'home', 'about'] as $prefix) {
-        foreach (array_keys(PageItemResource::SECTIONS) as $section) {
-            if (str_starts_with($section, $prefix.'.') && $section !== 'home.energy_chain') {
-                expect(PageSectionSources::sectionHelp($section))->not->toBeNull($section)
-                    ->and($reachable->all())->toContain($section);
-            }
-        }
+    foreach (array_keys(PageItemResource::SECTIONS) as $section) {
+        expect(PageSectionSources::sectionHelp($section))->not->toBeNull($section)
+            ->and($reachable->all())->toContain($section);
     }
-    expect(PageSectionSources::sectionHelp('home.energy_chain'))->not->toBeNull()
-        ->and(PageSectionSources::sectionHelp('site.footer'))->toBeNull();
+    expect(PageSectionSources::sectionHelp('no.such_section'))->toBeNull();
 });
 
 it('shows the rule and the other editors on a filtered section list, then leads back', function () {
@@ -199,6 +194,21 @@ it('counts the same new orders in the work queue and on the dashboard', function
     $dashboard = collect((new AttentionWidget)->items())->first(fn ($item) => str_contains($item['text'], 'đơn hàng mới'));
     expect($section['count'])->toBe(2)->and($dashboard['text'])->toStartWith('2 đơn hàng mới')
         ->and(collect($section['items'])->pluck('label')->implode('|'))->toContain($paid->code);
+});
+
+it('offers the home introduction button text the page reads, and drops boxes it ignores', function () {
+    $this->actingAs(flowUser(), 'admin');
+    DB::table('page_items')->where('section', 'home.about')->delete();
+    $row = PageItem::query()->create(['section' => 'home.about', 'title' => 'Tiêu đề thử', 'summary' => 'Mô tả thử', 'body' => 'Nội dung cũ', 'link' => '/cu/', 'is_visible' => true, 'sort_order' => 0]);
+
+    Livewire::test(ManagePageItems::class)->mountTableAction('edit', $row)
+        ->assertFormFieldExists('extra', checkFieldUsing: fn (TextInput $field) => $field->getLabel() === 'Chữ trên nút')
+        ->assertFormFieldIsHidden('body')->assertFormFieldIsHidden('image')->assertFormFieldIsHidden('link')
+        ->setTableActionData(['extra' => 'Xem câu chuyện'])->callMountedTableAction()->assertHasNoTableActionErrors();
+
+    // What staff typed reaches the public page, and the values of the hidden boxes stay in the database.
+    $this->getJson('/api/v1/home')->assertOk()->assertJsonPath('about.action', 'Xem câu chuyện')->assertJsonPath('about.title', 'Tiêu đề thử');
+    expect($row->fresh()->only(['body', 'link']))->toBe(['body' => 'Nội dung cũ', 'link' => '/cu/']);
 });
 
 /** A new order paid one way or another; only the columns the counting rule reads matter. */
