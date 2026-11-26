@@ -1,5 +1,8 @@
 <?php
 
+use App\Domain\Catalog\CategoryTree;
+use App\Domain\Catalog\Listing\CatalogLanding;
+use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Routing\Redirects;
 use App\Domain\Seo\Sitemap;
 use Illuminate\Support\Facades\DB;
@@ -37,4 +40,16 @@ it('lists the photo and video pages in the sitemap only when they have something
     DB::table('albums')->insert(['title' => 'Album thử', 'slug' => 'album-thu-seo', 'is_visible' => true, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()]);
     DB::table('videos')->insert(['title' => 'Video thử', 'url' => 'https://www.youtube.com/watch?v=abcdefghijk', 'is_visible' => true, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()]);
     expect($paths())->toContain('/thu-vien-anh/', '/video/');
+});
+
+it('rewrites a category card link only when its old address no longer answers', function () {
+    $stocked = DB::table('products')->where('is_visible', true)->whereNotNull('category_id')->value('category_id');
+    $live = '/'.trim(app(CategoryTree::class)->path((int) $stocked), '/').'/';
+    Redirects::record($live, '/san-pham/', false, 'manual');
+    Redirects::record('/danh-muc-san-pham/khong-con/', '/san-pham/', false, 'manual');
+    $landing = new CatalogLanding(DB::connection(), app(ProductMediaUrls::class));
+    $followed = new ReflectionMethod($landing, 'followed');
+
+    expect($followed->invoke($landing, $live))->toBe($live)
+        ->and($followed->invoke($landing, '/danh-muc-san-pham/khong-con/'))->toBe('/san-pham/');
 });

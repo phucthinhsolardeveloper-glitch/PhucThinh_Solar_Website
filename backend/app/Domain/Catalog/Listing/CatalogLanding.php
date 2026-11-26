@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Listing;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Routing\Redirects;
 use App\Models\Category;
@@ -104,7 +105,7 @@ final class CatalogLanding
                 }
                 $photo = (string) ($item['photo'] ?? '');
                 $image = $this->urls->visual($photo, 'upload/product/') ?: $this->urls->visual($photo, 'assets/images/site-visuals/');
-                $applications[] = ['title' => $itemTitle, 'description' => Text::plain($item['desc'] ?? ''), 'image' => $image, 'href' => Redirects::current(self::href($item['link'] ?? ''))];
+                $applications[] = ['title' => $itemTitle, 'description' => Text::plain($item['desc'] ?? ''), 'image' => $image, 'href' => $this->followed(self::href($item['link'] ?? ''))];
             }
         }
         $faqs = [];
@@ -214,7 +215,7 @@ final class CatalogLanding
             'title' => $title,
             'description' => Text::plain($banner['desc']),
             'image' => $this->urls->visual($banner['photo'], 'upload/photo/') ?: $this->urls->visual($banner['photo'], 'assets/images/site-visuals/'),
-            'href' => Redirects::current(self::href($banner['link'])),
+            'href' => $this->followed(self::href($banner['link'])),
         ];
     }
 
@@ -245,6 +246,27 @@ final class CatalogLanding
             'keywords' => ! empty($row['keywords']) ? Text::seo($row['keywords']) : '',
             'image' => $image,
         ];
+    }
+
+    /**
+     * An Admin link to a moved page goes straight to its new address. A redirect only applies to an address that no
+     * longer answers, so a link to a category that still has products is left as typed.
+     */
+    private function followed(string $href): string
+    {
+        $moved = Redirects::current($href);
+        if ($moved === $href) {
+            return $href;
+        }
+        $path = trim(substr($href, 0, strcspn($href, '?#')), '/');
+        $tree = app(CategoryTree::class);
+        foreach ($this->db->table('categories')->where('slug', basename($path))->where('is_visible', true)->pluck('id') as $id) {
+            if ($tree->path((int) $id) !== '' && trim($tree->path((int) $id), '/') === $path && $tree->hasVisibleProducts((int) $id)) {
+                return $href;
+            }
+        }
+
+        return $moved;
     }
 
     /** Site-relative link from Admin, refusing scripts, protocol-relative and traversal. */
