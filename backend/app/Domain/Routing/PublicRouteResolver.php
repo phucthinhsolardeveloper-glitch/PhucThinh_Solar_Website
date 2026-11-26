@@ -16,7 +16,7 @@ class PublicRouteResolver
 {
     /** Paths the router serves itself before the generic slug route. */
     private const RESERVED = ['he-thong-dai-ly', 've-chung-toi', 'product', 'index', 'sitemap', 'lien-he', 'gioi-thieu', 'dai-ly', 'tin-tuc', 'giai-phap', 'du-an',
-        'du-an-da-thuc-hien', 'chinh-sach', 'thuong-hieu', 'san-pham', 'tim-kiem', 'thu-vien-anh', 'video', 'gio-hang', 'cam-on', 'account', 'ngon-ngu'];
+        'du-an-da-thuc-hien', 'chinh-sach', 'thuong-hieu', 'san-pham', 'tim-kiem', 'thu-vien-anh', 'video', 'gio-hang', 'cam-on', 'account', 'ngon-ngu', 'tra-cuu-don-hang'];
 
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 

@@ -249,6 +249,7 @@ class SiteAssembler
                 $policies[] = $link;
             }
         }
+        $policies[] = ['label' => 'Tra cứu đơn hàng', 'href' => '/tra-cuu-don-hang/'];
         $locations = [];
         $branches = $this->db->table('store_locations')->where('is_visible', true)
             ->orderByRaw("case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end")->orderBy('sort_order')->orderByDesc('id')->get(['name', 'address', 'map_url']);

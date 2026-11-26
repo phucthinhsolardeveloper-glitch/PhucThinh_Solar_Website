@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
     Route::get('project-detail', [PagesController::class, 'projectDetail']);
     Route::get('product-extras', [PagesController::class, 'productExtras']);
     Route::post('review', [PagesController::class, 'submitReview']);
+    Route::post('order-lookup', [ShopController::class, 'lookup'])->middleware('throttle:30,1');
     Route::get('projects', [PagesController::class, 'projects']);
     Route::get('product-detail', ProductDetailController::class);
     Route::get('product-retired', [ProductDetailController::class, 'retired']);

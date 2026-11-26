@@ -19,7 +19,7 @@ const RESERVED_BARE_SLUGS = new Set([
   'he-thong-dai-ly', 've-chung-toi', 'product', 'index', 'sitemap', 'lien-he',
   'gioi-thieu', 'dai-ly', 'tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien',
   'chinh-sach', 'thuong-hieu', 'san-pham', 'tim-kiem', 'thu-vien-anh', 'video',
-  'gio-hang', 'cam-on', 'account', 'ngon-ngu', 'admin', 'api', 'administrator', 'upload',
+  'gio-hang', 'cam-on', 'tra-cuu-don-hang', 'account', 'ngon-ngu', 'admin', 'api', 'administrator', 'upload',
   'thumbs', 'watermark',
 ])
 // Product pages have no trailing slash; brand pages keep it.

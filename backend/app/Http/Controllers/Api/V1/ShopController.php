@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\Commerce\OrderLookup;
 use App\Domain\Commerce\Shop;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -73,6 +74,12 @@ class ShopController extends Controller
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */
+    /** POST /order-lookup: an order by its code and the phone it was placed with. */
+    public function lookup(Request $request, OrderLookup $lookup): JsonResponse
+    {
+        return self::reply($lookup->handle(json_decode($request->getContent(), true), (string) $request->ip()));
+    }
+
     private static function reply(array $result): JsonResponse
     {
         return response()->json($result[1], $result[0], ['Cache-Control' => 'private, no-store'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
