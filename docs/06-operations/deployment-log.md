@@ -904,3 +904,11 @@ Rủi ro còn lại:
 - Sau khi lên: bốn container chạy `cc5011b6-candidate`, 0 lỗi log, hàng đợi email 0, không migration chờ. Backup DB `/srv/pts-laravel13/backups/20261126-seo-sales-cc5011b6-predeploy/`.
 - Rollback: khôi phục `releases/cc5011b6/stack.env.before`, tạo lại backend worker scheduler nuxt (image `498ab8f1` còn trên VPS).
 - Chưa làm: nhánh `feat/pts-commerce-growth-20261126` (phiếu PDF, email trạng thái) chờ review; CRM chưa có endpoint.
+
+## 2026-11-26 — commerce growth: phiếu đơn hàng PDF, email trạng thái (tắt sẵn), sự kiện form, SEO, khung QR chuyển khoản, email mới (a4be39d1)
+
+- Gộp `feat/pts-commerce-growth-20261126` vào `master` (merge `a4be39d1`). Có migration `order_documents` (thêm bảng), thư viện `dompdf/dompdf` 3.1.6, `league/csv` 9.29.1. Image dựng đầy đủ từ `composer.lock`.
+- `releases/a4be39d1/deploy.sh` dưới `operation.lock`, lần chạy đầu `RELEASE_A4BE39D1_COMMERCE_GROWTH_SUCCESS`: backup DB `backups/20261126-commerce-growth-a4be39d1-predeploy/`; chép 34 file logo thanh toán vào `app/frontend/public/assets/images/payments/`; migrate trước khi đổi container; `view:clear` và khởi động lại worker sau khi đổi; 11 route 200; bảng có, 4 công tắc email tắt, logo công khai 200, phiếu mẫu cần đăng nhập, worker tạo được PNG QR, CRM tắt. Kiểm `bank_logo_in_worker` báo WARN vì `tinker` không chạy được dưới user worker; kiểm lại bằng `php -r`: worker đọc được `agr.png`.
+- Sau khi lên: 0 lỗi log backend/worker, hàng đợi email 0, sitemap 425 URL (bỏ trang thương hiệu chưa có sản phẩm, thư viện ảnh/video trống).
+- Rollback: khôi phục `releases/a4be39d1/stack.env.before`, tạo lại backend worker scheduler nuxt (image `cc5011b6` còn trên VPS), rồi `php artisan view:clear` và khởi động lại worker. Bảng `order_documents` để nguyên.
+- Chưa kiểm: hiển thị email thật trên Gmail/Outlook (chưa gửi thư thật).
