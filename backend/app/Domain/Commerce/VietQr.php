@@ -98,13 +98,34 @@ final class VietQr
         return $body.self::crc($body);
     }
 
-    /** SVG picture of a code, as a data URI the page can show directly. */
+    /** SVG picture of a code, as a data URI the page can show directly. High error correction: the page puts the bank's mark over the middle. */
     public static function svg(string $payload): string
     {
-        $options = new QROptions(['outputType' => QROutputInterface::MARKUP_SVG, 'eccLevel' => QRCode::ECC_M, 'addQuietzone' => true,
+        $options = new QROptions(['outputType' => QROutputInterface::MARKUP_SVG, 'eccLevel' => QRCode::ECC_H, 'addQuietzone' => true,
             'quietzoneSize' => 2, 'outputBase64' => true, 'svgUseFillAttributes' => true, 'drawLightModules' => false]);
 
         return (new QRCode($options))->render($payload);
+    }
+
+    /** PNG picture of a code, for e-mail (clients drop SVG and data URIs), 6 pixels per module with a quiet zone. */
+    public static function png(string $payload): string
+    {
+        $options = new QROptions(['outputType' => QROutputInterface::GDIMAGE_PNG, 'eccLevel' => QRCode::ECC_M, 'addQuietzone' => true,
+            'quietzoneSize' => 2, 'scale' => 6, 'outputBase64' => false]);
+
+        return (string) (new QRCode($options))->render($payload);
+    }
+
+    /**
+     * The bank's logo file bundled with the storefront, or '' when there is none. Mail carries it inline: clients
+     * such as Outlook block pictures fetched from a website until the reader allows them.
+     */
+    public static function logoFile(string $bin): string
+    {
+        $short = strtolower(self::BANKS[$bin][1] ?? '');
+        $file = rtrim((string) config('site.assets_path'), '/').'/images/payments/banks/'.$short.'.png';
+
+        return $short !== '' && is_file($file) ? $file : '';
     }
 
     /** CRC-16/CCITT-FALSE, upper-case hex, as EMVCo requires. */

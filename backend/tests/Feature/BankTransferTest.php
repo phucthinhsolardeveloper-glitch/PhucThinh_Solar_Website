@@ -1,7 +1,9 @@
 <?php
 
 use App\Domain\Commerce\ManualPayment;
+use App\Domain\Commerce\Shop;
 use App\Domain\Commerce\VietQr;
+use App\Domain\Outbox\Outbox;
 use App\Models\Order;
 use App\Models\User;
 use App\Support\FormToken;
@@ -9,6 +11,7 @@ use App\Support\SiteSettings;
 use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use Illuminate\Mail\MailManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -86,4 +89,36 @@ it('shows one fixed QR per order, lets the buyer report the transfer, and only s
     app(ManualPayment::class)->confirm($order, $staff, 'FT2611', (int) $order->total);
     expect($order->fresh()->payment_status)->toBe('paid');
     shop('GET', $thanks)->assertJsonPath('paymentState', 'paid');
+});
+
+it('makes order codes without characters that look alike on a bank statement', function () {
+    $make = new ReflectionMethod(Shop::class, 'newOrderCode');
+    $shop = app(Shop::class);
+    foreach (range(1, 200) as $ignored) {
+        expect($make->invoke($shop))->toMatch('/^[2-9A-HJKMNP-Z]{6}$/');
+    }
+});
+
+it('puts the order’s transfer code in the buyer’s confirmation, as a picture mail clients show', function () {
+    demoBank();
+    [, $order] = placeTransferOrder();
+    $payload = DB::table('outbox_messages')->where('dedupe_key', 'order:'.$order->id.':customer')->value('payload');
+    $mail = Outbox::mailable((string) $payload);
+    $instruction = DB::table('payment_instructions')->where('order_id', $order->id)->first();
+
+    expect($mail->transfer['note'])->toBe($instruction->reference)
+        ->and($mail->transfer['amount'])->toBe((int) $instruction->amount)
+        ->and(DB::table('outbox_messages')->where('dedupe_key', 'order:'.$order->id.':admin')->value('payload'))->not->toBeNull()
+        ->and(Outbox::mailable((string) DB::table('outbox_messages')->where('dedupe_key', 'order:'.$order->id.':admin')->value('payload'))->transfer)->toBe([]);
+
+    // Sent for real (array transport): the code travels inline, not as an SVG or data address.
+    $sent = (new MailManager(app()))->mailer('array')->to('khach@example.test')->send($mail);
+    $html = $sent->getOriginalMessage()->getHtmlBody();
+    $png = collect($sent->getOriginalMessage()->getAttachments())->first(fn ($part) => $part->getMediaType().'/'.$part->getMediaSubtype() === 'image/png');
+
+    expect(substr_count($html, 'src="cid:'))->toBe(App\Domain\Commerce\VietQr::logoFile((string) $instruction->bank_bin) !== '' ? 2 : 1);
+    expect($html)->toContain('src="cid:', $instruction->reference, $instruction->account_no)->not->toContain('data:image')
+        ->and($png)->not->toBeNull()
+        ->and(substr($png->getBody(), 0, 8))->toBe("\x89PNG\r\n\x1a\n")
+        ->and($sent->getOriginalMessage()->getTextBody())->toContain('CHUYỂN KHOẢN ĐỂ HOÀN TẤT ĐƠN', $instruction->reference);
 });

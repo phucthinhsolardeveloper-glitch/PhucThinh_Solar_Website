@@ -159,6 +159,9 @@ class OrderResource extends Resource
                             ->formatStateUsing(fn ($record) => $record ? $record->events()->limit(5)->get()->map(fn ($e) => ($e->happened_at?->format('H:i d/m') ?? '').' '.$e->status_name)->implode(' · ') : ''),
                     ])->columns(5),
             ]),
+            Section::make('Email và phiếu đơn hàng')->columnSpanFull()->collapsed()->schema([
+                View::make('filament.order-messages')->viewData(fn (?Order $record) => ['order' => $record]),
+            ]),
             Section::make('Lịch sử thanh toán')->columnSpanFull()->collapsed()->schema([
                 Repeater::make('payments')->hiddenLabel()->relationship()->disabled()->addable(false)->deletable(false)->reorderable(false)
                     ->schema([

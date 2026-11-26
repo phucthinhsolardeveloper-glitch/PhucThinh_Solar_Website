@@ -15,7 +15,8 @@ test('news category links use the canonical DTO URL and keep the search text', (
 test('project category links use the canonical DTO URL', () => {
   const filters = read('../app/components/projects/ProjectFilters.vue')
 
-  assert.match(filters, /return category\.url/)
+  // The DTO's canonical path (the sitemap address), as the news filters use; its url is the second address.
+  assert.match(filters, /return category\.canonicalPath \|\| category\.url/)
   assert.match(filters, /:to="categoryHref\(category\)"/)
 })
 

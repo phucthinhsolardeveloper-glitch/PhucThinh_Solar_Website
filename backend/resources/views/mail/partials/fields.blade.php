@@ -26,7 +26,7 @@
     <tr>
         <td class="px" style="padding:26px 32px 4px">
             @if (! empty($title))<div style="margin:0 0 10px;color:#09285e;font-size:14px;line-height:20px;font-weight:bold">{{ $title }}</div>@endif
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;border-spacing:0;background:#ffffff;border:1px solid #e2e8f2;border-top:3px solid #d9a326;border-radius:12px">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;border-spacing:0;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px">
                 @foreach ($rows as $r => $pair)
                     @php($border = $r < count($rows) - 1 ? 'border-bottom:1px solid #e2e8f2;' : '')
                     <tr>

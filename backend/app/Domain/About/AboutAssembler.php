@@ -188,19 +188,22 @@ class AboutAssembler
     /** Featured certificates first (up to three), then the rest in Admin order. */
     /**
      * Brand wall: visible brands that have a logo, in Admin order; those with products on sale link to them.
+     * brandPath is the brand's own indexable page; href (the filtered list) stays for a storefront that predates it.
      *
-     * @return list<array{id: int, name: string, logo: string, href: string|null}>
+     * @return list<array{id: int, name: string, logo: string, href: string|null, brandPath: string|null}>
      */
     private function partners(): array
     {
         $partners = [];
         foreach ($this->db->table('brands as b')->where('b.is_visible', true)->orderBy('b.sort_order')->orderByDesc('b.id')
-            ->select(['b.id', 'b.name', 'b.image'])
+            ->select(['b.id', 'b.name', 'b.image', 'b.slug'])
             ->selectRaw('exists(select 1 from products p where p.brand_id = b.id and p.is_visible = 1) as has_products')->get() as $brand) {
             $logo = Brand::logoUrl($brand->image);
             $name = self::text($brand->name);
             if ($logo !== '' && $name !== '') {
-                $partners[] = ['id' => (int) $brand->id, 'name' => $name, 'logo' => $logo, 'href' => $brand->has_products ? '/san-pham/?brand='.(int) $brand->id : null];
+                $slug = Text::slug($brand->slug);
+                $partners[] = ['id' => (int) $brand->id, 'name' => $name, 'logo' => $logo, 'href' => $brand->has_products ? '/san-pham/?brand='.(int) $brand->id : null,
+                    'brandPath' => $brand->has_products && $slug !== '' ? '/thuong-hieu/'.$slug.'/' : null];
             }
         }
 

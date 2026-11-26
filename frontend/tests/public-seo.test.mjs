@@ -276,6 +276,16 @@ test('catalog meta description names the real category and never repeats the gen
   assert.doesNotMatch(catalogSeoDescription({ categoryName: 'Pin lưu trữ' }), /undefined|null|\{|\}|0 sản phẩm/)
 })
 
+test('a category description names its real product groups and brands, in whole parts within the limit', () => {
+  const full = catalogSeoDescription({ categoryName: 'Đèn năng lượng mặt trời', total: 192, groups: ['Đèn Pha', 'Đèn Đường', 'Đèn Sân Vườn', 'Đèn UFO', 'Đèn Ốp Trần'], brands: ['BLUE CARBON', 'ORIANA', 'JINDIAN'] })
+  assert.equal(full, 'Đèn năng lượng mặt trời: 192 sản phẩm gồm Đèn Pha, Đèn Đường, Đèn Sân Vườn, Đèn UFO. Thương hiệu BLUE CARBON, ORIANA, JINDIAN.')
+  const short = catalogSeoDescription({ categoryName: 'Tấm pin năng lượng mặt trời', total: 19, groups: [], brands: ['LONGi', 'Canadian Solar'] })
+  assert.equal(short, 'Tấm pin năng lượng mặt trời: 19 sản phẩm. Thương hiệu LONGi, Canadian Solar. Xem thông số, hỏi giá tại Phúc Thịnh Solar.')
+  const long = catalogSeoDescription({ categoryName: 'Thiết bị và phụ kiện điện mặt trời '.repeat(3), total: 9, groups: ['Nhóm rất dài số một', 'Nhóm rất dài số hai'], brands: ['Thương hiệu dài'] })
+  assert.ok(long.length <= 160, long)
+  assert.equal(catalogSeoDescription({ seo: 'Mô tả riêng', categoryName: 'Pin', brands: ['A'] }), 'Mô tả riêng')
+})
+
 test('root /san-pham description is concise and topical even when the CMS sends the company intro', () => {
   const root = catalogSeoDescription({ seo: 'Ngọn cờ đầu '.repeat(40), categoryName: '' })
   assert.equal(root, PUBLIC_CATALOG_ROOT_DESCRIPTION)

@@ -13,3 +13,5 @@
   xác thực chữ ký, transaction ledger và registry cho GHN/GHTK/Viettel Post/
   Nhất Tín. Provider vẫn tắt cho tới khi nhập credential và hoàn tất mapping kho,
   dịch vụ, địa chỉ, kiện hàng; chưa coi là verified production integration.
+- Hóa đơn điện tử MISA: chưa nối; quy trình bàn giao và dữ liệu còn thiếu ở
+  [misa-invoice-handoff.md](misa-invoice-handoff.md).

@@ -2,16 +2,47 @@
 
 namespace App\Mail;
 
+use App\Domain\Commerce\OrderSheet;
+use App\Support\LogSafe;
 use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /** New order email, to the shop (with reply-to the customer) or to the customer as a receipt. */
 class OrderNotification extends Mailable
 {
     use Queueable;
+
+    /**
+     * Order sheet to attach, as stored when the order was placed; empty = no attachment. A declared default, so a
+     * message queued before this property existed still rebuilds.
+     *
+     * @var array<string, mixed>
+     */
+    public array $sheet = [];
+
+    private ?string $sheetBytes = null;
+
+    /**
+     * How to pay by bank transfer (payload, bank, logo, account, name, amount, note); empty for other payments.
+     * A declared default, like $sheet, so older queued messages still rebuild.
+     *
+     * @var array<string, mixed>
+     */
+    public array $transfer = [];
+
+    /** @param array<string, mixed> $transfer */
+    public function withTransfer(array $transfer): static
+    {
+        $this->transfer = $transfer;
+
+        return $this;
+    }
 
     /**
      * @param  array{subject: string, heading: string, intro: string, closing: string}  $copy
@@ -28,9 +59,41 @@ class OrderNotification extends Mailable
         return new Envelope(subject: $this->copy['subject'], replyTo: $replyTo);
     }
 
+    /** @param array<string, mixed> $sheet */
+    public function withSheet(array $sheet): static
+    {
+        $this->sheet = $sheet;
+        $this->sheetBytes = null;
+
+        return $this;
+    }
+
     public function content(): Content
     {
-        return new Content(view: 'mail.order', text: 'mail.order-text');
+        return new Content(view: 'mail.order', text: 'mail.order-text', with: ['sheetAttached' => $this->sheetPdf() !== null]);
+    }
+
+    /** @return list<Attachment> */
+    public function attachments(): array
+    {
+        $pdf = $this->sheetPdf();
+
+        return $pdf === null ? [] : [Attachment::fromData(fn () => $pdf, OrderSheet::filename($this->sheet))->withMime('application/pdf')];
+    }
+
+    /** The confirmation goes out even when the sheet cannot be rendered; the failure is logged. */
+    private function sheetPdf(): ?string
+    {
+        if ($this->sheet === []) {
+            return null;
+        }
+        try {
+            return $this->sheetBytes ??= app(OrderSheet::class)->pdf($this->sheet);
+        } catch (Throwable $e) {
+            Log::error('Order sheet could not be rendered', ['error' => LogSafe::error($e)]);
+
+            return null;
+        }
     }
 
     public static function money(float $value): string

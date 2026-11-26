@@ -71,7 +71,7 @@ watch(() => props.locations, (locations) => {
         <div v-if="selected" class="c-loc-panel overflow-hidden rounded-chip border-t-[3px] border-gold-500 bg-slate-50">
           <div class="flex flex-col gap-3.5 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4 tb:px-6">
             <div class="min-w-0 flex-1">
-              <p class="m-0 text-sm font-semibold text-gold-700">Địa điểm đang xem</p>
+              <p class="m-0 text-sm font-semibold text-gold-800">Địa điểm đang xem</p>
               <h3 class="mb-0 mt-1 text-xl font-black leading-7 text-navy-900">{{ selected.name }}</h3>
               <p class="mb-0 mt-1 text-sm leading-6 text-slate-600">{{ selected.address }}</p>
             </div>

@@ -107,7 +107,9 @@ function toggleDescription() {
         <div v-if="product.code || product.brand || extras?.reviews.total || extras?.videoEmbedUrl" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600 max-tb:order-3 max-tb:mb-2 max-tb:text-[13px]">
           <span v-if="product.code">Mã sản phẩm: <strong class="font-bold text-navy-800">{{ product.code }}</strong></span>
           <span v-if="product.code && product.brand" class="text-slate-300" aria-hidden="true">·</span>
-          <span v-if="product.brand">Thương hiệu: <strong class="font-bold text-navy-800">{{ product.brand }}</strong></span>
+          <span v-if="product.brand">Thương hiệu:
+            <NuxtLink v-if="product.brandUrl" :to="product.brandUrl" class="inline-flex min-h-9 items-center font-bold text-navy-800 underline decoration-gold-500 decoration-2 underline-offset-4">{{ product.brand }}</NuxtLink>
+            <strong v-else class="font-bold text-navy-800">{{ product.brand }}</strong></span>
           <template v-if="extras?.videoEmbedUrl">
             <span v-if="product.code || product.brand" class="text-slate-300" aria-hidden="true">·</span>
             <a href="#video-san-pham" class="inline-flex min-h-9 items-center gap-1 font-bold text-gold-700 no-underline hover:underline"><span aria-hidden="true">▶</span> Xem video</a>

@@ -264,8 +264,8 @@ const showroomImage = computed(() => {
             <div class="about-brand-board" aria-label="Các thương hiệu thiết bị">
               <span class="about-brand-circuit" aria-hidden="true" />
               <ul class="about-brand-grid">
-                <li v-for="brand in partnerBrands" :key="brand.id" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
-                  <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
+                <li v-for="brand in partnerBrands" :key="brand.id" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.brandPath || brand.href }">
+                  <NuxtLink v-if="brand.brandPath || brand.href" :to="(brand.brandPath || brand.href)!" :aria-label="`Xem sản phẩm ${brand.name}`">
                     <img :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
                   </NuxtLink>
                   <img v-else :src="brand.logo" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">

@@ -104,7 +104,7 @@ async function send() {
 </script>
 
 <template>
-  <form id="yeu-cau-tu-van" class="lead grid min-w-0 gap-8 rounded-chip border-t-[3px] border-gold-500 bg-slate-50 px-5 py-9 tb:px-8 lg:grid-cols-[minmax(230px,.75fr)_minmax(0,1.25fr)] lg:gap-12 lg:px-12 lg:py-12" @submit.prevent="send">
+  <form id="yeu-cau-tu-van" data-lead-form="contact_page" data-lead-kind="contact" class="lead grid min-w-0 gap-8 rounded-chip border-t-[3px] border-gold-500 bg-slate-50 px-5 py-9 tb:px-8 lg:grid-cols-[minmax(230px,.75fr)_minmax(0,1.25fr)] lg:gap-12 lg:px-12 lg:py-12" @submit.prevent="send">
     <div class="lead-aside flex min-w-0 flex-col justify-between gap-7">
       <div class="lead-intro">
         <h2 class="m-0 max-w-md text-[clamp(28px,2.7vw,40px)] font-black leading-tight tracking-tight text-navy-900">Đăng ký nhận tư vấn</h2>

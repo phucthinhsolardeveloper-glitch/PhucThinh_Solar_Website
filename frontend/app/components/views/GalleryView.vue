@@ -32,7 +32,7 @@ const pageTitle = computed(() => publicSeoTitle(gallery.value?.seo.title, 'Thư 
 useSeoMeta({
   title: pageTitle,
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.galleryPublicRouteIndexable, !!gallery.value && gallery.value.albums.length > 0 && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
   enabled: computed(() => !!gallery.value && !error.value),

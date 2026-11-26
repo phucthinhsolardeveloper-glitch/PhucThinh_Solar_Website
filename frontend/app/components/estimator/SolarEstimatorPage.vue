@@ -96,7 +96,7 @@ const bars = computed(() => {
 })
 
 // Lead: only name and phone; the estimate itself travels as the message.
-const { submit } = useLeadForm()
+const { submit, refused } = useLeadForm()
 const lead = reactive({ fullname: '', phone: '' })
 const touched = reactive({ fullname: false, phone: false })
 const sending = ref(false)
@@ -106,7 +106,12 @@ const phoneDigits = computed(() => normalizeVnPhone(lead.phone))
 const leadInvalid = computed(() => ({ fullname: !lead.fullname.trim(), phone: phoneDigits.value === null }))
 async function sendLead() {
   touched.fullname = touched.phone = true
-  if (!result.value || busy.value || leadInvalid.value.fullname || leadInvalid.value.phone || sending.value) return
+  if (!result.value || busy.value || sending.value) return
+  // This form checks its own fields (novalidate), so the browser reports nothing when they are wrong.
+  if (leadInvalid.value.fullname || leadInvalid.value.phone) {
+    refused('contact', 'solar_estimator')
+    return
+  }
   sending.value = true
   sendError.value = ''
   const requestSequence = sequence
@@ -261,7 +266,7 @@ async function sendLead() {
                 <div class="est-lead">
                   <h3>Nhận phương án chi tiết cho công trình của bạn</h3>
                   <p v-if="sent" class="est-sent" role="status"><UIcon name="i-lucide-circle-check" class="size-5" aria-hidden="true" />{{ sent }}</p>
-                  <form v-else class="est-lead__form" novalidate @submit.prevent="sendLead">
+                  <form v-else class="est-lead__form" data-lead-form="solar_estimator" data-lead-kind="contact" novalidate @submit.prevent="sendLead">
                     <label class="est-field" :class="{ 'is-invalid': touched.fullname && leadInvalid.fullname }">
                       <span>Họ và tên</span>
                       <input v-model="lead.fullname" autocomplete="name" maxlength="100" required placeholder="Nguyễn Văn A" @blur="touched.fullname = true">

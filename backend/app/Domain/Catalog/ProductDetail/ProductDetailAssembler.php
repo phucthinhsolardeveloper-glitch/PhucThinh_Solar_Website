@@ -85,7 +85,9 @@ class ProductDetailAssembler
 
         $root = $row['top_category_id'] ? $this->tree->get($row['top_category_id']) : null;
         $list = $root && $root['is_visible'] ? ['id' => $root['id'], 'slug' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
-        $brand = $row['brand_id'] > 0 ? $db->table('brands')->where('id', $row['brand_id'])->where('is_visible', true)->value('name') : '';
+        $brandRow = $row['brand_id'] > 0 ? $db->table('brands')->where('id', $row['brand_id'])->where('is_visible', true)->first(['name', 'slug']) : null;
+        $brand = $brandRow->name ?? '';
+        $brandSlug = Text::slug($brandRow->slug ?? '');
         $seo = (array) ($db->table('seo_metas')->where('owner_type', Product::class)->where('owner_id', $id)->first(['title', 'description', 'keywords']) ?? []);
 
         $profile = $this->specs->profileKey($row, $list);
@@ -123,6 +125,9 @@ class ProductDetailAssembler
             'canonical' => ['url' => '/san-pham/'.$slug],
             'seo' => $this->seo($name, $seo),
         ];
+        if ($brandSlug !== '' && $payload['product']['brand'] !== '') {
+            $payload['product']['brandUrl'] = '/thuong-hieu/'.$brandSlug.'/';
+        }
         $merchant = self::merchant($product);
         if ($merchant !== []) {
             $payload['product']['merchant'] = $merchant;

@@ -54,7 +54,7 @@ const leadIntent = useState<string>('public-home-lead-intent', () => '')
             <strong class="space-title text-[clamp(19px,1.45vw,24px)] font-extrabold leading-[1.25] tracking-[-.015em]">{{ campaign.name }}</strong>
           </span>
           <span v-if="campaign.description" class="mt-2.5 max-tb:mt-1.5 line-clamp-2 max-tb:line-clamp-none text-[15px] leading-[1.6] text-slate-600">{{ campaign.description }}</span>
-          <span class="mt-4 max-tb:mt-1 max-tb:min-h-11 inline-flex items-center gap-1.5 text-[14px] font-extrabold text-gold-700 transition-colors group-hover:text-navy-950">
+          <span class="mt-4 max-tb:mt-1 max-tb:min-h-11 inline-flex items-center gap-1.5 text-[14px] font-extrabold text-gold-800 transition-colors group-hover:text-navy-950">
             Xem chi tiết <span class="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true">→</span>
           </span>
         </a>

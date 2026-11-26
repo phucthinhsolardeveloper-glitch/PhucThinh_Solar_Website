@@ -174,7 +174,8 @@ class SiteAssembler
         };
         $children = [self::link('Tất cả bài viết', '/tin-tuc/')];
         foreach ($groups as $group) {
-            $children[] = $branch($group, 'category/'.self::slug($group).'/');
+            // The group's own address, as in the sitemap; /category/<slug>/ only redirects there.
+            $children[] = $branch($group, self::slug($group));
         }
         $nav[4]['children'] = array_values(array_filter($children));
 

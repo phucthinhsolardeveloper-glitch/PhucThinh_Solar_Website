@@ -143,7 +143,7 @@ async function send() {
           <button type="button" class="mt-6 border-b-2 border-gold-500 pb-1 text-[15px] font-extrabold text-navy-950" @click="success = ''">Gửi thêm một yêu cầu khác</button>
         </div>
 
-        <form v-else @submit.prevent="send">
+        <form v-else data-lead-form="home" data-lead-kind="contact" @submit.prevent="send">
           <fieldset class="m-0 min-w-0 border-0 p-0">
             <legend class="mb-3 text-[15px] font-extrabold text-navy-950">Anh/chị quan tâm đến</legend>
             <p v-if="prefilledFrom" class="-mt-1 mb-3 text-sm text-slate-600" role="status">

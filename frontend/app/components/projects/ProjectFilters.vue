@@ -7,8 +7,9 @@ const railRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(railRef)
 useSlidingPill(railRef, 'projects')
 
+// The category's own address (the sitemap's); /danh-muc-du-an/<slug>/ shows the same page under a second one.
 function categoryHref(category: PublicProjectCategory): string {
-  return category.url
+  return category.canonicalPath || category.url
 }
 </script>
 

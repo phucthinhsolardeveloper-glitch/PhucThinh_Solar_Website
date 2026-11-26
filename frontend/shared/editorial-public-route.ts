@@ -19,6 +19,19 @@ export function editorialPublicRouteRobots(isPublicRoute: unknown, indexable: un
   return 'index, follow'
 }
 
+/**
+ * Page 2, 3… of an article list are different lists with their own address, so each is indexable with a canonical of
+ * its own (`?p=N`). Any other query, a malformed number or a page past the end is a view search engines skip.
+ */
+export function editorialListPage(query: Record<string, unknown>, pagination?: { total: number, perPage: number } | null): { page: number, filtered: boolean } {
+  const others = Object.keys(query).some((key) => key !== 'p')
+  if (!('p' in query)) return { page: 1, filtered: others }
+  const raw = typeof query.p === 'string' && /^[1-9]\d{0,3}$/.test(query.p) ? Number(query.p) : 0
+  const last = pagination && pagination.perPage > 0 ? Math.ceil(pagination.total / pagination.perPage) : 0
+  if (!raw || raw > last) return { page: 1, filtered: true }
+  return { page: raw, filtered: others }
+}
+
 export function editorialPublicResponseStatus(isPublicRoute: unknown, status: unknown, invalidPayload: unknown = false): 404 | 502 | undefined {
   if (isPublicRoute !== true) return undefined
   if (status === 404) return 404

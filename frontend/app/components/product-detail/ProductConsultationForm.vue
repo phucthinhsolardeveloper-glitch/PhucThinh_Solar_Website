@@ -12,7 +12,7 @@ const props = defineProps<{
   needs: PublicProductNeed[]
 }>()
 
-const { security, ensureSecurity, submit } = useLeadForm()
+const { security, ensureSecurity, submit, refused } = useLeadForm()
 const form = reactive({
   fullname: '',
   phone: '',
@@ -94,6 +94,7 @@ async function send() {
   error.value = ''
   if ((form.city && !form.ward) || (!form.city && form.ward)) {
     error.value = 'Nếu chọn tỉnh/thành phố, vui lòng chọn cả phường/xã.'
+    refused('product', 'product_page')
     return
   }
   submitting.value = true
@@ -153,7 +154,7 @@ async function send() {
         </ul>
       </div>
 
-      <form class="min-w-0" @submit.prevent="send">
+      <form class="min-w-0" data-lead-form="product_page" data-lead-kind="product" @submit.prevent="send">
         <div v-if="needs.length" class="mb-5">
           <span class="mb-2 block text-sm font-semibold text-navy-900">Nhu cầu cần tư vấn</span>
           <div class="flex flex-wrap gap-2" role="group" aria-label="Nhu cầu cần tư vấn">

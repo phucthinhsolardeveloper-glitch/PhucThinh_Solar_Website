@@ -78,7 +78,7 @@ class NewsDetail extends PageSupport
         $category = [];
         $list = $categoryId > 0 ? $this->db->table('post_categories')->where('id', $categoryId)->where('kind', 'article')->where('is_visible', true)->first(['id', 'name', 'slug']) : null;
         if ($list && ($listSlug = Text::slug($list->slug)) !== '') {
-            $category = ['id' => (int) $list->id, 'name' => self::text($list->name), 'slug' => $listSlug, 'url' => '/'.$listSlug.'/'];
+            $category = ['id' => (int) $list->id, 'name' => self::text($list->name), 'slug' => $listSlug, 'url' => '/'.$listSlug];
         }
         $media = ['gallery' => [], 'videos' => []];
         $items = $this->db->table('post_media')->where('post_id', $id)->where('is_visible', true)->orderBy('sort_order')->orderByDesc('id')->get();

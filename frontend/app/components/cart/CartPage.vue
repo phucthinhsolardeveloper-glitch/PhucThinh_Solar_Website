@@ -240,7 +240,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 
                 <div class="col-start-2 row-start-2 text-sm tb:col-start-3 tb:row-auto tb:text-right">
                   <strong class="block text-[17px] text-red-600"><AnimatedMoney :value="item.lineTotal" :animate="false" /></strong>
-                  <small class="text-slate-400">{{ formatMoney(item.unitPrice) }} / sản phẩm</small>
+                  <small class="text-slate-500">{{ formatMoney(item.unitPrice) }} / sản phẩm</small>
                 </div>
 
                 <div class="col-start-2 row-start-3 w-fit self-center tb:col-start-4 tb:row-auto tb:justify-self-end">
@@ -322,7 +322,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 .cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: var(--radius-md); background: #f6f8fb; }
 .cart-row__name { display: block; color: var(--color-navy-950); font-size: 16.5px; font-weight: 800; line-height: 1.35; text-decoration: none; }
 .cart-row__name:hover { color: var(--color-gold-700); }
-.cart-row__remove { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: 0; background: none; color: #94a3b8; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
+.cart-row__remove { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: 0; background: none; color: #64748b; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
 .cart-row__remove:hover { color: #b91c1c; }
 .cart-row__remove:disabled { cursor: wait; }
 .cart-row-move { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }

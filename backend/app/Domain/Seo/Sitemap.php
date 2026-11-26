@@ -4,6 +4,7 @@ namespace App\Domain\Seo;
 
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Content\PostVisibility;
+use App\Domain\Media\MediaLibrary;
 use App\Domain\Solar\SolarEstimator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
@@ -22,6 +23,18 @@ class Sitemap
 
     public function __construct(private readonly CategoryTree $tree) {}
 
+    /** The photo and video libraries with nothing to show. */
+    private function hasNothing(string $page): bool
+    {
+        $media = app(MediaLibrary::class);
+
+        return match ($page) {
+            '/thu-vien-anh/' => $media->albums([])[1]['albums'] === [],
+            '/video/' => $media->videos([])[1]['videos'] === [],
+            default => false,
+        };
+    }
+
     /** @return list<array{path: string, lastmod?: string}> */
     public function entries(): array
     {
@@ -29,6 +42,9 @@ class Sitemap
         // lastmod is more accurate than claiming they change on every request.
         $entries = [['path' => '/']];
         foreach (self::PAGES as $page) {
+            if ($this->hasNothing($page)) {
+                continue; // The page answers noindex until something is published on it.
+            }
             $entries[] = ['path' => $page];
         }
         if (app(SolarEstimator::class)->enabled()) {
@@ -47,7 +63,10 @@ class Sitemap
             }
         }
         $this->add($entries, DB::table('products')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/san-pham/'.$slug);
-        $this->add($entries, DB::table('brands')->where('is_visible', true)->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/thuong-hieu/'.$slug.'/');
+        // A brand page without a visible product answers noindex, so it is not listed until it sells something.
+        $this->add($entries, DB::table('brands')->where('is_visible', true)
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('products')->whereColumn('products.brand_id', 'brands.id')->where('products.is_visible', true))
+            ->orderBy('sort_order')->orderBy('id'), fn ($slug) => '/thuong-hieu/'.$slug.'/');
 
         // Editorial: top categories are bare paths without a slash, posts follow their kind.
         foreach (['article', 'solution', 'project'] as $kind) {

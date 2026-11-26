@@ -47,7 +47,7 @@ const links = usePublicLinks()
           <SiteBreadcrumb
             :items="[
               { label: 'Dự án đã thực hiện', to: links.generic('/du-an-da-thuc-hien/') },
-              ...(payload?.project.category ? [{ label: payload.project.category.name, to: links.generic(payload.project.category.url) }] : []),
+              ...(payload?.project.category ? [{ label: payload.project.category.name, to: links.generic(`/${payload.project.category.slug}`) }] : []),
               ...(payload ? [{ label: payload.project.title }] : []),
             ]"
           />

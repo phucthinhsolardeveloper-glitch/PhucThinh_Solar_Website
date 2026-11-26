@@ -28,6 +28,67 @@ const reportingTransfer = ref(false)
 const reportError = ref('')
 const copied = ref('')
 const money = (value: number) => new Intl.NumberFormat('vi-VN').format(value) + 'đ'
+// Every bank the Admin list offers has its logo in /assets/images/payments/banks (named by its badge letters); a bank
+// whose logo opens with a separate emblem also has that emblem, shown in the middle of the code.
+const BANK_LOGOS = new Set(['abb', 'acb', 'agr', 'bab', 'bidv', 'bvb', 'ctg', 'eib', 'hdb', 'klb', 'lpb', 'mb', 'msb', 'nab', 'ncb', 'ocb', 'pgb', 'pvc', 'scb', 'sea', 'sgb', 'shb', 'stb', 'tcb', 'tpb', 'vab', 'vbb', 'vcb', 'vib', 'vpb'])
+const BANK_MARKS = new Set(['agr', 'mb', 'ocb', 'tpb'])
+const bankLogo = computed(() => {
+  const code = transfer.value?.bankShort.toLowerCase() ?? ''
+  if (!BANK_LOGOS.has(code)) return undefined
+  return { logo: `/assets/images/payments/banks/${code}.png`, mark: BANK_MARKS.has(code) ? `/assets/images/payments/banks/${code}-mark.png` : '' }
+})
+const savingQr = ref(false)
+/** The code with the amount and transfer note as one picture, for paying from a banking app on the same phone. */
+async function saveQr() {
+  const current = transfer.value
+  if (!current || !import.meta.client || savingQr.value) return
+  savingQr.value = true
+  try {
+    const load = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image()
+      image.onload = () => resolve(image)
+      image.onerror = reject
+      image.src = src
+    })
+    const optional = (src?: string) => (src ? load(src).catch(() => null) : Promise.resolve(null))
+    const [qr, mark, scheme, bank] = await Promise.all([load(current.qrImage), optional(bankLogo.value?.mark || undefined), optional('/assets/images/payments/vietqr.svg'), optional(bankLogo.value?.logo)])
+    const canvas = document.createElement('canvas')
+    canvas.width = 720
+    canvas.height = 1040
+    const c = canvas.getContext('2d')!
+    c.fillStyle = '#ffffff'
+    c.fillRect(0, 0, canvas.width, canvas.height)
+    if (scheme) c.drawImage(scheme, 60, 34, 160, 46)
+    if (bank) c.drawImage(bank, 660 - 220, 45, 220, 220 * bank.naturalHeight / bank.naturalWidth)
+    c.drawImage(qr, 60, 110, 600, 600)
+    if (mark) {
+      c.fillStyle = '#ffffff'
+      c.fillRect(312, 362, 96, 96)
+      c.drawImage(mark, 318, 368, 84, 84)
+    }
+    c.translate(0, 50)
+    c.textAlign = 'center'
+    c.fillStyle = '#0a2251'
+    c.font = 'bold 44px sans-serif'
+    c.fillText(money(current.amount), 360, 730)
+    c.font = '28px sans-serif'
+    c.fillStyle = '#334155'
+    c.fillText(`${current.bankName} · ${current.accountNo}`, 360, 790)
+    // The company name is long: shrink it to the width of the picture.
+    let size = 28
+    do { c.font = `${size}px sans-serif`; size -= 1 } while (c.measureText(current.accountName).width > 640 && size > 16)
+    c.fillText(current.accountName, 360, 832)
+    c.font = 'bold 30px sans-serif'
+    c.fillStyle = '#7c5c1b'
+    c.fillText(`Nội dung: ${current.note}`, 360, 892)
+    const link = document.createElement('a')
+    link.download = `ma-qr-${current.note}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } catch { /* The code stays on screen to scan. */ } finally {
+    savingQr.value = false
+  }
+}
 async function copyText(key: string, value: string) {
   try {
     await navigator.clipboard.writeText(value)
@@ -101,7 +162,7 @@ watch([payload, token], trackOrderConversion)
         <p class="mb-5 text-slate-600">Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.</p>
         <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
-      <div v-else class="mx-auto max-w-[900px]">
+      <div v-else class="mx-auto max-w-[860px]">
         <svg v-if="paymentConfirmed" class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
           <circle cx="32" cy="32" r="30" fill="currentColor" />
           <path d="m17 32 10 10 21-22" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" />
@@ -114,53 +175,77 @@ watch([payload, token], trackOrderConversion)
         <p v-else class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
         <p v-if="payload" class="mt-3 text-base text-slate-700">Mã đơn hàng: <strong class="text-navy-800">{{ payload.order.code }}</strong></p>
 
-        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="mx-auto mt-8 grid max-w-[760px] gap-6 rounded-btn border border-slate-200 bg-slate-50 p-5 text-left sm:grid-cols-[220px_1fr] sm:p-6" aria-labelledby="transfer-title">
-          <div class="mx-auto w-full max-w-[220px]">
-            <img :src="transfer.qrImage" :alt="`Mã VietQR chuyển khoản ${money(transfer.amount)} cho đơn ${payload?.order.code}`" width="220" height="220" class="block aspect-square w-full rounded-btn border border-slate-200 bg-white p-2">
-            <p class="m-0 mt-2 text-center text-xs text-slate-500">Quét bằng ứng dụng ngân hàng hoặc ví hỗ trợ VietQR</p>
-          </div>
-          <div>
-            <h2 id="transfer-title" class="m-0 text-lg font-bold text-navy-900">Thông tin chuyển khoản</h2>
-            <dl class="m-0 mt-3 grid gap-2.5 text-sm">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <dt class="text-slate-500">Ngân hàng</dt>
-                <dd class="m-0 flex items-center gap-2 font-semibold text-navy-900">
-                  <span
-                    v-if="transfer.bankShort"
-                    class="inline-flex h-6 w-11 shrink-0 items-center justify-center rounded-md text-[10px] font-bold tracking-wide text-white"
-                    :style="{ background: transfer.bankColor }"
-                    aria-hidden="true"
-                  >{{ transfer.bankShort }}</span>
-                  {{ transfer.bankName }}
-                </dd>
+        <section v-if="transfer && paymentState === 'awaiting_transfer'" class="transfer-card mt-8 text-left" aria-labelledby="transfer-title">
+          <div class="grid gap-0 overflow-hidden rounded-[20px] bg-white sm:grid-cols-[minmax(0,330px)_1fr]">
+            <!-- The code, framed like the cards banks print: VietQR above, the receiving bank below. -->
+            <div class="transfer-qr flex flex-col items-center gap-3 px-6 pb-6 pt-5">
+              <div class="flex w-full items-center justify-between gap-3">
+                <img src="/assets/images/payments/vietqr.svg" alt="VietQR" width="104" height="30" class="h-[30px] w-auto">
+                <span class="text-[12px] font-bold uppercase tracking-wide text-slate-500">Quét để thanh toán</span>
               </div>
-              <div class="flex flex-wrap items-center justify-between gap-2"><dt class="text-slate-500">Chủ tài khoản</dt><dd class="m-0 font-semibold text-navy-900">{{ transfer.accountName }}</dd></div>
-              <div v-for="row in [
-                { key: 'account', label: 'Số tài khoản', value: transfer.accountNo, shown: transfer.accountNo },
-                { key: 'amount', label: 'Số tiền', value: String(transfer.amount), shown: money(transfer.amount) },
-                { key: 'note', label: 'Nội dung', value: transfer.note, shown: transfer.note },
-              ]" :key="row.key" class="flex flex-wrap items-center justify-between gap-2">
-                <dt class="text-slate-500">{{ row.label }}</dt>
-                <dd class="m-0 flex items-center gap-2">
-                  <span class="font-bold tabular-nums text-navy-900" :class="row.key === 'note' ? 'rounded-sm bg-gold-100 px-1.5 text-gold-800' : ''">{{ row.shown }}</span>
-                  <button type="button" class="inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-btn border border-slate-300 bg-white px-2.5 text-xs font-bold text-navy-800 hover:border-navy-800" :aria-label="`Sao chép ${row.label.toLowerCase()}`" @click="copyText(row.key, row.value)">
+              <div class="relative w-full max-w-[260px] rounded-[14px] border border-slate-200 bg-white p-2.5 shadow-[0_8px_24px_rgb(10_34_81/10%)]">
+                <img :src="transfer.qrImage" :alt="`Mã VietQR chuyển khoản ${money(transfer.amount)} cho đơn ${payload?.order.code}`" width="240" height="240" class="block aspect-square w-full">
+                <span v-if="bankLogo?.mark" class="absolute left-1/2 top-1/2 grid size-[19%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[8px] bg-white p-[3px] shadow-sm" aria-hidden="true">
+                  <img :src="bankLogo.mark" alt="" width="48" height="48" class="block size-full rounded-[5px]">
+                </span>
+              </div>
+              <div class="flex w-full items-center justify-center gap-3 border-t border-slate-100 pt-3">
+                <img v-if="bankLogo" :src="bankLogo.logo" :alt="transfer.bankName" width="180" height="28" class="h-7 w-auto max-w-[190px] object-contain">
+                <span v-else class="inline-flex h-6 items-center rounded-md px-2 text-[11px] font-bold text-white" :style="{ background: transfer.bankColor }">{{ transfer.bankShort || transfer.bankName }}</span>
+              </div>
+              <button type="button" :disabled="savingQr" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-btn border border-navy-800/20 bg-white px-4 text-sm font-bold text-navy-900 hover:border-navy-800 disabled:cursor-wait" @click="saveQr">
+                <UIcon name="i-lucide-download" class="size-4" aria-hidden="true" />
+                {{ savingQr ? 'Đang lưu…' : 'Lưu ảnh mã QR' }}
+              </button>
+              <p class="m-0 text-center text-xs leading-relaxed text-slate-500">Mở ứng dụng ngân hàng, chọn quét mã hoặc tải ảnh mã QR từ thư viện.</p>
+            </div>
+
+            <div class="flex flex-col gap-4 border-t border-slate-100 p-5 sm:border-l sm:border-t-0 sm:p-7">
+              <div>
+                <h2 id="transfer-title" class="m-0 text-lg font-black text-navy-900">Thông tin chuyển khoản</h2>
+                <p class="m-0 mt-1 text-sm text-slate-500">Số tiền và nội dung đã có sẵn trong mã QR.</p>
+              </div>
+              <div class="rounded-[14px] bg-navy-950 px-5 py-4 text-white">
+                <p class="m-0 text-xs font-semibold text-white/70">Số tiền cần chuyển</p>
+                <p class="m-0 mt-1 flex items-center justify-between gap-3">
+                  <strong class="text-[28px] font-black tabular-nums leading-none text-gold-300">{{ money(transfer.amount) }}</strong>
+                  <button type="button" class="inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-btn border border-white/25 px-2.5 text-xs font-bold text-white hover:border-white" aria-label="Sao chép số tiền" @click="copyText('amount', String(transfer.amount))">
+                    <UIcon :name="copied === 'amount' ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3.5" aria-hidden="true" />{{ copied === 'amount' ? 'Đã chép' : 'Chép' }}
+                  </button>
+                </p>
+              </div>
+              <dl class="m-0 grid gap-3 text-sm">
+                <div class="grid gap-0.5">
+                  <dt class="text-slate-500">Chủ tài khoản</dt>
+                  <dd class="m-0 font-bold leading-snug text-navy-900">{{ transfer.accountName }}</dd>
+                </div>
+                <div v-for="row in [
+                  { key: 'account', label: 'Số tài khoản', value: transfer.accountNo, shown: transfer.accountNo, hint: transfer.bankName },
+                  { key: 'note', label: 'Nội dung chuyển khoản', value: transfer.note, shown: transfer.note, hint: 'Giữ đúng để kế toán nhận ra đơn' },
+                ]" :key="row.key" class="flex items-center justify-between gap-3 rounded-[12px] border border-slate-200 px-3.5 py-2.5">
+                  <div class="min-w-0">
+                    <dt class="text-xs text-slate-500">{{ row.label }}</dt>
+                    <dd class="m-0 mt-0.5 text-[17px] font-black tracking-wide tabular-nums" :class="row.key === 'note' ? 'text-gold-800' : 'text-navy-900'">{{ row.shown }}</dd>
+                    <p class="m-0 text-xs text-slate-500">{{ row.hint }}</p>
+                  </div>
+                  <button type="button" class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1 rounded-btn border border-slate-300 bg-white px-2.5 text-xs font-bold text-navy-800 hover:border-navy-800" :aria-label="`Sao chép ${row.label.toLowerCase()}`" @click="copyText(row.key, row.value)">
                     <UIcon :name="copied === row.key ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3.5" aria-hidden="true" />
                     <span>{{ copied === row.key ? 'Đã chép' : 'Chép' }}</span>
                   </button>
-                </dd>
+                </div>
+              </dl>
+              <div>
+                <p v-if="transfer.reported || transferReported" class="m-0 flex items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
+                  <UIcon name="i-lucide-check-circle-2" class="size-4" aria-hidden="true" />
+                  Đã nhận thông báo. Chúng tôi sẽ kiểm tra tài khoản và xác nhận đơn.
+                </p>
+                <button v-else type="button" :disabled="reportingTransfer" class="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-btn bg-navy-800 px-5 font-bold text-white hover:bg-navy-900 disabled:cursor-wait disabled:opacity-70" @click="reportTransfer">
+                  <UIcon name="i-lucide-send" class="size-4" aria-hidden="true" />
+                  {{ reportingTransfer ? 'Đang gửi…' : 'Tôi đã chuyển khoản' }}
+                </button>
+                <p v-if="reportError" class="m-0 mt-2 text-sm text-red-600" role="alert">{{ reportError }}</p>
+                <p class="m-0 mt-2 text-xs leading-relaxed text-slate-500">Đơn được xác nhận khi kế toán thấy tiền vào tài khoản công ty.</p>
               </div>
-            </dl>
-            <p class="m-0 mt-3 text-sm leading-relaxed text-slate-600">Giữ đúng nội dung <strong>{{ transfer.note }}</strong> để kế toán nhận ra đơn của bạn.</p>
-            <div class="mt-4">
-              <p v-if="transfer.reported || transferReported" class="m-0 flex items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
-                <UIcon name="i-lucide-check-circle-2" class="size-4" aria-hidden="true" />
-                Đã nhận thông báo. Chúng tôi sẽ kiểm tra tài khoản và xác nhận đơn.
-              </p>
-              <button v-else type="button" :disabled="reportingTransfer" class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-btn bg-navy-800 px-5 font-bold text-white hover:bg-navy-900 disabled:cursor-wait disabled:opacity-70" @click="reportTransfer">
-                <UIcon name="i-lucide-send" class="size-4" aria-hidden="true" />
-                {{ reportingTransfer ? 'Đang gửi…' : 'Tôi đã chuyển khoản' }}
-              </button>
-              <p v-if="reportError" class="m-0 mt-2 text-sm text-red-600" role="alert">{{ reportError }}</p>
             </div>
           </div>
         </section>
@@ -203,10 +288,11 @@ watch([payload, token], trackOrderConversion)
           </div>
         </div>
 
-        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center">
+        <!-- Same width as the transfer card above, so the page has one edge. -->
+        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center sm:px-6">
           <div>
             <p class="m-0 text-base font-bold text-white">Cần hỗ trợ hoặc bổ sung thông tin giao hàng?</p>
-            <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Liên hệ trực tiếp tổng đài Phúc Thịnh Solar trong giờ hành chính (T2 – T7):</p>
+            <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Giờ hành chính, Thứ Hai – Thứ Bảy.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2.5 sm:shrink-0">
             <a href="tel:0944555957" class="inline-flex min-h-10 items-center gap-2 rounded-chip bg-gold-500 px-3.5 py-2 text-xs font-extrabold text-navy-950 no-underline hover:bg-gold-400">
@@ -223,3 +309,9 @@ watch([payload, token], trackOrderConversion)
     </main>
   </div>
 </template>
+
+<style scoped>
+/* The gradient rim of a printed VietQR card, in the site's navy and gold. */
+.transfer-card { padding: 2px; border-radius: 22px; background: linear-gradient(135deg, var(--color-navy-800), #2c5aa6 45%, var(--color-gold-500)); box-shadow: 0 18px 40px rgb(10 34 81 / 12%); }
+.transfer-qr { background: linear-gradient(180deg, #f6f8fc, #ffffff 40%); }
+</style>

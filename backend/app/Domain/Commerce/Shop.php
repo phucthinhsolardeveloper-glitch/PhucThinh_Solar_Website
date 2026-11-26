@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -313,6 +312,7 @@ class Shop
                     $price = ! empty($product['sale_price']) ? (float) $product['sale_price'] : (float) $product['regular_price'];
                     $items[] = ['name' => (string) $product['name'], 'option' => implode(' - ', array_filter([$color, $size])), 'quantity' => $quantity, 'price' => $price, 'total' => $price * $quantity, 'image' => $this->mailImage($this->urls->product($product['image']))];
                 }
+                app(OrderSheet::class)->capture($orderId);
                 if (($payment['kind'] ?? '') === 'bank_transfer') {
                     app(BankTransfer::class)->issue($orderId, $order['code'], (int) round($total));
                 }
@@ -530,11 +530,18 @@ class Shop
         return [200, ($alreadyPaid || $status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
     }
 
+    /** Letters and digits staff can read off a bank statement or say on the phone: no 0/O, 1/I/L. */
+    public const ORDER_CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+
     /** Six characters, unique among existing orders. */
     private function newOrderCode(): string
     {
+        $alphabet = self::ORDER_CODE_ALPHABET;
         do {
-            $code = strtoupper(Str::random(6));
+            $code = '';
+            for ($i = 0; $i < 6; $i++) {
+                $code .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+            }
         } while (DB::table('orders')->where('code', $code)->exists());
 
         return $code;
@@ -605,13 +612,7 @@ class Shop
         if (! $order || $order->payment_code !== 'vnpay' || $order->payment_status !== 'paid') {
             return;
         }
-        $items = DB::table('order_items')->where('order_id', $orderId)->orderBy('id')->get()->map(function ($item) {
-            $price = (float) ($item->sale_price ?: $item->regular_price);
-
-            return ['name' => $item->name, 'option' => implode(' - ', array_filter([$item->color, $item->size])),
-                'quantity' => (int) $item->quantity, 'price' => $price, 'total' => $price * (int) $item->quantity, 'image' => $this->mailImage($this->urls->product($item->image))];
-        })->all();
-        $this->queueOrderMails((array) $order, $items, 'Thanh toán online qua VNPay');
+        $this->queueOrderMails((array) $order, app(CustomerOrderMail::class)->items($orderId), 'Thanh toán online qua VNPay');
     }
 
     /** A product photo as an absolute address for mail, '' when there is none. */
@@ -636,8 +637,17 @@ class Shop
                     app(MailActions::class)->staff(OrderResource::getUrl('edit', ['record' => $order['id']], isAbsolute: false, panel: 'admin'), (string) $order['phone'])));
         }
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            Outbox::queue('order:'.$order['id'].':customer', 'order_customer', $email,
-                new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals, actions: app(MailActions::class)->customer()));
+            $receipt = new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals, actions: app(MailActions::class)->customer());
+            $instruction = app(BankTransfer::class)->active((int) $order['id']);
+            if ($instruction !== null && ($order['payment_status'] ?? 'unpaid') !== 'paid') {
+                $receipt->withTransfer(['payload' => (string) $instruction->qr_text, 'bank' => (string) $instruction->bank_name,
+                    'bin' => (string) $instruction->bank_bin, 'account' => (string) $instruction->account_no,
+                    'name' => (string) $instruction->account_name, 'amount' => (int) $instruction->amount, 'note' => (string) $instruction->reference]);
+            }
+            if (CustomerOrderMail::enabled('sheet') && ($sheet = app(OrderSheet::class)->stored((int) $order['id'])) !== null) {
+                $receipt->withSheet($sheet);
+            }
+            Outbox::queue('order:'.$order['id'].':customer', 'order_customer', $email, $receipt);
         }
     }
 }

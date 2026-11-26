@@ -107,7 +107,8 @@ const brandCanonicalPath = computed(() => {
 })
 const brandIndexable = computed(() =>
   isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
-  && !!data.value && !error.value && !hasBrandFilters.value && !pageBeyondList.value)
+  // A brand with nothing on sale stays reachable but is not offered to search engines.
+  && !!data.value && data.value.pagination.total > 0 && !error.value && !hasBrandFilters.value && !pageBeyondList.value)
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
 // No CMS text: a sentence built from the brand name and how many of its products are listed.
 const brandDescription = computed(() => data.value?.seo?.description || (data.value

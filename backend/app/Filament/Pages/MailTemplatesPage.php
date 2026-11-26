@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Domain\Audit\Audit;
+use App\Domain\Commerce\CustomerOrderMail;
 use App\Filament\Support\AdminActor;
 use App\Filament\Support\NewFeatures;
 use App\Mail\MailTemplates;
@@ -12,6 +14,7 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -72,12 +75,23 @@ class MailTemplatesPage extends Page
         foreach (MailTemplates::LABELS as $key => $label) {
             $templates[$key] = array_merge(MailTemplates::defaults($key), is_array($saved[$key] ?? null) ? $saved[$key] : []);
         }
-        $this->form->fill(['templates' => $templates]);
+        $this->form->fill(['templates' => $templates, 'auto' => array_combine(array_keys(CustomerOrderMail::SWITCHES),
+            array_map(fn (string $key) => CustomerOrderMail::enabled($key), array_keys(CustomerOrderMail::SWITCHES)))]);
     }
 
     public function form(Schema $schema): Schema
     {
-        $sections = [];
+        $sections = [
+            Section::make('Tự động gửi cho khách đặt hàng')
+                ->description('Mặc định tắt. Bật mục nào, chỉ các đơn và thay đổi từ lúc đó mới được gửi; mỗi đơn tối đa một email cho mỗi bước.')
+                ->schema([
+                    ...array_map(fn (string $key, string $label) => Toggle::make('auto.'.$key)->label($label), array_keys(CustomerOrderMail::SWITCHES), CustomerOrderMail::SWITCHES),
+                    Actions::make([
+                        Action::make('sampleSheet')->label('Xem phiếu đơn hàng mẫu (PDF)')->icon('heroicon-o-document-text')->color('gray')
+                            ->url(fn () => route('order.sheet-sample'), true),
+                    ])->key('mail_sheet_sample'),
+                ]),
+        ];
         foreach (MailTemplates::LABELS as $key => $label) {
             $sections[] = Section::make($label)->collapsed()->schema([
                 TextInput::make("templates.{$key}.subject")->label('Tiêu đề email')->required()->maxLength(180),
@@ -111,7 +125,9 @@ class MailTemplatesPage extends Page
     public function save(): void
     {
         abort_unless(self::canAccess(), 403);
-        $input = $this->form->getState()['templates'] ?? [];
+        $state = $this->form->getState();
+        $input = $state['templates'] ?? [];
+        $this->saveSwitches(is_array($state['auto'] ?? null) ? $state['auto'] : []);
         $overrides = [];
         foreach (MailTemplates::LABELS as $key => $label) {
             $defaults = MailTemplates::defaults($key);
@@ -128,6 +144,23 @@ class MailTemplatesPage extends Page
         ]);
         app(SiteSettings::class)->clear();
         Notification::make()->title('Đã lưu mẫu email')->success()->send();
+    }
+
+    /** Turning automatic customer mail on or off is recorded with who did it. */
+    private function saveSwitches(array $input): void
+    {
+        $before = [];
+        $after = [];
+        foreach (array_keys(CustomerOrderMail::SWITCHES) as $key) {
+            $before[$key] = CustomerOrderMail::enabled($key);
+            $after[$key] = ($input[$key] ?? false) === true;
+        }
+        if ($before === $after) {
+            return;
+        }
+        DB::table('settings')->updateOrInsert(['key' => 'order_mail'], ['value' => json_encode($after, JSON_THROW_ON_ERROR), 'updated_at' => now(), 'created_at' => now()]);
+        [$from, $to] = Audit::diff($before, $after);
+        Audit::record('mail.automation', 'Setting', null, $from, $to);
     }
 
     private function draft(string $key): array

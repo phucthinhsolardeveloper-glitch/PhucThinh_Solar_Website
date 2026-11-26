@@ -18,6 +18,8 @@ export interface PublicProductDetail {
   packageContents?: string
   decisionMetrics?: PublicProductDecisionMetric[]
   brand?: string
+  /** The brand's own page, when the brand has one. */
+  brandUrl?: string
   /** Admin-verified Merchant facts only; a missing key means unknown, never "in stock". */
   merchant?: PublicProductMerchant
 }
@@ -156,6 +158,7 @@ export function isPublicProductDetailPayload(value: unknown): value is PublicPro
   if ('packageContents' in product && !text(product.packageContents, true)) return false
   if ('decisionMetrics' in product && (!Array.isArray(product.decisionMetrics) || product.decisionMetrics.length > 4 || !product.decisionMetrics.every(decisionMetric))) return false
   if ('merchant' in product && !merchant(product.merchant)) return false
+  if ('brandUrl' in product && (typeof product.brandUrl !== 'string' || !/^\/thuong-hieu\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(product.brandUrl))) return false
   return !('brand' in product) || text(product.brand, true)
 }
 
