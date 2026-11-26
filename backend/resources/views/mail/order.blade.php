@@ -7,7 +7,7 @@
 {{-- Order mail, to the shop and to the buyer. --}}
 @extends('mail.layout')
 @section('content')
-    @if (($copy['audience'] ?? 'staff') === 'customer')
+    @if (($copy['audience'] ?? 'staff') === 'customer' && ($copy['step'] ?? 0) >= 0)
         @include('mail.partials.tracker')
     @endif
     {{-- Summary: what the order is and how much --}}
@@ -105,6 +105,13 @@
             </table>
         </td>
     </tr>
+    @if ($sheetAttached ?? false)
+        <tr>
+            <td class="px" style="padding:16px 32px 0">
+                <div style="padding:12px 16px;border:1px solid #e6d3a0;border-radius:12px;background:#fdf7e8;color:#15284b;font-size:13.5px;line-height:20px">Phiếu đơn hàng (PDF) được đính kèm email này.</div>
+            </td>
+        </tr>
+    @endif
     @include('mail.partials.actions')
     @include('mail.partials.closing')
 @endsection

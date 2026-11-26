@@ -58,6 +58,9 @@ final class OrderLifecycle
             if ($to !== []) {
                 Audit::record(isset($to['status']) ? 'order.status' : 'order.notes', 'Order', (int) $locked->id, $from, $to);
             }
+            if (isset($to['status'])) {
+                app(CustomerOrderMail::class)->queue((int) $locked->id, $status);
+            }
         });
         $order->refresh();
     }
@@ -75,5 +78,9 @@ final class OrderLifecycle
         }
         DB::table('orders')->where('id', $lockedOrder->id)->update(['payment_status' => $to] + $extra + ['updated_at' => now()]);
         Audit::record('payment.'.$to, 'Order', (int) $lockedOrder->id, ['payment_status' => $from], ['payment_status' => $to] + $extra, $systemActor);
+        // An online payment already sends the order confirmation when it arrives.
+        if ($to === 'paid' && ($extra['payment_code'] ?? $lockedOrder->payment_code ?? null) === 'manual') {
+            app(CustomerOrderMail::class)->queue((int) $lockedOrder->id, 'paid');
+        }
     }
 }

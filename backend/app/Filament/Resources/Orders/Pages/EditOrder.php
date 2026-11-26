@@ -126,6 +126,7 @@ class EditOrder extends EditRecord
             Action::make('excel')->label('Tải Excel')->icon('heroicon-o-arrow-down-tray')->color('gray')
                 ->action(fn (Order $record) => app(OrderExporter::class)->single($record)),
             Action::make('print')->label('In')->icon('heroicon-o-printer')->color('gray')->url(fn (Order $record) => route('order.print', $record), true),
+            Action::make('sheet')->label('Phiếu PDF')->icon('heroicon-o-document-text')->color('gray')->url(fn (Order $record) => route('order.sheet', $record), true),
             Action::make('confirmManualPayment')->label('Xác nhận đã nhận tiền')->icon('heroicon-o-banknotes')
                 ->visible(fn (Order $record) => $record->payment_code === 'manual' && $record->payment_status === 'unpaid'
                     && AdminActor::current()->canPerform('orders_payment'))

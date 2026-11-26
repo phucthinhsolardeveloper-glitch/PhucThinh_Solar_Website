@@ -17,11 +17,17 @@ class MailTemplates
         'contact_customer' => 'Xác nhận gửi khách liên hệ',
         'order_admin' => 'Đơn hàng gửi quản trị',
         'order_customer' => 'Xác nhận gửi khách hàng',
+        'order_confirmed' => 'Báo khách: đơn đã được xác nhận',
+        'order_shipping' => 'Báo khách: đơn đang giao',
+        'order_paid' => 'Báo khách: đã nhận thanh toán',
     ];
 
     private const FIELDS = ['subject' => 180, 'heading' => 180, 'intro' => 700, 'closing' => 500];
 
-    /** Small status chip above the heading and who reads the mail; fixed by the kind of mail, not edited in Admin. */
+    /**
+     * Small status chip above the heading, who reads the mail and the step the order tracker has reached (-1 = no
+     * tracker); fixed by the kind of mail, not edited in Admin.
+     */
     private const FRAME = [
         'consult_admin' => ['Yêu cầu tư vấn mới', 'staff'],
         'dealer_admin' => ['Đăng ký đại lý mới', 'staff'],
@@ -29,6 +35,9 @@ class MailTemplates
         'contact_customer' => ['Đã tiếp nhận yêu cầu', 'customer'],
         'order_admin' => ['Đơn hàng mới', 'staff'],
         'order_customer' => ['Đã tiếp nhận đơn hàng', 'customer'],
+        'order_confirmed' => ['Đơn hàng đã xác nhận', 'customer', 1],
+        'order_shipping' => ['Đơn hàng đang giao', 'customer', 2],
+        'order_paid' => ['Đã nhận thanh toán', 'customer', -1],
     ];
 
     private const DEFAULTS = [
@@ -68,6 +77,24 @@ class MailTemplates
             'intro' => 'Đơn hàng #{order_code} đã được ghi nhận. Đội ngũ Phúc Thịnh Solar sẽ kiểm tra thông tin và liên hệ xác nhận trước khi giao hàng hoặc triển khai.',
             'closing' => 'Quý khách vui lòng lưu lại email này để thuận tiện đối chiếu khi cần hỗ trợ về đơn hàng.',
         ],
+        'order_confirmed' => [
+            'subject' => 'Phúc Thịnh Solar đã xác nhận đơn hàng #{order_code}',
+            'heading' => 'Đơn hàng của Quý khách đã được xác nhận',
+            'intro' => 'Đơn hàng #{order_code} đã được xác nhận. Chúng tôi sẽ tiếp tục chuẩn bị hàng và liên hệ Quý khách khi cần thống nhất thời gian giao hoặc triển khai.',
+            'closing' => 'Nếu thông tin dưới đây chưa đúng, Quý khách vui lòng gọi hotline được ghi trong email.',
+        ],
+        'order_shipping' => [
+            'subject' => 'Đơn hàng #{order_code} đang được giao',
+            'heading' => 'Đơn hàng của Quý khách đang được giao',
+            'intro' => 'Đơn hàng #{order_code} đã chuyển sang bước giao hàng. Quý khách vui lòng giữ liên lạc qua số điện thoại đã đặt hàng.',
+            'closing' => 'Khi cần đổi thời gian hoặc địa điểm nhận, Quý khách vui lòng gọi hotline được ghi trong email.',
+        ],
+        'order_paid' => [
+            'subject' => 'Phúc Thịnh Solar đã ghi nhận thanh toán đơn hàng #{order_code}',
+            'heading' => 'Chúng tôi đã ghi nhận thanh toán của Quý khách',
+            'intro' => 'Khoản thanh toán cho đơn hàng #{order_code} đã được ghi nhận đủ theo tổng tiền bên dưới.',
+            'closing' => 'Email này không thay hóa đơn giá trị gia tăng. Quý khách cần hóa đơn vui lòng liên hệ hotline được ghi trong email.',
+        ],
     ];
 
     public function __construct(private readonly SiteSettings $settings) {}
@@ -93,6 +120,7 @@ class MailTemplates
         }
         $copy['subject'] = trim((string) preg_replace('/[\r\n]+/', ' ', $copy['subject']));
         [$copy['badge'], $copy['audience']] = self::FRAME[$key];
+        $copy['step'] = self::FRAME[$key][2] ?? 0;
 
         return $copy;
     }

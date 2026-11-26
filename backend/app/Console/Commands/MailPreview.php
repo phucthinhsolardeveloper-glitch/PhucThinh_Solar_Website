@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Commerce\OrderSheet;
 use App\Mail\AdminNotification;
 use App\Mail\MailActions;
 use App\Mail\MailTemplates;
@@ -19,7 +20,7 @@ class MailPreview extends Command
 
     protected $description = 'Render the email templates with sample data into a folder (no mail is sent)';
 
-    public function handle(MailTemplates $templates, MailActions $actions): int
+    public function handle(MailTemplates $templates, MailActions $actions, OrderSheet $sheets): int
     {
         $dir = (string) $this->argument('dir');
         if (! is_dir($dir) && ! mkdir($dir, 0775, true) && ! is_dir($dir)) {
@@ -49,6 +50,10 @@ class MailPreview extends Command
             $copy = $templates->copy($key, $values);
             $buttons = $copy['audience'] === 'customer' ? $actions->customer() : $actions->staff('/admin/leads', $values['customer_phone']);
             $mail = str_starts_with($key, 'order_') ? new OrderNotification($copy, $order, $items, $totals, actions: $buttons) : new AdminNotification($copy, $lead, actions: $buttons);
+            if ($key === 'order_customer' && $mail instanceof OrderNotification) {
+                $mail->withSheet($sheets->sample());
+                file_put_contents($dir.'/'.OrderSheet::filename($mail->sheet), $sheets->pdf($mail->sheet));
+            }
             file_put_contents($dir.'/'.$key.'.html', $mail->render());
             $made[] = $key;
         }

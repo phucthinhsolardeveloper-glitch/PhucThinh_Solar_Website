@@ -13,6 +13,10 @@ SẢN PHẨM ĐÃ ĐẶT
 Tạm tính: {{ \App\Mail\OrderNotification::money($totals['subtotal']) }}
 Phí vận chuyển: {{ $totals['shipping'] > 0 ? \App\Mail\OrderNotification::money($totals['shipping']) : 'Chờ xác nhận' }}
 Tổng cộng: {{ \App\Mail\OrderNotification::money($totals['total']) }}
+@if ($sheetAttached ?? false)
+
+Phiếu đơn hàng (PDF) được đính kèm email này.
+@endif
 @if ($copy['closing'] !== '')
 
 {{ $copy['closing'] }}
