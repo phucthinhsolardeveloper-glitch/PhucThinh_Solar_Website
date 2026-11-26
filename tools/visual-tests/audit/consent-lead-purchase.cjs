@@ -81,8 +81,11 @@ const secrets = [customer.fullname, customer.phone, '0912345678', customer.email
   await form.locator('button[type="submit"]').click();
   const leadStatus = (await answer).status();
   await page.waitForTimeout(1000);
-  const leadEvents = named(await layer(page), 'generate_lead');
-  notes.lead = { status: leadStatus, events: leadEvents };
+  const afterLead = await layer(page);
+  const leadEvents = named(afterLead, 'generate_lead');
+  const funnel = afterLead.filter((entry) => /^(lead_form_|generate_lead$)/.test(entry.event || ''));
+  notes.lead = { status: leadStatus, events: leadEvents, funnel: funnel.map((entry) => entry.event) };
+  checks.leadFunnel = notes.lead.funnel.join() === 'lead_form_start,lead_form_submit,generate_lead' && !secrets.some((secret) => JSON.stringify(funnel).includes(secret));
   checks.lead = leadStatus === 200 && leadEvents.length === 1 && leadEvents[0].form_source === 'contact_page' && leadEvents[0].form_kind === 'contact'
     && !secrets.some((secret) => JSON.stringify(leadEvents).includes(secret));
 

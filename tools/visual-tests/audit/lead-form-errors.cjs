@@ -34,7 +34,11 @@ const base = process.env.AUDIT_BASE || 'http://localhost:3100';
     const alerts = (await form.getByRole('alert').allInnerTexts()).join(' | ');
     const successShown = await page.getByText('Gửi yêu cầu tư vấn thành công.').count() > 0;
     const events = await page.evaluate(() => (window.dataLayer || []).filter((entry) => entry && entry.event === 'generate_lead').map((entry) => ({ ...entry })));
-    results[name] = { posts: posts.length, alerts, successShown, events };
+    // The enquiry funnel as GA4 gets it: started, submitted, then one outcome. Nothing typed may appear in it.
+    const layer = await page.evaluate(() => (window.dataLayer || []).filter((entry) => entry && /^(lead_form_|generate_lead$)/.test(entry.event || '')).map((entry) => ({ ...entry })));
+    const funnel = layer.map((entry) => entry.event + (entry.error_type ? `:${entry.error_type}` : ''));
+    const leaked = /Khách kiểm thử|0944|0912/.test(JSON.stringify(layer));
+    results[name] = { posts: posts.length, alerts, successShown, events, funnel, leaked };
   }
 
   await send('expiredThenOk', [expired, ok]);
@@ -68,6 +72,8 @@ const base = process.env.AUDIT_BASE || 'http://localhost:3100';
     secondExpiryStops: results.expiredTwice.posts === 2 && !results.expiredTwice.successShown && results.expiredTwice.events.length === 0,
     serverMessageShown: results.invalid.posts === 1 && says(results.invalid.alerts, 'Số điện thoại không hợp lệ'),
     rateLimitMessage: says(results.rateLimitedWithoutBody.alerts, 'quá nhanh'),
+    funnel: Object.entries({ expiredThenOk: 'generate_lead', expiredTwice: 'lead_form_error:session', invalid: 'lead_form_error:validation', rateLimitedWithoutBody: 'lead_form_error:rate_limit' })
+      .every(([name, outcome]) => results[name].funnel.join() === `lead_form_start,lead_form_submit,${outcome}` && !results[name].leaked),
     checkoutPhone: JSON.stringify(Object.values(checkout)) === JSON.stringify(['valid', 'valid', 'invalid', 'invalid']),
   };
   console.log(JSON.stringify(checks));
