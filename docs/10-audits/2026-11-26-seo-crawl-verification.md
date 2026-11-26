@@ -26,7 +26,8 @@ Con số "22 trang thương hiệu" và "11 trang phân trang" là hai thứ kh�
 
 ## Sản phẩm đã gỡ đang có lượt tìm
 
-Trả **410** trên web thật: `tam-pin-nang-luong-mat-troi-canadian-720wp` (Search Console 01–23/11: 163 lượt hiển thị, 8 lượt bấm), `…canadian-620wp`, `…canadian-715wp-2-mat-kinh`, `…tcl-solar-720wp`. Chưa rõ ngày gỡ.
+Trả **410** trên web thật: `tam-pin-nang-luong-mat-troi-canadian-720wp` (Search Console 01–23/11: 163 lượt hiển thị, 8 lượt bấm; khoảng này gồm cả thời gian trước khi ẩn), `…canadian-620wp`, `…canadian-715wp-2-mat-kinh`, `…tcl-solar-720wp`.
+Đọc database web thật ngày 26/11 (chỉ SELECT): sản phẩm không bị xóa, được **ẩn trong Admin ngày 17/11** (TCL khoảng 11:13, Canadian khoảng 15:13); cả bốn không có ảnh đại diện, có giá. Tấm pin đang ẩn 10/29, gồm thêm TCL 625Wp, 630Wp.
 
 ## Đề xuất chữ cho Admin (chủ website duyệt rồi dán; chỉ dùng số đang đăng trên trang)
 
@@ -42,8 +43,8 @@ Trang danh mục chưa có mô tả SEO riêng sẽ tự mô tả bằng số s�
 
 ## Cần chủ website
 
-1. Ba nhận xét ở `…blue-carbon-bct-ww60-500w-tam-pin-mono` và `…jindian-jd-l1000-1000w` gửi cùng ngày 10/09/2026, cách nhau vài phút, không gắn đơn hàng. Xác nhận là khách thật. Nếu không, ẩn trong Admin → Đánh giá sản phẩm: mã sao tự mất (Google chỉ cho phép nhận xét thật).
-2. Bốn tấm pin trả 410: ngừng bán hẳn, hay vẫn bán và nên hiện lại dạng "Liên hệ báo giá".
+1. Ba nhận xét ở hai sản phẩm đèn: chủ website xác nhận ngày 26/11 là **khách thật**. Giữ nguyên, không còn việc.
+2. Bốn tấm pin trả 410 đang **ẩn khỏi website** (bật "Hiển thị" trong Admin là sống lại, đúng địa chỉ cũ). Còn bán thì thêm ảnh, kiểm giá rồi hiện; ngừng bán thì không cần làm gì.
 3. 13 thương hiệu chưa có sản phẩm (Canadian Solar, AESOLAR, TCL Solar, Sungrow, Huawei, Growatt, GoodWe, SOFAR, Anker SOLIX, Deye, Sigenergy, Leader Solar, Phúc Thịnh Solar): thêm sản phẩm, ẩn thương hiệu trong Admin, hoặc đồng ý cho tự `noindex` đến khi có hàng (cần xem lượt tìm trước).
 4. Sửa liên kết trong hai bài `duoc-gi-khi-hop-tac-cung-phuc-thinh-solar` và `blue-carbon-den-nang-luong-mat-troi-cho-du-an` thành `/thuong-hieu/blue-carbon/`.
 5. `/ho-gia-dinh`, `/doanh-nghiep` không trang nào dẫn tới (menu đi thẳng vào từng giải pháp, đúng thiết kế đã chốt): thêm lối vào ở trang Giải pháp hay bỏ khỏi chỉ mục.

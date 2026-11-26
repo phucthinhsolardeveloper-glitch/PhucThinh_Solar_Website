@@ -118,4 +118,4 @@ Commit: `e05b80f7` phiếu và email, `3a40044b` sự kiện form, `38c5d9c5` th
 - Thông tin công ty trên phiếu lấy từ Admin; chủ website cần xem phiếu mẫu.
 - Thẻ danh mục có liên kết cũ được đổi theo bảng chuyển hướng trong Admin (trừ danh mục còn sản phẩm).
 - Phí giao bằng 0 luôn hiện "Chờ xác nhận", kể cả khi thật sự miễn phí (giữ cách hiểu hiện có).
-- Trang thương hiệu rỗng, địa chỉ công ty, đánh giá, tồn kho, GTIN, bảo hành: chờ chủ website.
+- Trang thương hiệu rỗng, địa chỉ công ty, tồn kho, GTIN, bảo hành: chờ chủ website. Đánh giá sản phẩm đã được xác nhận là khách thật (26/11).
