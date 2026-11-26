@@ -5,13 +5,9 @@
     $field = fn (string $label) => trim((string) ($fields[$label] ?? ''));
     $other = array_filter(array_diff_key($fields, array_flip(['Mã đơn hàng', 'Thanh toán', 'Họ tên', 'Điện thoại', 'Email', 'Địa chỉ', 'Yêu cầu thêm'])), fn ($v) => trim((string) $v) !== '');
     $label = 'color:#6a7a95;font-size:12.5px;line-height:18px';
-    // One row per fact, full width: a narrow column breaks an address or a request one word from its end.
-    $people = array_values(array_filter([
-        ['Người nhận', trim($field('Họ tên').($field('Điện thoại') !== '' ? ' · '.$field('Điện thoại') : ''))],
-        ['Email', $field('Email')],
-        ['Giao đến', $field('Địa chỉ')],
-        ['Yêu cầu thêm', $field('Yêu cầu thêm')],
-    ], fn ($row) => $row[1] !== ''));
+    // Two full-width rows: who (name, phone, email) and where (address, request). A narrow column broke an address or a
+    // request one word from its end; four separate rows made the mail long on a phone.
+    $who = trim($field('Họ tên').($field('Điện thoại') !== '' ? ' · '.$field('Điện thoại') : ''));
 @endphp
 {{-- Order mail, to the shop and to the buyer. --}}
 @extends('mail.layout')
@@ -28,10 +24,13 @@
                         <div style="{{ $label }}">Mã đơn hàng</div>
                         <div style="margin-top:2px;color:#09285e;font-size:19px;line-height:26px;font-weight:bold;letter-spacing:.5px">{{ $field('Mã đơn hàng') ?: '—' }}</div>
                     </td>
+                    {{-- A transfer order shows the amount once, in the transfer block below. --}}
+                    @if (empty($transfer))
                     <td class="col gap-m tl-m" align="right" valign="top" style="padding:16px 20px 4px;text-align:right">
                         <div style="{{ $label }}">Tổng cộng</div>
                         <div style="margin-top:2px;color:#09285e;font-size:21px;line-height:26px;font-weight:bold;white-space:nowrap">{{ $money($totals['total']) }}</div>
                     </td>
+                    @endif
                 </tr>
                 <tr>
                     <td colspan="2" style="padding:6px 20px 16px;color:#475775;font-size:14px;line-height:21px">Thanh toán: <strong style="color:#15284b">{{ $field('Thanh toán') ?: '—' }}</strong></td>
@@ -46,18 +45,24 @@
     <tr>
         <td class="px" style="padding:18px 32px 0">
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:12px">
-                @foreach ($people as $i => [$name, $value])
+                @if ($who !== '')
                     <tr>
-                        <td style="padding:12px 18px;{{ $i > 0 ? 'border-top:1px solid #edf1f6;' : '' }}">
-                            <div style="{{ $label }}">{{ $name }}</div>
-                            <div style="margin-top:2px;color:#15284b;font-size:14.5px;line-height:22px;{{ $i === 0 ? 'font-weight:bold' : '' }}">
-                                @if ($name === 'Email')<a href="mailto:{{ $value }}" style="color:#15284b;text-decoration:none">{{ $value }}</a>
-                                @elseif ($name === 'Người nhận' && $field('Điện thoại') !== ''){{ $field('Họ tên') }} · <a href="tel:{{ $tel($field('Điện thoại')) }}" style="color:#09285e;text-decoration:none">{{ $field('Điện thoại') }}</a>
-                                @else{!! nl2br(e($value)) !!}@endif
-                            </div>
+                        <td style="padding:12px 18px">
+                            <div style="{{ $label }}">Người nhận</div>
+                            <div style="margin-top:2px;color:#15284b;font-size:14.5px;line-height:22px;font-weight:bold">{{ $field('Họ tên') }}@if ($field('Điện thoại') !== '') · <a href="tel:{{ $tel($field('Điện thoại')) }}" style="color:#09285e;text-decoration:none">{{ $field('Điện thoại') }}</a>@endif</div>
+                            @if ($field('Email') !== '')<div style="color:#475775;font-size:13.5px;line-height:20px"><a href="mailto:{{ $field('Email') }}" style="color:#475775;text-decoration:none">{{ $field('Email') }}</a></div>@endif
                         </td>
                     </tr>
-                @endforeach
+                @endif
+                @if ($field('Địa chỉ') !== '' || $field('Yêu cầu thêm') !== '')
+                    <tr>
+                        <td style="padding:12px 18px;{{ $who !== '' ? 'border-top:1px solid #edf1f6;' : '' }}">
+                            <div style="{{ $label }}">Giao đến</div>
+                            <div style="margin-top:2px;color:#15284b;font-size:14.5px;line-height:22px">{!! nl2br(e($field('Địa chỉ') ?: '—')) !!}</div>
+                            @if ($field('Yêu cầu thêm') !== '')<div style="margin-top:4px;color:#475775;font-size:13.5px;line-height:20px">Yêu cầu: {!! nl2br(e($field('Yêu cầu thêm'))) !!}</div>@endif
+                        </td>
+                    </tr>
+                @endif
             </table>
         </td>
     </tr>
