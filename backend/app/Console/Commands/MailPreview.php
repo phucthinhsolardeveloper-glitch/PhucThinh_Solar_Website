@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Domain\Commerce\OrderSheet;
+use App\Domain\Commerce\VietQr;
 use App\Mail\AdminNotification;
 use App\Mail\MailActions;
 use App\Mail\MailTemplates;
@@ -51,7 +52,9 @@ class MailPreview extends Command
             $buttons = $copy['audience'] === 'customer' ? $actions->customer() : $actions->staff('/admin/leads', $values['customer_phone']);
             $mail = str_starts_with($key, 'order_') ? new OrderNotification($copy, $order, $items, $totals, actions: $buttons) : new AdminNotification($copy, $lead, actions: $buttons);
             if ($key === 'order_customer' && $mail instanceof OrderNotification) {
-                $mail->withSheet($sheets->sample());
+                $mail->withSheet($sheets->sample())->withTransfer(['payload' => VietQr::payload('970405', '5020201003091', 5984000, 'PTSPTS26110042'),
+                    'bank' => 'Agribank', 'logo' => VietQr::logoUrl('970405'), 'account' => '5020201003091', 'name' => 'CONG TY TNHH CONG NGHE TM VA DV PHUC THINH SOLAR',
+                    'amount' => 5984000, 'note' => 'PTSPTS26110042']);
                 file_put_contents($dir.'/'.OrderSheet::filename($mail->sheet), $sheets->pdf($mail->sheet));
             }
             file_put_contents($dir.'/'.$key.'.html', $mail->render());

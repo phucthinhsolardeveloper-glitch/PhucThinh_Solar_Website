@@ -29,6 +29,22 @@ class OrderNotification extends Mailable
     private ?string $sheetBytes = null;
 
     /**
+     * How to pay by bank transfer (payload, bank, logo, account, name, amount, note); empty for other payments.
+     * A declared default, like $sheet, so older queued messages still rebuild.
+     *
+     * @var array<string, mixed>
+     */
+    public array $transfer = [];
+
+    /** @param array<string, mixed> $transfer */
+    public function withTransfer(array $transfer): static
+    {
+        $this->transfer = $transfer;
+
+        return $this;
+    }
+
+    /**
      * @param  array{subject: string, heading: string, intro: string, closing: string}  $copy
      * @param  array<string, string>  $fields  customer and delivery details
      * @param  list<array{name: string, option: string, quantity: int, price: float, total: float}>  $items

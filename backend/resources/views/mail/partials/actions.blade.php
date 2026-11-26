@@ -1,7 +1,7 @@
 {{-- Buttons: the first is the main action (gold), the others are outlined. --}}
 @if (! empty($actions))
     <tr>
-        <td class="px" style="padding:22px 32px 4px">
+        <td class="px" style="padding:22px 32px 0">
             <table class="btn-table" role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     @foreach ($actions as $action)

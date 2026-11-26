@@ -6,6 +6,15 @@
 {{ $label }}: {{ $value }}
 @endforeach
 
+@if (! empty($transfer))
+CHUYỂN KHOẢN ĐỂ HOÀN TẤT ĐƠN
+Ngân hàng: {{ $transfer['bank'] }}
+Số tài khoản: {{ $transfer['account'] }}
+Chủ tài khoản: {{ $transfer['name'] }}
+Số tiền: {{ \App\Mail\OrderNotification::money((float) $transfer['amount']) }}
+Nội dung: {{ $transfer['note'] }}
+
+@endif
 SẢN PHẨM ĐÃ ĐẶT
 @foreach ($items as $item)
 - {{ $item['name'] }}{{ $item['option'] !== '' ? ' ('.$item['option'].')' : '' }} x {{ $item['quantity'] }}: {{ \App\Mail\OrderNotification::money($item['total']) }}

@@ -107,6 +107,27 @@ final class VietQr
         return (new QRCode($options))->render($payload);
     }
 
+    /** PNG picture of a code, for e-mail (clients drop SVG and data URIs), 6 pixels per module with a quiet zone. */
+    public static function png(string $payload): string
+    {
+        $options = new QROptions(['outputType' => QROutputInterface::GDIMAGE_PNG, 'eccLevel' => QRCode::ECC_M, 'addQuietzone' => true,
+            'quietzoneSize' => 2, 'scale' => 6, 'outputBase64' => false]);
+
+        return (string) (new QRCode($options))->render($payload);
+    }
+
+    /** Address of the bank's logo bundled with the storefront, or '' when there is none. */
+    public static function logoUrl(string $bin): string
+    {
+        $short = strtolower(self::BANKS[$bin][1] ?? '');
+        $file = '/images/payments/banks/'.$short.'.png';
+        if ($short === '' || ! is_file(rtrim((string) config('site.assets_path'), '/').$file)) {
+            return '';
+        }
+
+        return rtrim((string) config('site.canonical_origin'), '/').'/assets'.$file;
+    }
+
     /** CRC-16/CCITT-FALSE, upper-case hex, as EMVCo requires. */
     public static function crc(string $data): string
     {
