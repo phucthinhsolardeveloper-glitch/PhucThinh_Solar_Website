@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -531,11 +530,18 @@ class Shop
         return [200, ($alreadyPaid || $status === 'paid' ? 'Thanh toán thành công' : 'Thanh toán chưa thành công').' cho đơn '.$code.'.'];
     }
 
+    /** Letters and digits staff can read off a bank statement or say on the phone: no 0/O, 1/I/L. */
+    public const ORDER_CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+
     /** Six characters, unique among existing orders. */
     private function newOrderCode(): string
     {
+        $alphabet = self::ORDER_CODE_ALPHABET;
         do {
-            $code = strtoupper(Str::random(6));
+            $code = '';
+            for ($i = 0; $i < 6; $i++) {
+                $code .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+            }
         } while (DB::table('orders')->where('code', $code)->exists());
 
         return $code;

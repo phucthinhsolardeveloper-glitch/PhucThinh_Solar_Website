@@ -28,11 +28,15 @@ const reportingTransfer = ref(false)
 const reportError = ref('')
 const copied = ref('')
 const money = (value: number) => new Intl.NumberFormat('vi-VN').format(value) + 'đ'
-// Receiving banks with a logo bundled in /assets/images/payments/banks (others show the coloured badge).
-const bankLogos: Record<string, { logo: string, mark: string }> = {
-  AGR: { logo: '/assets/images/payments/banks/agribank.png', mark: '/assets/images/payments/banks/agribank-mark.png' },
-}
-const bankLogo = computed(() => (transfer.value ? bankLogos[transfer.value.bankShort] : undefined))
+// Every bank the Admin list offers has its logo in /assets/images/payments/banks (named by its badge letters); a bank
+// whose logo opens with a separate emblem also has that emblem, shown in the middle of the code.
+const BANK_LOGOS = new Set(['abb', 'acb', 'agr', 'bab', 'bidv', 'bvb', 'ctg', 'eib', 'hdb', 'klb', 'lpb', 'mb', 'msb', 'nab', 'ncb', 'ocb', 'pgb', 'pvc', 'scb', 'sea', 'sgb', 'shb', 'stb', 'tcb', 'tpb', 'vab', 'vbb', 'vcb', 'vib', 'vpb'])
+const BANK_MARKS = new Set(['agr', 'mb', 'ocb', 'tpb'])
+const bankLogo = computed(() => {
+  const code = transfer.value?.bankShort.toLowerCase() ?? ''
+  if (!BANK_LOGOS.has(code)) return undefined
+  return { logo: `/assets/images/payments/banks/${code}.png`, mark: BANK_MARKS.has(code) ? `/assets/images/payments/banks/${code}-mark.png` : '' }
+})
 const savingQr = ref(false)
 /** The code with the amount and transfer note as one picture, for paying from a banking app on the same phone. */
 async function saveQr() {
@@ -47,7 +51,7 @@ async function saveQr() {
       image.src = src
     })
     const optional = (src?: string) => (src ? load(src).catch(() => null) : Promise.resolve(null))
-    const [qr, mark, scheme, bank] = await Promise.all([load(current.qrImage), optional(bankLogo.value?.mark), optional('/assets/images/payments/vietqr.svg'), optional(bankLogo.value?.logo)])
+    const [qr, mark, scheme, bank] = await Promise.all([load(current.qrImage), optional(bankLogo.value?.mark || undefined), optional('/assets/images/payments/vietqr.svg'), optional(bankLogo.value?.logo)])
     const canvas = document.createElement('canvas')
     canvas.width = 720
     canvas.height = 1040
@@ -181,12 +185,12 @@ watch([payload, token], trackOrderConversion)
               </div>
               <div class="relative w-full max-w-[260px] rounded-[14px] border border-slate-200 bg-white p-2.5 shadow-[0_8px_24px_rgb(10_34_81/10%)]">
                 <img :src="transfer.qrImage" :alt="`Mã VietQR chuyển khoản ${money(transfer.amount)} cho đơn ${payload?.order.code}`" width="240" height="240" class="block aspect-square w-full">
-                <span v-if="bankLogo" class="absolute left-1/2 top-1/2 grid size-[19%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[8px] bg-white p-[3px] shadow-sm" aria-hidden="true">
+                <span v-if="bankLogo?.mark" class="absolute left-1/2 top-1/2 grid size-[19%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[8px] bg-white p-[3px] shadow-sm" aria-hidden="true">
                   <img :src="bankLogo.mark" alt="" width="48" height="48" class="block size-full rounded-[5px]">
                 </span>
               </div>
               <div class="flex w-full items-center justify-center gap-3 border-t border-slate-100 pt-3">
-                <img v-if="bankLogo" :src="bankLogo.logo" :alt="transfer.bankName" width="150" height="20" class="h-5 w-auto">
+                <img v-if="bankLogo" :src="bankLogo.logo" :alt="transfer.bankName" width="180" height="28" class="h-7 w-auto max-w-[190px] object-contain">
                 <span v-else class="inline-flex h-6 items-center rounded-md px-2 text-[11px] font-bold text-white" :style="{ background: transfer.bankColor }">{{ transfer.bankShort || transfer.bankName }}</span>
               </div>
               <button type="button" :disabled="savingQr" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-btn border border-navy-800/20 bg-white px-4 text-sm font-bold text-navy-900 hover:border-navy-800 disabled:cursor-wait" @click="saveQr">

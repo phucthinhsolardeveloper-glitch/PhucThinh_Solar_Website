@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Commerce\ManualPayment;
+use App\Domain\Commerce\Shop;
 use App\Domain\Commerce\VietQr;
 use App\Models\Order;
 use App\Models\User;
@@ -86,4 +87,12 @@ it('shows one fixed QR per order, lets the buyer report the transfer, and only s
     app(ManualPayment::class)->confirm($order, $staff, 'FT2611', (int) $order->total);
     expect($order->fresh()->payment_status)->toBe('paid');
     shop('GET', $thanks)->assertJsonPath('paymentState', 'paid');
+});
+
+it('makes order codes without characters that look alike on a bank statement', function () {
+    $make = new ReflectionMethod(Shop::class, 'newOrderCode');
+    $shop = app(Shop::class);
+    foreach (range(1, 200) as $ignored) {
+        expect($make->invoke($shop))->toMatch('/^[2-9A-HJKMNP-Z]{6}$/');
+    }
 });
