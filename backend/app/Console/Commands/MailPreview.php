@@ -29,7 +29,7 @@ class MailPreview extends Command
 
             return self::FAILURE;
         }
-        $values = ['customer_name' => 'Nguyễn Văn An', 'customer_phone' => '0912 345 678', 'company' => 'Công ty TNHH Cơ điện An Phát', 'contact_subject' => 'Báo giá hệ thống đèn đường NLMT cho khu dân cư', 'order_code' => 'PTS-2611-0042'];
+        $values = ['customer_name' => 'Nguyễn Văn An', 'customer_phone' => '0912 345 678', 'company' => 'Công ty TNHH Cơ điện An Phát', 'contact_subject' => 'Báo giá hệ thống đèn đường NLMT cho khu dân cư', 'order_code' => 'K7M3QX'];
         $lead = ['Họ tên' => $values['customer_name'], 'Điện thoại' => $values['customer_phone'], 'Email' => 'an.nguyen@example.com', 'Địa chỉ' => 'Phường Hội Phú, Gia Lai',
             'Chủ đề' => $values['contact_subject'], 'Nội dung' => "Khu dân cư có 40 trụ đèn, cần đèn năng lượng mặt trời 100W.\nAnh/chị gửi giúp báo giá và thời gian lắp đặt."];
         $order = ['Mã đơn hàng' => $values['order_code'], 'Họ tên' => $values['customer_name'], 'Điện thoại' => $values['customer_phone'], 'Email' => 'an.nguyen@example.com',
@@ -52,9 +52,9 @@ class MailPreview extends Command
             $buttons = $copy['audience'] === 'customer' ? $actions->customer() : $actions->staff('/admin/leads', $values['customer_phone']);
             $mail = str_starts_with($key, 'order_') ? new OrderNotification($copy, $order, $items, $totals, actions: $buttons) : new AdminNotification($copy, $lead, actions: $buttons);
             if ($key === 'order_customer' && $mail instanceof OrderNotification) {
-                $mail->withSheet($sheets->sample())->withTransfer(['payload' => VietQr::payload('970405', '5020201003091', 5984000, 'PTSPTS26110042'),
+                $mail->withSheet($sheets->sample())->withTransfer(['payload' => VietQr::payload('970405', '5020201003091', 5984000, 'PTSK7M3QX'),
                     'bank' => 'Agribank', 'bin' => '970405', 'account' => '5020201003091', 'name' => 'CONG TY TNHH CONG NGHE TM VA DV PHUC THINH SOLAR',
-                    'amount' => 5984000, 'note' => 'PTSPTS26110042']);
+                    'amount' => 5984000, 'note' => 'PTSK7M3QX']);
                 file_put_contents($dir.'/'.OrderSheet::filename($mail->sheet), $sheets->pdf($mail->sheet));
             }
             file_put_contents($dir.'/'.$key.'.html', $mail->render());
