@@ -890,3 +890,17 @@ Rủi ro còn lại:
 - Build: backend incremental FROM c66e0611 (13 files, two new classes, classmap rebuilt in the image; every app/config/resources/routes/database file checked equal to the commit); Nuxt from the normal Dockerfile. No migration.
 - Deployment under operation.lock with releases/498ab8f1/deploy.sh, first run: RELEASE_498AB8F1_ADMIN_STATES_SEO_SUCCESS, eleven routes HTTP 200, 15 grid-tie products without a storage card. Afterwards: 50 quote-only product pages carry no price in page data; no backend or Nuxt errors in the first minutes. DB-only backup /srv/pts-laravel13/backups/20261125-admin-states-seo-498ab8f1-predeploy/.
 - Rollback: restore releases/498ab8f1/stack.env.before and recreate backend worker scheduler nuxt (c66e0611 images remain on the VPS).
+
+## 2026-11-26 — dữ liệu: hai liên kết Blue Carbon và một lỗi gõ (chủ website cho phép)
+
+- Bài "Được gì khi hợp tác cùng Phúc Thịnh Solar" (post 108) và "Đèn năng lượng mặt trời Blue Carbon cho dự án" (post 106): liên kết `/danh-muc-san-pham/den-nlmt/blue-carbon/` (và dạng `/tags-san-pham/…` đang 404) → `/thuong-hieu/blue-carbon/`. Trang Đại lý (page_items 139): "Mặt Tròi" → "Mặt Trời". Câu "Năm 2021, doanh thu…" giữ nguyên.
+- Chạy thử trước, ghi trong transaction, có dòng nhật ký Admin. Giá trị cũ: `/srv/pts-laravel13/state/admin-edits-20261126/before.json`.
+- Kiểm: hai bài trỏ thẳng trang hãng (200), không còn "Mặt Tròi" trên `/dai-ly/`.
+
+## 2026-11-26 — SEO/Sales: số điện thoại có dấu cách, lỗi form rõ ràng, GA4, tìm theo từng từ, SEO bộ lọc, log không chứa dữ liệu khách (cc5011b6)
+
+- Gộp fast-forward `feat/pts-seo-sales-20261125` vào `master`. Không migration. Image dựng lại đầy đủ (`build-candidate.sh`), chuyển bằng `docker save`, đối chiếu SHA-256, image ID và nhãn revision.
+- `releases/cc5011b6/deploy.sh` dưới `operation.lock`, lần chạy đầu: `RELEASE_CC5011B6_SEO_SALES_SUCCESS`, 11 route 200, lớp mới có trong image, `/san-pham/?brand=abc` 404, `?utm_source` 200, CRM tắt. Kiểm tìm kiếm trong script gọi nhầm API danh mục nên báo WARN; gọi đúng `/api/v1/search`: "đèn đường 100w" 3, "tấm pin 550w" 1.
+- Sau khi lên: bốn container chạy `cc5011b6-candidate`, 0 lỗi log, hàng đợi email 0, không migration chờ. Backup DB `/srv/pts-laravel13/backups/20261126-seo-sales-cc5011b6-predeploy/`.
+- Rollback: khôi phục `releases/cc5011b6/stack.env.before`, tạo lại backend worker scheduler nuxt (image `498ab8f1` còn trên VPS).
+- Chưa làm: nhánh `feat/pts-commerce-growth-20261126` (phiếu PDF, email trạng thái) chờ review; CRM chưa có endpoint.
