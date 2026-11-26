@@ -116,16 +116,16 @@ final class VietQr
         return (string) (new QRCode($options))->render($payload);
     }
 
-    /** Address of the bank's logo bundled with the storefront, or '' when there is none. */
-    public static function logoUrl(string $bin): string
+    /**
+     * The bank's logo file bundled with the storefront, or '' when there is none. Mail carries it inline: clients
+     * such as Outlook block pictures fetched from a website until the reader allows them.
+     */
+    public static function logoFile(string $bin): string
     {
         $short = strtolower(self::BANKS[$bin][1] ?? '');
-        $file = '/images/payments/banks/'.$short.'.png';
-        if ($short === '' || ! is_file(rtrim((string) config('site.assets_path'), '/').$file)) {
-            return '';
-        }
+        $file = rtrim((string) config('site.assets_path'), '/').'/images/payments/banks/'.$short.'.png';
 
-        return rtrim((string) config('site.canonical_origin'), '/').'/assets'.$file;
+        return $short !== '' && is_file($file) ? $file : '';
     }
 
     /** CRC-16/CCITT-FALSE, upper-case hex, as EMVCo requires. */

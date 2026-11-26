@@ -116,6 +116,7 @@ it('puts the order’s transfer code in the buyer’s confirmation, as a picture
     $html = $sent->getOriginalMessage()->getHtmlBody();
     $png = collect($sent->getOriginalMessage()->getAttachments())->first(fn ($part) => $part->getMediaType().'/'.$part->getMediaSubtype() === 'image/png');
 
+    expect(substr_count($html, 'src="cid:'))->toBe(App\Domain\Commerce\VietQr::logoFile((string) $instruction->bank_bin) !== '' ? 2 : 1);
     expect($html)->toContain('src="cid:', $instruction->reference, $instruction->account_no)->not->toContain('data:image')
         ->and($png)->not->toBeNull()
         ->and(substr($png->getBody(), 0, 8))->toBe("\x89PNG\r\n\x1a\n")

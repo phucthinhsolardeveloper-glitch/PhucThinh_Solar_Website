@@ -3,6 +3,9 @@
     $png = \App\Domain\Commerce\VietQr::png((string) $transfer['payload']);
     // Sent mail carries the picture inline (cid), which mail clients show; a preview has no message, so a data URI.
     $qr = isset($message) ? $message->embedData($png, 'ma-qr-'.$transfer['note'].'.png', 'image/png') : 'data:image/png;base64,'.base64_encode($png);
+    // The logo is looked up when the mail is built, so a message queued before a logo file existed still renders.
+    $logoFile = \App\Domain\Commerce\VietQr::logoFile((string) ($transfer['bin'] ?? ''));
+    $logo = $logoFile === '' ? '' : (isset($message) ? $message->embed($logoFile) : 'data:image/png;base64,'.base64_encode((string) file_get_contents($logoFile)));
     $row = 'padding:5px 0;color:#6a7a95;font-size:13px;line-height:19px;white-space:nowrap';
     $value = 'padding:5px 0 5px 12px;color:#15284b;font-size:14px;line-height:19px;font-weight:bold';
 @endphp
@@ -19,7 +22,7 @@
                 </td>
                 <td class="col" valign="top" style="padding:8px 18px 14px">
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tr><td style="{{ $row }}">Ngân hàng</td><td style="{{ $value }}">@if (($transfer['logo'] ?? '') !== '')<img src="{{ $transfer['logo'] }}" alt="{{ $transfer['bank'] }}" height="20" style="display:block;height:20px;width:auto;border:0">@else{{ $transfer['bank'] }}@endif</td></tr>
+                        <tr><td style="{{ $row }}">Ngân hàng</td><td style="{{ $value }}">@if ($logo !== '')<img src="{{ $logo }}" alt="{{ $transfer['bank'] }}" height="20" style="display:block;height:20px;width:auto;border:0">@else{{ $transfer['bank'] }}@endif</td></tr>
                         <tr><td style="{{ $row }}">Số tài khoản</td><td style="{{ $value }};letter-spacing:.5px">{{ $transfer['account'] }}</td></tr>
                         <tr><td style="{{ $row }}">Chủ tài khoản</td><td style="{{ $value }};font-weight:normal;font-size:13px">{{ $transfer['name'] }}</td></tr>
                         <tr><td style="{{ $row }}">Số tiền</td><td style="{{ $value }};color:#09285e;font-size:16px">{{ \App\Mail\OrderNotification::money((float) $transfer['amount']) }}</td></tr>

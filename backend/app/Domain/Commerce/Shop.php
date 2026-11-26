@@ -641,7 +641,7 @@ class Shop
             $instruction = app(BankTransfer::class)->active((int) $order['id']);
             if ($instruction !== null && ($order['payment_status'] ?? 'unpaid') !== 'paid') {
                 $receipt->withTransfer(['payload' => (string) $instruction->qr_text, 'bank' => (string) $instruction->bank_name,
-                    'logo' => VietQr::logoUrl((string) $instruction->bank_bin), 'account' => (string) $instruction->account_no,
+                    'bin' => (string) $instruction->bank_bin, 'account' => (string) $instruction->account_no,
                     'name' => (string) $instruction->account_name, 'amount' => (int) $instruction->amount, 'note' => (string) $instruction->reference]);
             }
             if (CustomerOrderMail::enabled('sheet') && ($sheet = app(OrderSheet::class)->stored((int) $order['id'])) !== null) {

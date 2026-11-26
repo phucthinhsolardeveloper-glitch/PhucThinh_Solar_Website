@@ -160,6 +160,8 @@ Khi được đồng ý, trong khối `phucthinhsolar.com` của Caddy ngoài c�
 
 ### Bước 2 — nhánh này (sau khi bước 1 ổn định và đã có review)
 
+**Chép logo thanh toán lên máy chủ trước khi đổi container:** worker đọc ảnh ở `/srv/pts-laravel13/app/frontend/public/assets` (thư mục chép tay, không phải git). Chép `frontend/public/assets/images/payments/` vào đó (`images/payments/vietqr.svg`, `images/payments/banks/*.png`); thiếu thì email chuyển khoản hiện tên ngân hàng thay cho logo.
+
 **Bắt buộc sau khi đổi container, cả lúc lùi:** `docker exec pts-laravel13-backend php artisan view:clear`, rồi khởi động lại worker. View đã biên dịch nằm trong volume `app_storage`, sống qua các lần phát hành; nhánh này đổi view email và Admin, bản biên dịch cũ có thể mới hơn file trong image nên không tự dựng lại. `cc5011b6` không đổi view nào.
 
 
@@ -169,6 +171,14 @@ Khi được đồng ý, trong khối `phucthinhsolar.com` của Caddy ngoài c�
 - Backend, worker, scheduler cùng image. Nuxt cũ và mới chạy được với cả backend cũ và mới.
 - Sau khi lên: mở "Xem phiếu đơn hàng mẫu"; đặt một đơn thử khi được đồng ý (công tắc vẫn tắt), tải Phiếu PDF; kiểm sitemap không còn `/thu-vien-anh/`, `/video/` nếu vẫn trống; bật "Đính kèm phiếu" khi đã xem email thật.
 - Rollback: chạy lại image trước đó. Bảng `order_documents` để nguyên, code cũ không đọc. Thư đã xếp hàng vẫn được bản cũ gửi, nhưng **không kèm phiếu**; nên để hàng đợi gửi hết trước khi lùi (`php artisan pts:outbox`).
+
+## Sau review (26/11, chiều)
+
+Chủ website góp ý thêm, đã làm, **chưa có người thứ hai soát**:
+- Khung chuyển khoản trang cảm ơn: logo VietQR, logo ngân hàng (đủ 30 ngân hàng trong Admin), biểu tượng ở giữa mã (mã dùng mức sửa lỗi cao), nút "Lưu ảnh mã QR". Mã đọc lại từ ảnh chụp và ảnh lưu: đúng tài khoản, số tiền, nội dung.
+- Mã đơn mới bỏ ký tự dễ nhầm (0/O, 1/I/L); nội dung chuyển khoản vẫn `PTS` + mã đơn.
+- Email làm lại: nhẹ hơn, không chữ rớt dòng; email đơn chuyển khoản có mã QR và logo ngân hàng gửi kèm trong thư (không tải từ web).
+- Test: email, chuyển khoản, đặt hàng, phiếu 26/26; frontend 565/565.
 
 ## Còn lại và rủi ro
 
