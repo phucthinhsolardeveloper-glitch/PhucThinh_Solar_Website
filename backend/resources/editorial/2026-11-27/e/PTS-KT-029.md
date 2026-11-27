@@ -1,4 +1,4 @@
-Điểm khác nhau cốt lõi giữa tấm pin N-type và P-type nằm ở lớp đế silicon bên trong tế bào quang điện. Tấm pin P-type pha tạp bo nên dễ sụt giảm công suất bởi ánh sáng trong giai đoạn đầu. Tấm pin N-type pha tạp phốt pho giúp loại bỏ khiếm khuyết bo - oxy, giữ công suất bền hơn và chạy mát hơn.
+Điểm khác nhau cốt lõi giữa tấm pin N-type và P-type nằm ở lớp đế silicon bên trong tế bào quang điện. Tấm pin P-type pha tạp bo nên dễ sụt giảm công suất bởi ánh sáng trong giai đoạn đầu. Tấm pin N-type pha tạp phốt pho giúp loại bỏ khiếm khuyết bo - oxy, giữ công suất bền hơn và ít hụt điện hơn khi mái nóng.
 
 ## Đế silicon pha phốt pho và pha bo khác nhau ra sao?
 
@@ -30,11 +30,11 @@ Tấm pin N-type dùng phốt pho ở lớp đế nên không tạo khiếm khuy
 
 ## Nền tảng N-type mở đường cho những công nghệ pin hiện đại nào?
 
-Theo Clean Energy Reviews, tấm pin P-type từng chiếm hơn 80% thị phần toàn cầu nhờ chi phí sản xuất rẻ. Tuy nhiên, khi chi phí phôi N-type giảm nhanh, ngành điện mặt trời đã chuyển mạnh sang nền tảng N-type.
+Theo Clean Energy Reviews, tấm pin P-type từng chiếm hơn 80% thị phần toàn cầu vào năm 2017 nhờ chi phí sản xuất rẻ. Khi chi phí sản xuất giảm, công nghệ N-type đã phát triển mạnh và trở thành nền tảng chủ đạo của ngành.
 
-Theo Viện Fraunhofer ISE, dòng wafer N-type hiện đã chiếm ưu thế áp đảo để thay thế công nghệ P-type PERC cũ. Khối đế N-type giúp phát triển các dòng tấm pin thương mại đạt hiệu suất trên 24% đến 25%.
+Khối đế N-type cùng các kiến trúc tiếp điểm mặt sau (BC) và TOPCon giúp tấm pin thương mại đạt hiệu suất trên 24% đến 25%.
 
-Ba kiến trúc cell chủ lực hiện nay gồm TOPCon, HJT và tiếp điểm mặt sau (BC) đều dùng nền đế N-type. Theo báo cáo của TaiyangNews, các hãng đang kết hợp ưu điểm của cả ba kiến trúc này để tăng hiệu suất tấm pin. Bạn có thể xem phân tích chi tiết từng kiến trúc trong bài [[155]].
+Ba kiến trúc cell chủ lực hiện nay gồm TOPCon, HJT và tiếp điểm mặt sau (BC) đều dùng nền đế N-type. Theo TaiyangNews, ngành pin đang ứng dụng lớp oxit mỏng để tăng dòng điện. Bột bạc phủ đồng cũng được đưa vào để hạ giá thành. Bạn có thể xem phân tích chi tiết từng kiến trúc trong bài [[155]].
 
 Bên cạnh công nghệ cell, độ bền của tấm pin còn phụ thuộc vào chất lượng màng bọc và kính bảo vệ. Bạn xem thêm dữ liệu kiểm định độ bền vật liệu trong bài [[KT-024]].
 
@@ -44,12 +44,11 @@ Khi so bản chào giá tấm pin cho nhà mình, bạn nên kiểm tra ba thôn
 
 - **Loại cell trên bảng thông số:** Ưu tiên tấm pin đời mới dùng cell N-type (TOPCon, HJT hoặc BC) thay cho dòng P-type cũ
 - **Hệ số nhiệt độ công suất (Pmax):** Tấm pin N-type tốt có hệ số nhiệt quanh mức -0,25%/°C đến -0,30%/°C, giúp đỡ hụt điện khi mái nóng
-- **Cam kết bảo hành hiệu suất:** Tấm pin N-type có mức suy hao hàng năm thấp hơn P-type và đi kèm thời hạn bảo hành hiệu suất dài hạn
+- **Cam kết bảo hành hiệu suất:** Tấm pin N-type suy hao hàng năm ít hơn P-type. Thời hạn bảo hành hiệu suất của dòng này cũng dài hơn.
 
 ## Nguồn tham khảo
 
 - [Clean Energy Reviews – Solar PV cell construction](https://www.cleanenergyreviews.info/blog/solar-pv-cell-construction)
 - [Clean Energy Reviews – Latest Solar Panel Technology](https://www.cleanenergyreviews.info/blog/latest-solar-panel-cell-technology)
 - [Clean Energy Reviews – Most Efficient Solar Panels 2026](https://www.cleanenergyreviews.info/blog/most-efficient-solar-panels)
-- [Fraunhofer ISE – Photovoltaics Report](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
 - [TaiyangNews – Solar Technology Trends Report Maps Charts the Future of Solar PV](https://taiyangnews.info/pressreleases/taiyangnews-solar-technology-trends-report-maps-charts-the-future-of-solar-pv)

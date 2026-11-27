@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), tế bào quang điện làm việc tốt nhất ở nhiệt độ mát mẻ.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Solar cells generally work best at low temperatures. Higher temperatures cause the semiconductor properties to shift, resulting in a slight increase in current, but a much larger decrease in voltage."
+  },
+  {
+    "claim": "Khi mặt pin bị nung nóng trưa hè, đặc tính bán dẫn thay đổi khiến dòng điện tăng nhẹ nhưng điện áp lại sụt rất mạnh.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Higher temperatures cause the semiconductor properties to shift, resulting in a slight increase in current, but a much larger decrease in voltage."
+  },
+  {
+    "claim": "Theo Clean Energy Reviews, nhiều dòng tấm pin mới hiện có dòng định mức từ 13 A trở lên.",
+    "url": "https://www.cleanenergyreviews.info/blog/best-grid-connect-solar-inverters-sma-fronius-solaredge-abb",
+    "quote": "the low 11A MPPT input current limit on the Home Series has meant that it is becoming obsolete since many new panels are now rated at 13A or more."
+  }
+]

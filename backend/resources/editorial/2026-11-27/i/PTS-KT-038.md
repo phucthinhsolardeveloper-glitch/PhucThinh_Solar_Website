@@ -19,7 +19,7 @@ Chỉ số Voc quyết định độ an toàn điện áp của dàn pin. Trong 
 
 Theo Bộ Năng lượng Hoa Kỳ (DOE), tế bào quang điện làm việc tốt nhất ở nhiệt độ mát mẻ. Khi mặt pin bị nung nóng trưa hè, đặc tính bán dẫn thay đổi khiến dòng điện tăng nhẹ nhưng điện áp lại sụt rất mạnh.
 
-Vào mùa đông trời lạnh và nắng trong, điện áp tấm pin sẽ tăng vọt lên cao. Mức điện áp thực tế lúc này vượt xa con số đo ở 25 °C trên nhãn.
+Vào mùa đông trời lạnh và nắng trong, điện áp tấm pin sẽ tăng vọt lên cao. Mức điện áp thực tế lúc này cao hơn con số đo ở 25 °C trên nhãn.
 
 Độ biến thiên này tính theo hệ số nhiệt độ của điện áp hở mạch ghi trên nhãn tấm pin. Nếu chỉ lấy điện áp ở 25 °C nhân với số tấm pin, dàn điện rất dễ bị quá áp khi trời trở rét.
 
@@ -31,7 +31,7 @@ Vào sáng mùa đông rét 10 °C (thấp hơn điều kiện chuẩn 15 °C), 
 
 Nếu thợ ghép nối tiếp 12 tấm thành một chuỗi, tổng điện áp lúc trời rét sẽ là 12 nhân 51,74 V, bằng 620,88 V.
 
-Giả sử dòng inverter bạn chọn có ngưỡng chịu áp tối đa là 600 V. Chuỗi 12 tấm này sẽ vượt ngưỡng an toàn của máy hơn 20 V. Quá áp khiến máy báo lỗi dừng chạy, hoặc làm nổ tụ điện đầu vào. Để an toàn, người thiết kế phải giảm chuỗi xuống còn 11 tấm. Khi đó tổng điện áp ở 10 °C là 569,14 V, hoàn toàn dưới mức 600 V.
+Giả sử dòng inverter bạn chọn có ngưỡng chịu áp tối đa là 600 V. Chuỗi 12 tấm này sẽ vượt ngưỡng an toàn của máy hơn 20 V. Quá áp có thể khiến máy báo lỗi dừng chạy, hoặc làm hỏng linh kiện đầu vào. Để an toàn, người thiết kế phải giảm chuỗi xuống còn 11 tấm. Khi đó tổng điện áp ở 10 °C là 569,14 V, hoàn toàn dưới mức 600 V.
 
 Vào mùa hè, mặt pin trên mái tôn bị nung nóng làm điện áp tụt giảm mạnh. Thợ phải tính toán để tổng điện áp lúc nóng nhất vẫn cao hơn ngưỡng khởi động của máy.
 
@@ -39,9 +39,9 @@ Khi chia chuỗi cho các mặt mái lệch hướng như bài [[KT-023]], kỹ 
 
 ## Giới hạn dòng điện Isc khi ghép song song chuỗi pin
 
-Mỗi ngõ vào trên inverter đều có giới hạn dòng làm việc và dòng ngắn mạch tối đa. Theo Clean Energy Reviews, nhiều dòng tấm pin mới có dòng điện định mức từ 13 A trở lên, dễ vượt quá giới hạn ngõ vào của các mẫu inverter đời cũ nên cần kiểm tra kỹ thông số trước khi đấu nối.
+Mỗi ngõ vào trên inverter đều có giới hạn dòng làm việc và dòng ngắn mạch tối đa. Theo Clean Energy Reviews, nhiều dòng tấm pin mới hiện có dòng định mức từ 13 A trở lên. Mức này dễ vượt quá giới hạn ngõ vào của các mẫu inverter đời cũ, do đó bạn cần kiểm tra kỹ thông số trước khi đấu nối.
 
-Tuy nhiên, khi ghép song song hai chuỗi vào chung một ngõ vào, dòng điện sẽ tăng gấp đôi. Giả sử mỗi tấm pin có dòng ngắn mạch 14 A, hai chuỗi song song sẽ đưa vào ngõ máy dòng 28 A. Thợ kỹ thuật phải so mức 28 A này với dòng ngắn mạch tối đa của máy để tránh quá tải.
+Khi ghép song song hai chuỗi vào chung một ngõ vào, dòng điện sẽ tăng gấp đôi. Giả sử mỗi tấm pin có dòng ngắn mạch 14 A, hai chuỗi song song sẽ đưa vào ngõ máy dòng 28 A. Thợ kỹ thuật phải so mức 28 A này với dòng ngắn mạch tối đa của máy để tránh quá tải.
 
 ## Những điểm cần thợ kỹ thuật giải thích rõ trước khi lắp đặt
 

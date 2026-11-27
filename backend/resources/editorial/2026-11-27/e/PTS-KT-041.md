@@ -45,13 +45,13 @@ Tính năng hai mặt thu sáng sẽ phát huy giá trị rõ rệt khi lắp tr
 
 Khi người bán tư vấn tấm pin hai mặt, bạn nên hỏi rõ hai điểm sau:
 
-- **Tấm pin dùng mặt sau bằng kính hay màng nhựa trong suốt:** Tấm hai mặt kính bảo vệ linh kiện bền hơn và chống ẩm tốt hơn trong khí hậu nóng ẩm
-- **Mái nhà có khoảng thoáng và nền phản xạ đủ sáng hay không:** Nếu lắp áp sát mái, bạn chỉ cần chú trọng độ bền của kết cấu hai mặt kính thay vì tính thêm điện mặt sau
+- **Mặt sau là kính hay màng nhựa?** Tấm hai mặt kính bền hơn và chống ẩm tốt hơn trong khí hậu nóng ẩm.
+- **Mái nhà có nền phản xạ đủ sáng không?** Nếu lắp áp sát mái, bạn hãy chú trọng độ bền hai mặt kính thay vì tính điện mặt sau.
 
 Bạn có thể xem cách đọc chỉ số điện áp và dòng điện trong bài [[137]]. Để ước tính sản lượng điện từng tháng theo vị trí mái nhà, bạn xem tiếp bài [[KT-025]].
 
 ## Nguồn tham khảo
 
 - [pv magazine – Parameter analysis of 842 bifacial solar modules from 236 manufacturers](https://www.pv-magazine.com/2025/07/24/parameter-analysis-of-842-bifacial-solar-modules-from-236-manufacturers/)
-- [Fraunhofer ISE – Photovoltaics Report](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
+- [Fraunhofer ISE – Photovoltaics Report (PDF)](https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf)
 - [Clean Energy Reviews – Latest Solar Panel Technology](https://www.cleanenergyreviews.info/blog/latest-solar-panel-cell-technology)

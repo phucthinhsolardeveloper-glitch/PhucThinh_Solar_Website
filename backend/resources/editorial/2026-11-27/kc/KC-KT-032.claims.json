@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "Fronius chỉ ra rằng hệ thống có lưu trữ đạt hiệu quả kinh tế khi tỷ lệ tự dùng điện mặt trời đạt tối thiểu 60%.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "accepted that a self-consumption rate of at least 60% is necessary for a setup to be economically viable."
+  },
+  {
+    "claim": "- Không có pin: Tỷ lệ tự chủ điện năng đạt 43%.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "Without a storage solution, the example household can only cover 43% of its annual electricity needs with solar energy."
+  },
+  {
+    "claim": "- Thêm pin 6,3 kWh: Tỷ lệ tự chủ tăng lên hơn 2/3.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "smaller energy storage device with a capacity of 6.3 kWh, the self-sufficiency rate increases to more than two thirds."
+  },
+  {
+    "claim": "- Thêm pin 9,5 kWh: Tỷ lệ tự chủ tăng lên hơn 3/4.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "higher charging capacity of 9.5 kWh moderately increases the degree of self-sufficiency even further: more than three quarters"
+  },
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), bạn cần phân biệt rõ dung lượng lưu trữ (kWh) và công suất phát (kW).",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Storage facilities differ in both energy capacity, which is the total amount of energy that can be stored (usually in kilowatt-hours or megawatt-hours), and power capacity,"
+  }
+]

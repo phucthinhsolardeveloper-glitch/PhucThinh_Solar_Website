@@ -4,23 +4,23 @@ Dàn tấm pin có tuổi thọ vận hành khoảng 25 năm. Khi lắp đặt, 
 
 ## Tuổi thọ của dàn pin và vòng đời mái nhà
 
-Theo Bộ Năng lượng Hoa Kỳ (DOE), khung giá đỡ và dàn pin quang điện được thiết kế để chịu được gió bão, mưa đá và sự ăn mòn qua nhiều thập kỷ. Dàn pin có tuổi thọ vận hành khoảng 25 năm, trong khi bộ biến tần inverter thường cần thay thế ít nhất một lần trong suốt vòng đời này.
+Theo Bộ Năng lượng Hoa Kỳ (DOE), khung giá đỡ dàn pin được thiết kế bền vững. Kết cấu này phải chịu được gió, mưa và ăn mòn qua nhiều thập kỷ. Dàn pin có vòng đời vận hành khoảng 25 năm. Trong khi đó, biến tần thường cần thay ít nhất một lần suốt thời gian này.
 
-Trong báo cáo lộ trình giảm chi phí điện mặt trời mái nhà dân dụng được Bộ Năng lượng Hoa Kỳ dẫn lại, Phòng thí nghiệm Quốc gia Năng lượng Tái tạo / National Laboratory of the Rockies (NLR) ước tính riêng tại Mỹ mỗi năm có trung bình 3,3 triệu ngôi nhà xây mới hoặc cần thay mái. Con số này cho thấy việc sửa chữa và thay mái là chu kỳ tự nhiên của mọi công trình.
+DOE dẫn một lộ trình ước tính cho nước Mỹ giai đoạn 2017–2030. Mỗi năm ở đó có trung bình 3,3 triệu ngôi nhà xây mới hoặc cần thay mái. Số liệu này cho thấy việc sửa chữa và thay mái là chu kỳ tự nhiên của mọi công trình.
 
-Mỗi loại vật liệu lợp có độ bền khác nhau. Giả sử lớp mái tôn nhà bạn có tuổi thọ khoảng 10 đến 15 năm và đã qua 8 năm sử dụng, thời gian dùng tốt còn lại của mái chỉ khoảng vài năm. Khoảng thời gian này ngắn hơn nhiều so với tuổi thọ 25 năm của dàn pin. Thay mái mới cùng lúc với lắp pin sẽ giúp hai hệ thống bắt đầu một chu kỳ sử dụng trọn vẹn cùng nhau.
+Mỗi loại vật liệu lợp có độ bền khác nhau. Giả sử mái tôn nhà bạn dùng được 10 đến 15 năm và đã qua 8 năm. Lúc này, mái chỉ còn dùng tốt thêm vài năm nữa. Khoảng thời gian này ngắn hơn nhiều so với tuổi thọ 25 năm của dàn pin. Thay mái mới cùng lúc với lắp pin sẽ giúp hai hệ thống bắt đầu một chu kỳ sử dụng trọn vẹn cùng nhau.
 
 ## Tốn kém thế nào nếu phải dỡ pin để lợp lại mái?
 
 Nhiều người nghĩ việc tháo pin xuống rồi lắp lại chỉ tốn tiền công vài ngày của thợ. Trên thực tế, đây là một quy trình kỹ thuật phức tạp với nhiều rủi ro.
 
-Đầu tiên, thợ điện phải ngắt toàn bộ dòng điện một chiều DC và tháo rời từng tấm pin. Tấm pin mặt trời có kích thước lớn và mặt kính cường lực nặng nên dễ rạn nứt tế bào quang điện bên trong nếu va quẹt trong khi hạ xuống sân. Toàn bộ dây dẫn, kẹp nhôm và thanh ray đỡ cũng phải tháo dỡ hoàn toàn để thợ lợp lại mái.
+Đầu tiên, thợ điện phải ngắt toàn bộ dòng điện một chiều DC và tháo rời từng tấm pin. Tấm pin mặt trời khá lớn và nặng. Tế bào quang điện bên trong rất dễ rạn nứt nếu bị va quẹt trong lúc tháo dỡ và hạ xuống sân. Toàn bộ dây dẫn, kẹp nhôm và thanh ray đỡ cũng phải tháo dỡ hoàn toàn để thợ lợp lại mái.
 
-Sau khi mái nhà được làm mới, đội ngũ thi công phải tiến hành lắp ráp lại từ đầu. Thợ phải định vị lại chân giá đỡ, xử lý chống thấm tại từng điểm bắt vít và đấu nối lại đường điện vào inverter. Khoản chi phí thuê nhân công tháo dỡ, bảo quản thiết bị và lắp đặt lại sẽ làm giảm đáng kể hiệu quả tiết kiệm điện của dự án, đồng thời ngôi nhà mất nguồn điện tự dùng trong suốt thời gian sửa mái.
+Sau khi mái nhà được làm mới, đội ngũ thi công phải tiến hành lắp ráp lại từ đầu. Thợ phải định vị lại chân giá đỡ, xử lý chống thấm tại từng điểm bắt vít và đấu nối lại đường điện vào inverter. Chi phí tháo dỡ, bảo quản và lắp lại dàn pin rất tốn kém. Việc này làm giảm đáng kể hiệu quả kinh tế. Ngôi nhà cũng mất nguồn điện mặt trời trong suốt thời gian sửa mái.
 
 ## Tình trạng từng loại mái và cách xử lý trước khi thi công
 
-Trước khi ký hợp đồng, bạn nên kiểm tra bốn điểm kỹ thuật: diện tích mặt phẳng lắp đặt, hướng dốc, bóng râm và độ vững của kết cấu đỡ.
+Trước khi ký hợp đồng, bạn nên kiểm tra bốn điểm kỹ thuật. Đó là diện tích mái, hướng dốc, bóng râm và độ vững của khung đỡ.
 
 | Loại mái | Tình trạng hiện tại | Phương án xử lý |
 |---|---|---|

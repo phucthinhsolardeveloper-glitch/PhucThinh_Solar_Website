@@ -1,4 +1,4 @@
-Dàn pin 10 kWp chỉ phát đủ 10 kW trong phòng thử nghiệm tiêu chuẩn. Trên mái nhà thực tế, công suất tức thời luôn thấp hơn con số định mức này.
+Con số 10 kWp là công suất đo trong điều kiện thử chuẩn của phòng thí nghiệm. Trên mái nhà thực tế, công suất tức thời thường thấp hơn con số này.
 
 Bạn xem bài [[139]] để phân biệt rõ kW, kWp và kWh. Ba đơn vị này đo ba đại lượng khác nhau nên không thể đánh đồng. Công suất thực tế thấp hơn số 10 kWp trên nhãn là điều bình thường. Sự chênh lệch này đến từ nhiệt độ, thời tiết và giới hạn thiết bị.
 

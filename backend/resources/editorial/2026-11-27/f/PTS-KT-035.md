@@ -36,7 +36,7 @@ Tùy vào mặt bằng và vị trí chiếu sáng, bạn có thể so sánh cá
 | Tản nhiệt cho pin | Khoang pin nhận thêm nhiệt từ tấm pin | Khoang pin tách rời, tản nhiệt tốt |
 | Bảo trì và thay pin | Cấu trúc đóng kín, tháo lắp khó hơn | Dễ mở hộp để thay pin hoặc linh kiện |
 
-Khi mua đèn, bạn nên xem 5 dấu hiệu nhận biết thông số thật trong bài [[KT-030]] để tránh bẫy công suất ảo. Khi cần rọi sáng khoảng sân rộng hoặc đường nội bộ lớn, bài viết [[KT-036]] sẽ hướng dẫn bạn cách bố trí điểm đèn hợp lý.
+Theo Lighting Global, đèn năng lượng mặt trời cần đạt chuẩn độ bền và chất lượng để bảo vệ người tiêu dùng. Khi mua đèn, bạn nên xem 5 dấu hiệu nhận biết thông số thật trong bài [[KT-030]] để tránh bẫy công suất ảo. Khi cần rọi sáng khoảng sân rộng hoặc đường nội bộ lớn, bài viết [[KT-036]] sẽ hướng dẫn bạn cách bố trí điểm đèn hợp lý.
 
 ## Nguồn tham khảo
 

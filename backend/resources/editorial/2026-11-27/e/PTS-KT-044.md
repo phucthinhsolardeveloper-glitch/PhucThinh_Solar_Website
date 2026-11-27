@@ -53,4 +53,3 @@ Mọi việc bấm đầu nối, kéo dây và đo đạc phải do thợ điệ
 
 - [U.S. Department of Energy – Solar Photovoltaic System Design Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics)
 - [Clean Energy Reviews – Designing off-grid and hybrid solar systems](https://www.cleanenergyreviews.info/blog/designing-off-grid-hybrid-solar-systems)
-- [Clean Energy Reviews – Best grid connect solar inverters](https://www.cleanenergyreviews.info/blog/best-grid-connect-solar-inverters-sma-fronius-solaredge-abb)

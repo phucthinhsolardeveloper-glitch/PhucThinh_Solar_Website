@@ -13,16 +13,16 @@ Khảo sát mái nhà là bước nền móng quyết định độ bền của 
 
 ## Câu hỏi về an toàn phòng cháy và thiết bị bảo vệ
 
-Theo hướng dẫn an toàn phòng cháy của Bộ Năng lượng Hoa Kỳ (DOE), lỗi thiết kế, linh kiện lỗi hoặc lắp đặt sai kỹ thuật có thể gây hồ quang điện và điểm nóng phát lửa, nên hệ thống trên mái phải tuân thủ nghiêm ngặt quy chuẩn an toàn điện:
+Theo Bộ Năng lượng Hoa Kỳ (DOE), lỗi thiết kế hay lắp đặt có thể tạo hồ quang điện và điểm nóng phát lửa. Vì vậy, hệ thống điện mặt trời trên mái cần được kiểm tra an toàn chặt chẽ:
 
 - Tủ điện DC và AC có lắp đầy đủ thiết bị chống sét lan truyền (SPD) cùng cầu chì chuyên dụng không?
 - Dây cáp DC ngoài trời dùng loại chống tia cực tím nào và luồn trong ống bảo vệ ra sao?
-- Hệ thống có dán nhãn nhận diện đường dây rõ ràng và bố trí cơ chế đóng ngắt đúng quy chuẩn để bảo vệ an toàn khi cứu hỏa không?
+- Đường dây có dán nhãn nhận diện rõ ràng và bố trí ngắt điện an toàn cho lính cứu hỏa không?
 - Điện trở nối đất của hệ thống tiếp địa giàn pin và inverter đo được dưới bao nhiêu ohm?
 
 ## Câu hỏi về nghiệm thu và hồ sơ bàn giao
 
-Báo cáo của IEA-PVPS khẳng định kiểm soát chất lượng chủ động ngay từ khâu thiết kế, chọn linh kiện đến kiểm tra kỹ thuật sẽ giảm đáng kể sự cố vận hành về sau và mang lại giá trị kinh tế vượt xa chi phí ban đầu:
+Theo báo cáo của IEA-PVPS, kiểm soát chất lượng sớm giúp giảm đáng kể sự cố vận hành. Hiệu quả kinh tế mang lại vượt xa chi phí đầu tư ban đầu:
 
 - Biên bản nghiệm thu có đo đủ điện áp hở mạch, dòng điện hoạt động và độ cách điện từng chuỗi không?
 - Nhà thầu có cung cấp bản sao chứng nhận xuất xứ (CO) và chất lượng (CQ) của từng lô hàng không?

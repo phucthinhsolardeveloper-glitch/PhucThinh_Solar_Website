@@ -27,9 +27,9 @@ Báo cáo *Photovoltaics Report* của Viện Fraunhofer ISE cập nhật ngày 
 
 Nhờ cưa dây kim cương cắt wafer mỏng hơn và hiệu suất cell tăng cao, lượng silicon dùng cho mỗi watt đã giảm mạnh. Nhờ đó, thời gian hoàn vốn năng lượng của hệ thống điện mặt trời chỉ còn khoảng 1 năm tùy vị trí lắp đặt.
 
-Thời gian bù năng lượng thay đổi theo bức xạ mặt trời của từng vùng. Tại các vùng nhiều nắng như Nam Âu, dàn pin chỉ cần chạy từ 0,9 đến 1 năm là hoàn trả xong năng lượng sản xuất.
+Thời gian bù năng lượng thay đổi theo bức xạ mặt trời của từng vùng. Với tấm pin sản xuất tại châu Âu, hệ lắp ở Bắc Âu cần khoảng 1,1 năm. Hệ lắp ở Nam Âu nhiều nắng hơn chỉ cần 0,9 năm.
 
-Theo Viện Fraunhofer ISE, với vòng đời 20 năm (hoặc 25 năm trong mô hình chuẩn hóa), dàn pin có thời gian hoàn vốn 1 năm sẽ tạo ra lượng điện sạch gấp 20 lần năng lượng đầu tư ban đầu.
+Báo cáo tính toán với vòng đời vận hành 20 năm. Khi đó, dàn pin có thời gian hoàn vốn 1 năm sẽ tạo ra lượng điện sạch gấp 20 lần năng lượng đầu tư ban đầu.
 
 ## Giải pháp giảm tiêu hao vật liệu trên toàn vòng đời
 
@@ -50,4 +50,5 @@ Theo Viện Fraunhofer ISE, công nghệ tế bào đơn tinh thể n-type TOPCo
 
 ## Nguồn tham khảo
 
-- [Fraunhofer ISE – Photovoltaics Report](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
+- [Fraunhofer ISE – Photovoltaics Report (HTML)](https://www.ise.fraunhofer.de/en/publications/studies/photovoltaics-report.html)
+- [Fraunhofer ISE – Photovoltaics Report (PDF)](https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf)

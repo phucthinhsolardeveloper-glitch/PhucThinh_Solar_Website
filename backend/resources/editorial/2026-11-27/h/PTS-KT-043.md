@@ -31,19 +31,18 @@ Giá mua điện dư là giá điện năng thị trường điện bình quân 
 
 Nếu hệ thống chạy độc lập không nối lưới quốc gia, bạn tự tính công suất vừa với thiết bị trong nhà. Bạn xem cách phân biệt tại bài [Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào?](/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao/).
 
-Nếu có nối lưới quốc gia, công suất lắp đặt không được vượt mức cực đại ($P_{max}$) trên nhãn công tơ hiện hữu (khoản 5 Điều 2). Với công tơ 1 pha, công thức là $P_{max} = U_{đdmax} \times I_{đdmax} \times k_c$. Với công tơ 3 pha, công thức là $P_{max} = \sqrt{3} \times U_{đdmax} \times I_{đdmax} \times k_c$.
+Nếu có nối lưới quốc gia, công suất lắp đặt không được vượt mức cực đại (Pmax) tính theo công tơ (khoản 3 Điều 11). Với công tơ 1 pha, công thức là Pmax = Uđdmax × Iđdmax × kc. Với công tơ 3 pha, công thức là Pmax = √3 × Uđdmax × Iđdmax × kc.
 
-Trong đó, $U_{đdmax}$ và $I_{đdmax}$ là điện áp và dòng điện lớn nhất ghi trên nhãn công tơ. Hệ số $k_c$ là tích hệ số biến dòng và biến áp đo lường (nhà dân đấu trực tiếp qua công tơ thì $k_c = 1$). Quy định cũng cấm nhập khẩu tấm quang điện và bộ inverter đã qua sử dụng.
+Trong đó, Uđdmax và Iđdmax là điện áp và dòng điện lớn nhất ghi trên nhãn công tơ. Hệ số kc là tích hệ số biến dòng và biến áp đo lường (nhà dân đấu trực tiếp qua công tơ thì kc = 1). Theo Mẫu số 01 và 02 Phụ lục III, người lắp cam kết không nhập khẩu tấm quang điện và bộ inverter đã qua sử dụng.
 
 ## Địa phương đã có chính sách hỗ trợ hộ gia đình lắp điện mặt trời kèm pin lưu trữ chưa?
 
-Ngày 18/9/2026, Bộ Công Thương ban hành Công văn 7404/BCT-DL đôn đốc các địa phương và ngành điện đẩy nhanh điện mặt trời mái nhà. Văn bản này triển khai Chỉ thị 10/CT-TTg với mục tiêu hoàn thành các nhiệm vụ trước ngày 31/3/2027.
+Tháng 9/2026, Bộ Công Thương ban hành Công văn 7404/BCT-DL đôn đốc các địa phương và ngành điện đẩy nhanh điện mặt trời mái nhà. Văn bản này triển khai Chỉ thị 10/CT-TTg với mục tiêu hoàn thành các nhiệm vụ trước ngày 31/3/2027.
 
-Bộ Công Thương đề nghị các tỉnh, thành phố trình Hội đồng nhân dân cấp tỉnh ban hành chính sách hỗ trợ hộ gia đình. Chính sách này khuyến khích lắp đặt hệ thống gắn với pin lưu trữ theo khoản 2 Điều 22 Luật Điện lực năm 2024. Tính đến lúc ra công văn, mới có 02/34 tỉnh, thành phố là Bắc Ninh và Lai Châu ban hành xong chính sách này. Ngoài ra, mới có 02/17 Bộ, cơ quan ngang Bộ ban hành kế hoạch triển khai. Vẫn còn 08/34 tỉnh, thành phố chưa báo cáo kế hoạch thực hiện. Khi chuẩn bị lắp, bạn nên hỏi rõ đơn vị thi công hoặc Ủy ban nhân dân cấp xã về quy định tại địa phương mình.
+Bộ Công Thương đề nghị các tỉnh, thành phố trình Hội đồng nhân dân cấp tỉnh ban hành chính sách hỗ trợ hộ gia đình. Chính sách này áp dụng theo khoản 2 Điều 22 Luật Điện lực năm 2024. Các địa phương cũng xây dựng chương trình hỗ trợ hộ dân lắp hệ thống gắn với pin lưu trữ. Tính đến lúc ra công văn, mới có 02/34 tỉnh, thành phố là Bắc Ninh và Lai Châu ban hành xong chính sách này. Ngoài ra, mới có 02/17 Bộ, cơ quan ngang Bộ ban hành kế hoạch triển khai. Vẫn còn 08/34 tỉnh, thành phố chưa báo cáo kế hoạch thực hiện. Khi chuẩn bị lắp, bạn nên hỏi rõ đơn vị thi công hoặc Ủy ban nhân dân cấp xã về quy định tại địa phương mình.
 
 ## Nguồn tham khảo
 
 - [Chính phủ – Nghị định số 243/2026/NĐ-CP](https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/6/243-ndcp.signed.pdf)
 - [Chính phủ – Nghị định số 58/2025/NĐ-CP](https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/3/58-nd.signed.pdf)
 - [Bộ Công Thương – Bộ Công Thương thúc tiến độ lắp điện mặt trời mái nhà](https://moit.gov.vn/tin-tuc/phat-trien-nang-luong/bo-cong-thuong-don-doc-dia-phuong-phat-trien-dien-mat-troi-mai-nha.html)
-- [Cổng Pháp luật quốc gia – Điện mặt trời mái nhà: Nâng tỷ lệ sản lượng điện dư được phép bán lên tới 50%](https://phapluat.gov.vn/tin-tuc/dien-mat-troi-mai-nha-nang-ty-le-san-luong-dien-du-duoc-phep-ban-len-toi-50)

@@ -20,7 +20,7 @@ Giả sử bộ pin 10 kWh đi với cổng xả 5 kW, bạn bật được cùn
 
 ## Chọn mức 5 kWh, 10 kWh hay 15 kWh
 
-Về độ xả sâu và bảo hành, bài [[KT-027]] đã nêu rõ bộ quản lý pin (BMS) luôn giữ lại một phần dung lượng đệm bảo vệ cell. Giả sử hệ thống giữ lại 10% đến 20% dung lượng đáy, bình 5 kWh sẽ cho dùng thực tế từ 4 đến 4,5 kWh. Bình 10 kWh dùng được từ 8 đến 9 kWh, và bình 15 kWh dùng được từ 12 đến 13,5 kWh.
+Về độ xả sâu, bài [[KT-027]] nêu rõ bộ quản lý pin (BMS) luôn giữ lại một phần dung lượng đệm bảo vệ cell. Giả sử hệ thống giữ lại 10% đến 20% dung lượng đáy, bình 5 kWh sẽ cho dùng thực tế từ 4 đến 4,5 kWh. Bình 10 kWh dùng được từ 8 đến 9 kWh, và bình 15 kWh dùng được từ 12 đến 13,5 kWh.
 
 | Cỡ pin | Điện dùng thực tế (giả sử trừ 10% đến 20% đệm) | Nhu cầu điện buổi tối | Thiết bị phù hợp |
 |---|---|---|---|

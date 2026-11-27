@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "Con số 10 kWp là tổng công suất đỉnh đo ở điều kiện thử chuẩn.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Efficiencies are obtained by exposing the cell to a constant, standard level of light while maintaining a constant cell temperature, and measuring the current and voltage that are produced"
+  },
+  {
+    "claim": "Nhưng theo Bộ Năng lượng Hoa Kỳ (DOE), tế bào quang điện làm việc tốt nhất ở nhiệt độ thấp.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Solar cells generally work best at low temperatures. Higher temperatures cause the semiconductor properties to shift, resulting in a slight increase in current, but a much larger decrease in voltage."
+  },
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), phần lớn ánh sáng chạm tới tấm pin bị thất thoát trên đường chuyển đổi.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Not all of the sunlight that reaches a PV cell is converted into electricity. In fact, most of it is lost."
+  },
+  {
+    "claim": "Thiết bị này đổi điện một chiều (DC) từ tấm pin sang điện xoay chiều (AC) dùng trong nhà.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-technology-basics",
+    "quote": "components that take the direct-current (DC) electricity produced by modules and convert it to the alternating-current (AC) electricity used to power the appliances in your home."
+  },
+  {
+    "claim": "Dùng lớp phủ chống phản xạ và bề mặt tạo nhám",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "Anti-reflection coatings and textured surfaces help decrease reflection."
+  }
+]

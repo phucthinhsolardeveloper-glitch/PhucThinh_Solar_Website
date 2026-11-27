@@ -6,29 +6,29 @@ Bài viết [[143]] đã chỉ ra vì sao số Watt quảng cáo dễ gây hiể
 
 Quang thông đo bằng lumen (lm) cho biết tổng lượng ánh sáng đèn phát ra. Bài viết [[152]] phân tích rõ lumen quyết định độ sáng thực tế, không phải số Watt.
 
-Chương trình Lighting Global (thuộc IFC và Ngân hàng Thế giới) bắt buộc nhà sản xuất ghi rõ quang thông bằng lumen và thời gian sáng trên vỏ hộp ở mức sáng cao nhất. Tiêu chuẩn này quy định độ sáng và thời gian sáng thực tế không được thấp hơn quá 15% so với số công bố. Khi chọn mua, bạn nên hỏi rõ đèn đạt bao nhiêu lumen ở mức sáng cao nhất.
+Chương trình Lighting Global thiết lập các tiêu chuẩn chất lượng và yêu cầu tính trung thực trong quảng cáo để bảo vệ người tiêu dùng. Khi chọn mua, bạn nên hỏi rõ đèn đạt bao nhiêu lumen ở mức sáng cao nhất và thời gian duy trì độ sáng đó.
 
 ## Dung lượng và điện áp của khối pin lưu trữ
 
 Đèn sáng được bao lâu phụ thuộc vào năng lượng lưu trong pin. Thông số pin cần ghi rõ điện áp Vôn (V) và dung lượng Ampe-giờ (Ah).
 
-Lấy số Vôn nhân với Ampe-giờ sẽ ra Watt-giờ (Wh). Giả sử đèn dùng pin LiFePO4 loại 3,2 V và 30 Ah thì năng lượng lưu trữ là 96 Wh, còn nếu chỉ dùng viên pin 3,2 V và 15 Ah thì năng lượng chỉ đạt 48 Wh điện. Khối pin nhỏ như vậy không thể cấp nguồn cho bóng đèn sáng mạnh suốt đêm. Theo tiêu chuẩn Lighting Global, pin lưu trữ (như dòng Lithium Iron Phosphate - LiFePO4) phải đạt chứng nhận an toàn và đi kèm bộ điều khiển sạc có mạch bảo vệ chống nạp quá áp, chống xả cạn.
+Lấy số Vôn nhân với Ampe-giờ sẽ ra Watt-giờ (Wh). Giả sử đèn dùng pin loại 3,2 V và 30 Ah, năng lượng lưu trữ sẽ là 96 Wh. Nếu viên pin chỉ có 3,2 V và 15 Ah, năng lượng chỉ đạt 48 Wh. Khối pin nhỏ như vậy không thể cấp nguồn cho bóng đèn sáng mạnh suốt đêm. Bạn nên hỏi người bán về dung lượng thực tế và mạch bảo vệ chống nạp quá áp hoặc xả cạn.
 
 ## Công suất thực tế của tấm pin mặt trời
 
 Tấm pin mặt trời là nguồn nạp điện cho cả bộ đèn. Bạn nên xem tấm pin có công suất bao nhiêu Watt đỉnh (Wp) và kích thước ra sao.
 
-Theo quy định minh bạch thông số của Lighting Global, công suất tấm pin mặt trời và dung lượng pin lưu trữ nếu công bố trên nhãn đều phải chính xác với kết quả đo kiểm. Một chiếc đèn gắn nhãn công suất lớn nhưng đi kèm tấm pin mặt trời quá nhỏ sẽ không thể thu đủ điện ban ngày để nạp đầy pin lưu trữ cho đèn sáng suốt đêm.
+Nhiều chiếc đèn gắn nhãn công suất rất lớn nhưng tấm pin mặt trời lại quá nhỏ. Tấm pin nhỏ không thể thu đủ điện ban ngày để nạp đầy pin lưu trữ cho đèn sáng cả đêm. Người mua cần chắc chắn sản phẩm hoạt động đúng như cam kết và có độ bền hợp lý theo thời gian.
 
 ## Mức duy trì độ sáng và kịch bản chiếu sáng
 
-Nhiều mẫu đèn rẻ tiền chỉ sáng rõ lúc đầu rồi mờ dần. Bạn cần hỏi rõ đèn sáng theo kịch bản nào trong đêm.
+Nhiều mẫu đèn rẻ tiền kém chất lượng đã xâm nhập thị trường và làm giảm niềm tin của người dùng. Bạn cần hỏi rõ đèn sáng theo kịch bản nào trong đêm.
 
-Đèn có chế độ giảm sáng tự động sau vài giờ hay dùng cảm biến chuyển động? Đèn chất lượng tốt giữ độ sáng ổn định và không bị tối nhanh. Theo tiêu chuẩn Lighting Global và phương pháp thử IEC 62257-9-5, lô mẫu đèn thử nghiệm sau 2.000 giờ sáng liên tục phải đạt độ sáng trung bình từ 90% trở lên so với ban đầu, trong đó tối đa một mẫu được phép xuống dưới 85%.
+Đèn có chế độ giảm sáng tự động sau vài giờ hay dùng cảm biến chuyển động? Theo tiêu chuẩn Lighting Global, chất lượng đèn được đánh giá qua thử nghiệm phòng thí nghiệm theo tiêu chuẩn IEC 62257-9-5. Thử nghiệm này giúp bảo đảm đèn duy trì độ sáng và vận hành ổn định.
 
 ## Phiếu kiểm định chất lượng và thời gian bảo hành
 
-Người bán rõ ràng luôn có bảng thông số hoặc phiếu kiểm định từ phòng thử nghiệm độc lập được công nhận. Tài liệu này ghi rõ quang thông, thời gian sáng khi sạc bằng nắng, điều kiện bảo hành và cấp bảo vệ chống bụi, chống nước đã qua thử nghiệm.
+Các sản phẩm đạt tiêu chuẩn chất lượng Lighting Global sẽ được cấp bảng thông số kỹ thuật và thư xác nhận chính thức. Tài liệu này ghi nhận kết quả đo kiểm độc lập về hiệu năng thực tế của đèn.
 
 | Thông số cần xem | Đèn quảng cáo thổi phồng | Đèn đúng tiêu chuẩn |
 |---|---|---|

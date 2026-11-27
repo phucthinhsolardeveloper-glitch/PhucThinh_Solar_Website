@@ -37,7 +37,7 @@ Bạn nên nhìn vào tổng sản lượng điện thu được qua cả năm. 
 
 Theo Bộ Năng lượng Hoa Kỳ (DOE), điện mặt trời không phải lúc nào cũng phát đúng lúc nhà bạn cần dùng điện nhất. Sự biến động theo thời tiết và thời gian trong ngày được giải quyết nhờ hai kênh:
 
-Kênh thứ nhất là phối hợp với lưới điện. Với hệ nối lưới, khi mây mưa làm dàn pin phát yếu hơn nhu cầu sử dụng, hệ thống tự động lấy thêm điện lưới bù vào cho thiết bị trong nhà.
+Kênh thứ nhất là phối hợp với lưới điện. Với hệ nối lưới, khi dàn pin phát yếu do mưa, hệ thống sẽ tự động lấy thêm điện lưới bù vào. Nhờ đó, các thiết bị trong nhà luôn có đủ điện để chạy.
 
 Kênh thứ hai là tích hợp hệ thống lưu trữ năng lượng (như pin lithium-ion). Pin lưu trữ sẽ nạp điện khi dàn pin phát dư lúc nắng tốt và xả điện khi trời nhiều mây hoặc ban đêm. Lưu trữ ngắn hạn trong vài phút giúp làm mượt các đợt sụt công suất khi mây bay ngang. Trong khi đó, lưu trữ dài hạn giúp cấp điện qua nhiều ngày thời tiết xấu. Bạn xem thêm bài [[KT-027]] về cách dùng pin lưu trữ bền bỉ.
 
@@ -53,4 +53,4 @@ Trước khi mùa mưa bão về, bạn nên rà soát các vị trí an toàn t
 ## Nguồn tham khảo
 
 - [U.S. Department of Energy – Solar Photovoltaic Performance and Efficiency Basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics)
-- [U.S. Department of Energy – Solar Integration: Solar Energy andstorage Basics](https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics)
+- [U.S. Department of Energy – Solar Integration: Solar Energy and Storage Basics](https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics)

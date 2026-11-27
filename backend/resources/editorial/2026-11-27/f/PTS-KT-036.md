@@ -6,21 +6,23 @@ Thay vì tìm một bóng đèn khổng lồ, bạn nên chia mặt bằng thàn
 
 Bóng đèn pha điện lưới được cấp nguồn liên tục nên duy trì được công suất sáng cao suốt đêm mà không lo cạn năng lượng.
 
-Trong khi đó, đèn năng lượng mặt trời độc lập chỉ vận hành bằng nguồn điện tích trong pin từ ban ngày. Theo hệ thống tiêu chuẩn chất lượng của Lighting Global, mỗi bộ đèn ngoài lưới đều có giới hạn cụ thể về quang thông thực (lumen), góc phân bổ ánh sáng và thời gian sáng sau một ngày nắng. Bài viết [[152]] đã giải thích rõ mối liên hệ giữa lumen và độ rọi lux: cùng một lượng quang thông, diện tích sân càng rộng thì ánh sáng rọi xuống mặt đất càng loãng.
+Trong khi đó, đèn năng lượng mặt trời độc lập chỉ vận hành bằng nguồn điện tích trong pin từ ban ngày. Theo tiêu chuẩn Lighting Global, mỗi bộ đèn độc lập đều có giới hạn về quang thông thực (lumen). Góc phân bổ ánh sáng và thời gian sáng sau một ngày nắng cũng được quy định cụ thể. Bài viết [[152]] đã giải thích rõ mối liên hệ giữa lumen và độ rọi lux. Cùng một lượng quang thông, diện tích sân càng rộng thì ánh sáng rọi xuống mặt đất càng loãng.
 
 Khi chỉ treo một đèn ở góc sân rộng, điểm ngay dưới chân đèn sáng rõ nhưng các góc xa sẽ bị tối. Vùng sáng lệch tạo ra bóng đổ gắt và gây mỏi mắt. Bài viết [[143]] cũng nhắc bạn không nên tin vào lời quảng cáo một bóng đèn giá rẻ rọi sáng cả khu đất lớn.
 
 ## Phân bổ vùng phủ sáng thay vì dùng một bóng công suất lớn
 
-Thực tế triển khai các dự án chiếu sáng ngoài trời của tập đoàn Signify (như hệ thống đèn LED năng lượng mặt trời cho cụm sân cầu lông tại bang Haryana, Ấn Độ hay chuỗi đèn công viên tại thành phố Seville, Tây Ban Nha) đều phân bổ nhiều cột đèn theo từng khu vực hoạt động thay vì chỉ dùng một bóng đèn đơn lẻ.
+Một số dự án ngoài trời của Signify dùng nhiều điểm đèn theo từng khu vực. Hãng đã thắp sáng 5 sân cầu lông tại bang Haryana (Ấn Độ) và lắp 20 đèn công viên tại thành phố Seville (Tây Ban Nha).
 
-Với thiết kế đèn liền thể tích hợp tấm pin, bộ điều khiển sạc, pin lưu trữ và đèn LED trong một vỏ đèn gọn (như dòng Philips SunStay của Signify), mỗi điểm đèn vận hành độc lập mà không cần kéo cáp điện nối với nhau. Thay vì dồn tiền mua một bộ đèn cỡ lớn, bạn nên chia diện tích sân thành các vị trí đối diện nhau và hướng chùm sáng vào khu vực sinh hoạt. Ánh sáng từ nhiều phía sẽ giảm vùng tối phía sau chướng ngại vật, giúp người đi bộ và xe cộ di chuyển an toàn.
+Đèn liền thể như Philips SunStay của Signify tích hợp tấm pin, bộ sạc, pin và đèn LED trong một vỏ gọn. Mỗi điểm đèn tự vận hành độc lập, không cần kéo cáp điện nối với nhau.
+
+Thay vì mua một bộ đèn quá lớn, bạn nên chia sân thành nhiều điểm đối diện nhau. Hướng chùm sáng vào khu vực sinh hoạt sẽ giúp mặt sân sáng đều hơn. Ánh sáng từ nhiều phía sẽ giảm vùng tối phía sau chướng ngại vật, giúp người đi bộ và xe cộ di chuyển an toàn.
 
 ## Thời lượng sáng qua đêm và cơ chế điều tiết thông minh
 
 Đèn pha điện lưới thường bật cố định một mức công suất, tiêu tốn khá nhiều điện năng. Đèn năng lượng mặt trời hiện đại giải quyết bài toán thời lượng bằng bộ điều khiển sạc và cảm biến thông minh.
 
-Theo Signify, cảm biến chuyển động tích hợp trên đèn sẽ tự động tăng cường độ sáng khi phát hiện có người hoặc phương tiện di chuyển, rồi hạ mức sáng khi khu vực vắng người để tiết kiệm điện. Với những nơi ánh nắng thất thường theo mùa, Signify cũng phát triển bộ điều khiển sạc lai (Philips Combo Charge Controller), giúp đèn ưu tiên chạy bằng điện mặt trời và chỉ lấy điện lưới hỗ trợ khi pin lưu trữ cạn điện.
+Theo Signify, cảm biến chuyển động tích hợp trên đèn sẽ tự động tăng độ sáng khi có người hoặc xe đi qua. Khi khu vực vắng người, đèn tự giảm sáng để tiết kiệm điện năng. Với nơi nắng thất thường theo mùa, Signify phát triển bộ sạc lai Philips Combo Charge Controller. Thiết bị này ưu tiên dùng điện mặt trời và chỉ lấy điện lưới hỗ trợ khi pin lưu trữ cạn điện.
 
 ## Bảng so sánh phương án chiếu sáng cho sân lớn
 
