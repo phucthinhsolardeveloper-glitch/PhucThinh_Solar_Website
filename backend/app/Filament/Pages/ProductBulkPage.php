@@ -36,6 +36,9 @@ class ProductBulkPage extends Page
 
     protected static ?string $navigationLabel = 'Nhập / xuất Excel';
 
+    /** Reached by the button of the same name on the product list; one place is enough. */
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $slug = 'nhap-xuat-san-pham';
 
     protected static string|UnitEnum|null $navigationGroup = 'Sản phẩm';

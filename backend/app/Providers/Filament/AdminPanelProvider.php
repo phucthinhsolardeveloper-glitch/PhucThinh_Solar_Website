@@ -9,6 +9,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -44,7 +45,11 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->navigationGroups(['Sản phẩm', 'Nội dung', 'Hình ảnh & video', 'Bán hàng', 'Khách hàng', 'Hệ thống'])
+            // Daily work first; groups that are set up once start folded.
+            ->navigationGroups([
+                NavigationGroup::make('Bán hàng'), NavigationGroup::make('Khách hàng'), NavigationGroup::make('Sản phẩm'), NavigationGroup::make('Nội dung'),
+                NavigationGroup::make('Hình ảnh & video')->collapsed(), NavigationGroup::make('Cài đặt bán hàng')->collapsed(), NavigationGroup::make('Hệ thống')->collapsed(),
+            ])
             ->sidebarCollapsibleOnDesktop()
             // Ctrl+K / Cmd+K: search orders (code, phone), customers, products and posts from any page.
             ->globalSearchKeyBindings(['mod+k'])

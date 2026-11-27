@@ -246,7 +246,8 @@ class ProductResource extends Resource
                     TextInputColumn::make('sale_price')->label('Giá khuyến mãi (đ)')->type('number')->extraInputAttributes(['min' => 0, 'step' => 'any'])
                         ->rules(fn (Product $record) => ['nullable', 'numeric', 'min:0', ...((float) $record->regular_price > 0 ? ['lte:'.(float) $record->regular_price] : [])]),
                 ] : [
-                    TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
+                    TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(80)->wrap()
+                        ->extraHeaderAttributes(['style' => 'min-width: 22rem'])->extraCellAttributes(['style' => 'min-width: 22rem'])
                         ->description(fn (Product $record) => implode(' · ', array_filter([$record->code, $record->is_bestseller ? '★ Nổi bật' : null]))),
                     TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
                         ->description(fn (Product $record) => data_get($record, 'brand.name')),

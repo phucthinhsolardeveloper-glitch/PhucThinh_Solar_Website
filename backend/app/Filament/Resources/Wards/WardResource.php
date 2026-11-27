@@ -38,7 +38,7 @@ class WardResource extends Resource
 
     protected static ?string $navigationLabel = 'Phí giao hàng';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Bán hàng';
+    protected static string|UnitEnum|null $navigationGroup = 'Cài đặt bán hàng';
 
     protected static ?int $navigationSort = 2;
 

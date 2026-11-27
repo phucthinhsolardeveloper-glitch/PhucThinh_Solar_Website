@@ -53,6 +53,15 @@ class EditorialCalendarPage extends Page
 
     public const KINDS = ['article' => 'Bài viết', 'project' => 'Dự án', 'solution' => 'Giải pháp', 'policy' => 'Chính sách', 'plan' => 'Đề tài'];
 
+    public function mount(): void
+    {
+        // A "chờ duyệt" link without a month opens where the oldest waiting article is, not on an empty month.
+        if ($this->state === EditorialBoard::WAITING && $this->month === '') {
+            $oldest = Post::query()->where('is_visible', false)->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))->min('published_at');
+            $this->month = $oldest ? Carbon::parse($oldest)->format('Y-m') : '';
+        }
+    }
+
     public static function canAccess(): bool
     {
         $user = auth('admin')->user();

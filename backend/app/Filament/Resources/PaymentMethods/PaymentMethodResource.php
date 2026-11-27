@@ -30,7 +30,7 @@ class PaymentMethodResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Hình thức thanh toán';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Bán hàng';
+    protected static string|UnitEnum|null $navigationGroup = 'Cài đặt bán hàng';
 
     protected static ?int $navigationSort = 3;
 

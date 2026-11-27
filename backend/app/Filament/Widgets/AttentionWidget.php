@@ -4,8 +4,10 @@ namespace App\Filament\Widgets;
 
 use App\Domain\Admin\WorkQueue;
 use App\Domain\Catalog\Health\CatalogHealth;
+use App\Domain\Content\EditorialBoard;
 use App\Domain\Media\MediaInventory;
 use App\Domain\Outbox\Outbox;
+use App\Filament\Pages\EditorialCalendarPage;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\MediaFiles\MediaFileResource;
@@ -35,7 +37,7 @@ class AttentionWidget extends Widget
             $new = WorkQueue::newOrders()->count();
             $reported = DB::table('orders')->whereNotNull('transfer_reported_at')->where('payment_status', 'unpaid')->where('status', '!=', 'cancelled')->count();
             if ($reported > 0) {
-                $items[] = ['tone' => 'danger', 'text' => $reported.' đơn khách báo đã chuyển khoản, chờ đối chiếu sao kê', 'url' => $orders];
+                $items[] = ['tone' => 'danger', 'text' => $reported.' đơn khách báo đã chuyển khoản, chờ đối chiếu sao kê', 'url' => OrderResource::getUrl('index', ['tab' => 'bao-ck'])];
             }
             if ($new > 0) {
                 $items[] = ['tone' => 'warning', 'text' => $new.' đơn hàng mới chưa xử lý', 'url' => $orders.'?filters[status][value]=new'];
@@ -48,6 +50,10 @@ class AttentionWidget extends Widget
             $items[] = ['tone' => 'info', 'text' => $reviews.' đánh giá chờ duyệt', 'url' => ReviewResource::getUrl().'?filters[status][value]=pending'];
         }
         if (ArticleResource::canViewAny()) {
+            $waiting = app(EditorialBoard::class)->totals()[EditorialBoard::WAITING];
+            if ($waiting > 0) {
+                $items[] = ['tone' => 'warning', 'text' => $waiting.' bài viết đã soạn, chờ duyệt', 'url' => EditorialCalendarPage::getUrl(['state' => 'waiting'])];
+            }
             $soon = Post::query()->where('kind', 'article')->where('is_visible', true)->whereBetween('published_at', [now(), now()->addDays(7)])->count();
             if ($soon > 0) {
                 $items[] = ['tone' => 'info', 'text' => $soon.' bài viết hẹn giờ đăng trong 7 ngày tới', 'url' => ArticleResource::getUrl().'?filters[scheduled][isActive]=1'];

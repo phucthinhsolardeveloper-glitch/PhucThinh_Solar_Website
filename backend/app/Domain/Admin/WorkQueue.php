@@ -5,12 +5,14 @@ namespace App\Domain\Admin;
 use App\Domain\Analytics\CountedOrders;
 use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Shipping\NhatTin\NtlStatus;
+use App\Filament\Pages\EditorialCalendarPage;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Reviews\ReviewResource;
+use App\Models\EditorialPlanItem;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\Post;
@@ -20,6 +22,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Everything waiting for someone, by kind, each row linking to where it is handled. Only what the user may see;
@@ -37,7 +40,7 @@ final class WorkQueue
             $transfer = Order::query()->whereNotNull('transfer_reported_at')->where('payment_status', 'unpaid')->where('status', '!=', 'cancelled');
             $sections[] = $this->section('transfer', 'Khách báo đã chuyển khoản, chờ đối chiếu', 'danger', $transfer->clone()->oldest('transfer_reported_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, $this->money($o->total).' · báo lúc '.$this->when($o->transfer_reported_at), OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl());
+                OrderResource::getUrl('index', ['tab' => 'bao-ck']));
             $sections[] = $this->section('shipment_trouble', 'Vận đơn có sự cố, đang hoàn hoặc chưa rõ kết quả', 'danger',
                 Order::query()->whereHas('latestShipment', fn ($q) => $q->whereIn('status', ['failed', 'returning', 'unknown']))->with('latestShipment')->oldest('updated_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone,
@@ -84,6 +87,13 @@ final class WorkQueue
                     ->when($mine, fn ($q) => $q->where(fn ($q) => $q->where('review_requested_by', $user->id)->orWhere('updated_by', $user->id))),
                 fn (PostRevision $r) => [(string) $r->post?->title, (string) $r->review_note, PostRevisionResource::getUrl('edit', ['record' => $r])],
                 PostRevisionResource::getUrl().'?filters[review_state][value]=returned');
+            if ($user->canPerform('content_publish') && Schema::hasTable('editorial_plan_items')) {
+                $sections[] = $this->section('waiting_articles', 'Bài đã viết, chờ duyệt', 'warning',
+                    Post::query()->where('kind', 'article')->where('is_visible', false)
+                        ->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))->orderBy('published_at'),
+                    fn (Post $p) => [(string) $p->title, 'lịch '.$this->when($p->published_at), EditorialCalendarPage::getUrl(['month' => $p->published_at ? Carbon::parse($p->published_at)->format('Y-m') : '', 'state' => 'waiting'])],
+                    EditorialCalendarPage::getUrl(['state' => 'waiting']));
+            }
             $sections[] = $this->section('scheduled', 'Bài hẹn giờ đăng trong 7 ngày', 'info',
                 Post::query()->where('kind', 'article')->where('is_visible', true)->whereBetween('published_at', [now(), now()->addDays(7)])->orderBy('published_at'),
                 fn (Post $p) => [(string) $p->title, 'đăng lúc '.Carbon::parse($p->published_at)->format('H:i d/m'), ArticleResource::getUrl('edit', ['record' => $p])],
