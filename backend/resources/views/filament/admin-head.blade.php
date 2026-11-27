@@ -45,7 +45,8 @@
     .pts-cal__day.is-drop { background: rgb(37 99 235 / .12); }
     .pts-cal__day.is-today .pts-cal__date { background: #e0a526; color: #0b1f3a; border-radius: 999px; padding: 0 .4rem; }
     .pts-cal__date { justify-self: start; font-size: .75rem; font-weight: 600; }
-    .pts-cal__post { display: block; width: 100%; text-align: left; font-size: .75rem; line-height: 1.3; padding: .25rem .35rem; border-radius: .3rem; border-left: 3px solid var(--cal); background: color-mix(in srgb, var(--cal) 11%, transparent); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .pts-cal__post { display: block; width: 100%; text-align: left; font-size: .75rem; line-height: 1.3; padding: .25rem .35rem; border-radius: .3rem; border-left: 3px solid var(--cal); background: color-mix(in srgb, var(--cal) 11%, transparent); }
+    .pts-cal__post > span.pts-cal__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .pts-cal__post.is-todo, .pts-cal__post.is-late { background: transparent; border: 1px dashed var(--cal); }
     .pts-cal__post[draggable="true"] { cursor: grab; }
     .pts-cal__post:hover { text-decoration: underline; }

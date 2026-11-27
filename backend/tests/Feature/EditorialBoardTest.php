@@ -90,3 +90,20 @@ it('requeues unwritten topics from a day, skipping hours already past', function
     expect(app(EditorialBoard::class)->requeue(Carbon::parse('2026-11-27'), 3))->toBe(3)
         ->and(collect([$a, $b, $c])->map(fn ($p) => $p->fresh()->scheduled_for->format('d H:i'))->all())->toBe(['27 12:00', '27 19:30', '28 08:00']);
 });
+
+it('imports written articles as hidden drafts once, without links to unpublished later articles', function () {
+    $earlier = topic('PTS-KT-022', '2026-11-28 08:00:00');
+    $later = topic('PTS-KT-023', '2026-11-28 12:00:00');
+    $this->artisan('pts:editorial-drafts', ['batch' => '2026-11-27'])->assertSuccessful();
+    expect($earlier->fresh()->post_id)->toBeNull();
+
+    $this->artisan('pts:editorial-drafts', ['batch' => '2026-11-27', '--apply' => true])->assertSuccessful();
+    $first = Post::query()->findOrFail($earlier->fresh()->post_id);
+    $second = Post::query()->findOrFail($later->fresh()->post_id);
+    expect($first->is_visible)->toBeFalse()->and($first->body)->not->toContain('[[')->not->toContain($second->slug)
+        ->and($second->body)->not->toContain('[[')->toContain('/'.$first->slug.'/')
+        ->and($first->summary)->not->toBe('');
+
+    $this->artisan('pts:editorial-drafts', ['batch' => '2026-11-27', '--apply' => true])->assertSuccessful();
+    expect($earlier->fresh()->post_id)->toBe($first->id);
+});

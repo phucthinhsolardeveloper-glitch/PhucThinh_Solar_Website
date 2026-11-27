@@ -38,7 +38,7 @@
                             wire:click="show('{{ $item['type'] }}', {{ $item['id'] }})"
                             title="{{ $labels[$item['state']] }} · {{ $item['title'] }}" aria-label="{{ $labels[$item['state']] }}, {{ $item['at']->format('H:i d/m') }}, {{ $item['title'] }}"
                             @if ($item['movable']) draggable="true" x-on:dragstart="drag = { type: '{{ $item['type'] }}', id: {{ $item['id'] }} }; $event.dataTransfer.setData('text/plain', '{{ $item['id'] }}')" @endif>
-                            <span class="pts-cal__time">{{ $item['at']->format('H:i') }}</span> {{ $item['title'] }}
+                            <span class="pts-cal__text"><span class="pts-cal__time">{{ $item['at']->format('H:i') }}</span> {{ $item['title'] }}</span>
                         </button>
                     @endforeach
                 </div>

@@ -27,7 +27,8 @@ final class EditorialDrafts extends Command
 
             return self::FAILURE;
         }
-        $files = glob($base.'/*/PTS-KT-[0-9][0-9][0-9].md') ?: [];
+        // input/ holds source material for the writers, never articles.
+        $files = array_filter(glob($base.'/*/PTS-KT-[0-9][0-9][0-9].md') ?: [], fn (string $f) => basename(dirname($f)) !== 'input');
         usort($files, fn (string $a, string $b) => strcmp(basename($a), basename($b)));
         $created = 0;
         foreach ($files as $file) {
