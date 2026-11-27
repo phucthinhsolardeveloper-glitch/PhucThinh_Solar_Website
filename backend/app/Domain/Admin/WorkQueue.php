@@ -2,8 +2,11 @@
 
 namespace App\Domain\Admin;
 
+use App\Domain\Analytics\CountedOrders;
 use App\Domain\Catalog\Health\CatalogHealth;
+use App\Domain\Content\EditorialBoard;
 use App\Domain\Shipping\NhatTin\NtlStatus;
+use App\Filament\Pages\EditorialCalendarPage;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\Leads\LeadResource;
 use App\Filament\Resources\Orders\OrderResource;
@@ -14,10 +17,11 @@ use App\Models\Lead;
 use App\Models\Order;
 use App\Models\Post;
 use App\Models\PostRevision;
+use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Everything waiting for someone, by kind, each row linking to where it is handled. Only what the user may see;
@@ -35,73 +39,100 @@ final class WorkQueue
             $transfer = Order::query()->whereNotNull('transfer_reported_at')->where('payment_status', 'unpaid')->where('status', '!=', 'cancelled');
             $sections[] = $this->section('transfer', 'Khách báo đã chuyển khoản, chờ đối chiếu', 'danger', $transfer->clone()->oldest('transfer_reported_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, $this->money($o->total).' · báo lúc '.$this->when($o->transfer_reported_at), OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl());
+                OrderResource::getUrl('index', ['tab' => 'bao-ck']));
             $sections[] = $this->section('shipment_trouble', 'Vận đơn có sự cố, đang hoàn hoặc chưa rõ kết quả', 'danger',
                 Order::query()->whereHas('latestShipment', fn ($q) => $q->whereIn('status', ['failed', 'returning', 'unknown']))->with('latestShipment')->oldest('updated_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone,
                     (NtlStatus::LABELS[$o->latestShipment->status] ?? '').' · '.($o->latestShipment->bill_code ?? $o->latestShipment->ref_code), OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl().'?tableFilters[shipping][value]=trouble');
+                OrderResource::getUrl().'?filters[shipping][value]=trouble');
             $sections[] = $this->section('cod', 'Đã giao, chờ đối soát tiền thu hộ', 'warning',
                 Order::query()->where('payment_status', 'unpaid')->whereHas('latestShipment', fn ($q) => $q->where('status', 'delivered')->where('cod_amount', '>', 0))
                     ->with('latestShipment')->oldest('updated_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, 'thu hộ '.$this->money($o->latestShipment->cod_amount).' · vận đơn '.$o->latestShipment->bill_code, OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl().'?tableFilters[shipping][value]=delivered');
-            $sections[] = $this->section('orders', 'Đơn hàng mới chưa xử lý', 'warning', Order::query()->where('status', 'new')->oldest(),
+                OrderResource::getUrl().'?filters[shipping][value]=delivered');
+            $sections[] = $this->section('orders', 'Đơn hàng mới chưa xử lý', 'warning', self::newOrders()->oldest(),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name.' · '.$o->phone, $this->money($o->total).' · đặt '.$this->when($o->created_at), OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl().'?tableFilters[status][value]=new');
+                OrderResource::getUrl().'?filters[status][value]=new');
             $sections[] = $this->section('unshipped', 'Đơn đã xác nhận quá 24 giờ, chưa có vận đơn', 'warning',
                 Order::query()->where('status', 'confirmed')->where('updated_at', '<', now()->subDay())->whereDoesntHave('shipments')->oldest('updated_at'),
                 fn (Order $o) => [$o->code.' · '.$o->customer_name, 'xác nhận '.$this->when($o->updated_at), OrderResource::getUrl('edit', ['record' => $o])],
-                OrderResource::getUrl().'?tableFilters[status][value]=confirmed');
+                OrderResource::getUrl().'?filters[status][value]=confirmed');
         }
         if ($user->hasPermission('leads')) {
             $scope = fn ($q) => $mine ? $q->where(fn ($q) => $q->where('assigned_to', $user->id)->orWhereNull('assigned_to')) : $q;
             $sections[] = $this->section('overdue', 'Liên hệ quá hạn hẹn gọi lại', 'danger',
                 Lead::query()->whereNotIn('status', ['done', 'spam'])->where('follow_up_at', '<', now())->tap($scope)->oldest('follow_up_at'),
-                fn (Lead $l) => [$l->name.' · '.$l->phone, 'hẹn '.$this->when($l->follow_up_at).($l->assignee ? ' · '.$l->assignee->getAttribute('name') : ' · chưa phân công'), LeadResource::getUrl().'?tableSearch='.urlencode((string) $l->phone)],
-                LeadResource::getUrl().'?tableFilters[overdue][isActive]=1');
+                fn (Lead $l) => [$l->name.' · '.$l->phone, 'hẹn '.$this->when($l->follow_up_at).($l->assignee ? ' · '.$l->assignee->getAttribute('name') : ' · chưa phân công'), LeadResource::getUrl().'?search='.urlencode((string) $l->phone)],
+                LeadResource::getUrl().'?filters[overdue][isActive]=1');
             $sections[] = $this->section('leads', 'Liên hệ / tư vấn mới chưa gọi', 'warning',
                 Lead::query()->where('status', 'new')->tap($scope)->oldest(),
-                fn (Lead $l) => [$l->name.' · '.$l->phone, (LeadResource::KINDS[$l->kind] ?? $l->kind).' · gửi '.$this->when($l->created_at), LeadResource::getUrl().'?tableSearch='.urlencode((string) $l->phone)],
-                LeadResource::getUrl().'?tableFilters[status][value]=new');
+                fn (Lead $l) => [$l->name.' · '.$l->phone, (LeadResource::KINDS[$l->kind] ?? $l->kind).' · gửi '.$this->when($l->created_at), LeadResource::getUrl().'?search='.urlencode((string) $l->phone)],
+                LeadResource::getUrl().'?filters[status][value]=new');
         }
         if ($user->hasPermission('reviews')) {
             $sections[] = $this->section('reviews', 'Đánh giá chờ duyệt', 'info', Review::query()->whereNull('parent_id')->where('status', 'pending')->oldest(),
-                fn (Review $r) => [(string) ($r->name ?? 'Khách'), str((string) $r->content)->limit(80)->toString(), ReviewResource::getUrl()], ReviewResource::getUrl());
+                fn (Review $r) => [(string) ($r->name ?? 'Khách'), str((string) $r->content)->limit(80)->toString(), ReviewResource::getUrl().'?filters[status][value]=pending'],
+                ReviewResource::getUrl().'?filters[status][value]=pending');
         }
         if ($user->hasPermission('content')) {
             if ($user->canPerform('content_publish')) {
                 $sections[] = $this->section('review', 'Bản nháp chờ duyệt', 'warning',
                     PostRevision::query()->with('post', 'requester')->where('state', 'draft')->where('review_state', 'waiting')->oldest('review_requested_at'),
                     fn (PostRevision $r) => [(string) $r->post?->title, 'gửi bởi '.($r->requester->name ?? '—').' '.$this->when($r->review_requested_at), PostRevisionResource::getUrl('edit', ['record' => $r])],
-                    PostRevisionResource::getUrl().'?tableFilters[review_state][value]=waiting');
+                    PostRevisionResource::getUrl().'?filters[review_state][value]=waiting');
             }
             $sections[] = $this->section('returned', 'Bản nháp bị trả lại', 'danger',
                 PostRevision::query()->with('post')->where('state', 'draft')->where('review_state', 'returned')
                     ->when($mine, fn ($q) => $q->where(fn ($q) => $q->where('review_requested_by', $user->id)->orWhere('updated_by', $user->id))),
                 fn (PostRevision $r) => [(string) $r->post?->title, (string) $r->review_note, PostRevisionResource::getUrl('edit', ['record' => $r])],
-                PostRevisionResource::getUrl().'?tableFilters[review_state][value]=returned');
+                PostRevisionResource::getUrl().'?filters[review_state][value]=returned');
+            if ($user->canPerform('content_publish')) {
+                $sections[] = $this->section('waiting_articles', 'Bài đã viết, chờ duyệt', 'warning', app(EditorialBoard::class)->waiting(),
+                    fn (Post $p) => [(string) $p->title, 'lịch '.$this->when($p->published_at), EditorialCalendarPage::getUrl(['month' => $p->published_at ? Carbon::parse($p->published_at)->format('Y-m') : '', 'state' => 'waiting'])],
+                    EditorialCalendarPage::getUrl(['state' => 'waiting']));
+            }
             $sections[] = $this->section('scheduled', 'Bài hẹn giờ đăng trong 7 ngày', 'info',
                 Post::query()->where('kind', 'article')->where('is_visible', true)->whereBetween('published_at', [now(), now()->addDays(7)])->orderBy('published_at'),
                 fn (Post $p) => [(string) $p->title, 'đăng lúc '.Carbon::parse($p->published_at)->format('H:i d/m'), ArticleResource::getUrl('edit', ['record' => $p])],
-                ArticleResource::getUrl().'?tableFilters[scheduled][isActive]=1');
+                ArticleResource::getUrl().'?filters[scheduled][isActive]=1');
         }
         if ($user->hasPermission('catalog')) {
-            $issues = Cache::remember('catalog-health', 600, fn () => app(CatalogHealth::class)->run());
-            $items = [];
+            $issues = app(CatalogHealth::class)->cached();
+            // One line per product, with everything wrong with it, so the count matches the filtered product list.
+            $broken = [];
             foreach (CatalogHealth::CHECKS as $key => [$severity, $label]) {
                 if ($severity !== 'error') {
                     continue;
                 }
                 foreach ($issues[$key] ?? [] as $product) {
-                    $items[] = ['label' => $product['name'], 'meta' => $label, 'url' => ProductResource::getUrl('edit', ['record' => $product['id']])];
+                    if (($id = CatalogHealth::productId($product)) !== null) {
+                        $broken[$id]['name'] ??= $key === 'duplicate_slug' ? null : $product['name'];
+                        $broken[$id]['labels'][] = $label;
+                    }
                 }
             }
+            $names = Product::query()->whereKey(array_keys($broken))->pluck('name', 'id');
+            $items = [];
+            foreach ($broken as $id => $row) {
+                $items[] = ['label' => (string) ($row['name'] ?? $names[$id] ?? ''), 'meta' => implode(' · ', $row['labels']),
+                    'url' => ProductResource::getUrl('edit', ['record' => $id])];
+            }
             $sections[] = ['key' => 'products', 'title' => 'Sản phẩm đang hiện nhưng có lỗi', 'tone' => 'danger', 'count' => count($items),
-                'more' => null, 'items' => array_slice($items, 0, 10), 'refs' => []];
+                'more' => ProductResource::getUrl('index', ['filters' => ['health' => ['value' => 'errors']]]), 'items' => array_slice($items, 0, 10), 'refs' => []];
         }
 
         return array_values(array_filter($sections, fn ($s) => $s['count'] > 0));
+    }
+
+    /**
+     * New orders someone has to handle, the same set the dashboard counts: an unpaid online (VNPay) order is a payment
+     * that has not gone through, not work yet.
+     *
+     * @return Builder<Order>
+     */
+    public static function newOrders(): Builder
+    {
+        return Order::query()->where('status', 'new')->where(fn (Builder $q) => CountedOrders::apply($q->getQuery()));
     }
 
     /** Sections that count toward the menu badge. */

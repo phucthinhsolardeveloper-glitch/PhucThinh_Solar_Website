@@ -173,7 +173,7 @@ class ReviewSubmission
         $uploads->deleteDirectory($batch);
         $productName = (string) DB::table('products')->where('id', $productId)->value('name');
         AdminBell::ring('reviews', 'review:'.$productId.':'.md5($row['name'].$row['created_at']), 'Đánh giá mới chờ duyệt: '.$star.'★', $row['name'].' · '.mb_strimwidth($productName, 0, 90, '…'),
-            ReviewResource::getUrl('index', ['tableFilters' => ['status' => ['value' => 'pending']]], isAbsolute: false, panel: 'admin'), 'heroicon-o-star', 'warning');
+            ReviewResource::getUrl('index', ['filters' => ['status' => ['value' => 'pending']]], isAbsolute: false, panel: 'admin'), 'heroicon-o-star', 'warning');
 
         return [200, ['ok' => true, 'message' => 'Đã nhận đánh giá. Nội dung sẽ hiển thị sau khi được duyệt.']];
     }

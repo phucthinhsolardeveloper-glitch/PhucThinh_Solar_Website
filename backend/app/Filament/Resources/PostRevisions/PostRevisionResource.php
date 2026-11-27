@@ -66,6 +66,12 @@ class PostRevisionResource extends Resource
 
     public const KIND_LABELS = ['article' => 'Bài viết', 'solution' => 'Giải pháp', 'project' => 'Dự án', 'policy' => 'Chính sách'];
 
+    /** In the menu only while there is an open draft; history stays reachable from each post. */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return PostRevision::query()->where('state', 'draft')->exists();
+    }
+
     /** Drafts waiting for review first (orange); otherwise all open drafts (grey). */
     public static function getNavigationBadge(): ?string
     {

@@ -88,7 +88,7 @@ it('preserves editorial changes on repeated imports and displays the planning ca
     $this->actingAs($user, 'admin');
     expect(EditorialPlanItemResource::canViewAny())->toBeTrue();
     Livewire::test(EditorialCalendarPage::class)->set('month', '2026-11')
-        ->assertSee('Tên đã sửa thủ công')->assertSee('Quản lý kế hoạch 180 bài');
+        ->assertSee('Tên đã sửa thủ công')->assertSee('Danh sách đề tài');
     $this->actingAs(User::query()->create([
         'name' => 'Nhân viên bán hàng', 'username' => 'sales-calendar-'.bin2hex(random_bytes(3)),
         'password' => 'test-password', 'role' => User::ROLE_EDITOR,

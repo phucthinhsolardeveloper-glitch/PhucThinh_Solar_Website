@@ -236,7 +236,7 @@ abstract class PostResource extends Resource
 
         return $table
             ->description($edit ? 'Đang sửa trên bảng: bật/tắt Hiển thị và đổi Ngày đăng, ô nào sửa là lưu ngay khi bấm ra ngoài. Tiêu đề và đường dẫn chỉ sửa trong từng bài. Bấm "Xong sửa" để thoát.' : null)
-            ->defaultSort('id', 'desc')
+            ->defaultSort(static::$kind === 'article' ? 'published_at' : 'id', 'desc')
             ->reorderable('sort_order', fn () => AdminActor::current()->canPerform('content_publish'))->paginatedWhileReordering(false)
             ->columns([
                 ImageColumn::make('image')->label('Ảnh')->disk('upload_news')->height(44)

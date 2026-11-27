@@ -243,7 +243,7 @@ class LeadSubmission
             $kind = ['contact_admin' => 'Liên hệ mới', 'consult_admin' => 'Yêu cầu tư vấn mới', 'dealer_admin' => 'Đăng ký đại lý mới'][$template] ?? 'Liên hệ mới';
             $subject = trim((string) ($values['contact_subject'] ?? $values['company'] ?? ''));
             AdminBell::ring('leads', 'lead:'.$this->leadId, $kind.': '.$values['customer_name'], $subject !== '' ? mb_strimwidth($subject, 0, 120, '…') : 'Mở để xem số điện thoại và nội dung.',
-                LeadResource::getUrl('index', ['tableSearch' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), 'heroicon-o-chat-bubble-left-right', 'info');
+                LeadResource::getUrl('index', ['search' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), 'heroicon-o-chat-bubble-left-right', 'info');
         }
         $to = (string) config('mail.admin_to');
         if ($to === '' || $this->leadId === null) {
@@ -252,7 +252,7 @@ class LeadSubmission
         try {
             Outbox::queue('lead:'.$this->leadId.':'.$template, $template, $to,
                 new AdminNotification($this->templates->copy($template, $values), $fields, $replyEmail, $replyName,
-                    app(MailActions::class)->staff(LeadResource::getUrl('index', ['tableSearch' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), (string) ($values['customer_phone'] ?? ''))));
+                    app(MailActions::class)->staff(LeadResource::getUrl('index', ['search' => (string) $values['customer_name']], isAbsolute: false, panel: 'admin'), (string) ($values['customer_phone'] ?? ''))));
         } catch (Throwable $e) {
             // The lead row is saved and listed in Admin even if the alert cannot be queued.
             Log::warning('Lead notification could not be queued', ['lead' => $this->leadId, 'error' => LogSafe::error($e)]);

@@ -22,6 +22,9 @@
                                 </span>
                             @endisset
                         </summary>
+                        @if (($check['list_url'] ?? '') !== '' && auth('admin')->user()?->hasPermission('catalog'))
+                            <a href="{{ $check['list_url'] }}" class="pts-queue__more">Mở trong danh sách sản phẩm để lọc và sửa tiếp</a>
+                        @endif
                         <ul class="pts-dq__items">
                             @foreach ($check['items'] as $item)
                                 <li>@if ($item['url'] !== '')<a href="{{ $item['url'] }}">{{ $item['name'] }}</a>@else{{ $item['name'] }}@endif</li>

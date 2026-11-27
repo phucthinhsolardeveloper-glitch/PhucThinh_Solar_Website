@@ -24,6 +24,11 @@ class TrafficChartWidget extends ChartWidget
         return ['7d' => '7 ngày', '30d' => '30 ngày', '90d' => '90 ngày', '12w' => '12 tuần', '12m' => '12 tháng'];
     }
 
+    public static function canView(): bool
+    {
+        return DB::table('page_views')->where('day', '>=', now()->subDays(29)->toDateString())->exists();
+    }
+
     public function getDescription(): ?string
     {
         $period = Periods::make((string) $this->filter, 'day');

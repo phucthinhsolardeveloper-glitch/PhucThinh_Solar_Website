@@ -39,7 +39,7 @@ class SolarEstimatorPage extends Page
 
     protected static ?string $slug = 'cong-cu-uoc-tinh';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Bán hàng';
+    protected static string|UnitEnum|null $navigationGroup = 'Cài đặt bán hàng';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalculator;
 

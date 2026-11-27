@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 final class DataQuality
 {
     /**
-     * @return list<array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>}>
+     * @return list<array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>, list_url: string}>
      */
     public function report(bool $fresh = false): array
     {
@@ -40,14 +40,16 @@ final class DataQuality
         Cache::forget('catalog-health');
     }
 
-    /** @return list<array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>}> */
+    /** @return list<array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>, list_url: string}> */
     private function build(): array
     {
         $checks = [];
         $health = app(CatalogHealth::class)->run();
         foreach (CatalogHealth::CHECKS as $key => [$severity, $label]) {
             $checks[] = $this->check('product.'.$key, 'Sản phẩm', $label, $severity,
-                array_map(fn ($p) => ['name' => $p['name'], 'url' => ProductResource::getUrl('edit', ['record' => $p['id']])], $health[$key] ?? []));
+                array_map(fn ($p) => ['name' => $p['name'], 'url' => CatalogHealth::productId($p) === null ? '' : ProductResource::getUrl('edit', ['record' => $p['id']])], $health[$key] ?? []),
+                array_filter($health[$key] ?? [], fn ($p) => CatalogHealth::productId($p) !== null) === [] ? ''
+                    : ProductResource::getUrl('index', ['filters' => ['health' => ['value' => $key]]]));
         }
         $missing = [];
         foreach (Product::query()->where('is_visible', true)->orderBy('id')->get() as $product) {
@@ -111,10 +113,10 @@ final class DataQuality
 
     /**
      * @param  list<array{name: string, url: string}>  $items
-     * @return array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>}
+     * @return array{key: string, group: string, label: string, severity: string, count: int, items: list<array{name: string, url: string}>, list_url: string}
      */
-    private function check(string $key, string $group, string $label, string $severity, array $items): array
+    private function check(string $key, string $group, string $label, string $severity, array $items, string $listUrl = ''): array
     {
-        return ['key' => $key, 'group' => $group, 'label' => $label, 'severity' => $severity, 'count' => count($items), 'items' => array_slice($items, 0, 25)];
+        return ['key' => $key, 'group' => $group, 'label' => $label, 'severity' => $severity, 'count' => count($items), 'items' => array_slice($items, 0, 25), 'list_url' => $listUrl];
     }
 }

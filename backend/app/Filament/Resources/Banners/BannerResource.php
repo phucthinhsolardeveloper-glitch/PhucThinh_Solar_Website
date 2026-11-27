@@ -67,7 +67,8 @@ class BannerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            Select::make('placement')->label('Vị trí')->options(self::PLACEMENTS)->required()->searchable()->live()->columnSpanFull(),
+            Select::make('placement')->label('Vị trí')->options(self::PLACEMENTS)->required()->searchable()->live()->columnSpanFull()
+                ->default(fn ($livewire) => $livewire->tableFilters['placement']['value'] ?? null),
             TextInput::make('title')->label('Tiêu đề / chữ thay thế ảnh'),
             TextInput::make('link')->label('Liên kết khi bấm')->placeholder('/san-pham/ hoặc https://…'),
             Textarea::make('summary')->label('Mô tả')->rows(2)->columnSpanFull(),

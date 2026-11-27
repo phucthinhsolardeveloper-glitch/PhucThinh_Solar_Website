@@ -82,7 +82,7 @@ trait ManagesPostPublication
                 }),
             Action::make('history')->label('Lịch sử')->icon('heroicon-o-clock')->color('gray')
                 ->visible(fn () => $record instanceof Post && $record->revisions()->exists())
-                ->url(fn () => PostRevisionResource::getUrl('index', ['tableFilters' => ['post_id' => ['value' => $record->getKey()]]])),
+                ->url(fn () => PostRevisionResource::getUrl('index', ['filters' => ['post_id' => ['value' => $record->getKey()]]])),
             ActionGroup::make([DeleteAction::make()])->label('Thêm')->icon('heroicon-m-ellipsis-horizontal')->button()->color('gray'),
         ];
     }

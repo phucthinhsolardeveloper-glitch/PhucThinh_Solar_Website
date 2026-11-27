@@ -32,7 +32,7 @@ class ProvinceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tỉnh/thành phố';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Bán hàng';
+    protected static string|UnitEnum|null $navigationGroup = 'Cài đặt bán hàng';
 
     protected static ?int $navigationSort = 3;
 

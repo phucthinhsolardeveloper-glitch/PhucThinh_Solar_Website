@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Domain\Catalog\ProductUndo;
 use App\Filament\Concerns\HasInlineEditMode;
+use App\Filament\Pages\DataQualityPage;
 use App\Filament\Pages\ProductBulkPage;
 use App\Filament\Resources\Products\ProductBulkActions;
 use App\Filament\Resources\Products\ProductResource;
@@ -29,6 +30,8 @@ class ListProducts extends ListRecords
             $this->inlineEditAction(ProductResource::canBulkImport()),
             Action::make('bulk')->label('Nhập / xuất Excel')->icon('heroicon-o-table-cells')->color('gray')
                 ->visible(fn () => ProductResource::canBulkImport())->url(ProductBulkPage::getUrl()),
+            Action::make('quality')->label('Chất lượng dữ liệu')->icon(Heroicon::OutlinedClipboardDocumentCheck)->color('gray')
+                ->visible(fn () => DataQualityPage::canAccess())->url(DataQualityPage::getUrl()),
             CreateAction::make(),
         ];
     }

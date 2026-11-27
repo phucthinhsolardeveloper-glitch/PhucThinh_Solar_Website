@@ -5,6 +5,7 @@ namespace App\Domain\Catalog\Health;
 use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductContentResolver;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -37,7 +38,44 @@ class CatalogHealth
     ) {}
 
     /**
-     * @return array<string, list<array{id: int, name: string}>>
+     * The report as Admin screens read it: cached ten minutes, dropped when a product, post or SEO row is saved.
+     *
+     * @return array<string, list<array{id: int, name: string, table?: string}>>
+     */
+    public function cached(): array
+    {
+        return Cache::remember('catalog-health', 600, fn () => $this->run());
+    }
+
+    /**
+     * The product a report row points at, or null: a shared address also lists categories, brands, posts and albums,
+     * whose ids must never be opened as products.
+     *
+     * @param  array{id: int, name: string, table?: string}  $row
+     */
+    public static function productId(array $row): ?int
+    {
+        return ($row['table'] ?? 'products') === 'products' ? (int) $row['id'] : null;
+    }
+
+    /**
+     * Products behind one check, or behind every "error" check when $check is "errors".
+     *
+     * @return list<int>
+     */
+    public function productIds(string $check): array
+    {
+        $keys = $check === 'errors'
+            ? array_keys(array_filter(self::CHECKS, fn ($c) => $c[0] === 'error'))
+            : (isset(self::CHECKS[$check]) ? [$check] : []);
+        $issues = $this->cached();
+
+        return array_values(array_unique(array_filter(array_map(self::productId(...),
+            array_merge([], ...array_map(fn ($key) => $issues[$key] ?? [], $keys))))));
+    }
+
+    /**
+     * @return array<string, list<array{id: int, name: string, table?: string}>>
      */
     public function run(): array
     {
@@ -147,7 +185,7 @@ class CatalogHealth
     /**
      * Top categories, products, brands, posts and albums share one address space.
      *
-     * @return list<array{id: int, name: string}>
+     * @return list<array{id: int, name: string, table: string}>
      */
     private function duplicateSlugs(): array
     {
@@ -158,7 +196,7 @@ class CatalogHealth
         }
         foreach ($sources as [$table, $query]) {
             foreach ($query->where('slug', '!=', '')->get(['id', 'slug']) as $row) {
-                $seen[(string) $row->slug][] = ['id' => (int) $row->id, 'name' => $table.': '.$row->slug];
+                $seen[(string) $row->slug][] = ['id' => (int) $row->id, 'name' => $table.': '.$row->slug, 'table' => $table];
             }
         }
         $out = [];

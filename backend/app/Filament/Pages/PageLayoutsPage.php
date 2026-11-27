@@ -3,7 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Domain\Pages\PageLayouts;
+use App\Domain\Routing\PublicUrls;
 use App\Filament\Support\AdminActor;
+use App\Filament\Support\PageSectionSources;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -17,6 +19,7 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -26,7 +29,7 @@ use UnitEnum;
 
 /**
  * Order, visibility and look of the sections of Home and About. Edits go to a draft; the public page
- * changes only on publish. Section texts and pictures are edited in "Nội dung các trang".
+ * changes only on publish. Section texts and pictures live elsewhere; PageSectionSources links each one.
  *
  * @property-read Schema $form
  */
@@ -69,7 +72,7 @@ class PageLayoutsPage extends Page
         $live = DB::table('page_layouts')->where('page', $this->page)->where('state', 'published')->orderByDesc('version')->first();
 
         return PageLayouts::PAGES[$this->page]['label'].': '.($live ? 'đang dùng bản '.$live->version : 'đang dùng bố cục gốc')
-            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Trang này quyết định khối nào hiện trên Trang chủ/Giới thiệu và thứ tự của chúng: kéo để đổi chỗ, bật/tắt từng khối, chọn kiểu hiển thị. Sửa xong lưu thành BẢN NHÁP; chỉ khi bấm "Xuất bản" thì website mới đổi (có "Xem trước" và có thể quay về bản cũ). Chữ và ảnh bên trong từng khối sửa ở mục "Nội dung các trang".';
+            .($draft ? ' · có bản nháp '.$draft->version.' chưa xuất bản' : '').'. Trang này quyết định khối nào hiện trên Trang chủ/Giới thiệu và thứ tự của chúng: kéo để đổi chỗ, bật/tắt từng khối, chọn kiểu hiển thị. Sửa xong lưu thành BẢN NHÁP; chỉ khi bấm "Xuất bản" thì website mới đổi (có "Xem trước" và có thể quay về bản cũ). Dưới mỗi khối ghi chữ và ảnh lấy từ đâu, kèm liên kết mở đúng chỗ sửa ở tab mới. Sửa ở đó có tác dụng ngay trên website, không đi qua bản nháp bố cục.';
     }
 
     public function form(Schema $schema): Schema
@@ -82,6 +85,12 @@ class PageLayoutsPage extends Page
                 ->columns(2)
                 ->schema([
                     Hidden::make('type'),
+                    View::make('filament.pages.page-section-source')->columnSpanFull()
+                        ->viewData(fn (Get $get): array => [
+                            'note' => PageSectionSources::note($this->page, (string) $get('type')),
+                            'links' => PageSectionSources::links($this->page, (string) $get('type')),
+                            'liveUrl' => PageSectionSources::liveUrl($this->page, (string) $get('type')),
+                        ]),
                     Toggle::make('visible')->label('Cho phép hiện khối')
                         ->disabled(fn ($get) => ! empty($sections[$get('type')]['required']))
                         ->helperText(fn ($get) => ! empty($sections[$get('type')]['required']) ? 'Khối mở đầu: luôn hiện và luôn ở đầu trang.'
@@ -112,7 +121,12 @@ class PageLayoutsPage extends Page
             $actions[] = Action::make('page_'.$key)->label($page['label'])->color($key === $this->page ? 'primary' : 'gray')
                 ->url(self::getUrl(['page' => $key]));
         }
-        $actions[] = Action::make('preview')->label('Xem trước')->icon(Heroicon::OutlinedEye)->color('gray')
+        $seo = PageSectionSources::seoLink();
+        $actions[] = Action::make('seo')->label($seo['label'])->icon(Heroicon::OutlinedMagnifyingGlass)->color('gray')
+            ->visible($seo['url'] !== null)->url($seo['url']);
+        $actions[] = Action::make('live')->label('Trang đang chạy')->icon(Heroicon::OutlinedArrowTopRightOnSquare)->color('gray')
+            ->url(PublicUrls::base().PageSectionSources::PAGES[$this->page]['path'], shouldOpenInNewTab: true);
+        $actions[] = Action::make('preview')->label('Xem trước bản nháp')->icon(Heroicon::OutlinedEye)->color('gray')
             ->visible(fn () => $this->draftRow() !== null)->url(fn () => app(PageLayouts::class)->previewUrl($this->draftRow()))->openUrlInNewTab();
         $actions[] = Action::make('publish')->label('Xuất bản')->icon(Heroicon::OutlinedRocketLaunch)->requiresConfirmation()
             ->modalDescription('Trang công khai sẽ dùng bố cục của bản nháp ngay sau khi xuất bản.')

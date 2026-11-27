@@ -81,7 +81,7 @@ final class PublicUrls
 
     /** PageItem section → the block on its page (ids of the Nuxt sections), so "Xem trên website" lands on it. */
     private const SECTION_ANCHORS = [
-        'home.process' => 'home-process-title', 'home.about' => 'home-about-title', 'home.about_points' => 'home-about-title',
+        'home.process' => 'home-process-title', 'home.about' => 'home-about-title', 'home.about_points' => 'home-about-title', 'home.energy_chain' => 'home-catalog-title',
         'about.history' => 'lich-su-phat-trien', 'about.compass' => 'tam-nhin-su-menh', 'about.reasons' => 'vi-sao-chon-chung-toi',
         'about.principles' => 'con-nguoi', 'about.team' => 'con-nguoi',
         'dealer.overview' => 'dealer-overview-start', 'dealer.benefits' => 'nang-luc-phan-phoi', 'dealer.support' => 'ho-tro-dai-ly',

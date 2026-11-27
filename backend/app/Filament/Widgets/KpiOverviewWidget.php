@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Domain\Admin\WorkQueue;
 use App\Domain\Analytics\CountedOrders;
 use App\Filament\Pages\WorkQueuePage;
 use App\Filament\Resources\Leads\LeadResource;
@@ -35,12 +36,12 @@ class KpiOverviewWidget extends StatsOverviewWidget
                 ->color($revenue >= $before ? 'success' : 'danger')->chart($this->daily('orders', 'sum(total)', fn ($q) => CountedOrders::apply($q)))
                 ->url(OrderResource::getUrl());
             $orders = $this->count('orders', now()->subDays(29)->startOfDay(), now(), fn ($q) => CountedOrders::apply($q));
-            $waiting = CountedOrders::apply(DB::table('orders'))->where('status', 'new')->count();
+            $waiting = WorkQueue::newOrders()->count();
             $stats[] = Stat::make('Đơn hàng 30 ngày', number_format($orders, 0, ',', '.'))
                 ->description($waiting > 0 ? $waiting.' đơn mới đang chờ xử lý' : 'Không có đơn chờ xử lý')
                 ->descriptionIcon($waiting > 0 ? 'heroicon-m-clock' : 'heroicon-m-check-circle')->color($waiting > 0 ? 'warning' : 'success')
                 ->chart($this->daily('orders', 'count(*)', fn ($q) => CountedOrders::apply($q)))
-                ->url($waiting > 0 ? OrderResource::getUrl().'?tableFilters[status][value]=new' : OrderResource::getUrl());
+                ->url($waiting > 0 ? OrderResource::getUrl().'?filters[status][value]=new' : OrderResource::getUrl());
         }
         if (LeadResource::canViewAny()) {
             $leads = $this->count('leads', now()->subDays(29)->startOfDay(), now(), fn ($q) => $q->where('status', '!=', 'spam'));
@@ -49,7 +50,7 @@ class KpiOverviewWidget extends StatsOverviewWidget
                 ->description($uncalled > 0 ? $uncalled.' khách chưa được gọi lại' : 'Đã gọi lại hết')
                 ->descriptionIcon($uncalled > 0 ? 'heroicon-m-phone' : 'heroicon-m-check-circle')->color($uncalled > 0 ? 'warning' : 'success')
                 ->chart($this->daily('leads', 'count(*)', fn ($q) => $q->where('status', '!=', 'spam')))
-                ->url(LeadResource::getUrl().($uncalled > 0 ? '?tableFilters[status][value]=new' : ''));
+                ->url(LeadResource::getUrl().($uncalled > 0 ? '?filters[status][value]=new' : ''));
         }
         $views = (int) DB::table('page_views')->where('day', '>=', now()->subDays(6)->toDateString())->count();
         $viewsBefore = (int) DB::table('page_views')->whereBetween('day', [now()->subDays(13)->toDateString(), now()->subDays(7)->toDateString()])->count();

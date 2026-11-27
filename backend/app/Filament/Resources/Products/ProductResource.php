@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Domain\Catalog\Health\CatalogHealth;
 use App\Domain\Catalog\MerchantIdentifier;
 use App\Domain\Catalog\ProductDetail\ProductDetailAssembler;
 use App\Domain\Catalog\ProductSalesReadiness;
@@ -245,7 +246,8 @@ class ProductResource extends Resource
                     TextInputColumn::make('sale_price')->label('Giá khuyến mãi (đ)')->type('number')->extraInputAttributes(['min' => 0, 'step' => 'any'])
                         ->rules(fn (Product $record) => ['nullable', 'numeric', 'min:0', ...((float) $record->regular_price > 0 ? ['lte:'.(float) $record->regular_price] : [])]),
                 ] : [
-                    TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(60)
+                    TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(80)->wrap()
+                        ->extraHeaderAttributes(['style' => 'min-width: 16.5rem'])->extraCellAttributes(['style' => 'min-width: 16.5rem'])
                         ->description(fn (Product $record) => implode(' · ', array_filter([$record->code, $record->is_bestseller ? '★ Nổi bật' : null]))),
                     TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
                         ->description(fn (Product $record) => data_get($record, 'brand.name')),
@@ -291,8 +293,13 @@ class ProductResource extends Resource
                     ->queries(true: fn (Builder $q) => $q->where('weight_kg', '>', 0), false: fn (Builder $q) => $q->where(fn ($q) => $q->whereNull('weight_kg')->orWhere('weight_kg', '<=', 0))),
                 SelectFilter::make('sales_readiness')->label('Cần cải thiện')->options(ProductSalesReadiness::FILTERS + ProductSalesReadiness::DATA_FILTERS)
                     ->query(fn (Builder $query, array $data) => app(ProductSalesReadiness::class)->filter($query, (string) ($data['value'] ?? ''))),
+                // The same checks as "Chất lượng dữ liệu" and "Việc cần làm", so their links land on this list.
+                SelectFilter::make('health')->label('Lỗi trên website')
+                    ->options(fn () => ['errors' => 'Mọi lỗi nghiêm trọng'] + array_map(fn (array $check) => $check[1], CatalogHealth::CHECKS))
+                    ->query(fn (Builder $query, array $data) => filled($data['value'] ?? null)
+                        ? $query->whereKey(app(CatalogHealth::class)->productIds((string) $data['value'])) : $query),
             ])
-            ->recordActions([self::quickEditAction(), EditAction::make()])
+            ->recordActions([self::quickEditAction()->iconButton()->tooltip('Sửa nhanh'), EditAction::make()->iconButton()->tooltip('Chỉnh sửa')])
             ->toolbarActions(ProductBulkActions::groups());
     }
 

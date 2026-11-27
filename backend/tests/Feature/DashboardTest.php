@@ -43,10 +43,15 @@ it('shows charts and only the waiting work on the dashboard, by permission', fun
     Livewire::test(AttentionWidget::class)->assertSee(DB::table('leads')->where('status', 'new')->count().' liên hệ / yêu cầu tư vấn chưa gọi lại');
     Livewire::test(TopPagesWidget::class)->assertSee('/san-pham-thu');
     Livewire::test(TrafficSourcesWidget::class)->assertSee('Khách đến từ đâu');
-    foreach ([TrafficChartWidget::class, SalesChartWidget::class, LeadsChartWidget::class, TopProductsWidget::class] as $widget) {
+    DB::table('orders')->insert(['code' => 'DASH-1', 'customer_name' => 'Khách thử', 'phone' => '0900000003', 'address' => 'x', 'payment_code' => 'manual',
+        'payment_status' => 'unpaid', 'subtotal' => 100000, 'total' => 100000, 'status' => 'new', 'created_at' => now(), 'updated_at' => now()]);
+    foreach ([TrafficChartWidget::class, SalesChartWidget::class, LeadsChartWidget::class] as $widget) {
         Livewire::test($widget)->assertOk();
     }
     expect(SalesChartWidget::canView())->toBeTrue();
+    // A chart with nothing to show is left off the dashboard.
+    DB::table('orders')->update(['created_at' => now()->subYears(2)]);
+    expect(SalesChartWidget::canView())->toBeFalse()->and(TopProductsWidget::canView())->toBeFalse();
 
     $writer = User::query()->create(['name' => 'Biên tập', 'username' => 'dash-writer', 'password' => 'test-password', 'role' => User::ROLE_EDITOR, 'permissions' => ['posts'], 'is_active' => true]);
     $this->actingAs($writer, 'admin');
