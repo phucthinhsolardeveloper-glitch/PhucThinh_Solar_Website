@@ -924,3 +924,11 @@ Rủi ro còn lại:
 
 - Xóa `TDXA2W`, `BPHPQE`, `FH7GRK` (đều đã hủy, cùng số điện thoại của chủ website, có chữ "test/thử") cùng 5 dòng hàng, 2 lệnh chuyển khoản, 1 bản chụp phiếu đơn và 5 thông báo Admin, trong một transaction. Giữ lại `UDC2G0`, `2UQ3NP`, `QI6PTD`.
 - Sao lưu trước khi xóa: `backups/20261126-delete-test-orders/*.sql` (chỉ dữ liệu, nạp lại bằng `mariadb < file` nếu cần).
+
+## 2026-11-27 — lịch bài viết, Admin gọn hơn, 6 bài chờ duyệt (6f3e4185)
+
+- Nội dung: merge `feat/pts-editorial-flow-20261127` (gồm `feat/pts-cms-workflow-20261126`). Một trang "Lịch bài viết" để đọc, duyệt lần lượt, hẹn giờ, kéo dời ngày; tab nhanh cho đơn hàng, liên hệ, đánh giá, bài viết; bài chờ duyệt trong "Việc cần làm"; menu xếp lại; biểu đồ trống được ẩn; link Admin mở đúng danh sách đã lọc; Bố cục trang chỉ nguồn nội dung. Không migration, không đổi frontend.
+- Kiểm trước phát hành: backend 603 pass, 2 skip (chạy theo nhóm) trên `54246db1`, cùng cây mã với merge.
+- Chạy: `releases/6f3e4185/deploy.sh`; backup `backups/20261127-editorial-6f3e4185-predeploy`; smoke 11 trang 200; 4 kiểm tra tính năng đạt.
+- Dữ liệu: `pts:editorial-drafts 2026-11-27 --apply` tạo 6 bài **ẩn** (id 157–162, PTS-KT-022..027), liên kết đề tài, trạng thái chờ duyệt. Số bài đang hiện giữ nguyên 32. KT-028..045 chưa kiểm chứng, chưa nhập.
+- Rollback: chép `releases/6f3e4185/stack.env.before` về `runtime/stack.env`, `up -d --force-recreate backend worker scheduler nuxt` (ảnh 63b9ff7e), `view:clear`, restart worker. 6 bài ẩn không hiện công khai, có thể giữ.
