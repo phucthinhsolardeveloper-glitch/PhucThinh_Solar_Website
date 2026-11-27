@@ -21,7 +21,8 @@ class SalesChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        return OrderResource::canViewAny();
+        // An empty chart takes a screen of space and says nothing.
+        return OrderResource::canViewAny() && CountedOrders::apply(DB::table('orders'))->where('created_at', '>=', now()->subMonths(12))->exists();
     }
 
     protected function getFilters(): ?array

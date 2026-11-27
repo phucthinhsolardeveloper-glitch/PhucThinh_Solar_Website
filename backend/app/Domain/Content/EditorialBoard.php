@@ -5,6 +5,7 @@ namespace App\Domain\Content;
 use App\Models\EditorialPlanItem;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -24,6 +25,12 @@ final class EditorialBoard
     /** Written, switched off: someone has to read it and switch it on. */
     public const WAITING = 'waiting';
 
+    /** Article created from a topic, still without text. */
+    public const WRITING = 'writing';
+
+    /** Switched off and not part of the approval queue: taken off the website, or never planned. */
+    public const HIDDEN = 'hidden';
+
     /** Planned topic with no article yet. */
     public const TODO = 'todo';
 
@@ -32,7 +39,7 @@ final class EditorialBoard
 
     public const STATES = [
         self::LIVE => 'Đang hiện', self::SCHEDULED => 'Hẹn giờ', self::WAITING => 'Chờ duyệt',
-        self::TODO => 'Chưa viết', self::LATE => 'Trễ, chưa viết',
+        self::TODO => 'Chưa viết', self::LATE => 'Trễ, chưa viết', self::WRITING => 'Đang viết', self::HIDDEN => 'Đang ẩn',
     ];
 
     public const SLOTS = ['08:00', '12:00', '19:30'];
@@ -43,8 +50,9 @@ final class EditorialBoard
     public function items(Carbon $from, Carbon $to): array
     {
         $items = [];
+        $hidden = $this->hiddenStates();
         foreach (Post::query()->whereBetween('published_at', [$from, $to])->get(['id', 'kind', 'title', 'is_visible', 'published_at']) as $post) {
-            $items[] = $this->postItem($post, Carbon::parse($post->published_at));
+            $items[] = $this->postItem($post, Carbon::parse($post->published_at), $hidden);
         }
         if (Schema::hasTable('editorial_plan_items')) {
             $plans = EditorialPlanItem::query()->with('post:id,kind,title,is_visible,published_at')
@@ -57,7 +65,7 @@ final class EditorialBoard
                 } elseif ($post->published_at === null) {
                     /** @var Carbon $at */
                     $at = $plan->scheduled_for;
-                    $items[] = $this->postItem($post, $at);
+                    $items[] = $this->postItem($post, $at, $hidden);
                 }
             }
         }
@@ -72,21 +80,66 @@ final class EditorialBoard
         $plans = Schema::hasTable('editorial_plan_items');
 
         return [
-            self::WAITING => Post::query()->where('kind', 'article')->where('is_visible', false)
-                ->when($plans, fn ($q) => $q->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id')))->count(),
+            self::WAITING => $this->waiting()->count(),
             self::SCHEDULED => Post::query()->where('is_visible', true)->where('published_at', '>', now())->count(),
             self::LATE => $plans ? EditorialPlanItem::query()->whereNull('post_id')->where('scheduled_for', '<', now())->count() : 0,
             self::TODO => $plans ? EditorialPlanItem::query()->whereNull('post_id')->where('scheduled_for', '>=', now())->count() : 0,
         ];
     }
 
-    public static function stateOf(Post $post): string
+    /**
+     * The approval queue: planned articles that have text, are switched off and were never on the website.
+     *
+     * @return Builder<Post>
+     */
+    public function waiting(): Builder
     {
-        if (! $post->is_visible) {
-            return self::WAITING;
+        if (! Schema::hasTable('editorial_plan_items')) {
+            return Post::query()->whereRaw('1 = 0');
         }
 
-        return PostVisibility::isScheduled($post) ? self::SCHEDULED : self::LIVE;
+        return Post::query()->where('kind', 'article')->where('is_visible', false)
+            ->whereIn('posts.id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))
+            ->whereRaw("TRIM(COALESCE(posts.body, '')) <> ''")
+            ->whereDoesntHave('revisions', fn ($q) => $q->where('state', 'published'))
+            ->orderBy('published_at')->orderBy('posts.id');
+    }
+
+    public function stateOf(Post $post): string
+    {
+        if ($post->is_visible) {
+            return PostVisibility::isScheduled($post) ? self::SCHEDULED : self::LIVE;
+        }
+
+        return $this->hiddenStates()[(int) $post->id] ?? self::HIDDEN;
+    }
+
+    /** @return array<int, string> post id => "waiting" or "writing"; every other switched-off post is plain hidden */
+    private function hiddenStates(): array
+    {
+        if (! Schema::hasTable('editorial_plan_items')) {
+            return [];
+        }
+        $states = Post::query()->where('kind', 'article')->where('is_visible', false)
+            ->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))
+            ->whereRaw("TRIM(COALESCE(body, '')) = ''")->pluck('id')->mapWithKeys(fn ($id) => [(int) $id => self::WRITING])->all();
+
+        return $states + $this->waiting()->pluck('posts.id')->mapWithKeys(fn ($id) => [(int) $id => self::WAITING])->all();
+    }
+
+    /** The first publishing hour from now on that no article on the website or already scheduled occupies. */
+    public function nextFreeSlot(): Carbon
+    {
+        $taken = Post::query()->where('kind', 'article')->where('is_visible', true)->where('published_at', '>', now())
+            ->pluck('published_at')->map(fn ($at) => Carbon::parse($at)->format('Y-m-d H:i'))->flip();
+        for ($day = today(); ; $day = $day->addDay()) {
+            foreach (self::SLOTS as $slot) {
+                $at = $day->copy()->setTimeFromTimeString($slot);
+                if ($at->gt(now()) && ! $taken->has($at->format('Y-m-d H:i'))) {
+                    return $at;
+                }
+            }
+        }
     }
 
     /**
@@ -133,8 +186,10 @@ final class EditorialBoard
         DB::transaction(function () use ($post, $at, $actor): void {
             $revisions = app(PostRevisions::class);
             $revisions->beforeDirectSave($post);
-            // "Đăng ngay" keeps a date that has already passed only when the post was live before; a hidden post gets today.
-            $post->update(['is_visible' => true, 'published_at' => ($at ?? now())->format('Y-m-d H:i:s')]);
+            // An article that was on the website before keeps its date when it comes back; a new one gets today.
+            $before = $post->published_at ? Carbon::parse($post->published_at) : null;
+            $wasPublic = $before?->lte(now()) && $post->revisions()->where('state', 'published')->exists();
+            $post->update(['is_visible' => true, 'published_at' => ($at ?? ($wasPublic ? $before : now()))->format('Y-m-d H:i:s')]);
             $this->syncPlan($post, $at !== null ? 'scheduled' : 'published');
             $revisions->afterDirectSave($post, $actor);
         });
@@ -162,7 +217,7 @@ final class EditorialBoard
             return;
         }
         $post = Post::query()->findOrFail($id);
-        $state = self::stateOf($post);
+        $state = $this->stateOf($post);
         if ($state === self::LIVE) {
             throw ValidationException::withMessages(['when' => 'Bài đang hiện trên website nên không dời ngày từ lịch.']);
         }
@@ -171,7 +226,9 @@ final class EditorialBoard
         }
         $at = $this->futureAt($day, $post->published_at ? Carbon::parse($post->published_at) : Carbon::parse(self::SLOTS[0]));
         $post->update(['published_at' => $at->format('Y-m-d H:i:s')]);
-        $this->syncPlan($post, $state === self::SCHEDULED ? 'scheduled' : 'review');
+        $this->syncPlan($post, match ($state) {
+            self::SCHEDULED => 'scheduled', self::WRITING => 'writing', default => 'review',
+        });
     }
 
     /**
@@ -237,9 +294,10 @@ final class EditorialBoard
         return $slug;
     }
 
-    private function postItem(Post $post, Carbon $at): array
+    /** @param array<int, string> $hidden */
+    private function postItem(Post $post, Carbon $at, array $hidden): array
     {
-        $state = self::stateOf($post);
+        $state = $post->is_visible ? $this->stateOf($post) : ($hidden[(int) $post->id] ?? self::HIDDEN);
 
         return ['type' => 'post', 'id' => (int) $post->id, 'title' => (string) $post->title, 'kind' => (string) $post->kind,
             'at' => $at, 'state' => $state, 'movable' => $state !== self::LIVE];

@@ -20,7 +20,7 @@ class LeadsChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        return LeadResource::canViewAny();
+        return LeadResource::canViewAny() && DB::table('leads')->where('status', '!=', 'spam')->where('created_at', '>=', now()->subMonths(12))->exists();
     }
 
     protected function getFilters(): ?array

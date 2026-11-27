@@ -57,7 +57,7 @@ class EditorialCalendarPage extends Page
     {
         // A "chờ duyệt" link without a month opens where the oldest waiting article is, not on an empty month.
         if ($this->state === EditorialBoard::WAITING && $this->month === '') {
-            $oldest = Post::query()->where('is_visible', false)->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))->min('published_at');
+            $oldest = app(EditorialBoard::class)->waiting()->first()?->published_at;
             $this->month = $oldest ? Carbon::parse($oldest)->format('Y-m') : '';
         }
     }
@@ -71,7 +71,7 @@ class EditorialCalendarPage extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        $waiting = app(EditorialBoard::class)->totals()[EditorialBoard::WAITING];
+        $waiting = app(EditorialBoard::class)->waiting()->count();
 
         return $waiting > 0 ? (string) $waiting : null;
     }
@@ -134,7 +134,9 @@ class EditorialCalendarPage extends Page
         $record = $this->selected();
         $at = $record instanceof Post ? ($record->published_at ? Carbon::parse($record->published_at) : null)
             : ($record instanceof EditorialPlanItem ? Carbon::parse($record->scheduled_for) : null);
-        $this->when = ($at && $at->isFuture() ? $at : now()->addDay()->setTime(8, 0))->format('Y-m-d\TH:i');
+        // A scheduled post shows its hour; anything else is offered the first free publishing hour.
+        $keep = $record instanceof Post && $record->is_visible && $at && $at->isFuture();
+        $this->when = ($keep ? $at : app(EditorialBoard::class)->nextFreeSlot())->format('Y-m-d\TH:i');
     }
 
     public function close(): void
@@ -193,6 +195,9 @@ class EditorialCalendarPage extends Page
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('review')->label('Duyệt lần lượt')->icon('heroicon-o-book-open')
+                ->visible(fn () => AdminActor::current()->canPerform('content_publish') && app(EditorialBoard::class)->waiting()->exists())
+                ->action(fn () => $this->reviewNext()),
             Action::make('requeue')->label('Xếp lại đề tài chưa viết')->icon('heroicon-o-arrow-path')->color('gray')
                 ->visible(fn () => AdminActor::current()->canPerform('content_publish') && $this->totals()[EditorialBoard::LATE] > 0)
                 ->modalDescription('Mọi đề tài chưa có bài được xếp lại nối tiếp nhau từ ngày chọn, giữ nguyên thứ tự. Bài đã viết không bị đụng tới.')
@@ -227,8 +232,25 @@ class EditorialCalendarPage extends Page
     {
         $post = $this->selected();
         abort_unless($post instanceof Post, 404);
-        $do($post, app(EditorialBoard::class));
+        $board = app(EditorialBoard::class);
+        $reviewing = $board->stateOf($post) === EditorialBoard::WAITING;
+        $do($post, $board);
         $this->open = '';
         Notification::make()->success()->title($done)->send();
+        // Approving is a queue: after one article the next waiting one opens, with the next free hour filled in.
+        if ($reviewing && ($next = $board->waiting()->first())) {
+            if ($this->month !== '' && $next->published_at) {
+                $this->month = Carbon::parse($next->published_at)->format('Y-m');
+            }
+            $this->show('post', (int) $next->id);
+        }
+    }
+
+    public function reviewNext(): void
+    {
+        if ($next = app(EditorialBoard::class)->waiting()->first()) {
+            $this->month = $next->published_at ? Carbon::parse($next->published_at)->format('Y-m') : $this->month;
+            $this->show('post', (int) $next->id);
+        }
     }
 }

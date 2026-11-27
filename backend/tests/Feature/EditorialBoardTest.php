@@ -46,7 +46,9 @@ it('creates one hidden draft per topic and keeps unwritten topics late or upcomi
 
     $first = app(EditorialBoard::class)->createDraft($late);
     expect(app(EditorialBoard::class)->createDraft($late)->id)->toBe($first->id)
-        ->and($first->is_visible)->toBeFalse()->and(EditorialBoard::stateOf($first))->toBe('waiting');
+        ->and($first->is_visible)->toBeFalse()->and(app(EditorialBoard::class)->stateOf($first))->toBe('writing');
+    $first->update(['body' => '<p>Đã viết</p>']);
+    expect(app(EditorialBoard::class)->stateOf($first))->toBe('waiting');
 });
 
 it('approves from the calendar: schedule, publish now, hide', function () {
@@ -55,10 +57,10 @@ it('approves from the calendar: schedule, publish now, hide', function () {
 
     $page = Livewire::test(EditorialCalendarPage::class)->call('show', 'post', $post->id)->assertSee('Nội dung bài thử')
         ->set('when', '2026-11-30T12:00')->call('schedule')->assertHasNoErrors();
-    expect(EditorialBoard::stateOf($post->fresh()))->toBe('scheduled')->and($plan->fresh()->stage)->toBe('scheduled');
+    expect(app(EditorialBoard::class)->stateOf($post->fresh()))->toBe('scheduled')->and($plan->fresh()->stage)->toBe('scheduled');
 
     $page->call('show', 'post', $post->id)->call('publishNow');
-    expect(EditorialBoard::stateOf($post->fresh()))->toBe('live')->and((string) $post->fresh()->published_at)->toStartWith('2026-11-27 09:00');
+    expect(app(EditorialBoard::class)->stateOf($post->fresh()))->toBe('live')->and((string) $post->fresh()->published_at)->toStartWith('2026-11-27 09:00');
 
     $page->call('show', 'post', $post->id)->call('hidePost');
     expect($post->fresh()->is_visible)->toBeFalse();
@@ -106,4 +108,30 @@ it('imports written articles as hidden drafts once, without links to unpublished
 
     $this->artisan('pts:editorial-drafts', ['batch' => '2026-11-27', '--apply' => true])->assertSuccessful();
     expect($earlier->fresh()->post_id)->toBe($first->id);
+});
+
+function written(string $key, string $at): Post
+{
+    return app(EditorialBoard::class)->createDraft(topic($key, $at), ['body' => '<p>'.str_repeat('Nội dung bài thử. ', 40).'</p>', 'summary' => 'Tóm tắt']);
+}
+
+it('walks the approval queue and offers the next free hour', function () {
+    Post::query()->where('is_visible', true)->where('published_at', '>', now())->update(['published_at' => '2026-11-01 08:00:00']);
+    $first = written('Q-1', '2020-01-01 08:00:00');
+    $second = written('Q-2', '2020-01-02 08:00:00');
+
+    $page = Livewire::test(EditorialCalendarPage::class)->call('reviewNext')->assertSet('open', 'post:'.$first->id)->assertSet('when', '2026-11-27T12:00');
+    $page->call('schedule')->assertSet('open', 'post:'.$second->id)->assertSet('when', '2026-11-27T19:30')->assertSet('month', '2020-01');
+});
+
+it('takes an article off without putting it back in the queue, and brings it back with its old date', function () {
+    $board = app(EditorialBoard::class);
+    $post = written('Q-3', '2026-11-20 08:00:00');
+    $board->publish($post, null, $this->owner);
+    Carbon::setTestNow('2026-11-29 10:00:00');
+    $board->hide($post->fresh(), $this->owner);
+    expect($board->stateOf($post->fresh()))->toBe('hidden')->and($board->waiting()->pluck('id'))->not->toContain($post->id);
+
+    $board->publish($post->fresh(), null, $this->owner);
+    expect((string) $post->fresh()->published_at)->toStartWith('2026-11-27 09:00');
 });

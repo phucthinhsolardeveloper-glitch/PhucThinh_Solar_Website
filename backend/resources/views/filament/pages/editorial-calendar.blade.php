@@ -50,7 +50,7 @@
         <div class="pts-cal__shade" wire:click="close"></div>
         <aside class="pts-cal__panel" role="dialog" aria-modal="true" aria-label="{{ $record->title }}" x-on:keydown.escape.window="$wire.close()">
             @if ($record instanceof \App\Models\Post)
-                @php($state = \App\Domain\Content\EditorialBoard::stateOf($record))
+                @php($state = app(\App\Domain\Content\EditorialBoard::class)->stateOf($record))
                 @php($resource = \App\Filament\Resources\PostRevisions\PostRevisionResource::ownerResource($record->kind))
                 <header>
                     <span class="pts-cal__tag is-{{ $state }}">{{ $labels[$state] }}@if ($record->published_at) · {{ \Illuminate\Support\Carbon::parse($record->published_at)->format('H:i d/m/Y') }}@endif</span>
@@ -71,7 +71,7 @@
                     @endif
                     <div class="pts-cal__acts">
                         <x-filament::button color="gray" tag="a" :href="$resource::getUrl('edit', ['record' => $record])" icon="heroicon-m-pencil-square">Sửa bài</x-filament::button>
-                        @if ($publisher && $state !== 'waiting')
+                        @if ($publisher && in_array($state, ['live', 'scheduled'], true))
                             <x-filament::button color="danger" outlined wire:click="hidePost" wire:confirm="Ẩn bài này khỏi website?">Ẩn bài</x-filament::button>
                         @endif
                         <x-filament::button color="gray" wire:click="close">Đóng</x-filament::button>

@@ -23,7 +23,7 @@ class TopProductsWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        return OrderResource::canViewAny();
+        return OrderResource::canViewAny() && CountedOrders::apply(DB::table('orders'))->where('created_at', '>=', now()->subDays(90))->exists();
     }
 
     protected function getData(): array

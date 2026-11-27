@@ -33,7 +33,7 @@
     .pts-cal__stat span { font-size: .8rem; font-weight: 600; }
     .pts-cal__stat small { display: block; font-size: .72rem; color: rgb(107 114 128); }
     .pts-cal__stat[aria-pressed="true"] { background: color-mix(in srgb, var(--cal) 16%, transparent); border-color: var(--cal); }
-    .is-live { --cal: #16a34a; } .is-scheduled { --cal: #2563eb; } .is-waiting { --cal: #d97706; } .is-todo { --cal: #94a3b8; } .is-late { --cal: #dc2626; }
+    .is-live { --cal: #16a34a; } .is-scheduled { --cal: #2563eb; } .is-waiting { --cal: #d97706; } .is-todo { --cal: #94a3b8; } .is-late { --cal: #dc2626; } .is-writing { --cal: #a855f7; } .is-hidden { --cal: #71717a; }
     .pts-cal__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
     .pts-cal__month { font-size: 1.05rem; min-width: 8rem; text-align: center; }
     .pts-cal__hint { font-size: .78rem; color: rgb(107 114 128); margin-left: auto; }

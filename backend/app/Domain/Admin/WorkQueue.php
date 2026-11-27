@@ -4,6 +4,7 @@ namespace App\Domain\Admin;
 
 use App\Domain\Analytics\CountedOrders;
 use App\Domain\Catalog\Health\CatalogHealth;
+use App\Domain\Content\EditorialBoard;
 use App\Domain\Shipping\NhatTin\NtlStatus;
 use App\Filament\Pages\EditorialCalendarPage;
 use App\Filament\Resources\Articles\ArticleResource;
@@ -12,7 +13,6 @@ use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Reviews\ReviewResource;
-use App\Models\EditorialPlanItem;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\Post;
@@ -22,7 +22,6 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Everything waiting for someone, by kind, each row linking to where it is handled. Only what the user may see;
@@ -87,10 +86,8 @@ final class WorkQueue
                     ->when($mine, fn ($q) => $q->where(fn ($q) => $q->where('review_requested_by', $user->id)->orWhere('updated_by', $user->id))),
                 fn (PostRevision $r) => [(string) $r->post?->title, (string) $r->review_note, PostRevisionResource::getUrl('edit', ['record' => $r])],
                 PostRevisionResource::getUrl().'?filters[review_state][value]=returned');
-            if ($user->canPerform('content_publish') && Schema::hasTable('editorial_plan_items')) {
-                $sections[] = $this->section('waiting_articles', 'Bài đã viết, chờ duyệt', 'warning',
-                    Post::query()->where('kind', 'article')->where('is_visible', false)
-                        ->whereIn('id', EditorialPlanItem::query()->whereNotNull('post_id')->select('post_id'))->orderBy('published_at'),
+            if ($user->canPerform('content_publish')) {
+                $sections[] = $this->section('waiting_articles', 'Bài đã viết, chờ duyệt', 'warning', app(EditorialBoard::class)->waiting(),
                     fn (Post $p) => [(string) $p->title, 'lịch '.$this->when($p->published_at), EditorialCalendarPage::getUrl(['month' => $p->published_at ? Carbon::parse($p->published_at)->format('Y-m') : '', 'state' => 'waiting'])],
                     EditorialCalendarPage::getUrl(['state' => 'waiting']));
             }

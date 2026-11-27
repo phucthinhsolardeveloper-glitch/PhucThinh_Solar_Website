@@ -16,6 +16,11 @@ class TrafficSourcesWidget extends ChartWidget
 
     protected ?string $maxHeight = '260px';
 
+    public static function canView(): bool
+    {
+        return DB::table('page_views')->where('day', '>=', now()->subDays(29)->toDateString())->where('source', '!=', 'internal')->exists();
+    }
+
     public function getDescription(): ?string
     {
         $devices = DB::table('page_views')->where('day', '>=', now()->subDays(29)->toDateString())->where('source', '!=', 'internal')
