@@ -1,0 +1,4 @@
+{
+  "summary": "Bài viết giải thích lý do cần đối chiếu thông số Voc và Isc với giới hạn đầu vào của inverter, đồng thời hướng dẫn tính toán điện áp chuỗi theo nhiệt độ bằng ví dụ giả định.",
+  "seo_description": "Vì sao phải đối chiếu Voc, Isc với giới hạn inverter? Hướng dẫn tính điện áp chuỗi theo nhiệt độ bằng ví dụ thực tế để tránh quá áp mùa đông."
+}
