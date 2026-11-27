@@ -33,9 +33,12 @@ class EditorialPlanItemResource extends Resource
 
     protected static ?string $modelLabel = 'lịch bài viết';
 
-    protected static ?string $pluralModelLabel = 'Lịch 180 bài viết';
+    protected static ?string $pluralModelLabel = 'Danh sách đề tài';
 
     protected static ?string $navigationLabel = 'Kế hoạch bài đăng';
+
+    /** Opened from "Lịch bài viết" ("Danh sách đề tài"); one menu entry for planning is enough. */
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string|UnitEnum|null $navigationGroup = 'Nội dung';
 
