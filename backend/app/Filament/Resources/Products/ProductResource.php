@@ -247,7 +247,7 @@ class ProductResource extends Resource
                         ->rules(fn (Product $record) => ['nullable', 'numeric', 'min:0', ...((float) $record->regular_price > 0 ? ['lte:'.(float) $record->regular_price] : [])]),
                 ] : [
                     TextColumn::make('name')->label('Sản phẩm')->searchable(['name', 'code', 'slug'])->sortable()->limit(80)->wrap()
-                        ->extraHeaderAttributes(['style' => 'min-width: 22rem'])->extraCellAttributes(['style' => 'min-width: 22rem'])
+                        ->extraHeaderAttributes(['style' => 'min-width: 16.5rem'])->extraCellAttributes(['style' => 'min-width: 16.5rem'])
                         ->description(fn (Product $record) => implode(' · ', array_filter([$record->code, $record->is_bestseller ? '★ Nổi bật' : null]))),
                     TextColumn::make('category.name')->label('Danh mục / thương hiệu')->toggleable()
                         ->description(fn (Product $record) => data_get($record, 'brand.name')),
@@ -299,7 +299,7 @@ class ProductResource extends Resource
                     ->query(fn (Builder $query, array $data) => filled($data['value'] ?? null)
                         ? $query->whereKey(app(CatalogHealth::class)->productIds((string) $data['value'])) : $query),
             ])
-            ->recordActions([self::quickEditAction(), EditAction::make()])
+            ->recordActions([self::quickEditAction()->iconButton()->tooltip('Sửa nhanh'), EditAction::make()->iconButton()->tooltip('Chỉnh sửa')])
             ->toolbarActions(ProductBulkActions::groups());
     }
 
