@@ -12,17 +12,17 @@ Hiểu rõ ưu và nhược điểm của từng loại giúp bạn chọn đún
 
 Khả năng đón ánh nắng quyết định trực tiếp lượng điện nạp vào pin mỗi ngày. Đây chính là điểm khác biệt lớn nhất giữa hai thiết kế.
 
-Với đèn All-in-One, tấm pin gắn cố định trên lưng đèn. Nếu bạn muốn đèn rọi vào lối đi dưới bóng cây, tấm pin cũng sẽ bị bóng râm che khuất. Tấm pin bị che bóng sẽ giảm mạnh lượng điện nạp, khiến đèn thiếu năng lượng vào ban đêm. Góc nghiêng của tấm pin liền thể cũng phụ thuộc vào góc đặt của cần đèn, thường chỉ nghiêng từ 0 đến 15 độ.
+Với đèn All-in-One, tấm pin gắn cố định trên lưng đèn. Nếu bạn muốn đèn rọi vào lối đi dưới bóng cây, tấm pin cũng sẽ bị bóng râm che khuất. Tấm pin bị che bóng sẽ giảm mạnh lượng điện nạp, khiến đèn thiếu năng lượng vào ban đêm. Góc nghiêng và hướng xoay của tấm pin liền thể cũng bị khóa cứng theo góc đặt của cần đèn.
 
-Với đèn tấm pin rời, bạn có thể treo thân đèn dưới mái hiên râm mát nhưng kéo dây đặt tấm pin lên mái nhà nhiều nắng. Bạn có thể xoay tấm pin về hướng Nam để đón nắng tốt nhất. Độ dốc tối ưu cho tấm pin tại Việt Nam thường từ 10 đến 15 độ.
+Với đèn tấm pin rời, bạn có thể treo thân đèn dưới mái hiên râm mát nhưng kéo dây đặt tấm pin lên mái nhà nhiều nắng. Bạn dễ dàng xoay khung giá đỡ tấm pin về hướng đón nắng tốt nhất và chỉnh độ dốc độc lập với hướng rọi của bóng đèn.
 
 ## Khả năng tản nhiệt và độ bền của pin lưu trữ
 
 Độ bền của khối pin lưu trữ bên trong đèn chịu tác động rất lớn từ nhiệt độ môi trường.
 
-Ở đèn All-in-One, khối pin Lithium Iron Phosphate (LiFePO4) nằm ngay sát mặt dưới của tấm pin mặt trời. Vào những ngày hè nắng gắt, bề mặt tấm pin có thể nóng tới 60 độ C và truyền nhiệt xuống khoang pin. Nhiệt độ cao liên tục làm pin nhanh thoái hóa dung lượng hơn.
+Ở đèn All-in-One, khối pin lưu trữ nằm ngay sát mặt dưới của tấm pin mặt trời. Vào những ngày hè nắng gắt, bề mặt tấm pin hấp thụ nhiệt và truyền xuống khoang chứa pin bên dưới. Nhiệt độ cao liên tục làm pin nhanh suy giảm dung lượng hơn.
 
-Đèn tấm pin rời tách biệt khoang pin khỏi mặt thu nhiệt của tấm pin. Thân đèn bằng nhôm đúc tản nhiệt tốt hơn cho chip LED và pin. Khi pin bị chai sau 3 đến 5 năm sử dụng, bạn có thể mở hộp để thay khối pin mới. Với đèn All-in-One, việc tháo rời lớp vỏ nguyên khối để thay thế pin đòi hỏi thao tác phức tạp hơn nhiều.
+Đèn tấm pin rời tách biệt khoang pin khỏi mặt thu nhiệt của tấm pin nên thân đèn tản nhiệt thoáng hơn. Khi pin suy giảm dung lượng sau thời gian dài sử dụng, bạn có thể tháo giắc cắm và mở hộp để thay khối pin mới. Với đèn All-in-One, việc tháo rời lớp vỏ nguyên khối để thay thế linh kiện đòi hỏi thao tác phức tạp hơn nhiều.
 
 ## Bảng so sánh để chọn đúng nhu cầu thực tế
 

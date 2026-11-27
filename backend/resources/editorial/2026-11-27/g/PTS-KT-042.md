@@ -2,41 +2,37 @@ Dùng điện mặt trời để chạy điều hòa suốt đêm hoàn toàn l�
 
 ## Điều hòa tiêu thụ bao nhiêu kWh trong một đêm?
 
-Muốn biết pin có gánh nổi điều hòa hay không, bạn cần tính lượng điện tiêu thụ bằng kWh. Đừng nhìn vào công suất làm lạnh BTU. Sự khác nhau giữa công suất kW và điện năng kWh đã được trình bày trong bài [[139]].
+Muốn biết pin có gánh nổi điều hòa hay không, bạn cần tính tổng lượng điện tiêu thụ bằng kWh trong suốt thời gian bật máy. Sự khác nhau giữa công suất tức thời (kW) và điện năng tiêu thụ (kWh) đã được trình bày trong bài [[139]].
 
-Máy điều hòa inverter tiết kiệm điện hơn nhiều so với máy đời cũ. Khi phòng đã đạt độ lạnh cài đặt khoảng 26 đến 27 °C, máy nén tự hạ công suất:
-- Điều hòa 9.000 BTU (1 HP) cho phòng nhỏ: ăn khoảng 0,5 đến 0,7 kWh mỗi giờ. Chạy 8 tiếng đêm hết khoảng 4 đến 5,5 kWh.
-- Điều hòa 12.000 BTU (1,5 HP) cho phòng lớn hơn: ăn khoảng 0,7 đến 1 kWh mỗi giờ. Chạy 8 tiếng đêm hết khoảng 5,5 đến 8 kWh.
+Theo Bộ Năng lượng Hoa Kỳ (DOE), nhu cầu dùng điện làm mát nhà ở thường đạt đỉnh vào buổi chiều muộn và buổi tối sau khi người đi làm về nhà, đúng vào lúc sản lượng điện mặt trời giảm xuống. Để ước tính lượng điện cần tích trữ cho ban đêm, bạn lấy mức điện tiêu thụ trung bình mỗi giờ của máy nhân với số giờ sử dụng:
+- Giả sử một máy điều hòa phòng ngủ khi duy trì độ lạnh ban đêm tiêu thụ trung bình 0,5 kWh mỗi giờ, chạy suốt 8 tiếng sẽ hết 4 kWh điện.
+- Giả sử phòng lớn hơn hoặc máy tiêu thụ trung bình 1 kWh mỗi giờ, một đêm chạy 8 tiếng sẽ tốn 8 kWh điện.
 
-Nếu nhà bạn bật hai máy điều hòa cùng lúc, lượng điện tiêu thụ cả đêm sẽ lên mức 9,5 đến 13,5 kWh.
+Nếu nhà bạn bật hai máy điều hòa cùng lúc suốt đêm, tổng điện năng tiêu thụ sẽ tăng gấp đôi.
 
 ## Dung lượng pin và công suất xả cần thiết
 
-Theo Bộ Năng lượng Hoa Kỳ (DOE), hệ thống lưu trữ phải đáp ứng cả dung lượng năng lượng (kWh) và công suất phát (kW).
+Theo Bộ Năng lượng Hoa Kỳ (DOE), hệ thống lưu trữ phải đáp ứng cả dung lượng năng lượng (kWh) để duy trì thiết bị nhiều giờ và công suất phát (kW) để cấp đủ điện tại một thời điểm.
 
-Với điều hòa, bộ pin phải xả đều đặn từ 1 kW đến 2 kW liên tục mà không bị quá nhiệt. Dung lượng dùng được của pin phải lớn hơn tổng số điện mà điều hòa và các thiết bị ban đêm tiêu thụ.
+Dung lượng dùng thực tế của pin phải lớn hơn tổng số kWh mà điều hòa và các thiết bị ban đêm tiêu thụ. Như đã nêu trong bài [[KT-027]], bộ quản lý pin luôn giữ lại một vùng đệm đáy bảo vệ cell. Giả sử hệ thống chừa lại 20% dung lượng đáy, bình 5 kWh chỉ cung cấp thực tế 4 kWh điện. Nếu vừa nuôi tủ lạnh, đèn, quạt, Wi-Fi vừa bật điều hòa thì bình 5 kWh không đủ điện đi hết 8 tiếng ban đêm.
 
-Như đã nêu trong bài [[KT-027]], bộ quản lý pin luôn chừa lại vùng đệm đáy khoảng 15% đến 20% dung lượng. Do đó, bình 5 kWh chỉ cung cấp thực tế khoảng 4 kWh điện. Lượng điện này vừa đủ nuôi tủ lạnh, đèn, quạt và chỉ chạy thêm điều hòa được khoảng 3 đến 4 tiếng đầu hôm.
-
-Muốn chạy trọn vẹn một điều hòa 9.000 BTU suốt 8 tiếng, bạn cần bộ pin tối thiểu 10 kWh. Mức này cung cấp khoảng 8 kWh dùng thực tế sau khi trừ hao. Nếu cần chạy hai máy điều hòa, bạn phải nâng lên mức 15 kWh hoặc 20 kWh như cách tính trong bài [[KT-032]].
+Với kịch bản giả định một điều hòa tiêu thụ 4 kWh mỗi đêm cùng các thiết bị sinh hoạt cơ bản, bạn cần bộ pin tối thiểu 10 kWh (cung cấp 8 kWh dùng thực tế sau khi trừ đệm đáy). Nếu cần chạy hai máy điều hòa suốt đêm, bạn phải cân nhắc mức 15 kWh hoặc 20 kWh như nguyên tắc chọn dung lượng trong bài [[KT-032]].
 
 ## Dàn pin trên mái có kịp nạp đầy bình vào ban ngày?
 
-Pin chỉ có điện để xả ban đêm nếu ban ngày dàn pin tạo ra đủ điện dư sau khi đã cấp cho sinh hoạt.
+Pin chỉ có điện để xả ban đêm nếu ban ngày dàn tấm pin trên mái tạo ra đủ điện dư sau khi đã cấp cho sinh hoạt trong nhà.
 
-Để nạp đầy bình 10 kWh, dàn pin cần tạo dư 11 đến 12 kWh. Lượng điện này tích lại trong 4 đến 5 giờ nắng tốt ban ngày:
-- Nếu nhà bạn lắp dàn pin 3 kWp: Mỗi ngày nắng tốt tạo khoảng 12 đến 14 kWh. Sau khi chia cho sinh hoạt ban ngày, lượng điện thừa không đủ sạc đầy bình 10 kWh.
-- Để nạp đầy pin 10 kWh và vừa dùng điện ban ngày, dàn pin trên mái cần đạt quy mô từ 5 kWp đến 7 kWp.
+Theo DOE, quá trình lưu trữ điện năng không bao giờ đạt hiệu suất 100% vì luôn có một phần năng lượng hao hụt trong khâu chuyển đổi nạp và xả. Ngoài ra, sản lượng điện mặt trời ban ngày còn biến động theo mùa, mây mù, bụi bẩn và bóng râm. Chuyên gia tại Fronius lưu ý quy mô pin lưu trữ phải gắn liền với công suất dàn pin hiện có trên mái: nếu dàn pin trên mái nhỏ và lượng điện tạo ra ban ngày chỉ vừa đủ cho sinh hoạt, bộ pin lớn sẽ không có nguồn điện dư để sạc đầy.
 
 ## So sánh tính khả thi theo số lượng điều hòa
 
-Chuyên gia tại Fronius nhấn mạnh chi phí đầu tư cho mỗi kWh pin lưu trữ còn khá cao (trung bình khoảng 1.000 euro/kWh tại châu Âu). Lắp pin quá lớn chỉ để ôm tải máy lạnh mùa hè sẽ khiến thời gian thu hồi vốn kéo dài thêm nhiều năm.
+Chuyên gia tại Fronius nhấn mạnh chi phí đầu tư cho mỗi kWh pin lưu trữ còn khá lớn (trung bình khoảng 1.000 euro/kWh tại thị trường châu Âu), và hệ thống cần đạt tỷ lệ tự dùng điện mặt trời tối thiểu 60% mới đảm bảo hiệu quả kinh tế. Việc lắp pin quá lớn chỉ để gánh tải máy lạnh mùa nắng nóng sẽ khiến thời gian thu hồi vốn kéo dài hơn nhiều.
 
-| Nhu cầu ban đêm | Điện tiêu thụ 8h | Cỡ pin đề xuất | Dàn pin tối thiểu | Khả thi kinh tế |
-|---|---|---|---|---|
-| 1 điều hòa 9.000 BTU | 5 đến 6,5 kWh | 10 kWh | 5 đến 6 kWp | Rất khả thi, hoàn vốn tốt |
-| 2 điều hòa gia đình | 10 đến 13 kWh | 15 đến 20 kWh | 8 đến 10 kWp | Khả thi, vốn đầu tư cao |
-| 3 điều hòa trở lên | Trên 18 kWh | Từ 25 kWh | Trên 12 kWp | Kém khả thi, hoàn vốn chậm |
+| Kịch bản dùng ban đêm | Điện điều hòa giả định (8 giờ) | Cỡ pin lưu trữ tham khảo | Đánh giá hiệu quả kinh tế |
+|---|---|---|---|
+| 1 điều hòa phòng ngủ cùng tải cơ bản | Giả sử 4 kWh | 10 kWh (dùng thực 8 kWh) | Khả thi, cân đối tốt chi phí và độ tự chủ |
+| 2 điều hòa gia đình chạy suốt đêm | Giả sử 8 kWh | 15 đến 20 kWh | Đòi hỏi vốn đầu tư lớn và dàn pin mái rộng |
+| Từ 3 điều hòa trở lên cùng lúc | Vượt xa nhu cầu lưu trữ thường ngày | Phải ghép hệ pin rất lớn | Kém kinh tế, kéo dài thời gian hoàn vốn |
 
 Phương án kinh tế nhất là dùng pin 10 kWh cho một phòng ngủ chính. Các thiết bị cơ bản khác trong nhà vẫn hoạt động bình thường suốt đêm. Những ngày nắng yếu hoặc khi bật thêm máy lạnh phòng khác, bạn vẫn nên dùng điện lưới hỗ trợ để đạt hiệu quả tài chính tốt nhất. Bạn có thể xem thêm cách đọc biểu giá điện trong bài [[151]].
 

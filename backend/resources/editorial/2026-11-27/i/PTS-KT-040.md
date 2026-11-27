@@ -1,6 +1,6 @@
 Hỏi rõ 15 câu hỏi then chốt về kết cấu, an toàn phòng cháy, nghiệm thu và bảo hành giúp bạn chọn đúng nhà thầu uy tín.
 
-Điện mặt trời là tài sản vận hành từ 20 đến 25 năm trên mái nhà. Chất lượng hệ thống phụ thuộc rất lớn vào tay nghề của đơn vị thi công. Một bản hợp đồng rõ ràng từ đầu sẽ giúp bạn tránh được các tranh cãi tốn kém về sau.
+Điện mặt trời là tài sản vận hành suốt nhiều thập kỷ trên mái nhà. Chất lượng hệ thống phụ thuộc rất lớn vào tay nghề của đơn vị thi công. Một bản hợp đồng rõ ràng từ đầu sẽ giúp bạn tránh được các tranh cãi tốn kém về sau.
 
 ## Câu hỏi về khảo sát kết cấu và sơ đồ đấu nối
 
@@ -13,16 +13,16 @@ Khảo sát mái nhà là bước nền móng quyết định độ bền của 
 
 ## Câu hỏi về an toàn phòng cháy và thiết bị bảo vệ
 
-Theo hướng dẫn của Bộ Năng lượng Hoa Kỳ (DOE), hệ thống điện mặt trời trên mái phải tuân thủ nghiêm ngặt quy chuẩn an toàn điện:
+Theo hướng dẫn an toàn phòng cháy của Bộ Năng lượng Hoa Kỳ (DOE), lỗi thiết kế, linh kiện lỗi hoặc lắp đặt sai kỹ thuật có thể gây hồ quang điện và điểm nóng phát lửa, nên hệ thống trên mái phải tuân thủ nghiêm ngặt quy chuẩn an toàn điện:
 
 - Tủ điện DC và AC có lắp đầy đủ thiết bị chống sét lan truyền (SPD) cùng cầu chì chuyên dụng không?
 - Dây cáp DC ngoài trời dùng loại chống tia cực tím nào và luồn trong ống bảo vệ ra sao?
-- Hệ thống có công tắc ngắt khẩn cấp hoặc cơ chế ngắt nhanh để hỗ trợ cứu hỏa khi xảy ra hỏa hoạn không?
+- Hệ thống có dán nhãn nhận diện đường dây rõ ràng và bố trí cơ chế đóng ngắt đúng quy chuẩn để bảo vệ an toàn khi cứu hỏa không?
 - Điện trở nối đất của hệ thống tiếp địa giàn pin và inverter đo được dưới bao nhiêu ohm?
 
 ## Câu hỏi về nghiệm thu và hồ sơ bàn giao
 
-Báo cáo của IEA-PVPS khẳng định kiểm soát chất lượng từ khâu nghiệm thu sẽ ngăn ngừa phần lớn sự cố vận hành:
+Báo cáo của IEA-PVPS khẳng định kiểm soát chất lượng chủ động ngay từ khâu thiết kế, chọn linh kiện đến kiểm tra kỹ thuật sẽ giảm đáng kể sự cố vận hành về sau và mang lại giá trị kinh tế vượt xa chi phí ban đầu:
 
 - Biên bản nghiệm thu có đo đủ điện áp hở mạch, dòng điện hoạt động và độ cách điện từng chuỗi không?
 - Nhà thầu có cung cấp bản sao chứng nhận xuất xứ (CO) và chất lượng (CQ) của từng lô hàng không?
