@@ -25,6 +25,9 @@ final class PublicLink
                 if (! $record instanceof Post || ! self::isPreview($record)) {
                     return;
                 }
+                if ($record->kind === 'article' && ! $record->revisions()->where('state', 'draft')->exists()) {
+                    return;
+                }
                 $draft = $record->revisions()->where('state', 'draft')->first()
                     ?? app(PostRevisions::class)->draft($record, AdminActor::current());
 
@@ -56,6 +59,11 @@ final class PublicLink
 
         $draft = $record->revisions()->where('state', 'draft')->first();
 
-        return $draft ? app(PostRevisions::class)->previewUrl($draft) : null;
+        if ($draft) {
+            return app(PostRevisions::class)->previewUrl($draft);
+        }
+
+        // A hidden article with no draft opens as saved; other kinds get a draft on click (see action()).
+        return $record->kind === 'article' ? app(PostRevisions::class)->savedPreviewUrl($record) : null;
     }
 }
