@@ -349,7 +349,7 @@ class Shop
     }
 
     /** @return array<string, mixed> what the thank-you page shows to pay by transfer */
-    private static function transfer(object $instruction, bool $reported): array
+    public static function transfer(object $instruction, bool $reported): array
     {
         // The badge travels with the instruction so the page can show which bank without loading a logo.
         $badge = VietQr::badge((string) $instruction->bank_bin) ?? ['short' => '', 'color' => '#09285e'];
@@ -656,7 +656,7 @@ class Shop
                     app(MailActions::class)->staff(OrderResource::getUrl('edit', ['record' => $order['id']], isAbsolute: false, panel: 'admin'), (string) $order['phone'])));
         }
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $receipt = new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals, actions: app(MailActions::class)->customer());
+            $receipt = new OrderNotification($this->templates->copy('order_customer', $values), $fields, $items, $totals, actions: app(MailActions::class)->customer((string) $order['code']));
             $instruction = app(BankTransfer::class)->active((int) $order['id']);
             if ($instruction !== null && ($order['payment_status'] ?? 'unpaid') !== 'paid') {
                 $receipt->withTransfer(['payload' => (string) $instruction->qr_text, 'bank' => (string) $instruction->bank_name,

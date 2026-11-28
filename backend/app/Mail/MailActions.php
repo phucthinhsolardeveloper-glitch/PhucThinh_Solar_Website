@@ -9,11 +9,18 @@ final class MailActions
 {
     public function __construct(private readonly MailBrand $brand, private readonly SiteSettings $settings) {}
 
-    /** What a customer can do next: call, or message on Zalo. @return list<array{label: string, href: string}> */
-    public function customer(): array
+    /**
+     * What a customer can do next: follow the order (when there is one), call, or message on Zalo.
+     *
+     * @return list<array{label: string, href: string}>
+     */
+    public function customer(string $orderCode = ''): array
     {
         $brand = $this->brand->data();
         $actions = [];
+        if (preg_match('/^[A-Z0-9]{4,20}$/', $orderCode)) {
+            $actions[] = ['label' => 'Tra cứu đơn hàng', 'href' => $this->absolute('tra-cuu-don-hang/?ma='.$orderCode)];
+        }
         $hotline = preg_replace('/[^+\d]/', '', $brand['hotline']) ?? '';
         if ($hotline !== '') {
             $actions[] = ['label' => 'Gọi '.$brand['hotline'], 'href' => 'tel:'.$hotline];
