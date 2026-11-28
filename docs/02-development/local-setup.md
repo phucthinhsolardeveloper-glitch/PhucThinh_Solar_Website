@@ -1,73 +1,35 @@
-# Local/staging setup
+# Local setup — Laravel/Nuxt hiện hành
 
-Quy trình nối từ local → test → Git → deploy/VPS dành cho người tiếp quản nằm
-tại [Sổ tay chủ hệ thống](../06-operations/owner-system-handbook.md).
+Source đặt trong WSL ~/src/Web_PTS_PHP. Trước khi chạy xác nhận git status, branch và không trùng port/container với worktree đang QA.
 
-## Docker local (dev nhanh)
-
-Mặc định local bật `debug-developer` để phát triển. Khi cần cho chủ project test
-phân quyền thật qua tunnel, khởi động lại web với:
-
+## Backend
 ```bash
-LOCAL_ENFORCE_RBAC=1 docker compose -f docker-compose.local.yml up -d --force-recreate web
+cd ~/src/Web_PTS_PHP
+docker compose config --services
+docker compose ps
+# Khi đã xác nhận local DB/volume và env phù hợp:
+docker compose up -d
+docker exec pts-laravel13-local php artisan migrate:status
+# chỉ khi cần migration và đã xác nhận DB local:
+# docker exec pts-laravel13-local php artisan migrate
 ```
 
-Trả về chế độ phát triển bằng cùng lệnh với `LOCAL_ENFORCE_RBAC=0`. Tài khoản
-demo chỉ tạo bằng `scripts/create-local-rbac-demo-accounts.php`; không mang các
-tài khoản/mật khẩu này lên production.
+docker-compose.yml khai báo laravel13 (pts-laravel13-local, 127.0.0.1:8090 → 8000), db (pts-mariadb-local, MariaDB 10.11), db_data và legacy_upload. Không chạy import legacy --fresh trên DB có dữ liệu. Không overwrite env hoặc đưa secret production vào local. Xem [README](../../README.md) và [compose](../../docker-compose.yml).
 
+## Frontend
 ```bash
-docker compose -f docker-compose.local.yml up -d
+cd ~/src/Web_PTS_PHP/frontend
+npm ci
+NUXT_API_ORIGIN=http://127.0.0.1:8090 npm run dev
 ```
+npm run dev dùng 127.0.0.1:3100; README có cách chạy bản build ở 3110 với NITRO_PORT. Admin ở http://127.0.0.1:8090/admin. Kiểm port thực tế, không giả định 3110 là dev mặc định.
 
-Web `http://localhost:8080`, admin `http://localhost:8080/administrator/`. DB MariaDB 10.4 trong service `db` (`phucthinhs_local` / `pts_local` / `pts_local_only`).
-
-Từ 2026-09-01, service `web` bind-mount `domains/phucthinhsolar.com/public_html` vào `/var/www/html`, nên **sửa file `.php` / `.js` / `.css` là thấy ngay, không cần `docker compose build web`**. Các thư mục runtime (`caches`, `logs`, `upload`, `thumbs`) nằm trong named volume để Apache (`www-data`) ghi được và không làm bẩn cây git; lần đầu chạy chúng được seed từ nội dung image (Dockerfile `mkdir` + `chown` sẵn `caches` và `logs`).
-
-- Chỉ build lại image khi đổi `docker/php81/Dockerfile`, `docker/php81/local-php.ini` hoặc phiên bản PHP.
-- Sau khi kéo compose mới lần đầu: `docker compose -f docker-compose.local.yml up -d --force-recreate web`.
-- Nếu cần làm mới cache trang: `docker compose -f docker-compose.local.yml exec web rm -f /var/www/html/caches/cache_*`.
-- Dùng file manager admin để upload vào `assets/` trên local sẽ vướng quyền (host `assets/` thuộc user host, container chạy `www-data`); chưa xử lý trong phạm vi này.
-
-## Frontend Nuxt (HMR)
-
-Luồng Nuxt hằng ngày không cần bật website PHP legacy trên cổng 8080. Cần
-MariaDB local và PHP API/media bridge trên cổng 8088:
-
+## Kiểm tra / lỗi
 ```bash
-docker compose -f docker-compose.local.yml up -d db
-docker compose -f docker-compose.nuxt-preview.yml up -d api-bridge
+docker compose ps
+docker compose logs --tail=100 laravel13
+curl -fsS http://127.0.0.1:8090/health
 ```
+Nếu 8090 không có service, kiểm docker ps, worktree đang chạy QA và port trước khi khởi động lại. Không restart container của agent khác. 502 từ Nuxt: kiểm backend origin, endpoint và payload contract; 401/419: cookie, session, CSRF, không tắt bảo vệ. [Testing](testing.md).
 
-Sau đó mở terminal riêng cho Nuxt:
-
-```bash
-cd frontend
-npm ci                 # lần đầu hoặc khi package-lock.json thay đổi
-npm run dev
-```
-
-Mở **http://localhost:3100/**; trang liên hệ là
-http://localhost:3100/lien-he/. Nuxt/Vite tự theo dõi file và cập nhật Vue,
-TypeScript, CSS khi sửa. Không build Nuxt hoặc rebuild container trong vòng lặp
-code frontend. SSR gọi PHP APIs và lấy media qua bridge `127.0.0.1:8088` để
-hiện cùng origin Nuxt. `npm run dev` in URL Local ra terminal khi server khởi động.
-Không cần bật service `web` trên `:8080` trừ khi đang kiểm tra riêng PHP legacy;
-Nuxt là giao diện cần mở để xem.
-
-`npm run build` chỉ dùng để xác nhận production build. Lệnh
-`scripts/nuxt-local-preview.sh restart` tạo snapshot SSR riêng ở cổng 3100;
-dừng `npm run dev` trước khi dùng snapshot vì cả hai chiếm cùng cổng.
-
-## Thiết lập thủ công (không Docker)
-
-Chưa chạy thành công trong môi trường khảo sát: PHP CLI không tồn tại và không có DB local (`ENVIRONMENT_FAILURE`). Quy trình cần xác minh:
-
-1. Dùng bản sao riêng, không trỏ vào production DB/upload.
-2. Cài Apache-compatible rewrite, PHP 8.1 trước để lập baseline và MariaDB/MySQL.
-3. Import dump vào DB staging; cấu hình bản sao `libraries/config.php` bằng credential riêng.
-4. Trỏ document root tới `domains/phucthinhsolar.com/public_html`.
-5. Bật extension PDO MySQL, cURL, GD/Imagick, fileinfo, mbstring, OpenSSL theo lỗi runtime.
-6. Kiểm tra `/`, `/administrator/`, category, product, contact và cart.
-
-Không tạo `.env.example` vì code hiện không đọc environment variables; tạo file đó sẽ gây hiểu nhầm. Việc chuyển secret ra env là task hardening riêng.
+Tại thời điểm khảo sát chỉ thấy pts-cms-qa và pts-mariadb-local đang chạy; chưa chạy lại stack trong đợt docs. Hướng dẫn cũ: git show 5c35860f:docs/02-development/local-setup.md.

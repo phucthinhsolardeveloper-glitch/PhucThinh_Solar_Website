@@ -1,5 +1,8 @@
 # Vận hành VPS hằng ngày và xử lý sự cố
 
+> **Cảnh báo kiến trúc:** một phần hướng dẫn thuộc PHP legacy. Chỉ thực thi lệnh đã đối chiếu với source hiện hành. Bắt đầu tại [Sổ tay](../SO-TAY-CHU-PROJECT.md), [CURRENT](../CURRENT.md) và [Laravel deploy](../../deploy/laravel13/README.md).
+
+
 Cập nhật: 2026-11-16. Website production hiện chạy Nuxt 4 + Laravel 13 tại
 /srv/pts-laravel13; stack PHP cũ /srv/phucthinhsolar đã ngừng phục vụ website.
 Lần dựng/chuyển VPS xem vps-cloudfly-runbook.md, quy trình deploy hằng ngày xem

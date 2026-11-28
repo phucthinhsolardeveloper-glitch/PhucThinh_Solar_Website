@@ -1,5 +1,8 @@
 # Triển khai Laravel 13 — rehearsal, staging và production
 
+> **Cập nhật 2026-11-26:** release mới nhất ghi nhận là 63b9ff7e; xem [CURRENT](../../docs/CURRENT.md) và [deployment log](../../docs/06-operations/deployment-log.md). Snapshot 12/11 bên dưới là lịch sử.
+
+
 ## Trạng thái hiện tại — 2026-11-12
 
 Production đang chạy release `f62158bb` (Laravel 13 + Nuxt 4; trước đó `83a74afa`) trên stack

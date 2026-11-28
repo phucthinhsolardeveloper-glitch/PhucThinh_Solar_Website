@@ -1,5 +1,8 @@
 # Sổ tay chủ hệ thống Phúc Thịnh Solar
 
+> **Cảnh báo kiến trúc:** một phần hướng dẫn thuộc PHP legacy. Chỉ thực thi lệnh đã đối chiếu với source hiện hành. Bắt đầu tại [Sổ tay](../SO-TAY-CHU-PROJECT.md), [CURRENT](../CURRENT.md) và [Laravel deploy](../../deploy/laravel13/README.md).
+
+
 Tài liệu này dành cho chủ website hoặc người tiếp quản khi không có developer/AI
 bên cạnh. Mục tiêu là trả lời ba câu:
 

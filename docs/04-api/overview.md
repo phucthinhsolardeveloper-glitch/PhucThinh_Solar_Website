@@ -1,32 +1,22 @@
-# API/AJAX inventory
+# API inventory hiện hành
 
-Các endpoint là PHP file, không phải REST API versioned và không có OpenAPI.
+Đối chiếu route declarations 2026-11-26 (5c35860f). Base Laravel /api/v1; public Nuxt proxy /_api. Source [api.php](../../backend/routes/api.php), [web.php](../../backend/routes/web.php), [stateless.php](../../backend/routes/stateless.php), [Nitro routes](../../frontend/server/routes), [contracts](../../frontend/shared/contracts).
 
-- `api/cart.php`: POST command add/update/delete/ship/popup; session cart; JSON hoặc HTML fragment.
-- `api/comment.php`: `GET limitLists`, `GET limitReplies`, `POST add` qua `Comments`.
-- `api/fillter_service.php`: GET filter/sort/pagination, trả HTML fragment; dynamic brand/origin list cần hardening.
-- `api/product3.php`: fragment sản phẩm theo danh mục cho `.paging-prolist` trên storefront PHP.
-- `api/ward-city.php`: danh sách phường/xã theo tỉnh/TP cho checkout hai cấp.
-- `api/payment_vnpay.php`: return/IPN của VNPay (cấu hình tại Admin > Tích hợp).
-- `api/shipping_quote.php`: báo phí vận chuyển cho checkout PHP và Nuxt.
-- `api/pts_v1_*.php`: DTO JSON công khai cho Nuxt (qua Nitro `/_migration/*`, riêng
-  đánh giá sản phẩm gọi thẳng `api/pts_v1_review.php`).
-- Đã gỡ ngày 2026-11-05 vì không còn DOM/caller nào trên storefront PHP, Admin hay
-  Nuxt: `api/product.php`, `product2.php`, `search_product.php`, `color.php`,
-  `video.php`, `district.php`, `ward.php`, `addons.php` cùng class `AddonsOnline`
-  và các handler JS tương ứng (`loadDistrict`, `loadWard`, `doSearchProduct`,
-  `GA_FRAMEWORK.loadTab`, khối video/màu/phân trang chết). Bằng chứng và rollback
-  ở `docs/10-audits/2026-11-05-backend-frontend-admin-audit.md`.
-- `administrator/api/*`: login, upload, status/order/category/component/sort/delete helpers; dựa vào CMS session/bootstrap theo từng file.
+| Method | /api/v1/... | Owner controller |
+|---|---|---|
+| GET | home, site, catalog, product-detail, product-retired | HomeController, SiteController, CatalogController, ProductDetailController |
+| GET | about, brand-detail, contact, dealer, gallery, gallery-detail, news, news-detail, policy-detail, projects, project-detail, solutions, solution-detail, video, product-extras | AboutController, PagesController |
+| GET | search, compare, public-route-resolve, redirect, checkout-wards | PagesController |
+| GET / POST | lead-form | PagesController |
+| POST | review, track | PagesController, PageViewController |
+| GET / POST | solar-estimator (GET), solar-estimate (POST) | SolarEstimatorController |
+| GET / POST | cart, checkout | ShopController |
+| POST | shipping-quote, order-thanks/transferred | ShopController |
+| GET | checkout-notice, order-thanks, payment/vnpay | ShopController |
+| GET | article-draft-preview/{revision}, post-draft-preview/{revision}, page-layout-preview/{layout}, product-preview/{product} | Preview controllers; signed:relative, throttle |
 
-Response thành công vẫn có chủ ý gồm JSON hoặc HTML fragment theo consumer legacy. Toàn bộ lỗi Admin API đã chuẩn hóa dần về envelope tương thích ngược `ok/message/code/data`; lỗi hết phiên, CSRF/quyền, validation, endpoint legacy bị khóa và exception ngoài dự kiến đều có HTTP status + mã lỗi rõ ràng. Integration test dùng một assertion schema chung trên các nhóm lỗi đại diện. Trước khi tạo React/static frontend, cần quyết định giữ HTML-fragment AJAX hay xây JSON API có version/auth/validation thống nhất.
+Ngoài v1: POST /api/integrations/ntl/webhook; GET /health, /upload/{path}, /thumbs/{width}x{height}x{mode}/{path}, /sitemap.xml, /google-shopping.xml; admin web route in đơn/phiếu PDF.
 
-`administrator/api/numb.php`, `copy.php` và `slug.php` đã chuyển sang envelope JSON. Client phục hồi thứ tự cũ khi lỗi, chỉ reload sau khi copy thành công và đọc `data.available` khi kiểm tra slug. Copy dùng vòng lặp slug có giới hạn, lấy đúng `lastInsertId`, chuẩn hóa field số và bắt exception DB. Kiểm tra slug xác thực định dạng, ép kiểu ID và parameterize điều kiện loại trừ bản ghi. Các endpoint fragment vẫn giữ contract legacy.
+Commerce group có middleware cookie/session. Không bỏ validation, signature, throttle hay session khi thêm route. Đọc controller và test trước khi thay contract; kiểm cả Nitro validation và UI. Bảng chỉ là inventory route source, không khẳng định mọi endpoint đã bật ở production.
 
-Ba endpoint `update_sttMenu.php`, `update_sttIndex.php`, `update_sttDetail.php` trả envelope JSON và cập nhật thứ tự trong transaction. Danh sách bị giới hạn 500 ID dương, không trùng, phải tồn tại đủ trong bảng allowlist; JavaScript hiển thị lỗi nếu server không xác nhận thành công.
-
-`delete_add_item.php` nhận nhóm `menu/index/detail` qua allowlist để chọn đúng bảng sortable, trả JSON và xác minh bản ghi đã được xóa. Client giữ nguyên dòng nếu request thất bại; dòng mới chưa lưu (`id=0`) chỉ được gỡ khỏi DOM và không gọi API.
-
-Mutation trong `comment.php` giữ `success/errors` cho plugin cũ và thêm envelope chuẩn. Quyền edit/delete được suy ra từ `type` của bình luận trong DB; trạng thái có allowlist, dữ liệu phản hồi Admin có allowlist cột và luôn kế thừa `id_variant/type` từ bình luận gốc.
-
-Form full-page `com=sortable&act=save` vẫn dùng response chuyển trang legacy nhưng đã kiểm tra quyền, allowlist field và validate các mảng item trước khi mở transaction. Ba nhóm item, cấu hình chung và SEO cùng commit hoặc rollback; payload POST không còn bị dump ra response.
+Lịch sử API PHP: git show 5c35860f:docs/04-api/overview.md.

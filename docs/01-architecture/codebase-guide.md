@@ -1,5 +1,11 @@
 # Hiểu codebase — tìm đúng file trong 2 phút
 
+> **Cảnh báo kiến trúc:** một phần hướng dẫn thuộc PHP legacy. Chỉ thực thi lệnh đã đối chiếu với source hiện hành. Bắt đầu tại [Sổ tay](../SO-TAY-CHU-PROJECT.md), [CURRENT](../CURRENT.md) và [Laravel deploy](../../deploy/laravel13/README.md).
+
+
+> **Lưu ý 2026-11-26:** Tài liệu này chứa chỉ dẫn từ kiến trúc PHP legacy. Không dùng đường dẫn hoặc mô hình dữ liệu cũ làm hướng dẫn sửa Laravel/Nuxt hiện hành. Xem [Sổ tay chủ project](../SO-TAY-CHU-PROJECT.md).
+
+
 Cập nhật: 2026-09-17. Tất cả đường dẫn tính từ
 `domains/phucthinhsolar.com/public_html/`.
 

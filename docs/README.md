@@ -1,12 +1,17 @@
 # Documentation index
 
-> **Mới bắt đầu, hoặc AI vừa mất context? Đọc [SO-TAY.md](SO-TAY.md) trước.**
+> **Hai lối vào:** [AI tiếp quản](AI-START.md) · [Tự vận hành](SO-TAY-CHU-PROJECT.md) · [Trạng thái hiện hành](CURRENT.md) · [Quy chuẩn tài liệu](DOCUMENTATION.md).
+
+
+
+
+> **Tài liệu sổ tay cũ:** [SO-TAY.md](SO-TAY.md) chứa lịch sử trước cutover; dùng hai lối vào hiện hành ở trên.
 > File này liệt kê tài liệu theo thư mục; `SO-TAY.md` tra cứu theo *việc cần làm*
 > và nói trước các cạm bẫy.
 
 ## Sổ tay thao tác (đọc vào là làm được)
 
-- `SO-TAY.md`: cửa vào duy nhất — tra cứu theo việc, bản đồ hệ thống, cạm bẫy đã gặp thật.
+- `SO-TAY.md`: sổ tay lịch sử, đối chiếu với kiến trúc hiện hành trước khi dùng.
 - `02-development/nuxt-storefront-guide.md`: website public Nuxt — code nằm đâu, chạy/kiểm tra, quy tắc giao diện đã chốt với chủ website, cạm bẫy, điều kiện trước deploy.
 - `11-workflows/owner-feedback-loop.md`: vòng nhận ảnh chụp → đo → sửa → kiểm → báo cáo → lưu kiến thức.
 - `01-architecture/codebase-guide.md`: URL → `$source` → `$template`; vai trò từng thư mục; hợp đồng `getImage()`.

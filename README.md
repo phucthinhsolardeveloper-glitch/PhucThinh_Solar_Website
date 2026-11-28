@@ -1,5 +1,10 @@
 # Phúc Thịnh Solar — phucthinhsolar.com
 
+> **Hai lối vào:** [AI tiếp quản](docs/AI-START.md) · [Tự vận hành](docs/SO-TAY-CHU-PROJECT.md) · [Trạng thái hiện hành](docs/CURRENT.md) · [Quy chuẩn tài liệu](docs/DOCUMENTATION.md).
+
+
+
+
 Website bán hàng và giới thiệu của Phúc Thịnh Solar.
 
 ```text

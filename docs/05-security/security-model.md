@@ -1,5 +1,8 @@
 # Security baseline
 
+> **Lịch sử trước Laravel:** các phát hiện bên dưới thuộc baseline PHP cũ, không mặc định còn tồn tại. Điểm vào bảo mật hiện hành: [auth-rbac.md](auth-rbac.md), [API](../04-api/overview.md). Chưa thực hiện pentest mới.
+
+
 ## P0
 
 - `phucthinhsolar_com.sql`, `codientumanhdat.com.zip`, `logs/*.txt` trong webroot và production trả HTTP 200. Dump chứa PII và auth hashes.

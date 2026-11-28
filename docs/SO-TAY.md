@@ -1,5 +1,8 @@
 # Sổ tay Phúc Thịnh Solar — đọc vào là làm được
 
+> **Cảnh báo 2026-11-26:** Nội dung bên dưới chứa snapshot lịch sử, không phải bằng chứng trạng thái production hiện tại. Đọc [Sổ tay chủ project](SO-TAY-CHU-PROJECT.md) và kiểm chứng source/release/runtime trước khi làm theo.
+
+
 Cập nhật: 2026-11-07.
 
 **Ghi chú nhánh migration 2026-11-08:** các mục mô tả PHP/Admin bên dưới là

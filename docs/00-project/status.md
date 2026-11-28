@@ -1,5 +1,8 @@
 # Current status
 
+> **Cảnh báo 2026-11-26:** Nội dung bên dưới chứa snapshot lịch sử, không phải bằng chứng trạng thái production hiện tại. Đọc [Sổ tay chủ project](../SO-TAY-CHU-PROJECT.md) và kiểm chứng source/release/runtime trước khi làm theo.
+
+
 ## 2026-09-29: production và tài liệu vận hành đã đồng bộ
 
 - Production đang chạy image `phucthinhsolar-web:14fdb2672665`; migration 058–060

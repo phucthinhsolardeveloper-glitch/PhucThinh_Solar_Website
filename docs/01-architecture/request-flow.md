@@ -1,21 +1,21 @@
-# Request flows
+# Request flow hiện hành
 
-## Storefront
+Đối chiếu source 2026-11-26 (5c35860f).
 
-`GET /slug/` -> `.htaccess` -> `index.php` -> object bootstrap -> `router.php` generic match/slug lookup -> `sources/allpage.php` + selected source -> `templates/index.php` -> layout + selected `*_tpl.php`.
+## Public read
+Ví dụ trang chủ: frontend/app/pages/index.vue → Nitro frontend/server/routes/_api/home.get.ts → fetchBackendPayload ở server/utils/backend-api.ts → GET /api/v1/home → HomeController → Domain/Home → database. Nitro kiểm payload bằng shared/contracts/public-home.ts, normalize hero và trả private/no-store. Tìm request của từng page thật, không giả định mọi route giống nhau.
 
-## Product
+## Cart và checkout
+UI useShopCart + pages/gio-hang, thanh-toan.vue → Nitro _api/cart.get.ts, cart.post.ts, checkout.get.ts → session helper server/utils/backend-session.ts → Laravel /api/v1/cart, /api/v1/checkout. api.php gắn EncryptCookies, AddQueuedCookiesToResponse, StartSession cho nhóm commerce. Cart mutation kiểm action, CSRF token, số lượng và item code ở proxy; backend vẫn phải kiểm nghiệp vụ.
 
-`sources/product.php` tải product/hierarchy/brand/gallery/related/comment/SEO, tăng view; `templates/product/product_detail_tpl.php` render.
+Đặt hàng: ShopController::placeOrder → Domain/Commerce/Shop::placeOrder, transaction ghi order/items/payment, xử lý token checkout/idempotency và trả thanks. reportTransfer chỉ là báo đã chuyển; kế toán xác nhận qua ManualPayment, trạng thái qua OrderLifecycle. Xem [checkout write path](../03-data/checkout-write-path.md).
 
-## Commerce
+## Admin
+/admin → AdminPanelProvider → Filament resources/pages → model/domain. Đọc quyền và validation cụ thể của resource/action; không sửa thẳng DB từ giao diện. In đơn /admin/orders/{order}/in và phiếu PDF là route web riêng. Preview có signed route và throttle trong api.php.
 
-`api/cart.php` sửa `$_SESSION['cart']`. `gio-hang` chạy `sources/order.php`; POST hợp lệ insert `table_order`/`table_order_detail`, gửi email, xóa cart và redirect về base URL.
+## Media / SEO / webhook
+routes/stateless.php → HealthController, MediaController, SitemapController, MerchantFeedController; Nitro có route proxy tương ứng. Nhất Tín webhook POST /api/integrations/ntl/webhook → NtlWebhookController. Kiểm bảo vệ webhook thực tế trước khi đổi.
 
-## CMS
+Nguồn: [API](../../backend/routes/api.php), [web](../../backend/routes/web.php), [stateless](../../backend/routes/stateless.php), [bootstrap](../../backend/bootstrap/app.php), [Nitro routes](../../frontend/server/routes), [contracts](../../frontend/shared/contracts).
 
-`administrator/index.php` -> shared bootstrap -> `config-type.php` -> `libraries/requick.php` auth/optional RBAC -> `administrator/sources/<com>.php` -> admin template.
-
-## AJAX
-
-Mỗi `api/*.php` tự bootstrap qua `api/config.php`; không có centralized API router/spec.
+Lịch sử PHP: git show 5c35860f:docs/01-architecture/request-flow.md.

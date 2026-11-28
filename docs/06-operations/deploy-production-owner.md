@@ -1,5 +1,8 @@
 # Deploy production cho chủ website
 
+> **Cảnh báo kiến trúc:** một phần hướng dẫn thuộc PHP legacy. Chỉ thực thi lệnh đã đối chiếu với source hiện hành. Bắt đầu tại [Sổ tay](../SO-TAY-CHU-PROJECT.md), [CURRENT](../CURRENT.md) và [Laravel deploy](../../deploy/laravel13/README.md).
+
+
 > **Cập nhật 16/11/2026 — đọc trước.** Quy trình một lệnh trong tài liệu này
 > (`scripts/deploy-production.sh`, `/srv/phucthinhsolar/...`, `deploy-release.sh`,
 > `rollback-release.sh`, `verify-stack.sh`) là của **stack PHP cũ đã gỡ ngày

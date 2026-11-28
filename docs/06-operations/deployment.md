@@ -1,5 +1,8 @@
 # Deployment
 
+> **Điểm vào production hiện hành:** [Laravel deploy](../../deploy/laravel13/README.md) và [release log](deployment-log.md). Không dùng wrapper AUTO/SAFE/FAST cũ nếu chưa xác minh script còn tồn tại.
+
+
 Production hiện chạy trên VPS Docker/Caddy. Chủ website hoặc người trực deploy
 dùng [Deploy production AUTO/SAFE/FAST một lệnh](deploy-production-owner.md). Tài
 liệu bên dưới về DirectAdmin là bối cảnh hosting cũ, không phải đường deploy

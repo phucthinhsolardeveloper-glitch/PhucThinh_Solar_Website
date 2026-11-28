@@ -1,22 +1,14 @@
-# Verified project fact map
+# Fact map — kiến trúc hiện hành
 
-Ngày khảo sát: 2026-08-26.
+Cập nhật 2026-11-26; đối chiếu source local master 5c35860f. Trạng thái release: [CURRENT](../CURRENT.md).
 
-- Mục đích: website doanh nghiệp/catalogue/e-commerce-lite cho Phúc Thịnh Solar.
-- Stack: PHP tự xây dựng, AltoRouter, PDODb/PDO, MariaDB, jQuery/Bootstrap, PHPMailer, PHPExcel, PHPWord, WebpConvert, CKEditor/CKFinder/elFinder.
-- Entry/routing: `public_html/index.php`, `.htaccess`, `libraries/router.php`.
-- Business/view/API: `sources/`, `templates/`, `api/`; CMS riêng trong `administrator/`.
-- Data: dump có 48 bảng `table_*`, engine MyISAM, chỉ thấy primary key và không thấy foreign key/index nghiệp vụ.
-- Storage: `upload/` persistent; `thumbs/`, `caches/` derived. `wp-content/` là legacy asset, không nằm trong bootstrap PHP hiện tại.
-- Admin auth: session + DB token + lockout theo IP. Password dùng `md5(secret + password + salt)`.
-- RBAC có schema/code nhưng `permission.active = false`.
-- Product/price/sale/gallery/spec/SEO, news/project/static/contact: IMPLEMENTED.
-- Cart/checkout/order/email: code có; admin order config tắt; NEEDS VERIFICATION runtime.
-- Comment/star/photo: code/schema có; product comment config tắt.
-- Filter: PARTIAL, có brand/sort; chưa có wattage/type structured.
-- SMTP và reCAPTCHA: có implementation. OneSignal có implementation nhưng tắt. Không thấy payment/shipping provider.
-- Runtime: GET `/` và category trả 200 ngày khảo sát. Không có CI/test/migration/IaC.
-- P0: SQL dump, ZIP 482 MB và logs tải công khai từ production.
-- UNKNOWN: deploy owner/runbook, backup schedule/restore, web server chain, usage thực tế của member/order/comment, source `solar-light-web`.
+- Website public: Nuxt 4/Vue 3/Nuxt UI 4; manifest frontend/package.json, frontend/nuxt.config.ts. SSR/Nitro, route ở frontend/app/pages và proxy ở frontend/server/routes.
+- Backend: Laravel 13, Filament 5, Docker PHP 8.4 (Composer yêu cầu ^8.3). Manifest backend/composer.json.
+- Database: MariaDB 10.11 theo Docker local; schema quản lý bằng Laravel migrations, không dùng bảng table_* legacy làm schema chính.
+- Admin: backend/app/Providers/Filament/AdminPanelProvider.php, backend/app/Filament/Resources, backend/app/Filament/Pages.
+- Nghiệp vụ: backend/app/Domain; model: backend/app/Models; API: backend/routes/api.php, backend/routes/web.php, backend/routes/stateless.php.
+- Tích hợp có code: Merchant feed, sitemap, lead/email, analytics, chuyển khoản/QR, Nhất Tín, VNPay callback. Có code không đồng nghĩa provider đã bật, nhận tiền tự động hoặc được nghiệm thu.
+- Production Docker/Caddy; runtime ngày 28/11 đã xác minh revision 596ce498 của bốn container website. Xem [release log](../06-operations/deployment-log.md) và [CURRENT](../CURRENT.md) để biết giới hạn kiểm thử.
+- Đọc [sổ tay](../SO-TAY-CHU-PROJECT.md), [architecture](../01-architecture/overview.md), [database](../03-data/database.md).
 
-Evidence chính: `index.php`, `libraries/router.php`, `libraries/requick.php`, `libraries/config-type.php`, `libraries/type/`, `sources/`, `api/`, `administrator/`, `phucthinhsolar_com.sql`, runtime HTTP.
+Bản fact map trước migration được lưu trong Git: git show 5c35860f:docs/00-project/fact-map.md.

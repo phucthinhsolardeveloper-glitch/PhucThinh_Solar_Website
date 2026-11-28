@@ -1,5 +1,8 @@
 # Runbook VPS CloudFly — dựng mới, deploy, chuyển nhà và rollback
 
+> **Cảnh báo kiến trúc:** một phần hướng dẫn thuộc PHP legacy. Chỉ thực thi lệnh đã đối chiếu với source hiện hành. Bắt đầu tại [Sổ tay](../SO-TAY-CHU-PROJECT.md), [CURRENT](../CURRENT.md) và [Laravel deploy](../../deploy/laravel13/README.md).
+
+
 Ngày chuẩn hóa: 2026-10-28. Baseline: Ubuntu 24.04, Docker Compose, Caddy,
 Nuxt SSR public frontend, Apache/PHP 8.1 backend và MariaDB 10.11. Nguồn triển khai nằm ở `deploy/vps/`.
 

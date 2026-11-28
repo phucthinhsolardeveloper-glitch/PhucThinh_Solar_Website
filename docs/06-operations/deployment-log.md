@@ -932,3 +932,11 @@ Rủi ro còn lại:
 - Chạy: `releases/6f3e4185/deploy.sh`; backup `backups/20261127-editorial-6f3e4185-predeploy`; smoke 11 trang 200; 4 kiểm tra tính năng đạt.
 - Dữ liệu: `pts:editorial-drafts 2026-11-27 --apply` tạo 6 bài **ẩn** (id 157–162, PTS-KT-022..027), liên kết đề tài, trạng thái chờ duyệt. Số bài đang hiện giữ nguyên 32. KT-028..045 chưa kiểm chứng, chưa nhập.
 - Rollback: chép `releases/6f3e4185/stack.env.before` về `runtime/stack.env`, `up -d --force-recreate backend worker scheduler nuxt` (ảnh 63b9ff7e), `view:clear`, restart worker. 6 bài ẩn không hiện công khai, có thể giữ.
+
+## 2026-11-28 — CMS preview, khối đại lý, tra cứu đơn hàng và nội dung (596ce498)
+
+- Source merge `596ce4984602c1047a7c74228989694594d407fd`. Bố cục/lịch biên tập liên kết trang thật và preview; quản lý khối đại lý trang chủ; tra cứu đơn hàng theo mã và điện thoại; 18 bài mới đã review và 10 bản viết lại ở dạng nháp theo báo cáo agent, chưa tự xuất bản.
+- VPS release `/srv/pts-laravel13/releases/596ce498/`: manifest xác nhận backend/Nuxt image revision trên; deploy.log ghi `RELEASE_596CE498_SUCCESS`, 12/12 URL 200, 5 feature check PASS, 1 WARN editorial_drafts_command. Kiểm lại 15:02–15:03 bằng artisan list --raw xác nhận lệnh tồn tại; không chạy import. Không có chứng cứ full suite cho revision này trong log đã đọc; không dùng số test release trước thay thế.
+- Backup `backups/20261128-596ce498-predeploy/` có SQL gzip và SHA256SUMS; chưa thử restore trong lượt rà soát. Rollback theo manifest, container-images-before.txt và stack.env.before trong release; kiểm tra image trước còn sẵn, tuân thủ runbook/operation.lock trước khi thực hiện. Không thực hiện rollback.
+- Runtime kiểm chỉ đọc: cả backend, worker, scheduler, Nuxt có OCI revision đúng; backend và Nuxt healthy, worker/scheduler running. Worker restart count 5, exit code 0, không OOM theo inspect; log worker 30 phút gần nhất không có dòng lỗi. Chưa xác định nguyên nhân restart; cần theo dõi. VPS 76% disk. Không thay đổi runtime.
+- Chưa nghiệm thu tra cứu đúng đơn trên production trong lượt này, không đọc thông tin khách. Agent báo 23 bài chờ duyệt và 10 bản nháp viết lại; không xác minh số đếm DB trong lượt này.
