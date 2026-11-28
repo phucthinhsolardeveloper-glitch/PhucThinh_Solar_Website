@@ -54,6 +54,8 @@ class PageItemResource extends Resource
         'home.process' => ['Trang chủ · Quy trình làm việc', ['title', 'summary', 'figure']],
         'home.about' => ['Trang chủ · Giới thiệu ngắn', ['title', 'summary', 'extra']],
         'home.about_points' => ['Trang chủ · Điểm nổi bật giới thiệu', ['title', 'summary', 'image']],
+        'home.dealer' => ['Trang chủ · Khối đại lý', ['title', 'summary']],
+        'home.dealer_points' => ['Trang chủ · Quyền lợi đại lý (tối đa 4 dòng)', ['title']],
         'home.energy_chain' => ['Trang chủ · Chuỗi năng lượng', ['title', 'subtitle', 'summary', 'figure', 'image']],
         'about.history' => ['Giới thiệu · Nội dung mở đầu (mốc lịch sử dùng giao diện riêng)', ['title', 'body', 'image']],
         'about.compass' => ['Giới thiệu · Sứ mệnh, tầm nhìn', ['title', 'body', 'image']],
