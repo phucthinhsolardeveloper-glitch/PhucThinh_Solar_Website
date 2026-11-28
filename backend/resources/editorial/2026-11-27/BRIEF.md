@@ -27,3 +27,11 @@ Chủ website rất khó tính về giọng văn: từng chê bài là "thô, đ
 - `bao-cao.md` (tiếng Việt): mỗi bài ghi nguồn đã mở được / không mở được, số liệu dùng và lấy từ đâu, điểm còn băn khoăn, kết quả doc-giong.
 
 Không có ghi chú biên tập, "bài gốc", "bản nháp" hay lời thanh minh nào trong thân bài. Những thứ đó chỉ nằm trong bao-cao.md.
+
+## Bài học lô 1 (bắt buộc tránh)
+- Không ví von "bồn nước / vòi nước / ống nước". Chủ website đã chê kiểu này.
+- Chỉ gán số cho nguồn khi chính trang đó có con số ấy. Lô 1 đã ghi "theo Clean Energy Reviews..." cho số mà trang không có: bị gỡ.
+- Không đưa chi tiết dành cho kỹ sư vận hành (chỉ số giám sát, mã tiêu chuẩn phụ) nếu không giúp chủ nhà quyết định.
+- Trong bảng, ô không kết thúc bằng dấu chấm.
+- Bài tin về luật, nghị định: phải mở được văn bản gốc (thuvienphapluat, chinhphu.vn, moit.gov.vn...). Không mở được thì không viết, ghi lý do.
+- Có bài cũ trên website cùng chủ đề (xem danh sách trong input/live-posts.txt): không lặp nội dung, chỉ ghi [[ID]] chỗ nên liên kết sang.

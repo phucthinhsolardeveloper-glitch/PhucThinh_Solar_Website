@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), hệ thống điện mặt trời hòa lưới thông thường luôn phụ thuộc vào lưới điện để phát điện.",
+    "url": "https://www.energy.gov/cmei/systems/solar-and-resilience-basics",
+    "quote": "This is because solar systems generally depend on the electrical grid to produce power—and, for safety reasons, they’re designed to switch off if the grid power cuts out."
+  },
+  {
+    "claim": "Muốn có điện khi sự cố xảy ra, ngôi nhà cần inverter hybrid và hệ thống pin lưu trữ.",
+    "url": "https://www.energy.gov/cmei/systems/solar-and-resilience-basics",
+    "quote": "For solar panels to produce power on their own, they need two things: a properly configured inverter and a storage system."
+  },
+  {
+    "claim": "Thiết bị lập tức chuyển sang chế độ độc lập (islanded mode) để giữ nguồn điện trong nhà.",
+    "url": "https://www.energy.gov/cmei/systems/solar-and-resilience-basics",
+    "quote": "Within seconds, residential photovoltaic (PV) solar panel systems with battery storage automatically detect the loss of grid power and switch to an “islanded” mode to keep the power on."
+  },
+  {
+    "claim": "Theo DOE, hệ thống pin cần hai yếu tố: dung lượng (kWh) và công suất phát (kW).",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Storage facilities differ in both energy capacity, which is the total amount of energy that can be stored (usually in kilowatt-hours or megawatt-hours), and power capacity"
+  },
+  {
+    "claim": "Hệ thống không cần tiếp nhiên liệu liên tục như máy phát chạy dầu diesel.",
+    "url": "https://www.energy.gov/cmei/systems/solar-and-resilience-basics",
+    "quote": "electricity can be stored and discharged without the need for fuel deliveries, unlike conventional diesel generators, which are the most common source of emergency backup power."
+  }
+]

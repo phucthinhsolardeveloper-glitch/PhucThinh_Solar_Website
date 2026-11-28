@@ -1,0 +1,37 @@
+[
+  {
+    "claim": "Báo cáo *Photovoltaics Report* của Viện Fraunhofer ISE cập nhật ngày 14/07/2026 nêu rất rõ về thời gian hoàn vốn năng lượng.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "Please cite the information presented in these slides as follows: ©Fraunhofer ISE: Photovoltaics Report, updated: 14 July 2026"
+  },
+  {
+    "claim": "Theo Viện Fraunhofer ISE, tấm pin sản xuất tại châu Âu có thời gian hoàn vốn năng lượng ngắn hơn sản xuất tại Trung Quốc.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "EPBT for PV systems produced in Europe is shorter than for those produced in China because of better grid efficiency in Europe."
+  },
+  {
+    "claim": "Tại các vùng nhiều nắng ở phía Nam, hệ thống chỉ cần 0,9 năm để hoàn trả năng lượng đầu vào.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "while PV systems installed in the South require 0.9 years to pay back the energy input, depending on the technology installed and the grid efficiency."
+  },
+  {
+    "claim": "Khi đó, dàn pin có thời gian hoàn vốn 1 năm sẽ tạo ra lượng điện sạch gấp 20 lần năng lượng đầu tư ban đầu.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "Assuming a 20-year lifetime, this type of system can produce twenty times the energy invested in it."
+  },
+  {
+    "claim": "Dùng đa thanh cái, không thanh cái hoặc thay bằng đồng",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "Multi-busbars with more precise application of the silver paste; busbar-less cells; Replacing silver (Ag) by copper (Cu) or aluminium (Al)"
+  },
+  {
+    "claim": "Chuyển sang tấm pin hai mặt kính hoặc tấm nền không flo",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "Double-glass modules; alternative backsheets without fluorine compounds Fluorinated backsheets"
+  },
+  {
+    "claim": "Theo Viện Fraunhofer ISE, công nghệ tế bào đơn tinh thể n-type TOPCon hiện đã giữ vai trò chủ đạo trên thị trường.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "n-type TopCon and Heterojunction replaces p-type PERC technology."
+  }
+]

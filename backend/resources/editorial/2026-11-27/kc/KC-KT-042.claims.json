@@ -1,0 +1,22 @@
+[
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), nhu cầu dùng điện làm mát thường đạt đỉnh vào chiều muộn và buổi tối.",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Peak power usage often occurs on summer afternoons and evenings , when solar energy generation is falling."
+  },
+  {
+    "claim": "Theo DOE, hệ thống pin phải đáp ứng cả dung lượng (kWh) và công suất phát (kW).",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "differ in both energy capacity, which is the total amount of energy that can be stored (usually in kilowatt-hours or megawatt-hours), and power capacity"
+  },
+  {
+    "claim": "Theo Fronius, mỗi kWh pin lưu trữ có giá trung bình khoảng 1.000 euro tại châu Âu.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "every kWh of storage capacity comes at an average cost of 1,000 euros and the time needed until a PV system with an oversized battery"
+  },
+  {
+    "claim": "Hệ thống cần đạt tỷ lệ tự dùng tối thiểu 60% mới đảm bảo hiệu quả kinh tế.",
+    "url": "https://blog.fronius.com/solar-energy/en/know-how/right-battery-for-pv-system/",
+    "quote": "For this reason, it is generally accepted that a self-consumption rate of at least 60% is necessary for a setup to be economically viable."
+  }
+]

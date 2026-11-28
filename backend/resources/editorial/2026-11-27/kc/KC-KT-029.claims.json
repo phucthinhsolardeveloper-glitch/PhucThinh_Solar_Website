@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "Đế silicon N-type còn chịu nóng tốt hơn.",
+    "url": "https://www.cleanenergyreviews.info/blog/solar-pv-cell-construction",
+    "quote": "In addition, n-type cells have greater temperature tolerance compared to both mono and multi P-type cells."
+  },
+  {
+    "claim": "Tấm pin N-type dùng phốt pho ở lớp đế nên không tạo khiếm khuyết bo - oxy, tránh được hiện tượng LID này.",
+    "url": "https://www.cleanenergyreviews.info/blog/solar-pv-cell-construction",
+    "quote": "due to the boron-oxygen defects which are a common issue with p-type cells doped with Boron."
+  },
+  {
+    "claim": "Theo Clean Energy Reviews, tấm pin P-type từng chiếm hơn 80% thị phần toàn cầu vào năm 2017 nhờ chi phí sản xuất rẻ.",
+    "url": "https://www.cleanenergyreviews.info/blog/latest-solar-panel-cell-technology",
+    "quote": "P-type silicon became the dominant cell type, with over 80% of the global market in 2017 using P-type cells."
+  },
+  {
+    "claim": "Khối đế N-type cùng các kiến trúc tiếp điểm mặt sau (BC) và TOPCon giúp tấm pin thương mại đạt hiệu suất trên 24% đến 25%.",
+    "url": "https://www.cleanenergyreviews.info/blog/most-efficient-solar-panels",
+    "quote": "Back-contact technology is pushing residential module efficiency beyond 25%, while advanced TOPCon technology is catching up and approaching 25% in compact residential formats."
+  },
+  {
+    "claim": "Theo TaiyangNews, ngành pin đang ứng dụng lớp oxit mỏng để tăng dòng điện.",
+    "url": "https://taiyangnews.info/pressreleases/taiyangnews-solar-technology-trends-report-maps-charts-the-future-of-solar-pv",
+    "quote": "Thin oxide layers are contributing to improved current generation, and silver-coated copper pastes are driving meaningful progress on metallization costs."
+  }
+]
