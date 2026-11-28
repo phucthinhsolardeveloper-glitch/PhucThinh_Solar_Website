@@ -10,8 +10,9 @@ const route = useRoute()
 const revision = typeof route.params.revision === 'string' ? route.params.revision : ''
 const expires = typeof route.query.expires === 'string' ? route.query.expires : ''
 const signature = typeof route.query.signature === 'string' ? route.query.signature : ''
+const saved = route.query.bai === '1' ? { bai: '1' } : {}
 const { data, error } = await useAsyncData(`article-preview-${revision}-${expires}`, () => $fetch('/_api/article-draft-preview', {
-  query: { revision, expires, signature },
+  query: { revision, expires, signature, ...saved },
 }))
 const payload = computed(() => isPublicNewsDetailPayload(data.value) ? data.value : null)
 
@@ -35,7 +36,7 @@ if (import.meta.server) {
       </div>
       <div v-if="error || !payload" class="py-20 text-center">
         <h1 class="text-2xl font-bold">Liên kết xem trước không còn hiệu lực</h1>
-        <p class="mt-3 text-slate-600">Mở lại bản nháp trong Admin để lấy liên kết mới.</p>
+        <p class="mt-3 text-slate-600">Mở lại bài trong Admin để lấy liên kết mới.</p>
       </div>
       <template v-else>
         <NewsReadingProgress target="#news-article-body" />

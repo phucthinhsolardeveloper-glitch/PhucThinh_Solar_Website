@@ -70,6 +70,10 @@
                         </div>
                     @endif
                     <div class="pts-cal__acts">
+                        @if ($link = $this->siteLink($record, $state))
+                            <x-filament::button tag="a" :href="$link['url']" target="_blank" rel="noopener" :color="$state === 'live' ? 'primary' : 'info'"
+                                :icon="$state === 'live' ? 'heroicon-m-arrow-top-right-on-square' : 'heroicon-m-eye'">{{ $link['label'] }}</x-filament::button>
+                        @endif
                         <x-filament::button color="gray" tag="a" :href="$resource::getUrl('edit', ['record' => $record])" icon="heroicon-m-pencil-square">Sửa bài</x-filament::button>
                         @if ($publisher && in_array($state, ['live', 'scheduled'], true))
                             <x-filament::button color="danger" outlined wire:click="hidePost" wire:confirm="Ẩn bài này khỏi website?">Ẩn bài</x-filament::button>

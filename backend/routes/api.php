@@ -23,6 +23,8 @@ Route::prefix('v1')->group(function () {
     Route::post('track', PageViewController::class)->middleware('throttle:120,1');
     Route::get('article-draft-preview/{revision}', ArticleDraftPreviewController::class)
         ->middleware(['signed:relative', 'throttle:30,1'])->name('article-draft.preview');
+    Route::get('article-preview/{post}', [ArticleDraftPreviewController::class, 'saved'])
+        ->whereNumber('post')->middleware(['signed:relative', 'throttle:30,1'])->name('article-saved.preview');
     Route::get('page-layout-preview/{layout}', PageLayoutPreviewController::class)
         ->whereNumber('layout')->middleware(['signed:relative', 'throttle:30,1'])->name('page-layout.preview');
     Route::get('product-preview/{product}', ProductPreviewController::class)

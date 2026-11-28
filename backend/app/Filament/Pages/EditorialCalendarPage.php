@@ -3,6 +3,8 @@
 namespace App\Filament\Pages;
 
 use App\Domain\Content\EditorialBoard;
+use App\Domain\Content\PostRevisions;
+use App\Domain\Routing\PublicUrls;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Filament\Resources\EditorialPlanItems\EditorialPlanItemResource;
 use App\Filament\Resources\PostRevisions\PostRevisionResource;
@@ -153,6 +155,25 @@ class EditorialCalendarPage extends Page
             'plan' => EditorialPlanItem::query()->find((int) $id),
             default => null,
         };
+    }
+
+    /**
+     * The open post on the website: its public page when live, otherwise a preview of the saved article.
+     *
+     * @return array{label: string, url: string}|null
+     */
+    public function siteLink(Post $post, string $state): ?array
+    {
+        if ($state === EditorialBoard::LIVE) {
+            $url = PublicUrls::url($post);
+
+            return $url === null ? null : ['label' => 'Xem trên website', 'url' => $url];
+        }
+        if ($post->kind !== 'article' || trim(strip_tags((string) $post->body, '<img><iframe>')) === '') {
+            return null;
+        }
+
+        return ['label' => 'Xem trước trên web', 'url' => app(PostRevisions::class)->savedPreviewUrl($post)];
     }
 
     public function publishNow(): void
