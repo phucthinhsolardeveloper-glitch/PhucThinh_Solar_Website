@@ -6,7 +6,8 @@ defineProps<{ dealer: PublicHomePayload['dealer'] }>()
 const { openDealer } = useStorefrontModal()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 
-const benefits = [
+// Used until Admin has its own benefit lines.
+const stockBenefits = [
   'Danh mục sản phẩm phù hợp nhu cầu thị trường.',
   'Hệ thống kho tại TP.HCM, Đà Nẵng và Gia Lai.',
   'Hỗ trợ tư vấn sản phẩm, kỹ thuật và bảo hành theo chính sách.',
@@ -24,7 +25,7 @@ const benefits = [
           {{ dealer.description }}
         </p>
         <ul class="dealer-benefits m-0 mt-7 grid list-none gap-3 p-0">
-          <li v-for="item in benefits" :key="item" class="flex items-start gap-3 text-[15.5px] leading-[1.55]">
+          <li v-for="item in dealer.benefits ?? stockBenefits" :key="item" class="flex items-start gap-3 text-[15.5px] leading-[1.55]">
             <span class="mt-[9px] h-px w-5 flex-none bg-gold-400" aria-hidden="true" />
             {{ item }}
           </li>

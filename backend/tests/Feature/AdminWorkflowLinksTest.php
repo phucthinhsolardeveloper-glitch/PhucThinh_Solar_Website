@@ -19,6 +19,7 @@ use App\Models\PageItem;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
@@ -219,3 +220,14 @@ function flowOrder(string $method, string $payment): Order
 
     return Order::query()->findOrFail($id);
 }
+
+it('lets staff write the home dealer block and keeps the stock text until they do', function () {
+    DB::table('page_items')->whereIn('section', ['home.dealer', 'home.dealer_points'])->delete();
+    $home = fn () => $this->getJson('/api/v1/home')->assertOk()->json('dealer');
+    expect($home()['title'])->toBe('Đăng ký đại lý')->and($home())->not->toHaveKey('benefits');
+
+    PageItem::query()->create(['section' => 'home.dealer', 'title' => 'Làm đại lý cùng chúng tôi', 'summary' => 'Mô tả mới', 'is_visible' => true, 'sort_order' => 0]);
+    PageItem::query()->create(['section' => 'home.dealer_points', 'title' => 'Quyền lợi thử', 'is_visible' => true, 'sort_order' => 0]);
+    Cache::flush();
+    expect($home()['title'])->toBe('Làm đại lý cùng chúng tôi')->and($home()['benefits'])->toBe(['Quyền lợi thử']);
+});

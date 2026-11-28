@@ -1,0 +1,17 @@
+[
+  {
+    "claim": "Kết cấu này phải chịu được gió, mưa và ăn mòn qua nhiều thập kỷ.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics",
+    "quote": "PV arrays must be mounted on a stable, durable structure that can support the array and withstand wind, rain, hail, and corrosion over decades."
+  },
+  {
+    "claim": "Trong khi đó, biến tần thường cần thay ít nhất một lần suốt thời gian này.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics",
+    "quote": "It is expected that inverters will need to be replaced at least once in the 25-year lifetime of a PV array."
+  },
+  {
+    "claim": "Theo báo cáo được DOE trích dẫn, mỗi năm có trung bình 3,3 triệu ngôi nhà xây mới hoặc cần thay mái.",
+    "url": "https://www.energy.gov/cmei/systems/solar-rooftop-potential",
+    "quote": "NLR estimates that an average of 3.3 million homes per year will be built or will require roof replacement—representing a potential of roughly 30 gigawatts"
+  }
+]

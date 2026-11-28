@@ -102,7 +102,7 @@ class HomeAssembler
             'campaigns' => $campaigns,
             'solutions' => $solutions,
             'process' => $process,
-            'dealer' => ['title' => 'Đăng ký đại lý', 'description' => 'Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.', 'href' => '/dai-ly/'],
+            'dealer' => $this->dealer(),
             'about' => $this->about(),
             'contact' => ['hotline' => self::text($options['hotline'] ?? ''), 'email' => self::text($options['email'] ?? ''), 'address' => self::text($options['address'] ?? ''), 'workingHours' => self::text($options['working_hours'] ?? '')],
             'productGroups' => $productGroups,
@@ -212,6 +212,22 @@ class HomeAssembler
         }
 
         return $out;
+    }
+
+    /** The dealer block: the first visible "home.dealer" row and up to four benefit lines; the stock text stands in. */
+    private function dealer(): array
+    {
+        $row = $this->items('home.dealer')->firstWhere('is_visible', true);
+        $benefits = $this->items('home.dealer_points')->where('is_visible', true)
+            ->map(fn ($point) => self::text($point->title))->filter()->take(4)->values()->all();
+        $dealer = [
+            'title' => self::text($row?->title) ?: 'Đăng ký đại lý',
+            'description' => self::text($row?->summary) ?: 'Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.',
+            'href' => '/dai-ly/',
+        ];
+
+        // Without rows of its own the page keeps the benefit lines built into the interface.
+        return $benefits === [] ? $dealer : $dealer + ['benefits' => $benefits];
     }
 
     private function about(): array

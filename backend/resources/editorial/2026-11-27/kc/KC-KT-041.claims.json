@@ -1,0 +1,22 @@
+[
+  {
+    "claim": "Nhóm nghiên cứu đánh giá tiềm năng phát điện qua ba chỉ số: mức tăng hai mặt, tỷ số hai mặt và hệ số phát điện mặt sau.",
+    "url": "https://www.pv-magazine.com/2025/07/24/parameter-analysis-of-842-bifacial-solar-modules-from-236-manufacturers/",
+    "quote": "Bifacial gain, bifacial ratio, and bifaciality were the three main parameters used to assess the panels’ potential performance."
+  },
+  {
+    "claim": "Trong bốn dòng cell gồm PERC, TOPCon, HJT và tiếp điểm mặt sau (BC), nhóm HJT và BC có thông số trung vị tốt nhất.",
+    "url": "https://www.pv-magazine.com/2025/07/24/parameter-analysis-of-842-bifacial-solar-modules-from-236-manufacturers/",
+    "quote": "Their analysis took into account the best of the median values indicated in the product specifications and found that heterojunction and back-contact panels provide the best parameters."
+  },
+  {
+    "claim": "Theo báo cáo của Viện Fraunhofer ISE, tấm pin hai mặt kính là giải pháp quan trọng giúp thay thế tấm nền nhựa chứa flo.",
+    "url": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/Photovoltaics-Report.pdf",
+    "quote": "Double-glass modules; alternative backsheets without fluorine compounds Fluorinated backsheets"
+  },
+  {
+    "claim": "Các tấm pin hai mặt thế hệ mới dùng tế bào TOPCon thu nhận ánh sáng từ cả hai phía ngày càng phổ biến.",
+    "url": "https://www.cleanenergyreviews.info/blog/latest-solar-panel-cell-technology",
+    "quote": "next-generation bifacial solar panels, which capture sunlight from both sides using TOPcon cells, have gained traction, allowing for improved energy yield in various installation environments."
+  }
+]

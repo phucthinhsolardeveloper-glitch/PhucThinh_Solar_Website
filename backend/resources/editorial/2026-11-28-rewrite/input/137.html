@@ -1,0 +1,122 @@
+<!-- Cách đọc datasheet tấm pin năng lượng mặt trời: 10 thông số quan trọng -->
+<p>Hai tấm pin cùng ghi “650 W” vẫn có thể khác về hiệu suất, điện áp, dòng điện, kích thước và bảo hành.</p>
+<p>Datasheet giúp bạn so đúng model và kiểm tra tấm pin có phù hợp với inverter, mái nhà hay không.</p>
+<p><img src="/upload/news/pts-infographic-panel-650w.webp" alt="Infographic thông số datasheet tấm pin LONGi 650W"></p>
+<h3>Đọc nhanh</h3>
+<ul>
+<li>Xác định đúng mã sản phẩm và phiên bản datasheet.</li>
+<li>So công suất, hiệu suất, điện áp, dòng điện và hệ số nhiệt.</li>
+<li>Kiểm tra kích thước, khối lượng và điều khoản bảo hành.</li>
+<li>Dùng thông số đúng model khi thiết kế chuỗi với inverter.</li>
+</ul>
+<p>Các thông số dưới đây thuộc LONGi Hi-MO X10 Explorer LR7-72HVH-650M, theo datasheet BGV02.</p>
+<h2>Xác định model và điều kiện đo</h2>
+<h3>Model và Pmax cho biết điều gì?</h3>
+<p>Tên dòng như “Hi-MO X10” gồm nhiều phiên bản. Mã LR7-72HVH-650M xác định phiên bản cụ thể.</p>
+<p>Pmax là công suất cực đại của module trong điều kiện đo quy định. Model ví dụ có Pmax 650 W tại STC.</p>
+<p>Mười tấm 650 Wp cộng lại thành 6,5 kWp công suất DC ghi trên nhãn. Sản lượng cần tính theo bức xạ, nhiệt độ và tổn thất của hệ thống.</p>
+<h3>STC và NOCT/NMOT là hai điều kiện đo</h3>
+<p>STC (điều kiện thử chuẩn) dùng bức xạ 1.000 W/m², nhiệt độ tế bào 25°C và phổ sáng AM1.5. Đây là mốc chung để so thông số giữa các tấm pin.</p>
+<p>Datasheet cũng có thể ghi NOCT/NMOT, là điều kiện đo khác STC.</p>
+<p>Trong datasheet LONGi tham khảo, Pmax là 650 W tại STC và 495 W tại NOCT.</p>
+<p>Hai số ứng với hai điều kiện đo khác nhau; công suất ngoài mái thay đổi theo điều kiện vận hành.</p>
+<h3>Hiệu suất giúp so công suất trên diện tích</h3>
+<p>Hiệu suất module cho biết tỷ lệ năng lượng ánh sáng trên diện tích tấm pin được chuyển thành điện trong điều kiện chuẩn. LONGi LR7-72HVH-650M được hãng công bố hiệu suất 24,1%.</p>
+<p>Tấm lớn hơn có thể ghi công suất cao hơn dù hiệu suất bằng hoặc thấp hơn tấm nhỏ.</p>
+<p>Mái chật cần so hiệu suất; mái rộng cần tính cả chi phí hệ thống và cách bố trí.</p>
+<h2>Điện áp và dòng điện cần khớp với inverter</h2>
+<h3>Voc và Vmp giúp kiểm tra điện áp</h3>
+<table>
+<thead>
+<tr>
+<th>Ký hiệu</th>
+<th>Nghĩa</th>
+<th>Bạn cần quan tâm vì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voc</td>
+<td>Điện áp hở mạch, khi tấm pin không cấp dòng cho tải</td>
+<td>Voc tăng khi tế bào lạnh. Điện áp chuỗi không được vượt giới hạn DC của inverter.</td>
+</tr>
+<tr>
+<td>Vmp</td>
+<td>Điện áp tại điểm công suất cực đại</td>
+<td>Tổng Vmp của chuỗi cần nằm trong dải MPPT của inverter.</td>
+</tr>
+</tbody>
+</table>
+<p>Model này có Voc 53,90 V và Vmp 44,56 V tại STC. Kỹ sư dùng nhiệt độ dự kiến để tính điện áp chuỗi rồi so với giới hạn inverter.</p>
+<h3>Isc và Imp là hai mức dòng khác nhau</h3>
+<p>Isc là dòng ngắn mạch tại điều kiện đo; Imp là dòng tại điểm công suất cực đại. Bảng dưới đây giữ các thông số STC của model tham khảo.</p>
+<table>
+<thead>
+<tr>
+<th>Thông số</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pmax</td>
+<td>650 W</td>
+</tr>
+<tr>
+<td>Hiệu suất module</td>
+<td>24,1%</td>
+</tr>
+<tr>
+<td>Voc</td>
+<td>53,90 V</td>
+</tr>
+<tr>
+<td>Vmp</td>
+<td>44,56 V</td>
+</tr>
+<tr>
+<td>Isc</td>
+<td>15,29 A</td>
+</tr>
+<tr>
+<td>Imp</td>
+<td>14,59 A</td>
+</tr>
+</tbody>
+</table>
+<p>Dòng điện cần khớp với đầu vào MPPT, dây dẫn, đầu nối và thiết bị bảo vệ; ghép song song làm tổng dòng tăng.</p>
+<h2>Nhiệt độ, kích thước và bảo hành ảnh hưởng thế nào?</h2>
+<h3>Hệ số nhiệt cho biết ảnh hưởng của nhiệt độ</h3>
+<p>Tấm pin silicon thường giảm công suất khi tế bào nóng lên. Hệ số nhiệt Pmax của model khoảng -0,260%/°C.</p>
+<p>Khi nhiệt độ tế bào tăng từ 25°C lên 55°C (30°C), phép tính tuyến tính cho mức giảm công suất khoảng 7,8% ở cùng bức xạ.</p>
+<p>Khi so module, xem hệ số nhiệt cùng độ thông thoáng mái.</p>
+<h3>Kích thước và khối lượng có ảnh hưởng đến cách lắp</h3>
+<p>Kích thước quyết định cách bố trí trên mái; khối lượng liên quan đến tải tĩnh. Kỹ sư cần tính riêng tải trọng mái và khung.</p>
+<p>Datasheet BGV02 được tham khảo ghi kích thước 2.382 × 1.134 × 30 mm và khối lượng 28,5 kg cho phiên bản LONGi này.</p>
+<p>Cùng mức công suất nhưng khác dòng sản phẩm có thể khác kích thước và khối lượng.</p>
+<h3>Đọc riêng điều khoản bảo hành</h3>
+<p>Bảo hành sản phẩm áp dụng cho lỗi vật liệu, sản xuất hoặc gia công theo điều khoản của hãng.</p>
+<p>Bảo hành hiệu suất nói về mức công suất duy trì theo thời gian và cách áp dụng.</p>
+<p>Điều khoản bảo hành vật liệu và hiệu suất dài hạn cần đọc theo tài liệu áp dụng cho lô hàng và thị trường.</p>
+<h2>Hoàn tất việc kiểm tra datasheet</h2>
+<h3>Những trường khác nên xem</h3>
+<ul>
+<li>Điện áp hệ thống tối đa, loại đầu nối và chiều dài cáp.</li>
+<li>Kết cấu kính, khung, hộp nối và cấp bảo vệ IP.</li>
+<li>Chứng nhận, kết quả thử nghiệm và điều kiện bảo hành.</li>
+<li>Dòng, điện áp tương thích với inverter đang dùng.</li>
+<li>Điều kiện lắp đặt và các giới hạn của nhà sản xuất.</li>
+</ul>
+<p>Chọn tấm theo model, hiệu suất, điện áp, dòng điện, đặc tính nhiệt, kích thước và bảo hành. Thiết kế chuỗi dựa trên datasheet của model và thông số inverter.</p>
+<h3>Đọc thêm</h3>
+<ul>
+<li><a href="/tam-pin-600w-620w-650w-va-720w-watt-cao-co-tot-hon/">Tấm pin 600W, 620W, 650W và 720W: watt cao có tốt hơn?</a></li>
+<li><a href="/topcon-hjt-bc-back-contact-khac-nhau-ra-sao/">TOPCon, HJT, BC (Back Contact) khác nhau ra sao?</a></li>
+<li><a href="/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/">Xem tấm pin năng lượng mặt trời</a></li>
+</ul>
+<h3>Nguồn tham khảo</h3>
+<ul>
+<li><a href="https://www.longi.com/en/products/modules/hi-mo-x10-guardian-anti-glare/">LONGi – Hi-MO X10</a></li>
+<li><a href="https://www.longi.com/vn/download/">LONGi – Thư viện tài liệu sản phẩm</a></li>
+<li><a href="https://static.longi.com/LR_7_72_HVH_630_650_M_30_30_and_15_Explorer_BGV_02_20241118_EN_Draft_426c93d9d1.pdf">Datasheet LONGi LR7-72HVH-630–650M BGV02</a></li>
+</ul>

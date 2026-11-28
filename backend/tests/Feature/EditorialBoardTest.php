@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Content\EditorialBoard;
+use App\Domain\Content\PostRevisions;
 use App\Filament\Pages\EditorialCalendarPage;
 use App\Models\EditorialPlanItem;
 use App\Models\Post;
@@ -134,4 +135,20 @@ it('takes an article off without putting it back in the queue, and brings it bac
 
     $board->publish($post->fresh(), null, $this->owner);
     expect((string) $post->fresh()->published_at)->toStartWith('2026-11-27 09:00');
+});
+
+it('links a live article to its page and a hidden one to a preview of the saved text, without a draft', function () {
+    $post = app(EditorialBoard::class)->createDraft(topic('T-9', '2026-11-28 08:00:00'), ['body' => '<p>Chữ của bài đang ẩn.</p>', 'summary' => 'Tóm tắt']);
+    $page = Livewire::test(EditorialCalendarPage::class)->call('show', 'post', $post->id)
+        ->assertSee('Xem trước trên web')->assertSee('/xem-truoc/bai-viet/'.$post->id.'?bai=1', false);
+
+    $url = app(PostRevisions::class)->savedPreviewUrl($post);
+    parse_str(parse_url($url, PHP_URL_QUERY), $query);
+    $api = '/api/v1/article-preview/'.$post->id;
+    $this->getJson($api)->assertForbidden();
+    $this->getJson($api.'?expires='.$query['expires'].'&signature='.$query['signature'])->assertOk()
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive')->assertSee('Chữ của bài đang ẩn', false);
+    expect($post->revisions()->count())->toBe(0)->and($post->fresh()->is_visible)->toBeFalse();
+
+    $page->call('publishNow')->call('show', 'post', $post->id)->assertSee('Xem trên website')->assertSee('/'.$post->slug, false)->assertDontSee('Xem trước trên web');
 });

@@ -223,7 +223,6 @@ final class PostRevisions
         return $changes;
     }
 
-    /** Signed, short-lived link to the Nuxt preview of an article draft. */
     /** Nuxt preview page of each kind; the link works for 15 minutes. */
     public const PREVIEW_PATHS = ['article' => 'bai-viet', 'solution' => 'giai-phap', 'project' => 'du-an', 'policy' => 'chinh-sach'];
 
@@ -237,6 +236,14 @@ final class PostRevisions
         $path = '/xem-truoc/'.self::PREVIEW_PATHS[$kind].'/'.$revision->id;
 
         return PublicUrls::base().$path.'?'.parse_url($signed, PHP_URL_QUERY);
+    }
+
+    /** Signed link to the Nuxt preview of an article exactly as saved (15 minutes), without creating a draft. */
+    public function savedPreviewUrl(Post $post): string
+    {
+        $signed = URL::temporarySignedRoute('article-saved.preview', now()->addMinutes(15), ['post' => $post->id], absolute: false);
+
+        return PublicUrls::base().'/xem-truoc/'.self::PREVIEW_PATHS['article'].'/'.$post->id.'?bai=1&'.parse_url($signed, PHP_URL_QUERY);
     }
 
     /**

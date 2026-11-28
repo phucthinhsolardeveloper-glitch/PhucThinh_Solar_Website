@@ -49,7 +49,7 @@ class MailPreview extends Command
         $made = [];
         foreach (array_keys(MailTemplates::LABELS) as $key) {
             $copy = $templates->copy($key, $values);
-            $buttons = $copy['audience'] === 'customer' ? $actions->customer() : $actions->staff('/admin/leads', $values['customer_phone']);
+            $buttons = $copy['audience'] === 'customer' ? $actions->customer(str_starts_with($key, 'order_') ? 'K7M3QX' : '') : $actions->staff('/admin/leads', $values['customer_phone']);
             $mail = str_starts_with($key, 'order_') ? new OrderNotification($copy, $order, $items, $totals, actions: $buttons) : new AdminNotification($copy, $lead, actions: $buttons);
             if ($key === 'order_customer' && $mail instanceof OrderNotification) {
                 $mail->withSheet($sheets->sample())->withTransfer(['payload' => VietQr::payload('970405', '5020201003091', 5984000, 'PTSK7M3QX'),

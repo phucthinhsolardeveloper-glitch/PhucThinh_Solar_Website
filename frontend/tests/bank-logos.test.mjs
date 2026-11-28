@@ -7,7 +7,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 test('every bank the Admin list offers has a logo the transfer card can show', () => {
   const badges = [...read('../backend/app/Domain/Commerce/VietQr.php').matchAll(/'9704\d{2}' => \['[^']+', '([A-Z]+)'/g)].map((m) => m[1].toLowerCase())
   assert.ok(badges.length >= 30)
-  const page = read('app/components/order/OrderThanksPage.vue')
+  const page = read('app/components/order/OrderTransferCard.vue')
   for (const code of badges) {
     assert.ok(existsSync(new URL(`../public/assets/images/payments/banks/${code}.png`, import.meta.url)), `${code}.png`)
     assert.ok(page.includes(`'${code}'`), `${code} listed`)

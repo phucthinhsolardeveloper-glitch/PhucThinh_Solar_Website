@@ -1,0 +1,87 @@
+<!-- Inverter điện mặt trời là gì? Nó thực hiện những chức năng nào? -->
+<p>Inverter biến dòng điện một chiều (DC) từ tấm pin thành điện xoay chiều (AC) để thiết bị trong nhà sử dụng.</p>
+<p>Máy còn theo dõi điểm làm việc của tấm pin và thực hiện các chức năng bảo vệ theo thiết kế.</p>
+<h2>Inverter làm gì trong hệ thống?</h2>
+<ul>
+<li><strong>Biến đổi điện:</strong> đổi DC từ tấm pin thành AC phù hợp với hệ thống điện.</li>
+<li><strong>Theo dõi công suất:</strong> MPPT giúp inverter điều chỉnh điểm làm việc khi ánh sáng thay đổi.</li>
+<li><strong>Bảo vệ hệ thống:</strong> máy theo dõi điều kiện lưới và ngắt hoặc giới hạn hoạt động theo thiết kế.</li>
+</ul>
+<h2>Mái nhà và tải quyết định điều gì?</h2>
+<table>
+<thead>
+<tr>
+<th>Trường hợp</th>
+<th>Thông số nên xem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mái một hướng, ít bóng</td>
+<td>Dải MPPT, giới hạn DC và cách ghép chuỗi</td>
+</tr>
+<tr>
+<td>Hai hướng mái khác nhau</td>
+<td>Số MPPT độc lập và cách chia chuỗi</td>
+</tr>
+<tr>
+<td>Muốn dùng điện khi mất lưới</td>
+<td>Cổng cấp điện dự phòng (EPS), pin tương thích và mạch cách ly</td>
+</tr>
+<tr>
+<td>Tải có động cơ</td>
+<td>Công suất liên tục, khả năng quá tải và dòng khởi động</td>
+</tr>
+</tbody>
+</table>
+<p>Nhiều MPPT có ích khi các nhóm tấm pin cần được theo dõi riêng, chẳng hạn khi chúng nằm ở những mặt mái khác hướng.</p>
+<p>Số MPPT nhiều hơn tự nó không làm hệ thống tạo thêm điện.</p>
+<h2>Các ký hiệu trên datasheet nghĩa là gì?</h2>
+<table>
+<thead>
+<tr>
+<th>Ký hiệu</th>
+<th>Nghĩa</th>
+<th>Bạn cần quan tâm vì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voc</td>
+<td>Điện áp hở mạch của tấm pin</td>
+<td>Khi trời lạnh, điện áp chuỗi có thể tăng; tổng điện áp phải nằm dưới giới hạn DC của inverter.</td>
+</tr>
+<tr>
+<td>Vmp</td>
+<td>Điện áp tại điểm công suất cực đại</td>
+<td>Điện áp chuỗi cần nằm trong dải MPPT để inverter theo dõi tấm pin đúng cách.</td>
+</tr>
+<tr>
+<td>Isc</td>
+<td>Dòng điện ngắn mạch của tấm pin</td>
+<td>Khi ghép chuỗi song song, dòng tổng phải phù hợp với giới hạn đầu vào.</td>
+</tr>
+<tr>
+<td>Imp</td>
+<td>Dòng điện tại điểm công suất cực đại</td>
+<td>Dòng làm việc cần phù hợp với đầu vào MPPT, dây dẫn và thiết bị bảo vệ.</td>
+</tr>
+</tbody>
+</table>
+<p>Khi ghép nhiều chuỗi song song, hãy xem tổng dòng có nằm trong giới hạn của inverter và các thiết bị điện hay không.</p>
+<p>Chọn đúng model và xem datasheet giúp tránh ghép sai dải điện áp hoặc dòng vào.</p>
+<h2>Inverter có cấp điện khi lưới mất không?</h2>
+<p>Inverter hòa lưới thông thường dừng để chống phát điện ngược ra đường dây.</p>
+<p>Muốn giữ điện cho một số tải khi mất lưới, hệ thống cần nhánh dự phòng được thiết kế và cách ly phù hợp.</p>
+<p>Tên gọi “hybrid” hoặc “battery-ready” chưa cho biết tải nào được cấp điện; hãy xem datasheet và sơ đồ đấu nối của đúng model.</p>
+<h3>Đọc thêm</h3>
+<ul>
+<li><a href="/he-hoa-luoi-hybrid-doc-lap-nen-chon-loai-nao/">Hệ hòa lưới, hybrid, độc lập: nên chọn loại nào?</a></li>
+<li><a href="/inverter-hoa-luoi-va-hybrid-khac-nhau-the-nao/">Inverter hòa lưới và hybrid khác nhau thế nào?</a></li>
+<li><a href="/danh-muc-san-pham/bien-tan-inverter/">Xem biến tần (inverter)</a></li>
+</ul>
+<h3>Nguồn tham khảo</h3>
+<ul>
+<li><a href="https://blog.fronius.com/solar-energy/en/">Fronius – Solar Energy Blog</a></li>
+<li><a href="https://www.energy.gov/cmei/systems/solar-photovoltaic-system-design-basics">U.S. Department of Energy – PV System Design Basics</a></li>
+</ul>

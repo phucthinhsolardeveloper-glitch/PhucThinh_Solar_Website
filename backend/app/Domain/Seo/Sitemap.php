@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 class Sitemap
 {
     /** Fixed pages, in menu order. */
-    private const PAGES = ['/gioi-thieu/', '/san-pham/', '/giai-phap/', '/du-an-da-thuc-hien/', '/tin-tuc/', '/thu-vien-anh/', '/video/', '/dai-ly/', '/lien-he/'];
+    private const PAGES = ['/gioi-thieu/', '/san-pham/', '/giai-phap/', '/du-an-da-thuc-hien/', '/tin-tuc/', '/thu-vien-anh/', '/video/', '/dai-ly/', '/lien-he/', '/tra-cuu-don-hang/'];
 
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 

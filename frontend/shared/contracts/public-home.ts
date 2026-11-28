@@ -18,7 +18,7 @@ export interface PublicHomePayload {
   campaigns: PublicHomeImage[]
   solutions: PublicHomeSolution[]
   process: PublicHomeProcess[]
-  dealer: { title: string; description: string; href: string }
+  dealer: { title: string; description: string; href: string; benefits?: string[] }
   about: { configured: boolean; visible: boolean; title: string; description: string; href: string; action: string; points?: PublicHomeAboutPoint[] }
   contact: { hotline: string; email: string; address: string; workingHours: string }
   productGroups: PublicHomeProductGroup[]
@@ -51,6 +51,7 @@ export function isPublicHomePayload(value: unknown): value is PublicHomePayload 
   if (!Array.isArray(value.solutions) || !value.solutions.every((item) => record(item) && text(item.label) && text(item.name) && text(item.description) && image(item.image) && url(item.href))) return false
   if (!Array.isArray(value.process) || !value.process.every((item) => record(item) && text(item.number) && text(item.name) && text(item.description))) return false
   if (!record(value.dealer) || !text(value.dealer.title) || !text(value.dealer.description) || !url(value.dealer.href)) return false
+  if (value.dealer.benefits !== undefined && (!Array.isArray(value.dealer.benefits) || value.dealer.benefits.length > 4 || !value.dealer.benefits.every((item) => text(item)))) return false
   if (!record(value.about) || typeof value.about.configured !== 'boolean' || typeof value.about.visible !== 'boolean' || (value.about.visible && !value.about.configured) || !text(value.about.title) || !text(value.about.description) || !text(value.about.action) || !url(value.about.href)) return false
   if (value.about.points !== undefined && (!Array.isArray(value.about.points) || value.about.points.length > 4 || !value.about.points.every(isAboutPoint))) return false
   if (!record(value.contact) || !text(value.contact.hotline, true) || !text(value.contact.email, true) || !text(value.contact.address, true) || !text(value.contact.workingHours, true)) return false

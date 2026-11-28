@@ -1,0 +1,27 @@
+[
+  {
+    "claim": "Theo tài liệu của Bộ Năng lượng Hoa Kỳ (DOE), sản lượng điện mặt trời chịu ảnh hưởng từ mây, bụi bẩn, khói mù, mưa và bóng râm.",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Solar energy production can be affected by season, time of day, clouds, dust, haze, or obstructions like shadows, rain, snow, and dirt."
+  },
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), điện mặt trời không phải lúc nào cũng phát đúng lúc nhà bạn cần dùng điện nhất.",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Solar energy is not always produced at the time energy is needed most."
+  },
+  {
+    "claim": "Lưu trữ ngắn hạn trong vài phút giúp làm mượt các đợt sụt công suất khi mây bay ngang.",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "Short-term storage that lasts just a few minutes will ensure a solar plant operates smoothly during output fluctuations due to passing clouds,"
+  },
+  {
+    "claim": "Trong khi đó, lưu trữ dài hạn giúp cấp điện qua nhiều ngày thời tiết xấu.",
+    "url": "https://www.energy.gov/cmei/systems/solar-integration-solar-energy-and-storage-basics",
+    "quote": "while longer-term storage can help provide supply over days or weeks when solar energy production is low or during a major weather event, for example."
+  },
+  {
+    "claim": "Theo Bộ Năng lượng Hoa Kỳ (DOE), tế bào quang điện hoạt động nhờ các hạt ánh sáng (photon) tách electron tạo dòng điện.",
+    "url": "https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics",
+    "quote": "The remainder have the right amount of energy to separate electrons from their atomic bonds to produce charge carriers and electric current."
+  }
+]

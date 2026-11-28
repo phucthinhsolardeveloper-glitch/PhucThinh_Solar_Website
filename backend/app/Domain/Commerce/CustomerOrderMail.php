@@ -77,7 +77,7 @@ final class CustomerOrderMail
             $totals = ['subtotal' => (float) $order->subtotal, 'shipping' => (float) $order->shipping_fee, 'total' => (float) $order->total];
 
             return Outbox::queue('order:'.$orderId.':customer:'.$event, 'order_'.$event, (string) $order->email,
-                new OrderNotification($copy, $fields, $this->items($orderId), $totals, actions: $this->actions->customer()));
+                new OrderNotification($copy, $fields, $this->items($orderId), $totals, actions: $this->actions->customer((string) $order->code)));
         } catch (Throwable $e) {
             Log::error('Order mail could not be queued', ['order' => $orderId, 'event' => $event, 'error' => LogSafe::error($e)]);
 
