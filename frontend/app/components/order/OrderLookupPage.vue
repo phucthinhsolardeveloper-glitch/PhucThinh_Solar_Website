@@ -112,10 +112,10 @@ function again() {
             <p v-if="order.status === 'cancelled'" class="m-0 flex items-center gap-2 font-bold text-red-700">
               <UIcon name="i-lucide-circle-x" class="size-5" aria-hidden="true" />Đơn hàng đã hủy
             </p>
-            <ol v-else class="m-0 grid list-none grid-cols-4 p-0">
+            <ol v-else class="isolate m-0 grid list-none grid-cols-4 p-0">
               <li v-for="([key, label], i) in STEPS" :key="key" class="relative flex flex-col items-center gap-2 text-center">
                 <span v-if="i > 0" class="absolute right-1/2 top-[13px] h-0.5 w-full" :class="i <= stepIndex ? 'bg-navy-800' : 'bg-slate-200'" aria-hidden="true" />
-                <span class="relative grid size-7 place-items-center rounded-full text-xs font-bold" :class="i < stepIndex ? 'bg-navy-800 text-white' : i === stepIndex ? 'bg-gold-500 text-navy-950 ring-4 ring-gold-100' : 'bg-slate-100 text-slate-400'">
+                <span class="relative z-10 grid size-7 place-items-center rounded-full text-xs font-bold" :class="i < stepIndex ? 'bg-navy-800 text-white' : i === stepIndex ? 'bg-gold-500 text-navy-950 ring-4 ring-gold-100' : 'bg-slate-100 text-slate-400'">
                   <UIcon v-if="i < stepIndex" name="i-lucide-check" class="size-4" aria-hidden="true" />
                   <template v-else>{{ i + 1 }}</template>
                 </span>
